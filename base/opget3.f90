@@ -31,8 +31,8 @@ subroutine OPGET3 (IACTK,IDT,IYR1,IYR2,ISQNUM,MXPM,NPRMS, &
   !             1 IMPLIES THE ACTIVITY REFERENCED COULD NOT BE FOUND.
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'OPCOM.F77'
+  include 'PRGPRM.f90'
+  include 'OPCOM.f90'
 
   ! Variables
   integer :: KODE,NPRMS,ISQNUM,IYR1,IYR2,IDT,IACTK,MXPM,IFIND,NTIMES

@@ -1,0 +1,50 @@
+!========================!
+!   fire/base : excfim   !
+!========================!
+! FIRE-BASE $Id$
+subroutine EXCFIM
+  implicit none
+
+  !     EXTRA EXTERNAL REFERENCES FOR THE CFIM (Crown Fire Initiation Model) FROM FVS-BC
+  !     FOR USE WHEN CFIM IS NOT LINKED TO FFE
+
+  ! Variables
+  character(len=8) :: CFTMP
+  integer :: IYR,FMOIS,CANBURN,FCLS,FLAME,FMD
+  real    :: ROS,INTSTY,UWIND,IBYRAM
+  real    :: RDANUW
+  integer :: IDANUW
+  character(len=8) :: CDANUW
+
+  !  ENTRY FMCANC
+
+  entry FMCANC (IYR,FMOIS,CFTMP,CANBURN,ROS,INTSTY,FCLS)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  IDANUW = IYR
+  IDANUW = FMOIS
+  IDANUW = CANBURN
+  IDANUW = FCLS
+  CDANUW(1:8) = CFTMP(1:8)
+  RDANUW = ROS
+  RDANUW = INTSTY
+
+  return
+
+  !  ENTRY FMCFIM
+
+  entry FMCFIM(IYR,FMD,UWIND,IBYRAM,FLAME,CANBURN,ROS)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  IDANUW = IYR
+  IDANUW = FMD
+  IDANUW = FLAME
+  IDANUW = CANBURN
+  RDANUW = UWIND
+  RDANUW = IBYRAM
+  RDANUW = ROS
+
+  return
+end

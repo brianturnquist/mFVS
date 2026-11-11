@@ -1,0 +1,64 @@
+!=================================================!
+!   Compute subsequent and planted tree heights   !
+!=================================================!
+! EC $Id$
+subroutine ESSUBH (I,HHT,EMSQR,DILATE,DELAY,ELEV,IHTSER,GENTIM,&
+     &TRAGE)
+  implicit none
+
+  !     ASSIGNS HEIGHTS TO SUBSEQUENT AND PLANTED TREE RECORDS
+  !     CREATED BY THE ESTABLISHMENT MODEL.
+  !     COMING INTO ESSUBH, TRAGE IS THE AGE OF THE TREE AS SPECIFIED ON
+  !     THE PLANT OR NATURAL KEYWORD.  LEAVING ESSUBH, TRAGE IS THE NUMBER
+  !     BETWEEN PLANTING (OR NATURAL REGENERATION) AND THE END OF THE
+  !     CYCLE.  AGE IS TREE AGE UP TO THE TIME REGENT WILL BEGIN GROWING
+  !     THE TREE.
+
+  !     CALLED FROM **ESTAB
+  !     CALLS **SMHTGF
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'CONTRL.f90'
+  include 'ESPARM.f90'
+  include 'ESCOMN.f90'
+
+  ! Variables
+  logical :: DEBUG
+  integer :: I,IHTSER,N,MODE0,ITIME
+  real    :: AGE,EMSQR,DILATE,DELAY,ELEV,GENTIM,H,HHT,TRAGE
+  real    :: RDANUW
+  integer :: IDANUW
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  RDANUW = DILATE
+  RDANUW = ELEV
+  RDANUW = EMSQR
+  IDANUW = IHTSER
+
+  call DBCHK (DEBUG,'ESSUBH',6,ICYC)
+  if (DEBUG)&
+       &write(JOSTND,*)' ENTERING ESSUBH - ICYC, TRAGE= ',ICYC,TRAGE
+
+  N = INT(DELAY+0.5)
+  if (N.lt.-3) N = -3
+  DELAY = real(N)
+  ITIME = INT(TIME+0.5)
+  if (N.gt.ITIME) DELAY = TIME
+  AGE = TIME-DELAY-GENTIM+TRAGE
+  if (AGE.lt.1.0) AGE = 1.0
+  TRAGE = TIME-DELAY
+
+  !  CALL SMHTGF TO CALCULATE SEEDLING HEIGHT AT AGE "AGE".
+
+  MODE0 = 0
+  call SMHTGF (MODE0,ICYC,I,H,AGE,HHT,JOSTND,DEBUG)
+
+  if (DEBUG) then
+     write(JOSTND,*)' LEAVE ESSUBH -ICYC,I,AGE,TRAGE,TIME,DELAY,HHT= ',&
+          &ICYC,I,AGE,TRAGE,TIME,DELAY,HHT
+  end if
+
+  return
+end

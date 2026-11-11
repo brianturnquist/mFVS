@@ -9,9 +9,9 @@ subroutine BFTOPK(ISPC,D,H,BBFV,LCONE,BARK,VMAX,ITHT)
   !    TOPS.
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'COEFFS.F77'
-  include 'VOLSTD.F77'
+  include 'PRGPRM.f90'
+  include 'COEFFS.f90'
+  include 'VOLSTD.f90'
 
   ! Variables
   logical :: LCONE

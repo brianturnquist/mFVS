@@ -11,10 +11,10 @@ subroutine TWIGCF(ISPC,H,D,VN,VM,I)
 
   ! Common blocks
   include 'PRGPRM.f90'
-  include 'PLOT.F77'
-  include 'ARRAYS.F77'
-  include 'VOLSTD.F77'
-  include 'CONTRL.F77'
+  include 'PLOT.f90'
+  include 'ARRAYS.f90'
+  include 'VOLSTD.f90'
+  include 'CONTRL.f90'
 
   !  BHB1 --  INTERCEPT COEFFICIENT IN THE MODEL PREDICTING BOLE HEIGHT
   !           TO A 4-INCH TOP (ONE COEFFICIENT PER SPECIES).

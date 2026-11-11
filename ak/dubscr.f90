@@ -12,10 +12,10 @@ subroutine DUBSCR(ISPC,D,H,PRD,QMDPLT,CR)
 
   ! Common blocks
   include 'PRGPRM.f90'
-  include 'ARRAYS.F77'
-  include 'CONTRL.F77'
-  include 'PDEN.F77'
-  include 'PLOT.F77'
+  include 'ARRAYS.f90'
+  include 'CONTRL.f90'
+  include 'PDEN.f90'
+  include 'PLOT.f90'
   include 'CRCOEF.f90'
 
   ! Variables

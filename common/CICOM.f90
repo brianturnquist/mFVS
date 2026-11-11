@@ -1,0 +1,19 @@
+!====================!
+!   common : CICOM   !
+!====================!
+! COMMON $Id$
+
+! Variables
+integer :: ICINDX
+
+integer :: ICITYP(130)
+
+common /CICOM/ ICINDX,ICITYP
+
+!  DEFINITIONS OF VARIABLES IN 'CICOM' COMMON BLOCK:
+
+!    ICINDX -- THE INDEX OF THE IDENTIFIED CENTRAL IDAHO HABITAT TYPE
+!              SET IN **HABTYP** AND **GRINIT**.
+!              USED IN **DGF** AND **MORTS**.
+!    ICITYP -- HABITAT TYPES RECOGNIZED BY THE CENTRAL IDAHO VARIANT
+!              THESE ARE LOADED IN **BLKDAT***, AND USED IN **HABTYP**

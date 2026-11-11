@@ -24,9 +24,9 @@ subroutine OPNEW (KODE,IDT,IACTK,NPRMS,PRMS)
   !     PRMS = THE PARAMETER LIST.
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'OPCOM.F77'
-  include 'CONTRL.F77'
+  include 'PRGPRM.f90'
+  include 'OPCOM.f90'
+  include 'CONTRL.f90'
 
   ! Variables
   integer :: NPRMS,IACTK,IDT,KODE,IPEND,I,J

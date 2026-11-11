@@ -12,13 +12,13 @@ subroutine INTREE (RECORD,IRDPLV,ISDSP,SDLO,SDHI,LKECHO)
   !  WHICH ARE TREE RECORD SPECIFIC.
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'ARRAYS.F77'
-  include 'CONTRL.F77'
-  include 'PLOT.F77'
-  include 'HTCAL.F77'
-  include 'ESTREE.F77'
-  include 'STDSTK.F77'
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
+  include 'CONTRL.f90'
+  include 'PLOT.f90'
+  include 'HTCAL.f90'
+  include 'ESTREE.f90'
+  include 'STDSTK.f90'
 
   ! Variables
   integer :: IG,IULIM,IGRP,IPP,IAXE,ISPI,IUP,IHIT3,IHIT2,IHIT1,I,IK

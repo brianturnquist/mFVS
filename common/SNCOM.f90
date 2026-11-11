@@ -1,0 +1,17 @@
+!====================!
+!   common : SNCOM   !
+!====================!
+! COMMON $Id$
+
+!  COMMON BLOCK FOR ALL VARIABLES UNIQUE TO SN VARIANT.
+
+! Variables
+integer :: ISEFOR,KODIST
+
+common /SECOM/ ISEFOR,KODIST
+
+!  VARIABLE DEFINITIONS:
+!     ISEFOR= FOREST CODE FROM FORKOD.  DOES NOT INCLUDE DISTRICT.
+!     KODIST= DISTRICT NUMBER
+
+!--END COMMON

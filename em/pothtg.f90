@@ -1,0 +1,162 @@
+!=================!
+!   em : pothtg   !
+!=================!
+! EM $Id$
+subroutine POTHTG (I,ISPEC,H,SI50,SI100,PHTG,DEBUG)
+  implicit none
+
+  ! THIS ROUTINE CALCULATES POTENTIAL HTG USING A VARIETY OF
+  ! SITE OR HTG GROWTH CURVES.
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'CONTRL.f90'
+  include 'ARRAYS.f90'
+
+  ! Variables
+  logical :: DEBUG
+
+  integer :: ISPEC,I
+  real    :: H,CCF,A,B,C,TEM,EFAGE,EFAG10,Z1,Z2,TEMHT,TEMSI,TERM1
+  real    :: H10,D,P1,P2,P3,P4,P5,TERM2,PHTG,SI100,SI50
+
+  !  SPECIES ORDER:
+  !   1=WB,  2=WL,  3=DF,  4=LM,  5=LL,  6=RM,  7=LP,  8=ES,
+  !   9=AF, 10=PP, 11=GA, 12=AS, 13=CW, 14=BA, 15=PW, 16=NC,
+  !  17=PB, 18=OS, 19=OH
+
+  !  SPECIES EXPANSION
+  !  LM USES IE LM (ORIGINALLY FROM TT VARIANT)
+  !  LL USES IE AF (ORIGINALLY FROM NI VARIANT)
+  !  RM USES IE JU (ORIGINALLY FROM UT VARIANT)
+  !  AS,PB USE IE AS (ORIGINALLY FROM UT VARIANT)
+  !  GA,CW,BA,PW,NC,OH USE IE CO (ORIGINALLY FROM CR VARIANT)
+
+  if (DEBUG) write(JOSTND,3) ICYC
+  3 format(' ENTERING SUBROUTINE POTHTG  CYCLE =',I5)
+
+  if (ISPEC .eq.1.or. ISPEC .eq.7.or.&
+       &ISPEC .eq.2.or. ISPEC .eq.18)go to 100
+  if (ISPEC .eq.3)go to 200
+  if (ISPEC .eq.8.or. ISPEC .eq.9)go to 300
+  if (ISPEC .eq.10) go to 400
+  if (ISPEC.eq.12.or. ISPEC.eq.17) go to 500
+  PHTG = 0.0
+  go to 1000
+
+  ! SECTION TO CALC POT HTG FOR WBP AND LP VIA ALEXANDER TACKLE AND DAHMS
+
+  100 continue
+  CCF = 125.0
+  A = 9.72443 - 0.00091*SI100*CCF - H
+  B = -0.23733 + 0.0149*SI100
+  C = 0.00160 - 0.00005*SI100
+
+  ! CALCULATE THE EFFECTIVE AGE OF THE TREE IN QUESTION
+
+  if (DEBUG) write (JOSTND,900) A,B,C
+  900 format(' IN POTHGF 900 A,B,C = ',3F12.5)
+  TEM = B*B - 4.0*A*C
+  if (TEM .lt.0.0)TEM = 0.0
+  if (C .ne.0.) then
+     EFAGE = (-B + SQRT(TEM))/(2.0*C)
+  else
+     EFAGE = -A/B
+  end if
+  if (ABIRTH(I) .le.0.0)ABIRTH(I) = EFAGE
+  EFAG10 = EFAGE + 10.0
+  if (DEBUG) write (JOSTND,905) EFAGE,EFAG10
+  905 format(' IN POTHGF 905 EFAGE,EFAG10 = ',2F12.5)
+  PHTG = -2.3733 + 0.00160*(EFAG10*EFAG10-EFAGE*EFAGE) +&
+       &0.1490*SI100 - 0.00005*SI100*(EFAG10*EFAG10-&
+       &EFAGE*EFAGE)
+  go to 1000
+
+  ! SECTION TO CALCUALE POT HTG VIA MONSERUD'S 1985 DF HT AGE CURVES
+
+  200 continue
+  Z1 = 0.3197
+  Z2 = 1.0232
+  TEMHT = H - 4.5
+  if (TEMHT .eq.1.) TEMHT = 1.1
+  TEMSI = SI50 - 4.5
+  TERM1 = (42.397*TEMSI**Z1)/TEMHT-1.0
+  if (TERM1.lt.0.0) then
+     PHTG = 0.0
+     go to 1000
+  end if
+  TERM1 = ALOG(TERM1)
+  EFAGE = EXP ((TERM1 + Z2*ALOG(TEMSI) - 9.7278)/(-1.2934))
+  if (ABIRTH(I) .le.0.0)ABIRTH(I) = EFAGE
+  EFAG10 = EFAGE + 10.0
+  H10 = (42.397*TEMSI**Z1)/(1.0 + EXP(9.7278-&
+       &1.2934*ALOG(EFAG10) - ALOG(TEMSI)*Z2))
+  PHTG = H10 - TEMHT
+  go to 1000
+
+  ! SECTION TO CALCULATE POT HTG FOR ES AND AF VIA ALEXANDER LOOK ALIKE
+  ! CURVES
+
+  300 continue
+  A = SI100
+
+  ! A IS THEN THE ASYMPTOTE
+
+  B = 0.931764
+  C = 0.01679
+  D = 0.302381
+  if (DEBUG) write (JOSTND,920) H,A,D,B
+  920 format(' IN POTHTG H,A,D,B = ',4F12.5)
+  if (H .ge. A) then
+     PHTG = 1.0
+     go to 1000
+  end if
+  TERM1 = ALOG((1.0-((H/A)**(1.0-D)))/B)
+  EFAGE = TERM1/(-C)
+  if (ABIRTH(I) .le.0.0)ABIRTH(I) = EFAGE
+  EFAG10 = EFAGE + 10.0
+  if (DEBUG) write (JOSTND,925) A,B,C,D,EFAG10,EFAGE,TERM1
+  925 format(' IN POTHTG A,B,C,D,EFAG10,EFAGE,TERM1 = ',7F12.5)
+  H10 = A*(1.0 - B*EXP(-C*EFAG10))**(1.0/(1.0-D))
+  PHTG = H10-H
+  go to 1000
+
+  ! SECTION TO CALCULATE POT HTG FOR PP VIA MEYER LOOK ALIKE CURVES
+
+  400 continue
+  P1 = 3.635794
+  P2 = 0.916307
+  P3 = 6.09478
+  P4 = 0.96483
+  P5 = 0.277025
+  TERM1 = ((P1*SI100**P2)/H)-1.0
+  if (TERM1.le.0.0) then
+     PHTG = 0.0
+     go to 1000
+  end if
+  TERM1 = ALOG(TERM1)
+  TERM2 = TERM1-P3 + P5*ALOG(SI100)
+  EFAGE = EXP(TERM2/(-P4))
+  if (ABIRTH(I) .le.0.0)ABIRTH(I) = EFAGE
+  EFAG10 = EFAGE + 10.0
+  H10 = P1*SI100**P2/(1.0 + EXP(P3-P4*ALOG(EFAG10) -&
+       &P5*ALOG(SI100)))
+  PHTG = H10-H
+
+  !  COMPUTE AGE FOR ASPEN. THIS EQUATION IS ALSO USED FOR PAPER BIRCH.
+  !  EQUATION FORMULATED BY
+  !  WAYNE SHEPPERD, ROCKY MTN FOREST EXP STATION, FT COLLINS, CO.
+
+  500 continue
+  if (PROB(I).le.0.0) go to 1000
+  if (ISPEC.eq.12.or. ISPEC.eq.17) then
+     EFAGE = (H*2.54*12.0/26.9825)**(1.0/1.1752)
+     if (ABIRTH(I) .le.0.0)ABIRTH(I) = EFAGE
+     PHTG = 0.
+  end if
+
+  1000 continue
+  if (DEBUG) write(JOSTND,1100) ICYC
+  1100 format(' LEAVING SUBROUTINE POTHTG CYCLE =',I5)
+  return
+end

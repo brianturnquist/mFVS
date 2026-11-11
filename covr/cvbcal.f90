@@ -1,0 +1,296 @@
+!===================!
+!   covr : cvbcal   !
+!===================!
+! COVR $Id$
+subroutine CVBCAL(HTINDX)
+  implicit none
+
+  !  THIS SUBROUTINE IS CALLED BY **CVBROW** TO COMPUTE CORRECTION
+  !  FACTORS FOR THE UNDERSTORY SHRUB PREDICTIONS. IT IS ONLY CALLED
+  !  ONCE DURING THE SIMULATION AT THE START OF THE PROJECTION.
+
+  !  VARIABLE DEFINITIONS:
+
+  !       ** COMPUTED CORRECTION FACTORS **
+
+  !-- BHTCF(31) -- SHRUB HEIGHT CORRECTION FACTORS
+  !-- BPCCF(31) -- SHRUB COVER CORRECTION FACTORS
+  !-- XCV(31), XPB(31), XSH(31) -- COVER, PROB., AND HEIGHT
+  !             PREDICTIONS FOR CYCLE # 0, BEFORE CALIBRATION
+
+  !       ** CALIBRATION BY LAYER **
+
+  !-- AVGBHT(3), AVGBPC(3) -- OBSERVED AVERAGE HEIGHT AND COVER VALUES
+  !             OF UP TO 3 SHRUB LAYERS INPUT ON THE SHRBLAYR KEYWORD
+  !             RECORD.  SORTED BY HEIGHT IN **CVIN**:
+  !             AVGBHT(1) = AVERAGE HEIGHT OF TALLEST SHRUB LAYER,
+  !             AVGBHT(3) = AVERAGE HEIGHT OF LOWEST SHRUB LAYER
+  !-- HTAVG(3), CVAVG(3) -- PREDICTED AVERAGE HEIGHT AND COVER
+  !             VALUES FOR SHRUB LAYERS COMPUTED BY **CVBCAL**
+  !-- HTFRAC(3), CVFRAC(3) -- RATIO OF OBSERVED/PREDICTED (AVGBHT/HTAVG)
+  !             HEIGHT OR COVER VALUES BY LAYERS, OR, CORRECTION
+  !             FACTORS BY LAYER
+  !-- HTINDX(31) -- SPECIES SUBSCRIPTS SORTED BY DECREASING HEIGHT
+  !-- IHT(3,2) -- INDEXES HTINDX(31) BY SHRUB LAYER
+  !-- ILAYR(31) -- LAYER NUMBER WHICH EACH SHRUB SPECIES IS ASSIGNED TO
+  !-- LCAL1 --  .TRUE. IF CALIBRATION METHOD #1 IS BEING USED
+  !             (CALIBRATION BY SHRUB LAYER: SHRBLAYR CARD)
+  !-- NKLASS -- NUMBER OF OBSERVED SHRUB LAYERS (UP TO THREE),
+  !             IDENTIFIED ON SHRBLAYR KEYWORD CARD
+  !-- SUMCVR -- TOTAL OBSERVED COVER, EQUAL TO THE SUM OF THE COVER
+  !             VALUES FOR SHRUB LAYERS INPUT ON THE SHRBLAYR CARD
+  !-- TOTLCV(MAXCY1,2) -- TOTAL PREDICTED COVER BEFORE CALIBRATION,
+  !             WEIGHTED BY PB(I), COMPUTED BY **CVBROW** IN CYCLE # 0
+  !-- RELPC(3) -- RATIO OF OBSERVED COVER VALUES BY LAYER TO TOTAL
+  !               (AVGBPC(I)/SUMCVR)
+  !-- SUMHT(3), SUMCV(3), NEXTSP, LASTSP, CUMULI, RCUMPC, DIFF1, DIFF2 --
+  !             VARIABLES USED TO FIND HEIGHT CLASSES
+
+  !       ** CALIBRATION BY SPECIES **
+
+  !-- SHRBHT(31), SHRBPC(31) -- OBSERVED HEIGHT AND COVER VALUES
+  !             FOR SPECIES READ FROM THE SHRUBHT KEYWORD CARD
+  !-- LCAL2 --  .TRUE. IF CALIBRATION METHOD #2 IS BEING USED
+  !             (CALIBRATION BY SPECIES: SHRUBHT & SHRUBPC CARDS)
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
+  include 'CONTRL.f90'
+  include 'CVCOM.f90'
+
+  ! Variables
+  logical :: DEBUG
+  integer :: HTINDX(31)
+  real    :: RELPC(3)
+  real    :: SUMCV(3),SUMHT(3)
+  integer :: IHT(3,2)
+  integer :: ISPI,I,NEXTSP,J,K,I1,I2,LASTSP
+  real    :: CUMULI,RCUMPC,DIFF1,DIFF2
+
+  !  CHECK FOR DEBUG.
+
+  call DBCHK(DEBUG,'CVBCAL',6,ICYC)
+  if (DEBUG) write (JOSTND,9000) ICYC
+  9000 format ('**CALLING CVBCAL, CYCLE = ', I3)
+
+  !  SAVE THE UNCALIBRATED PREDICTIONS FOR CYCLE # 0 IN THE ARRAYS XCV,
+  !  XPB, AND XSH.
+
+  do ISPI = 1,31
+     XCV(ISPI) = PBCV(ISPI)
+     XPB(ISPI) = PB(ISPI)
+     XSH(ISPI) = SH(ISPI)
+     10 continue
+  end do
+
+  !  BRANCH TO DESIRED CALIBRATION TECHNIQUE:
+
+  if (LCAL2) go to 200
+  !===============  CALIBRATION METHOD # 1: BY SHRUB LAYER ===============
+  !  COMPUTE THE RATIO OF OBSERVED PERCENT COVER BY HEIGHT LAYER
+  !  TO THE TOTAL.
+
+  !  BECAUSE OF NUMERICAL PROBLEMS IN COMPARING RCUMPC WITH
+  !  RELPC(I), ADD A LITTLE TO RELPC(I).
+
+  do I = 1,NKLASS
+     RELPC(I) = 0.00001 + AVGBPC(I)/SUMCVR
+     30 continue
+  end do
+
+  if (DEBUG) write (JOSTND,7000) (AVGBPC(I),I = 1,NKLASS),SUMCVR,&
+       &(RELPC(I),I = 1,NKLASS)
+  7000 format (7F10.5//)
+
+  !  PROGRESS DOWN THROUGH THE SHRUB SPECIES FROM TALLEST TO SHORTEST
+  !  (BASED ON FIRST CYCLE HEIGHT PREDICTIONS), AND ACCUMULATE THE
+  !  INDIVIDUAL SHRUB COVER VALUES (WEIGHTED BY PROBABILITY OF
+  !  OCCURRENCE). WHEN THIS VALUE ACCOUNTS FOR THE SAME PROPORTION
+  !  OF TOTAL PREDICTED SHRUB COVER AS INPUT SHRUB LAYER ONE
+  !  DOES OF THE TOTAL INPUT SHRUB COVER -- STOP; GROUP THOSE
+  !  SPECIES DOWN TO THE CURRENT SPECIES INTO HEIGHT CLASS ONE.
+  !  ZERO OUT THE SHRUB COVER CUMULATOR AND CONTINUE ON DOWN THE SPECIES
+  !  LIST UNTIL "NKLASS" GROUPS HAVE BEEN IDENTIFIED IN THE SAME MANNER.
+  !  ALL SPECIES MUST BE PLACED INTO A GROUP.
+
+  NEXTSP = 1
+  do I = 1,NKLASS
+     if (NEXTSP .gt.31) go to 130
+     IHT(I,1) = NEXTSP
+     CUMULI = 0.0
+     RCUMPC = 0.0
+
+     !  IF THIS IS THE LAST GROUP: THROW ALL THE REMAINING SPECIES INTO IT.
+
+     if ( I .eq. NKLASS ) go to 110
+     do J = NEXTSP,31
+        K = HTINDX(J)
+        DIFF1 = ABS( RCUMPC - RELPC(I) )
+        CUMULI = CUMULI + PBCV(K)
+        RCUMPC = CUMULI/TOTLCV(1,1)
+        DIFF2 = ABS( RCUMPC - RELPC(I) )
+
+        if (DEBUG) write (JOSTND,7009) I,J,K,PBCV(K),&
+             &CUMULI,RCUMPC,TOTLCV(1,1),RELPC(I),DIFF1,DIFF2
+        7009 format ('70 CONTINUE : I, J, K',3I5,9F10.5)
+
+        if (RELPC(I) .eq.0.0) go to 80
+        if ( RCUMPC .le. RELPC(I) ) go to 70
+
+        !  PREDICTED COVER RATIO (RCUMPC) HAS JUST EXCEEDED THE OBSERVED
+        !  COVER RATIO FOR THE CURRENT ILAYER. CHOOSE WHETHER TO KEEP THE LAST
+        !  SPECIES COVER VALUE IN THE CUMULATED TOTAL DEPENDING ON IF THE
+        !  MATCH WAS CLOSER PRIOR TO ADDING IN THE LAST SPECIES:
+        !           IF ( DIFF1 .LE. DIFF2 ) DROP THE LAST SPECIES
+
+        if ( DIFF1.le. DIFF2 ) go to 80
+        go to 90
+        70 continue
+     end do
+     80 continue
+
+     !  DROP THE LAST SPECIES
+
+     CUMULI = CUMULI - PBCV(K)
+     if (DEBUG) write (JOSTND,7010) I,J,K,PBCV(K),&
+          &CUMULI,RCUMPC, TOTLCV(1,1),RELPC(I),DIFF1,DIFF2
+     7010 format ('80 DROP     : I, J, K',3I5,9F10.5)
+     LASTSP = J-1
+     NEXTSP = J
+     IHT(I,2) = LASTSP
+     go to 100
+     90 continue
+
+     !  KEEP THE LAST SPECIES
+
+     if (DEBUG) write (JOSTND,7011) I,J,K,PBCV(K),&
+          &CUMULI,RCUMPC,TOTLCV(1,1),RELPC(I),DIFF1,DIFF2
+     7011 format ('90 KEEP     : I, J, K',3I5,9F10.5)
+     LASTSP = J
+     NEXTSP = J + 1
+     IHT(I,2) = LASTSP
+     100 continue
+  end do
+  110 continue
+  do J = NEXTSP,31
+     K = HTINDX(J)
+     CUMULI = CUMULI + PBCV(K)
+     if (DEBUG) write (JOSTND,7012) I,J,K,PBCV(K),&
+          &CUMULI
+     7012 format ('120 THE REST: I, J, K',3I5,4F10.5)
+     120 continue
+  end do
+  IHT(NKLASS,2) = 31
+  130 continue
+  if (DEBUG) write (JOSTND,7013) I,NEXTSP,LASTSP
+  7013 format ('130 CONTINUE : I,NEXTSP,LASTSP',3I5)
+
+  !  USING THE CLASS POINTERS DEFINED ABOVE, COMPUTE THE AVERAGE
+  !  PREDICTED SHRUB HEIGHT AND PERCENT COVER IN EACH HEIGHT CLASS.
+
+  do I = 1,NKLASS
+     if (AVGBPC(I) .le.0.0) go to 150
+     SUMCV(I) = 0.0
+     SUMHT(I) = 0.0
+     CVAVG(I) = 0.0
+     HTAVG(I) = 0.0
+     CVFRAC(I) = 0.0
+     HTFRAC(I) = 0.0
+     I1 = IHT(I,1)
+     I2 = IHT(I,2)
+     if (DEBUG) write (JOSTND,7014) I1,I2
+     7014 format ('150 CONTINUE : I1,I2',2I5)
+     if (I2.lt.I1) go to 150
+     do J = I1,I2
+        K = HTINDX(J)
+        ILAYR(K) = I
+        SUMCV(I) = SUMCV(I) + PBCV(K)
+        SUMHT(I) = SUMHT(I) + SH(K)
+        140 continue
+     end do
+     CVAVG(I) = SUMCV(I)
+     HTAVG(I) = SUMHT(I)/((I2-I1)+1)
+     150 continue
+  end do
+  if (DEBUG) write (JOSTND,7000) (CVAVG(I),I = 1,NKLASS),&
+       &(HTAVG(I),I = 1,NKLASS)
+
+  !  COMPUTE THE RATIO OF OBSERVED VALUES TO PREDICTED VALUES FOR AVERAGE
+  !  SHRUB HEIGHT AND AVERAGE PERCENT COVER IN EACH OF THE HEIGHT LAYERS.
+  !  ASSIGN CORRECTION FACTORS BASED ON THE RATIOS ABOVE.
+
+  do I = 1,NKLASS
+     if (AVGBPC(I) .le.0.0) go to 180
+     if (CVAVG(I).gt.0.0) CVFRAC(I) = AVGBPC(I)/CVAVG(I)
+     if (HTAVG(I).gt.0.0) HTFRAC(I) = AVGBHT(I)/HTAVG(I)
+     I1 = IHT(I,1)
+     I2 = IHT(I,2)
+     if (I2.lt.I1) go to 180
+     do J = I1,I2
+        K = HTINDX(J)
+        BHTCF(K) = HTFRAC(I)
+        BPCCF(K) = CVFRAC(I)
+        170 continue
+     end do
+     180 continue
+  end do
+  return
+  200 continue
+
+  !============ CALIBRATION METHOD #2: BY INDIVIDUAL SPECIES ============
+  !  COMPUTE RATIOS FOR (MEASURED HEIGHT/PREDICTED HEIGHT), AND
+  !  (MEASURED % COVER/PREDICTED % COVER).
+
+  !       OBSERVED          PROB      CORRECTION FACTORS
+
+  !  SHRBHT(I)  SHRBPC(I)   PB(I)     BHTCF(I)  BPCCF(I)
+
+  !     < 0.      < 0.      SAME         1.0       1.0
+  !     < 0.        0.      0.0          0.0       0.0
+  !     < 0.      > 0.      1.0          1.0    INPUT/PRED
+
+  !       0.      < 0.      SAME         0.0       0.0
+  !       0.        0.      0.0          0.0       0.0
+  !       0.      > 0.      1.0          0.0    INPUT/PRED
+
+  !     > 0.      < 0.      SAME     INPUT/PRED    1.0
+  !     > 0.        0.      0.0          0.0       0.0
+  !     > 0.      > 0.      1.0      INPUT/PRED INPUT/PRED
+
+  !  IF OBSERVED SHRBPC(I) > 0, THEN PB(I) IS RESET TO 1.0
+  !  IF OBSERVED SHRBPC(I) = 0, THEN PB(I) IS RESET TO 0.0
+
+  do ISPI = 1,31
+     if (SHRBPC(ISPI) .ge.0.0) go to 230
+     if (SHRBHT(ISPI) .lt.0.0) go to 300
+     if (SHRBHT(ISPI) .gt.0.0) go to 210
+     BPCCF(ISPI) = 0.0
+     BHTCF(ISPI) = 0.0
+     go to 300
+
+     210 continue
+     BHTCF(ISPI) = SHRBHT(ISPI)/SH(ISPI)
+     go to 300
+
+     230 continue
+     if (SHRBPC(ISPI) .gt.0.0) go to 240
+     BPCCF(ISPI) = 0.0
+     BHTCF(ISPI) = 0.0
+     go to 300
+
+     240 continue
+     BPCCF(ISPI) = SHRBPC(ISPI)/PBCV(ISPI)
+
+     if (SHRBHT(ISPI) .lt.0.0) go to 300
+     if (SHRBHT(ISPI) .gt.0.0) go to 270
+     BHTCF(ISPI) = 0.0
+     go to 300
+
+     270 continue
+     BHTCF(ISPI) = SHRBHT(ISPI)/SH(ISPI)
+     300 continue
+  end do
+
+  return
+end

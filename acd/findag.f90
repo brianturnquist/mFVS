@@ -12,9 +12,9 @@ subroutine FINDAG(I,ISPC,D1,D2,H,SITAGE,SITHT,AGMAX,HTMAX1,HTMAX2, &
 
   ! Common blocks
   include 'PRGPRM.f90'
-  include 'CONTRL.F77'
-  include 'ARRAYS.F77'
-  include 'PLOT.F77'
+  include 'CONTRL.f90'
+  include 'ARRAYS.f90'
+  include 'PLOT.f90'
 
   !  DECLARATIONS
 

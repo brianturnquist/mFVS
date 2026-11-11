@@ -11,8 +11,8 @@ subroutine GENRPT
   !     IN SEQUENCE.
 
   ! Common blocks
-  include "PRGPRM.F77"
-  include "CONTRL.F77"
+  include "PRGPRM.f90"
+  include "CONTRL.f90"
 
   common /GENRCM/ JOSCRT,NRPTS,IFOPN
 

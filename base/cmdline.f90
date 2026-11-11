@@ -42,7 +42,7 @@ subroutine fvsSetCmdLine(theCmdLine,lenCL,IRTNCD)
   implicit none
 
   ! Common blocks
-  include "GLBLCNTL.F77"
+  include "GLBLCNTL.f90"
 
 !DEC$ ATTRIBUTES DLLEXPORT,C,DECORATE :: FVSSETCMDLINE
 !DEC$ ATTRIBUTES ALIAS : 'FVSSETCMDLINE' :: FVSSETCMDLINE
@@ -222,7 +222,7 @@ end subroutine fvsSetCmdLine
 
 block data setglblcntl
   ! Common blocks
-  include "GLBLCNTL.F77"
+  include "GLBLCNTL.f90"
   data fvsRtnCode/-1/
 end block data setglblcntl
 
@@ -230,7 +230,7 @@ subroutine fvsGetStoppointCodes (spptcd,spptyr)
   implicit none
 
   ! Common blocks
-  include "GLBLCNTL.F77"
+  include "GLBLCNTL.f90"
 
 !DEC$ ATTRIBUTES DLLEXPORT,C,DECORATE :: FVSGETSTOPPOINTCODES
 !DEC$ ATTRIBUTES ALIAS : 'FVSGETSTOPPOINTCODES' :: FVSGETSTOPPOINTCODES
@@ -247,7 +247,7 @@ subroutine fvsSetStoppointCodes (spptcd,spptyr)
   implicit none
 
   ! Common blocks
-  include "GLBLCNTL.F77"
+  include "GLBLCNTL.f90"
 
 !DEC$ ATTRIBUTES DLLEXPORT,C,DECORATE :: FVSSETSTOPPOINTCODES
 !DEC$ ATTRIBUTES ALIAS : 'FVSSETSTOPPOINTCODES' :: FVSSETSTOPPOINTCODES
@@ -264,7 +264,7 @@ subroutine fvsGetRestartCode (restrtcd)
   implicit none
 
   ! Common blocks
-  include "GLBLCNTL.F77"
+  include "GLBLCNTL.f90"
 
 !DEC$ ATTRIBUTES DLLEXPORT,C,DECORATE :: FVSGETRESTARTCODE
 !DEC$ ATTRIBUTES ALIAS : 'FVSGETRESTARTCODE' :: FVSGETRESTARTCODE
@@ -287,7 +287,7 @@ subroutine fvsRestart (restrtcd)
   implicit none
 
   ! Common blocks
-  include "GLBLCNTL.F77"
+  include "GLBLCNTL.f90"
 
   ! Variables
   integer :: restrtcd
@@ -331,7 +331,7 @@ subroutine fvsRestartLastStand(restrtcd)
   implicit none
 
   ! Common blocks
-  include "GLBLCNTL.F77"
+  include "GLBLCNTL.f90"
 
 !DEC$ ATTRIBUTES DLLEXPORT,C,DECORATE :: FVSRESTARTLASTSTAND
 !DEC$ ATTRIBUTES ALIAS:'FVSRESTARTLASTSTAND' :: FVSRESTARTLASTSTAND
@@ -356,7 +356,7 @@ subroutine fvsGetKeywordFileName (fn,mxch,nch)
   implicit none
 
   ! Common blocks
-  include "GLBLCNTL.F77"
+  include "GLBLCNTL.f90"
 
 !DEC$ ATTRIBUTES DLLEXPORT,C,DECORATE :: FVSGETKEYWORDFILENAME
 !DEC$ ATTRIBUTES ALIAS:'FVSGETKEYWORDFILENAME' :: FVSGETKEYWORDFILENAME
@@ -384,7 +384,7 @@ end subroutine fvsGetKeywordFileName
 subroutine fvsSetRtnCode (rtnCode)
   implicit none
   ! Common blocks
-  include "GLBLCNTL.F77"
+  include "GLBLCNTL.f90"
   ! Variables
   integer :: rtnCode
 
@@ -403,7 +403,7 @@ end subroutine fvsSetRtnCode
 subroutine fvsGetRtnCode (rtnCode)
 
   ! Common blocks
-  include "GLBLCNTL.F77"
+  include "GLBLCNTL.f90"
   ! Variables
   integer :: rtnCode
 
@@ -421,9 +421,9 @@ subroutine fvsStopPoint (LOCODE,ISTOPDONE)
   !     note that this routine is called during the simulation
 
   ! Common blocks
-  include "PRGPRM.F77"
-  include "GLBLCNTL.F77"
-  include "CONTRL.F77"
+  include "PRGPRM.f90"
+  include "GLBLCNTL.f90"
+  include "CONTRL.f90"
 
   ! Variables
   integer :: LOCODE,ISTOPDONE,i,tmpyr

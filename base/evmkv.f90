@@ -8,8 +8,8 @@ subroutine EVMKV(CTOK)
   !     CREATES A NEW VARIABLE, IF IT CAN!
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'OPCOM.F77'
+  include 'PRGPRM.f90'
+  include 'OPCOM.f90'
 
   ! Variables
   character(len=*) :: CTOK

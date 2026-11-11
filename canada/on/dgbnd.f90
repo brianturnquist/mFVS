@@ -1,0 +1,19 @@
+!=======================!
+!   canada/on : dgbnd   !
+!=======================!
+! CANADA-ON $Id$
+subroutine DGBND (ISPC,DBH,DDG)
+
+  !  THIS SUBROUTINE IS USED TO INSURE THAT A MAXIMUM VALUE FOR DG
+  !  IS NOT EXCEEDED.
+
+  ! ALL SPECIES USE THE SAME BOUNDING FUNCTION.
+  ! THIS FUNCTION IS FROM THE WC VARIANT, BUT WITH THE MAXIMUM VALUE
+  ! LOWERED FROM 7.92 TO 6.0 (ARBITRARILY)
+
+  if (DBH .gt.150.)DBH = 150.
+  DGMAX = 6.0*EXP(-0.03*DBH)
+  if (DDG .gt. DGMAX) DDG = DGMAX
+  if (DDG .lt.0.0) DDG = 0.0
+  return
+end

@@ -1,0 +1,84 @@
+!=======================================!
+!   Estimate tree age and site height   !
+!=======================================!
+! CANADA-ON $Id$
+subroutine FINDAG(I,ISPC,D1,D2,H,SITAGE,SITHT,AGMAX,HTMAX1,HTMAX2,&
+     &DEBUG)
+  implicit none
+
+  !  THIS ROUTINE FINDS EFFECTIVE TREE AGE
+  !  CALLED FROM **COMCUP
+  !  CALLED FROM **CRATET
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'CONTRL.f90'
+  include 'ARRAYS.f90'
+  include 'PLOT.f90'
+
+  !  DECLARATIONS
+
+  ! Variables
+  logical :: DEBUG
+  integer :: I,ISPC,MODE0,IVAR
+  real    :: D1,D2,SITAGE,SITHT,AGMAX,HTMAX1,HTMAX2
+  real    :: HTG1,H,YRS,HTMAX,AGET
+  real    :: D3,P2
+
+  !     SILENCE GFORTRAN WARNING
+  AGMAX = AGMAX
+  D1 = D1
+  D2 = D2
+  HTMAX1 = HTMAX1
+  HTMAX2 = HTMAX2
+  SITHT = SITHT
+
+  HTG1 = 0.
+  D3 = DBH(I)
+  P2 = PCT(I)
+
+  !   CALL HTCALC TO CALCULATE AGE BASED ON INITIAL TREE HEIGHT
+
+  MODE0 = 0
+  IVAR = 1
+  YRS = 10.
+  AGET = 0.
+  HTMAX = 0.
+  if (DEBUG) write(JOSTND,*) 'IN FINDAG CALLING HTCALC 1: MODE0,',&
+       &'IVAR,ISPC,SITEAR(ISPC),BA,YRS,H,AGET,HTMAX,HTG1,JOSTND,',&
+       &'DEBUG,D3,P2',&
+       &MODE0,IVAR,ISPC,SITEAR(ISPC),BA,YRS,H,AGET,HTMAX,&
+       &HTG1,JOSTND,DEBUG,D3,P2
+
+  call HTCALC (MODE0,IVAR,ISPC,SITEAR(ISPC),BA,YRS,H,AGET,HTMAX,&
+       &HTG1,JOSTND,DEBUG,D3,P2)
+  if (DEBUG) write(JOSTND,*) 'IN FINDAG BACK FROM HTCALC 1: MODE0,',&
+       &'IVAR,ISPC,SITEAR(ISPC),BA,YRS,H,AGET,HTMAX,HTG1,JOSTND,',&
+       &'DEBUG,D3,P2',&
+       &MODE0,IVAR,ISPC,SITEAR(ISPC),BA,YRS,H,AGET,HTMAX,&
+       &HTG1,JOSTND,DEBUG,D3,P2
+
+  !  IF H >= HTMAX THEN CALCULATE AGE BASED ON HTMAX - 1. FT.
+  !  THE FORMULA FOR AGE IS UNSTABLE FOR HEIGHTS >= HTMAX.
+
+  if (DEBUG)write(JOSTND,*)'In FINDAG 2',HTMAX,H,AGET,HTG1,D3,P2
+  if (HTMAX-H.le.1.) then
+     H = HTMAX - 1.1
+     if (DEBUG) write(JOSTND,*) 'IN FINDAG CALLING HTCALC 2: MODE0,',&
+          &'IVAR,ISPC,SITEAR(ISPC),BA,YRS,H,AGET,HTMAX,HTG1,JOSTND,',&
+          &'DEBUG,D3,P2',&
+          &MODE0,IVAR,ISPC,SITEAR(ISPC),BA,YRS,H,AGET,HTMAX,&
+          &HTG1,JOSTND,DEBUG,D3,P2
+     call HTCALC (MODE0,IVAR,ISPC,SITEAR(ISPC),BA,YRS,H,AGET,HTMAX,&
+          &HTG1,JOSTND,DEBUG,D3,P2)
+  end if
+
+  if (DEBUG)write(JOSTND,*)'In FINDAG 3',HTMAX,H,AGET,HTG1,D3,P2
+  SITAGE = AGET
+
+  if (DEBUG)write(JOSTND,50)
+  50 format(' LEAVING SUBROUTINE FINDAG')
+
+  return
+end
+  !**END OF CODE SEGMENT

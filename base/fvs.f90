@@ -19,15 +19,15 @@ subroutine FVS(IRTNCD)
   !     PHONE (208) 882-3557
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'ARRAYS.F77'
-  include 'PLOT.F77'
-  include 'CONTRL.F77'
-  include 'OUTCOM.F77'
-  include 'PDEN.F77'
-  include 'ECON.F77'
-  include 'WORKCM.F77'
-  include 'OPCOM.F77'
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
+  include 'PLOT.f90'
+  include 'CONTRL.f90'
+  include 'OUTCOM.f90'
+  include 'PDEN.f90'
+  include 'ECON.f90'
+  include 'WORKCM.f90'
+  include 'OPCOM.f90'
 
 !DEC$ ATTRIBUTES DLLEXPORT, C, DECORATE, ALIAS : "FVS" :: FVS
 !DEC$ ATTRIBUTES REFERENCE :: IRTNCD

@@ -31,8 +31,8 @@ subroutine HTDBH (IFOR,ISPC,D,H,MODE)
 
   ! Common blocks
   include 'PRGPRM.f90'
-  include 'COEFFS.F77'
-  include 'CONTRL.F77'
+  include 'COEFFS.f90'
+  include 'CONTRL.f90'
 
   ! Variables
   integer :: MODE,ISPC,IFOR,J,I

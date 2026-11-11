@@ -1,0 +1,68 @@
+!=======================================================!
+!   Compute individual tree crown competition factors   !
+!=======================================================!
+! LS $Id$
+subroutine CCFCAL(ISPC,D,H,JCR,P,LTHIN,CCFT,CRWDTH,MODE)
+  implicit none
+
+  !  THIS ROUTINE COMPUTES CROWN WIDTH AND CCF FOR INDIVIDUAL TREES.
+  !  CALLED FROM DENSE, PRTRLS, SSTAGE, AND CVCW.
+
+  !  ARGUMENT DEFINITIONS:
+  !    ISPC = NUMERIC SPECIES CODE
+  !       D = DIAMETER AT BREAST HEIGHT
+  !       H = TOTAL TREE HEIGHT
+  !     JCR = CROWN RATIO IN PERCENT (0-100)
+  !       P = TREES PER ACRE
+  !   LTHIN = .TRUE. IF THINNING HAS JUST OCCURRED
+  !         = .FALSE. OTHERWISE
+  !    CCFT = CCF REPRESENTED BY THIS TREE
+  !  CRWDTH = CROWN WIDTH OF THIS TREE
+  !    MODE = 1 IF ONLY NEED CCF RETURNED
+  !           2 IF ONLY NEED CRWDTH RETURNED
+
+  !  CROWN WIDTH EQUATIONS FOR REGIONS 8 & 9:  SEE DOCUMENTATION IN
+  !  SUBROUTINE **CWCALC**.
+
+  !     CONVERTING CROWN WIDTH TO CCF:
+  !     THE CONSTANT 0.001803 CAN BE USED TO CONVERT CROWN WIDTH
+  !     IN FEET TO THE PERCENT OF AN ACRE COVERED BY THE CROWN
+  !     CCF = (PIE * (CRWDTH/2)**2 / 43560) * 100
+  !     CCF = 0.001803 * CRWDTH**2
+
+  ! Variables
+  logical :: LTHIN
+  integer :: MODE,ISPC,IWHO,IICR,JOSTND,JCR
+  real    :: CRWDTH,CCFT,P,H,D,TEMCW,CR
+  real    :: RDANUW
+  logical :: LDANUW
+  integer :: IDANUW
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  RDANUW = CRWDTH
+  IDANUW = JCR
+  IDANUW = MODE
+  LDANUW = LTHIN
+
+  !  INITIALIZE RETURN VARIABLES.
+
+  CCFT = 0.
+
+  ! CALL CWCALC TO GET CROWN WIDTH
+
+  TEMCW = 0.
+  CR = 90.
+  IWHO = 1
+  call CWCALC(ISPC,P,D,H,CR,IICR,TEMCW,IWHO,JOSTND)
+
+  !  COMPUTE CCF
+
+  if (D .gt.0.1) then
+     CCFT = 0.001803 * TEMCW**2.
+  else
+     CCFT = 0.001
+  end if
+  CCFT = CCFT * P
+  return
+end

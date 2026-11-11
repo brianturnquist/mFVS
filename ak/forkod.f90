@@ -10,8 +10,8 @@ subroutine FORKOD
 
   ! Common blocks
   include 'PRGPRM.f90'
-  include 'CONTRL.F77'
-  include 'PLOT.F77'
+  include 'CONTRL.f90'
+  include 'PLOT.f90'
 
   !  NATIONAL FORESTS:
   !   1004 = CHUGACH

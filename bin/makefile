@@ -128,10 +128,12 @@ ifdef sourceFileList
  ifndef sourceList
   export sourceFileList
   export sourceList = $(shell cat $(sourceFileList))
-  export includes = $(notdir $(filter %.F77 %.INC %.h,$(sourceList)))
-  export mods = $(notdir $(filter %_mod.f, $(sourceList)))
+  # Converted includes retain .f90 names but are never compiled alone.
+  include_names := $(notdir $(shell cat $(FVS_ROOT)/bin/fortran_includes.txt))
+  export includes = $(notdir $(filter %.F77 %.INC %.inc %.h,$(sourceList))) $(filter $(include_names),$(notdir $(sourceList)))
+  export mods = $(notdir $(filter %_mod.f90, $(sourceList)))
   export mods_mods = $(addsuffix .mod,$(basename $(mods)))
-  export source = $(notdir $(filter %.c %.f %.f90 %.F %.for %.cpp, $(sourceList)))
+  export source = $(filter-out $(includes),$(notdir $(filter %.c %.f %.f90 %.F90 %.F %.for %.cpp, $(sourceList))))
   export object = $(addsuffix .o,$(basename $(source)))
  endif
 endif
@@ -251,6 +253,9 @@ else
 endif
 
 %.mod : %.f $(includes)
+	$(FCprf)$(FC) $(FFLAGS) -c $<
+
+%.mod : %.f90 $(includes)
 	$(FCprf)$(FC) $(FFLAGS) -c $<
 
 %.o : %.f $(includes) $(mods_mods)

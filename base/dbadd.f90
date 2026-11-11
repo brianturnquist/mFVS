@@ -6,7 +6,7 @@ subroutine DBADD (SUBIN,NC,ICYC,IRC)
   implicit none
 
   ! Common blocks
-  include 'DBSTK.F77'
+  include 'DBSTK.f90'
 
   ! Variables
   integer :: IRC,ICYC,NC,IPLEN,I,IS,IE

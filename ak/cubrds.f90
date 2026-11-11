@@ -9,7 +9,7 @@ block data CUBRDS
 
   ! Common blocks
   include 'PRGPRM.f90'
-  include 'VOLSTD.F77'
+  include 'VOLSTD.f90'
 
   !  DATA STATEMENTS:
 

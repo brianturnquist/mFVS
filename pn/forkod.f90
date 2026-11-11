@@ -1,0 +1,210 @@
+!============================!
+!   Translate forest codes   !
+!============================!
+! PN $Id$
+subroutine FORKOD
+  implicit none
+
+  !     TRANSLATES FOREST CODE INTO A SUBSCRIPT, IFOR, AND IF
+  !     KODFOR IS ZERO, THE ROUTINE RETURNS THE DEFAULT CODE.
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'PLOT.f90'
+  include 'CONTRL.f90'
+
+  ! VALID FOREST CODES ARE:
+  !     609 = OLYMPIC
+  !     612 = SIUSLAW
+  !     800 = QUINAULT INDIAN RESERVATION
+  !     708 = BLM SALEM ADMIN UNIT
+  !     709 = BLM EUGENE ADMIN UNIT
+  !     712 = BLM COOS BAY ADMIN UNIT
+
+  !  RESERVATION PSUEDO CODES:
+  !  8101 = GRAND RONDE COMMUNITY       (MAPPED TO 612 SIUSLAW)
+  !  8102 = SILETZ RESERVATION          (MAPPED TO 612 SIUSLAW)
+  !  8103 = COOS, LOWER UMPQUA, SIUSLAW OFF-RES. TRUST LAND
+  !         (MAPPED TO 612 SIUSLAW)
+  !  8104 = COW CREEK RESERVATION
+  !         (MAPPED TO 712 BLM - COOS BAY DISTRICT)
+  !  8105 = COQUILLE RESERVATION
+  !         (MAPPED TO 712 BLM - COOS BAY DISTRICT)
+  !  8110 = CHEHALIS RESERVATION        (MAPPED TO 609 OLYMPIC)
+  !  8111 = HOH INDIAN RESERVATION      (MAPPED TO 609 OLYMPIC)
+  !  8113 = SHOALWATER BAY INDIAN RES.  (MAPPED TO 609 OLYMPIC)
+  !  8114 = SKOKOMISH RESERVATION       (MAPPED TO 609 OLYMPIC)
+  !  8115 = SQUAXIN ISLAND RESERVATION  (MAPPED TO 609 OLYMPIC)
+  !  8116 = LOWER ELWHA OFF-RES TRUST LAND
+  !         (MAPPED TO 609 OLYMPIC)
+  !  8119 = LUMMI RESERVATION           (MAPPED TO 609 OLYMPIC)
+  !  8120 = MUCKLESHOOT RESERVATION     (MAPPED TO 609 OLYMPIC)
+  !  8121 = NISQUALLY RESERVATION       (MAPPED TO 609 OLYMPIC)
+  !  8122 = PORT GAMBLE RESERVATION     (MAPPED TO 609 OLYMPIC)
+  !  8123 = PORT MADISON RESERVATION    (MAPPED TO 609 OLYMPIC)
+  !  8125 = SWINOMISH RESERVATION       (MAPPED TO 609 OLYMPIC)
+  !  8126 = TULALIP RESERVATION         (MAPPED TO 609 OLYMPIC)
+  !  8127 = UPPER SKAGIT RESERVATION    (MAPPED TO 609 OLYMPIC)
+  !  8128 = SAMISH TDSA                 (MAPPED TO 609 OLYMPIC)
+  !  8129 = SNOQUALMIE RESERVATION      (MAPPED TO 609 OLYMPIC)
+
+  ! Variables
+  integer :: JFOR(6),KFOR(6),NUMFOR,I
+  logical :: USEIGL,FORFOUND
+
+  data JFOR/609,612,800,708,709,712/, NUMFOR /6/
+  data KFOR/1,1,1,1,1,1/
+
+  USEIGL = .true.
+  FORFOUND = .false.
+
+  select case (KODFOR)
+     !       CROSSWALK FOR RESERVATION PSUEDO CODES & LOCATION CODE
+  case (8101)
+     write(JOSTND,61)
+     61 format(/,'********',T12,'GRAND RONDE COMMUNITY (8101) BEING ',&
+          &'MAPPED TO SIUSLAW NF (612) FOR FURTHER PROCESSING.')
+     IFOR = 2
+  case (8102)
+     write(JOSTND,62)
+     62 format(/,'********',T12,'SILETZ RESERVATION (8102) BEING ',&
+          &'MAPPED TO SIUSLAW NF (612) FOR FURTHER PROCESSING.')
+     IFOR = 2
+  case (8103)
+     write(JOSTND,63)
+     63 format(/,'********',T12,'COOS, LOWER UMPQUA, SIUSLAW OFF-RES',&
+          &' TL (8103) BEING MAPPED TO SIUSLAW NF (612) FOR FURTHER ',&
+          &'PROCESSING.')
+     IFOR = 2
+  case (8104)
+     write(JOSTND,64)
+     64 format(/,'********',T12,'COW CREEK RESERVATION (8104) BEING ',&
+          &'MAPPED TO BLM - COOS BAY DISTRICT (712) FOR FURTHER ',&
+          &'PROCESSING.')
+     IFOR = 6
+  case (8105)
+     write(JOSTND,65)
+     65 format(/,'********',T12,'COQUILLE RESERVATION (8105) BEING ',&
+          &'MAPPED TO BLM - COOS BAY DISTRICT (712) FOR FURTHER ',&
+          &'PROCESSING.')
+     IFOR = 6
+  case (8110)
+     write(JOSTND,66)
+     66 format(/,'********',T12,'CHEHALIS RESERVATION (8110) BEING ',&
+          &'MAPPED TO OLYMPIC NF (609) FOR FURTHER PROCESSING.')
+     IFOR = 1
+  case (8111)
+     write(JOSTND,67)
+     67 format(/,'********',T12,'HOH INDIAN RESERVATION (8111) BEING',&
+          &' MAPPED TO OLYMPIC NF (609) FOR FURTHER PROCESSING.')
+     IFOR = 1
+  case (8113)
+     write(JOSTND,68)
+     68 format(/,'********',T12,'SHOALWATER BAY INDIAN RESERVATION ',&
+          &'(8113) BEING MAPPED TO OLYMPIC NF (609) FOR FURTHER ',&
+          &'PROCESSING.')
+     IFOR = 1
+  case (8114)
+     write(JOSTND,69)
+     69 format(/,'********',T12,'SKOKOMISH RESERVATION (8114) BEING',&
+          &' MAPPED TO OLYMPIC NF (609) FOR FURTHER PROCESSING.')
+     IFOR = 1
+  case (8115)
+     write(JOSTND,70)
+     70 format(/,'********',T12,'SQUAXIN ISLAND RESERVATION (8115) ',&
+          &'BEING MAPPED TO OLYMPIC NF (609) FOR FURTHER PROCESSING.')
+     IFOR = 1
+  case (8116)
+     write(JOSTND,71)
+     71 format(/,'********',T12,'LOWER ELWHA OFF-RES TL (8116) BEING',&
+          &' MAPPED TO OLYMPIC NF (609) FOR FURTHER PROCESSING.')
+     IFOR = 1
+  case (8119)
+     write(JOSTND,72)
+     72 format(/,'********',T12,'LUMMI RESERVATION (8119) BEING ',&
+          &'MAPPED TO OLYMPIC NF (609) FOR FURTHER PROCESSING.')
+     IFOR = 1
+  case (8120)
+     write(JOSTND,73)
+     73 format(/,'********',T12,'MUCKLESHOOT RESERVATION (8120) ',&
+          &'BEING MAPPED TO OLYMPIC NF (609) FOR FURTHER PROCESSING.')
+     IFOR = 1
+  case (8121)
+     write(JOSTND,74)
+     74 format(/,'********',T12,'NISQUALLY RESERVATION (8121) BEING ',&
+          &'MAPPED TO OLYMPIC NF (609) FOR FURTHER PROCESSING.')
+     IFOR = 1
+  case (8122)
+     write(JOSTND,75)
+     75 format(/,'********',T12,'PORT GAMBLE RESERVATION (8122) ',&
+          &'BEING MAPPED TO OLYMPIC NF (609) FOR FURTHER PROCESSING.')
+     IFOR = 1
+  case (8123)
+     write(JOSTND,76)
+     76 format(/,'********',T12,'PORT MADISON RESERVATION (8123) ',&
+          &'BEING MAPPED TO OLYMPIC NF (609) FOR FURTHER PROCESSING.')
+     IFOR = 1
+  case (8125)
+     write(JOSTND,77)
+     77 format(/,'********',T12,'SWINOMISH RESERVATION (8125) BEING ',&
+          &'MAPPED TO OLYMPIC NF (609) FOR FURTHER PROCESSING.')
+     IFOR = 1
+  case (8126)
+     write(JOSTND,78)
+     78 format(/,'********',T12,'TULALIP RESERVATION (8126) BEING ',&
+          &'MAPPED TO OLYMPIC NF (609) FOR FURTHER PROCESSING.')
+     IFOR = 1
+  case (8127)
+     write(JOSTND,79)
+     79 format(/,'********',T12,'UPPER SKAGIT RESERVATION (8127) ',&
+          &'BEING MAPPED TO OLYMPIC NF (609) FOR FURTHER PROCESSING.')
+     IFOR = 1
+  case (8128)
+     write(JOSTND,80)
+     80 format(/,'********',T12,'SAMISH TDSA (8128) BEING MAPPED ',&
+          &'TO OLYMPIC NF (609) FOR FURTHER PROCESSING.')
+     IFOR = 1
+  case (8129)
+     write(JOSTND,81)
+     81 format(/,'********',T12,'SNOQUALMIE RESERVATION (8129) BEING',&
+          &' MAPPED TO OLYMPIC NF (609) FOR FURTHER PROCESSING.')
+     IFOR = 1
+     !       END CROSSWALK FOR RESERVATION PSUEDO CODES & LOCATION CODE
+
+  case default
+
+     !         CONFIRMS THAT KODFOR IS AN ACCEPTED FVS LOCATION CODE
+     !         FOR THIS VARIANT FOUND IN DATA ARRAY JFOR
+     do I = 1,NUMFOR
+        if (KODFOR .eq. JFOR(I)) then
+           IFOR = I
+           FORFOUND = .true.
+           exit
+        end if
+        10 continue
+     end do
+
+     !         LOCATION CODE ERROR TRAP
+     if (.not. FORFOUND) then
+        call ERRGRO (.true.,3)
+        write(JOSTND,11) JFOR(IFOR)
+        11 format(/,'********',T12,'FOREST CODE USED IN THIS ',&
+             &'PROJECTION IS',I4)
+        USEIGL = .false.
+     end if
+
+  end select
+
+  !     FOREST MAPPING CORRECTION {N/A THIS VARIANT}
+  !     SELECT CASE (IFOR)
+  !     END SELECT
+
+  !     SET THE IGL VARIABLE ONLY IF DEFAULT FOREST IS USED
+  !     GEOGRAPHIC LOCATION CODE: 1=NORTH, 2=CENTRAL, 3=SOUTH
+  !     USED TO SET SOME EQUATIONS IN REGENERATION AND PERHAPS
+  !     HEIGHT-DIAMETER IN DIFFERENT VARIANTS.
+  if (USEIGL) IGL = KFOR(IFOR)
+
+  KODFOR = JFOR(IFOR)
+  return
+end

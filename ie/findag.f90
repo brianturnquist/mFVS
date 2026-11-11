@@ -1,0 +1,44 @@
+!=======================================!
+!   Estimate tree age and site height   !
+!=======================================!
+! IE $Id$
+subroutine FINDAG(I,ISPC,D1,D2,H,SITAGE,SITHT,AGMAX,HTMAX1,HTMAX2,&
+     &DEBUG)
+  implicit none
+
+  !  THIS ROUTINE SET EFFECTIVE TREE AGE BASED ON INPUT VARIABLE(S)
+  !  SUCH AS TREE HEIGHT.  IN IE, AGE IS CALCULATED FOR AS,MM,AND PB
+  !  CALLED FROM **CRATET
+  !  CALLED FROM **COMCUP
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'CONTRL.f90'
+
+  ! Variables
+  logical :: DEBUG
+  integer :: I,ISPC
+  real    :: D1,D2,H,SITAGE,SITHT,AGMAX,HTMAX1,HTMAX2
+  real    :: RDANUW
+  integer :: IDANUW
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  RDANUW = AGMAX
+  RDANUW = D1
+  RDANUW = D2
+  RDANUW = HTMAX1
+  RDANUW = HTMAX2
+  IDANUW = ISPC
+
+  !  COMPUTE AGE FOR ASPEN. THIS EQUATION IS ALSO USED FOR MM AND PB.
+  !  EQUATION FORMULATED BY
+  !  WAYNE SHEPPERD, ROCKY MTN FOREST EXP STATION, FT COLLINS, CO.
+
+  SITAGE = (H*2.54*12.0/26.9825)**(1.0/1.1752)
+
+  if (DEBUG)write(JOSTND,50)I,SITAGE,SITHT
+  50 format(' LEAVING SUBROUTINE FINDAG I,SITAGE,SITHT =',I5,2F10.3)
+
+  return
+end

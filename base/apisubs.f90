@@ -18,9 +18,9 @@ subroutine fvsDimSizes(ntrees,ncycles,nplots,maxtrees,maxspecies, &
      & maxplots,maxcycles)
   implicit none
   ! Common blocks
-  include "PRGPRM.F77"
-  include "CONTRL.F77"
-  include "PLOT.F77"
+  include "PRGPRM.f90"
+  include "CONTRL.f90"
+  include "PLOT.f90"
 
 !DEC$ ATTRIBUTES DLLEXPORT,C,DECORATE,ALIAS:'FVSDIMSIZES'::FVSDIMSIZES
 !DEC$ ATTRIBUTES REFERENCE :: NTREES, NCYCLES, NPLOTS, MAXTREES
@@ -47,9 +47,9 @@ subroutine fvsSummary(summary,icycle,ncycles,maxrow,maxcol, &
   implicit none
 
   ! Common blocks
-  include "PRGPRM.F77"
-  include "CONTRL.F77"
-  include "OUTCOM.F77"
+  include "PRGPRM.f90"
+  include "CONTRL.f90"
+  include "OUTCOM.f90"
 
 !DEC$ ATTRIBUTES DLLEXPORT,C,DECORATE,ALIAS:'FVSSUMMARY'::FVSSUMMARY
 !DEC$ ATTRIBUTES REFERENCE :: SUMMARY, ICYCLE, NCYCLES, MAXROW
@@ -117,12 +117,12 @@ subroutine fvsTreeAttr(name,nch,action,ntrees,attr,rtnCode)
   !               4= the length of the "name" string was too big or small
 
   ! Common blocks
-  include "PRGPRM.F77"
-  include "FMPARM.F77"
-  include "FMCOM.F77"
-  include "ARRAYS.F77"
-  include "CONTRL.F77"
-  include "VARCOM.F77"
+  include "PRGPRM.f90"
+  include "FMPARM.f90"
+  include "FMCOM.f90"
+  include "ARRAYS.f90"
+  include "CONTRL.f90"
+  include "VARCOM.f90"
 
 !DEC$ ATTRIBUTES DLLEXPORT,C,DECORATE,ALIAS:'FVSTREEATTR'::FVSTREEATTR
 !DEC$ ATTRIBUTES REFERENCE :: NAME, NCH, ACTION, NTREES, ATTR, RTNCODE
@@ -264,7 +264,7 @@ subroutine fvsSpeciesAttrC(namei,nch,actioni,attr,rtnCode) &
   !     C-bindings of their correspoinding arguments.
 
   ! Common blocks
-  include "PRGPRM.F77"
+  include "PRGPRM.f90"
 
   ! Variables
   integer(c_int),bind(c) :: nch,rtnCode
@@ -301,11 +301,11 @@ subroutine fvsSpeciesAttr(name,nch,action,attr,rtnCode)
   !               4= the length of the "name" string was too big or small
 
   ! Common blocks
-  include "PRGPRM.F77"
-  include "PLOT.F77"
-  include 'VOLSTD.F77'
-  include 'CONTRL.F77'
-  include 'MULTCM.F77'
+  include "PRGPRM.f90"
+  include "PLOT.f90"
+  include 'VOLSTD.f90'
+  include 'CONTRL.f90'
+  include 'MULTCM.f90'
 
 !DEC$ ATTRIBUTES DLLEXPORT,C,DECORATE:: FVSSPECIESATTR
 !DEC$ ATTRIBUTES ALIAS:'FVSSPECIESATTR'::FVSSPECIESATTR
@@ -453,11 +453,11 @@ subroutine fvsEvmonAttr(name,nch,action,attr,rtnCode)
   !               is known to be undefined. 2= "name" not found,
 
   ! Common blocks
-  include "PRGPRM.F77"
-  include "FMPARM.F77"
-  include "FMCOM.F77"
-  include "ARRAYS.F77"
-  include "OPCOM.F77"
+  include "PRGPRM.f90"
+  include "FMPARM.f90"
+  include "FMCOM.f90"
+  include "ARRAYS.f90"
+  include "OPCOM.f90"
 
 !DEC$ ATTRIBUTES DLLEXPORT,C,DECORATE,ALIAS:'FVSEVMONATTR'::FVSEVMONATTR
 !DEC$ ATTRIBUTES REFERENCE :: NAME, NCH, ACTION, ATTR, RTNCODE
@@ -843,14 +843,14 @@ subroutine fvsAddTrees(in_dbh,in_species,in_ht,in_cratio, &
   !                 or when ntrees is zero
 
   ! Common blocks
-  include "PRGPRM.F77"
-  include "ARRAYS.F77"
-  include "CONTRL.F77"
-  include "OUTCOM.F77"
-  include "PLOT.F77"
-  include "VARCOM.F77"
-  include "ESTREE.F77"
-  include "STDSTK.F77"
+  include "PRGPRM.f90"
+  include "ARRAYS.f90"
+  include "CONTRL.f90"
+  include "OUTCOM.f90"
+  include "PLOT.f90"
+  include "VARCOM.f90"
+  include "ESTREE.f90"
+  include "STDSTK.f90"
 
 !DEC$ ATTRIBUTES DLLEXPORT,C,DECORATE,ALIAS:'FVSADDTREES'::FVSADDTREES
 !DEC$ ATTRIBUTES REFERENCE :: IN_DBH, IN_SPECIES, IN_HT, IN_CRATIO
@@ -952,8 +952,8 @@ subroutine fvsSpeciesCode(fvs_code,fia_code,plant_code, &
   !     indx    = species index
 
   ! Common blocks
-  include "PRGPRM.F77"
-  include "PLOT.F77"
+  include "PRGPRM.f90"
+  include "PLOT.f90"
 
 !DEC$ ATTRIBUTES DLLEXPORT,ALIAS:'FVSSPECIESCODE'::FVSSPECIESCODE
 !DEC$ ATTRIBUTES C,DECORATE :: FVSSPECIESCODE
@@ -994,8 +994,8 @@ subroutine fvsSpeciesCodeC(fvs_code,fia_code,plant_code,indx) &
   !     indx    = species index
 
   ! Common blocks
-  include "PRGPRM.F77"
-  include "PLOT.F77"
+  include "PRGPRM.f90"
+  include "PLOT.f90"
 
   ! Variables
   integer(c_int),bind(c) :: indx
@@ -1031,9 +1031,9 @@ end subroutine fvsSpeciesCodeC
 subroutine fvsCutTrees(pToCut,ntrees,rtnCode)
 
   ! Common blocks
-  include "PRGPRM.F77"
-  include "ARRAYS.F77"
-  include "CONTRL.F77"
+  include "PRGPRM.f90"
+  include "ARRAYS.f90"
+  include "CONTRL.f90"
 
 !DEC$ ATTRIBUTES DLLEXPORT,C,DECORATE,ALIAS:'FVSCUTTREES'::FVSCUTTREES
 !DEC$ ATTRIBUTES REFERENCE :: PTOCUT, NTREES, RTNCODE
@@ -1059,9 +1059,9 @@ subroutine fvsStandIDC(sID,sCN,mID,mCase) &
   implicit none
 
   ! Common blocks
-  include "PRGPRM.F77"
-  include "PLOT.F77"
-  include "DBSCOM.F77"
+  include "PRGPRM.f90"
+  include "PLOT.f90"
+  include "DBSCOM.f90"
 
   ! Variables
   integer :: i,ncsID,ncCN,ncmID,ncCase
@@ -1097,8 +1097,8 @@ end subroutine fvsStandIDC
 subroutine fvsStandID(sID,sCN,mID,ncsID,ncCN,ncmID)
 
   ! Common blocks
-  include "PRGPRM.F77"
-  include "PLOT.F77"
+  include "PRGPRM.f90"
+  include "PLOT.f90"
 
 !DEC$ ATTRIBUTES DLLEXPORT,C,DECORATE,ALIAS:'FVSSTANDID'::FVSSTANDID
 !DEC$ ATTRIBUTES REFERENCE :: SID, SCN, MID, NCSID, NCCN, NCMID
@@ -1180,8 +1180,8 @@ subroutine fvsAddActivity(idt,iactk,inprms,nprms,rtnCode)
   !     point 1 or 2.
 
   ! Common blocks
-  include "PRGPRM.F77"
-  include "CONTRL.F77"
+  include "PRGPRM.f90"
+  include "CONTRL.f90"
 
 !DEC$ ATTRIBUTES DLLEXPORT,ALIAS:'FVSADDACTIVITY'::FVSADDACTIVITY
 !DEC$ ATTRIBUTES C,DECORATE :: FVSADDACTIVITY
@@ -1220,9 +1220,9 @@ subroutine fvsSVSDimSizes(nsvsobjs,ndeadobjs,ncwdobjs, &
      & mxsvsobjs,mxdeadobjs,mxcwdobjs)
   implicit none
   ! Common blocks
-  include "PRGPRM.F77"
-  include "SVDATA.F77"
-  include "SVDEAD.F77"
+  include "PRGPRM.f90"
+  include "SVDATA.f90"
+  include "SVDEAD.f90"
 
 !DEC$ ATTRIBUTES DLLEXPORT,C,DECORATE :: FVSSVSDIMSIZES
 !DEC$ ATTRIBUTES ALIAS:'FVSSVSDIMSIZES':: FVSSVSDIMSIZES
@@ -1288,11 +1288,11 @@ subroutine fvsSVSObjData(name,nch,action,nobjs,attr,rtnCode)
   !               4= the length of the "name" string was too big or small
 
   ! Common blocks
-  include "PRGPRM.F77"
-  include "CONTRL.F77"
-  include "PLOT.F77"
-  include "SVDATA.F77"
-  include "SVDEAD.F77"
+  include "PRGPRM.f90"
+  include "CONTRL.f90"
+  include "PLOT.f90"
+  include "SVDATA.f90"
+  include "SVDEAD.f90"
 
 !DEC$ ATTRIBUTES DLLEXPORT,C,DECORATE :: FVSSVSOBJDATA
 !DEC$ ATTRIBUTES ALIAS:'FVSSVSOBJDATA':: FVSSVSOBJDATA
@@ -1643,9 +1643,9 @@ subroutine fvsFFEAttrs(name,nch,action,nobjs,attr,rtnCode)
   !               4= the length of the "name" string was too big or small
 
   ! Common blocks
-  include "PRGPRM.F77"
-  include 'FMPARM.F77'
-  include 'FMCOM.F77'
+  include "PRGPRM.f90"
+  include 'FMPARM.f90'
+  include 'FMCOM.f90'
 
 !DEC$ ATTRIBUTES DLLEXPORT,C,DECORATE :: FVSFFEATTRS
 !DEC$ ATTRIBUTES ALIAS:'FVSFFEATTRS':: FVSFFEATTRS
@@ -1773,7 +1773,7 @@ subroutine fvsUnitConversion(name,nch,value,rtnCode)
 !DEC$ ATTRIBUTES REFERENCE :: NAME, NCH, VALUE, RTNCODE
 
   ! Common blocks
-  include "METRIC.F77"
+  include "METRIC.f90"
 
   ! Variables
   integer :: nch,rtnCode

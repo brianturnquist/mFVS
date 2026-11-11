@@ -15,9 +15,9 @@ subroutine SVTRIP (IBASE,IT1)
   !     TRIPLE.
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'ARRAYS.F77'
-  include 'SVDATA.F77'
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
+  include 'SVDATA.f90'
 
   ! Variables
   integer :: NRT(3),ITR(3)

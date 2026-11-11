@@ -1,0 +1,68 @@
+!=====================!
+!   clim/bc : clcwd   !
+!=====================!
+! CLIM-BC $Id$
+  ! Variables
+real function CLCWD(Q10,REF)
+  implicit none
+
+  !     CLIMATE EXTENSION -- COMPUTES MAT_BASED DECAY MODIFIER BASED ON HABITAT
+  !     IF CLIMATE DATA ARE NOT LOADED, THE HISTORIC MAT IS USED. THE MODIFIER
+  !     IS BASED ON THE STANDARD Q10 RELATIONSHIP
+
+  !     EXP((MAT-REFTEMP)*LN(Q10)*0.1))
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'CONTRL.f90'
+  include 'PLOT.f90'
+  include 'CLIMATE.f90'
+
+  !      Q10 = TEMPERATURE-RESPIRATION SCALING: 10C INCREASE INCREASES RESPIRATION BY Q10
+  !      REFTEMP = REFERENCE TEMPERATURE FOR Q10, SHOULD BE 10c
+  !      MULT = MULTIPLIER BASED ON MAT VS REFTEMP AND Q10=2
+
+  logical :: DEBUG,LOK
+  real    :: X,Q10,REF,MULT
+  real    :: THISYR,ALGSLP,MAT_NOW
+
+  call DBCHK (DEBUG,'CLCWD',5,ICYC)
+
+  if (DEBUG) write (JOSTND,1) LCLIMATE,Q10,REF
+  1 format ('IN CLCWD, LCLIMATE=',L2,'Q10,REF=',2F6.3)
+
+  !     Q10 MUST BE IN THE 0.5 - 4.0 RANGE
+  !     REF MUST BE IN THE RANGE -5.0 - 40 CELSIUS
+  CLCWD = 1.0
+  if (Q10.lt.0.5.or. Q10.gt.4) return
+  if (REF .lt. -5.0.or. REF .gt.40) return
+
+  !     ENSURE THE MULTIPLIER IS INITIALLY 1.0 (NO CLIMATE EFFECT).
+
+  if (DEBUG) write (JOSTND,2) ICYC,IY(ICYC),IXMAT
+  2 format ('IN CLCWD, ICYC,IY(ICYC)=',2I5,&
+       &' IXMAT=',I4)
+
+  !     IF CLIMATE NOT ACTIVE OR DATA IS ABSENT, TAKE FROM HISTORIC
+  !     MAT USING HABITAT ZONE
+  LOK = .true.
+
+  if ((.not.LCLIMATE) .or. (IXMAP*IXMAT*IXMTCM*IXDD5.eq.0)) then
+     call CLHAB(MAT_NOW, LOK)
+     if (.not.LOK) return
+  else
+     !       LOAD THE CLIMATE DATA FOR THIS YEAR
+     THISYR = FLOAT(IY(ICYC))+(FINT/2)
+     MAT_NOW = ALGSLP (THISYR, FLOAT(YEARS), ATTRS(1,IXMAT), NYEARS)
+  end if
+
+  !     NOW CALCULATE THE MULTIPLER BASED ON REFTEMP AND MAT.
+  !     ULTIMATELY THIS WILL MODIFY THE DECAY RATE
+  !     ANSWER IS BOUNDED BY 10**-3 AND 10**3
+  X = (MAT_NOW-REF)*LOG(Q10)*0.1
+  X = MAX(-6.91,MIN(X,6.91))
+  MULT = EXP(X)
+  CLCWD = MULT
+
+  return
+end

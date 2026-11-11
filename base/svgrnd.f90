@@ -64,9 +64,9 @@ subroutine SVGRND (NOUT,KYLAST,KYFRST,IFIREFLG)
   !       20     DARK BROWNS       244 to 255
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'SVDATA.F77'
-  include 'CONTRL.F77'
+  include 'PRGPRM.f90'
+  include 'SVDATA.f90'
+  include 'CONTRL.f90'
 
   ! Variables
   character(len=256) :: GRIDLINE

@@ -12,10 +12,10 @@ subroutine CWIDTH
   !  WIDTHS, AND FROM **UPDATE** TO LOAD THE END-OF-CYCLE VALUES.
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'ARRAYS.F77'
-  include 'CONTRL.F77'
-  include 'CWDCOM.F77'
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
+  include 'CONTRL.f90'
+  include 'CWDCOM.f90'
 
   !  DEFINITIONS:
 

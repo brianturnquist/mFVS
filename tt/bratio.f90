@@ -1,0 +1,83 @@
+!=========================!
+!   Compute bark ratios   !
+!=========================!
+! TT $Id$
+function BRATIO(IS,D,H)
+  implicit none
+
+  ! FUNCTION TO COMPUTE BARK RATIOS AS A FUNCTION OF DIAMETER AND SPECIES.
+  ! REPLACES ARRAY BKRAT IN BASE MODEL.
+
+  ! SPECIES ORDER FOR TETONS VARIANT:
+
+  !  1=WB,  2=LM,  3=DF,  4=PM,  5=BS,  6=AS,  7=LP,  8=ES,  9=AF, 10=PP,
+  ! 11=UJ, 12=RM, 13=BI, 14=MM, 15=NC, 16=MC, 17=OS, 18=OH
+
+  ! VARIANT EXPANSION:
+  ! BS USES ES EQUATIONS FROM TT
+  ! PM USES PI (COMMON PINYON) EQUATIONS FROM UT
+  ! PP USES PP EQUATIONS FROM CI
+  ! UJ AND RM USE WJ (WESTERN JUNIPER) EQUATIONS FROM UT
+  ! BI USES BM (BIGLEAF MAPLE) EQUATIONS FROM SO
+  ! MM USES MM EQUATIONS FROM IE
+  ! NC AND OH USE NC (NARROWLEAF COTTONWOOD) EQUATIONS FROM CR
+  ! MC USES MC (CURL-LEAF MTN-MAHOGANY) EQUATIONS FROM SO
+  ! OS USES OT (OTHER SP.) EQUATIONS FROM TT
+
+  ! Variables
+  real    :: BARK1(18),BARK2(18),H,D,BRATIO,TEMD,DIB
+  integer :: IMAP(18),IS,IEQN
+  real    :: RDANUW
+
+  data BARK1/  0.969,   0.969,    0.867,       0.,    0.956,&
+       &0.969,   0.969,    0.956,    0.937, 0.809427,&
+       &0.,      0.,  0.94782,    0.950,    0.892,&
+       &0.9,   0.969,    0.892/
+
+  data BARK2/     0.,      0.,       0.,       0.,       0.,&
+       &0.,      0.,       0.,       0., 1.016866,&
+       &0.,      0.,   0.0836,       0.,   -0.086,&
+       &0.,      0.,   -0.086/
+
+  data IMAP/ 2, 2, 2, 1, 2, 2, 2, 2, 2, 4,&
+       &1, 1, 3, 2, 3, 2, 2, 3/
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  RDANUW = H
+
+  IEQN = IMAP(IS)
+  TEMD = D
+  if (TEMD.lt.1.)TEMD = 1.
+
+  if (IEQN .eq.1) then
+     if (BARK1(IS).eq.0.0.and. BARK2(IS).eq.0.0) then
+        if (TEMD.gt.19.)TEMD = 19.
+        BRATIO = 0.9002 - 0.3089*(1/TEMD)
+     else
+        BRATIO = BARK1(IS)+BARK2(IS)*D
+        BRATIO = 1.0/BRATIO
+     end if
+
+  else if (IEQN .eq.2) then
+     BRATIO = BARK1(IS)
+
+  else if (IEQN .eq.3) then
+     BRATIO = BARK1(IS)+BARK2(IS)*(1.0/TEMD)
+  else if (IEQN .eq.4) then
+     if (D .gt.0) then
+        DIB = BARK1(IS)*D**BARK2(IS)
+        BRATIO = DIB/D
+        if (BRATIO .gt.0.97) BRATIO = 0.97
+        go to 100
+     else
+        BRATIO = 0.97
+     end if
+  end if
+
+  if (BRATIO .gt.0.99) BRATIO = 0.99
+  if (BRATIO .lt.0.80) BRATIO = 0.80
+
+  100 continue
+  return
+end

@@ -1,0 +1,171 @@
+!==================!
+!   dfb : dfbsch   !
+!==================!
+! DFB $Id$
+subroutine DFBSCH
+  implicit none
+
+  !  THIS SUBROUTINE IS CALLED TO SCHEDULE REGIONAL OUTBREAKS RANDOMLY.
+
+  !  THIS SUBROUTINE WAS COPIED FROM THE SUBROUTINE TMSCHD OF THE DFTM
+  !  MODEL AND MODIFIED FOR USE WITH THE DFB MODEL.  THE TMSCHD MODEL WAS
+  !  WRITTEN BY :   N.L. CROOKSTON   MAY 1978 & JUNE 1981   INT -- MOSCOW
+  !  THE CONCEPT FOR THE 'RANSCHED' OPTION IS FROM A. R. STAGE.
+  !  INT -- MOSCOW.
+
+  !  CALLED BY :
+  !     MAIN   [PROGNOSIS]
+
+  !  CALLS :
+  !     DFBRAN  (SUBROUTINE)  [DFB]
+  !     OPNEW   (SUBROUTINE)  [PROGNOSIS]
+
+  !  LOCAL VARIABLES :
+  !     I      - COUNTER TO LOOP THROUGH CYCLES.
+  !     I1     - POSITION IN IY ARRAY TO START THE SEARCH TO FIND THE
+  !              NEXT OUTBREAK YEAR.
+  !     IFINYR - FINAL YEAR OF SIMULATION.
+  !     INVYR  - THE INVENTORY YEAR.
+  !     IPREV  - THE DATE OF THE LAST RECORDED DFB REGIONAL OUTBREAK.
+  !     IYI    - CYCLE TO SCHEDULE REGIONAL OUTBREAK (SUBSCRIPT OF ARRAY
+  !              IY).
+  !     KODE   - ERROR CODE FROM OPTION PROCESSOR ROUTINE OPNEW.
+  !     NEXT   - THE YEAR OF THE NEXT OUTBREAK.
+  !     NYR    - COUNTER THAT KEEPS TRACK OF THE NUMBER OF CALLS TO THE
+  !              RANDOM NUMBER GENERATOR BEFORE A NUMBER IS DRAWN THAT
+  !              FITS THE PROBABILITY OF A DFB EVENT.
+  !     PRMS   - HOLDS PARAMETERS FOR CALL TO OPTION PROCESSOR ROUTINE
+  !              OPNEW.
+  !     RAND   - A UNIFORM RANDOM NUMBER (0-1).
+
+  !  COMMON BLOCK VARIABLES USED :
+  !     DBEVNT - (DFBCOM)   INPUT
+  !     DEBUIN - (DFBCOM)   INPUT
+  !     IDBSCH - (DFBCOM)   INPUT
+  !     IPAST  - (DFBCOM)   INPUT
+  !     IWAIT  - (DFBCOM)   INPUT
+  !     IY     - (CONTRL)   INPUT
+  !     JODFB  - (DFBCOM)   INPUT
+  !     JOSTND - (CONTRL)   INPUT
+  !     LDFBON - (DFBCOM)   INPUT
+  !     NCYC   - (CONTRL)   INPUT
+  !     ORSEED - (DFBCOM)   INPUT
+
+  ! REVISION HISTORY:
+  !   02-AUG-01 Lance R. David (FHTET)
+  !     (previous revision date was 01/17/96)
+  !     Added double precision variable TSEED to replace the addition statement
+  !     as the arugument in the call to DFBCSD because it caused a LF95 error.
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'CONTRL.f90'
+  include 'DFBCOM.f90'
+
+  ! Variables
+  integer :: IFINYR,I,I1,INVYR,IPREV,IYI,KODE,NEXT,NYR
+
+  real    :: RAND,PRMS(1)
+  double precision :: TSEED
+
+  if (DEBUIN) write (JODFB,*) '** ENTERING SUBROUTINE DFBSCH'
+
+  !     IF THE DFB MODEL IS BEING USED AND REGIONAL OUTBREAKS ARE TO BE
+  !     SCHEDULED RANDOMLY THEN SCHEDULE THE REGIONAL OUTBREAKS.
+
+  if (LDFBON .and. IDBSCH .eq.2) then
+
+     ! Initialize variables
+     INVYR = IY(1)
+     I1 = 1
+     IPREV = IPAST
+     IFINYR = IY(NCYC) + 10
+
+     !        START OF LOOP THAT RANDOMLY CALCULATES EACH REGIONAL OUTBREAK
+     !        AND SCHEDULES IT.
+
+     100 continue
+     NYR = 0
+
+     !        START OF LOOP THAT TESTS THE PROBABILITY OF REGIONAL OUTBREAK
+     !        TO A RANDOM NUMBER.  EACH CYCLE OF THIS LOOP REPRESENTS A YEAR.
+
+     200 continue
+     call DFBRAN(RAND)
+     if (RAND .le. DBEVNT) goto 400
+     NYR = NYR + 1
+
+     !        IF THE NEXT POSSIBLE REGIONAL OUTBREAK DATE IS BEYOND THE
+     !        ENDING DATE FOR THE SIMULATION THEN EXIT THIS ROUTINE
+     !        (GOTO 1000).
+
+     if ((IPREV + IWAIT + NYR) .ge. IFINYR) goto 1000
+
+     !        END OF LOOP TO TEST THE PROBABILITY OF REGIONAL OUTBREAK TO A
+     !        RANDOM NUMBER.
+
+     if (NYR .lt.100) goto 200
+
+     !        THE ABOVE LOOP WAS EXECUTED TO MANY TIMES.  THE EVENT
+     !        PROBABILITY (DBEVNT) MAY BE TOO DAMN SMALL OR EQUAL TO ZERO.
+
+     write (JOSTND,300) DBEVNT
+     300 format (//,'***** WARNING:  DOUGLAS-FIR BEETLE EVENT ',&
+          &'PROBABILITY EQUALS:',E13.7,'.  NO OUTBREAKS SCHEDULED.')
+     goto 1000
+
+     400 continue
+
+     !        CALCULATE THE NEXT REGIONAL OUTBREAK BASED ON THE NUMBER OF
+     !        ITERATIONS OF THE ABOVE LOOP.
+
+     NEXT = IPREV + IWAIT + NYR
+
+     if (NEXT .lt. INVYR) NEXT = INVYR
+     IPREV = NEXT
+
+     !        INITIALIZE IYI AND I.
+
+     IYI = 0
+     I = I1
+
+     !        LOOP THROUGH EACH CYCLE YEAR UNTIL YOU REACH THE FIRST CYCLE
+     !        YEAR AFTER THE CALCULATED OUTBREAK YEAR.
+
+     500 if (IY(I) .gt. NEXT) goto 600
+     I = I + 1
+     goto 500
+
+     !        SET THE CYCLE YEAR TO THE CYCLE YEAR FOUND ABOVE MINUS 1 CYCLE
+     !        YEAR.
+
+     600 continue
+     IYI = I - 1
+
+     !        CALL THE EVENT MONITOR TO ADD THE REGIONAL OUTBREAK.
+
+     call OPNEW (KODE, IY(IYI), 2208, 0, PRMS)
+     if (KODE .ne.0) goto 1000
+     I1 = IYI
+
+     if (IYI .ge. NCYC) goto 1000
+
+     !        GO TO THE TOP OF THE LOOP THAT SCHEDULES THE OUTBREAKS.
+
+     goto 100
+  end if
+
+  1000 continue
+
+  !     RESET SEED TO THE ORIGINAL SEED + 1128.  THIS IS DONE SO THAT
+  !     CHANGING THE LENGTH OF THE RUN WON'T CHANGE VALUES IN THE
+  !     RANDOM CALCULATIONS DURING AN OUTBREAK ON SIMULATIONS OF THE SAME
+  !     STAND.  (1128 WAS CHOSEN AT RANDOM).
+
+  TSEED = ORSEED + 1128D0
+  call DFBCSD(TSEED)
+
+  if (DEBUIN) write (JODFB,*) '** LEAVING SUBROUTINE DFBSCH'
+
+  return
+end

@@ -8,9 +8,9 @@ subroutine EXESTB
   !     EXTRA REFERENCES FOR REGENERATION ESTABLISHMENT
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'PLOT.F77'
-  include 'CALDEN.F77'
+  include 'PRGPRM.f90'
+  include 'PLOT.f90'
+  include 'CALDEN.f90'
 
   ! Variables
   character(len=8) :: KEYWRD

@@ -1,0 +1,128 @@
+!=================!
+!   ie : cftopk   !
+!=================!
+! IE $Id$
+subroutine CFTOPK(ISPC,D,H,TCF,MCF,SCF,VMAX,LCONE,BARK,ITHT)
+  implicit none
+
+  ! THIS ROUTINE CORRECTS TOTAL CUBIC FOOT VOLUME AND MERCHANTABLE
+  ! CUBIC FOOT VOLUME FOR BROKEN/DEAD TOPS.
+
+  ! Routine updated May 2024 to account for both merchantiable top kill,
+  ! as well as sawtimber cubic top kill.  -DW
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'COEFFS.f90'
+  include 'CONTRL.f90'
+
+  !  DIMENSION STATEMENT FOR INTERNAL ARRAYS.
+
+  ! Variables
+  logical :: LCONE
+  integer :: ITHT,ISPC
+  real    :: BARK,VMAX,MCF,TCF,SCF,H,D,VOLT,BEHRE,HTRUNC,VOLTK,STUMP
+  real    :: DMRCH,S3,VOLM,HTMRCH,DTRUNC,PHT
+
+  !  IF TOTAL VOLUME IS GREATER THAN ZERO, ADJUST TOTAL VOLUME
+  !  ESTIMATE FOR DEAD OR MISSING TOP; OTHERWISE RETURN.
+  !  ASSUME IF TCFV = 0, THEN MCFV = 0 ALSO.
+
+  if (TCF .le.0.) go to 50
+  call BEHPRM (VMAX,D,H,BARK,LCONE)
+  VOLT = BEHRE(0.0,1.0)
+
+  !     COMPUTE TOTAL CUBIC VOLUME LOSS DUE TO TOPKILL. HEIGHT AT
+  !     POINT OF TRUNCATION (HTRUNC) IS COMPUTED FROM ITRUNC. HEIGHT
+  !     AND DIAMETER AT THE POINT OF TRUNCATION ARE THEN EXPRESSED AS
+  !     RATIOS OF "NORMAL" HEIGHT AND DBH (PHT AND DTRUNC).
+
+  HTRUNC = ITHT / 100.0
+  PHT = 1. - (HTRUNC/H)
+  if (PHT .lt.0.) PHT = 0.
+  DTRUNC = PHT / (AHAT*PHT + BHAT)
+
+  !     CORRECT FOR THE TRUNCATED TOP IN THE VN ESTIMATE USING THE
+  !     RATIO OF VOLUME BELOW TRUNCATION TO TOTAL VOLUME.
+
+  if (.not.LCONE) then
+     VOLTK = BEHRE(PHT,1.0)
+     TCF = TCF  *VOLTK/VOLT
+
+     !     PROCESS CONES.
+
+  else
+     TCF = TCF  *(1.0-PHT**3)
+  end if
+  50 continue
+
+  !  IF MERCHANTABLE CUBIC VOLUME IS GREATER THAN ZERO, ADJUST
+  !  MERCHANTABLE VOLUME ESTIMATES FOR DEAD OR MISSING TOP.
+
+  if (MCF.le.0.)go to 100
+
+  STUMP = 1. - (STMP(ISPC)/H)
+  DMRCH = TOPD(ISPC)/D
+  HTMRCH = ((BHAT*DMRCH)/(1.0-(AHAT*DMRCH)))
+  VOLT = BEHRE(HTMRCH,STUMP)
+  if (.not.LCONE) then
+     if (DTRUNC.gt.DMRCH) then
+
+        !     CORRECT MERCHANTABLE VOLUME FOR TOP KILL.
+
+        VOLTK = BEHRE(PHT,STUMP)
+        MCF = MCF  *VOLTK/VOLT
+     end if
+  else
+
+     !     PROCESS CONES.
+
+     S3 = STUMP**3
+     VOLM = S3-HTMRCH**3
+     if (DTRUNC.gt.DMRCH) then
+
+        !     CORRECT MERCHANTABLE VOLUME FOR TOP KILL (CONES ONLY).
+
+        VOLTK = S3-PHT**3
+        MCF = MCF*VOLTK/VOLM
+     end if
+  end if
+  if (MCF.gt.TCF) MCF = TCF
+  if (MCF.lt.0.) MCF = 0
+
+  !  IF SAWTIMBER CUBIC VOLUME IS GREATER THAN ZERO, ADJUST
+  !  SAWTIMBER CUBIC VOLUME ESTIMATES FOR DEAD OR MISSING TOP.
+
+  if (SCF.le.0.)go to 100
+  STUMP = 1. - (SCFSTMP(ISPC)/H)
+  DMRCH = SCFTOPD(ISPC)/D
+  HTMRCH = ((BHAT*DMRCH)/(1.0-(AHAT*DMRCH)))
+  VOLT = BEHRE(HTMRCH,STUMP)
+  if (.not.LCONE) then
+     if (DTRUNC.gt.DMRCH) then
+
+        !     CORRECT MERCHANTABLE VOLUME FOR TOP KILL.
+
+        VOLTK = BEHRE(PHT,STUMP)
+        SCF = SCF  *VOLTK/VOLT
+     end if
+  else
+
+     !     PROCESS CONES.
+
+     S3 = STUMP**3
+     VOLM = S3-HTMRCH**3
+     if (DTRUNC.gt.DMRCH) then
+
+        !     CORRECT MERCHANTABLE VOLUME FOR TOP KILL (CONES ONLY).
+
+        VOLTK = S3-PHT**3
+        SCF = SCF*VOLTK/VOLM
+     end if
+  end if
+  if (SCF.gt.MCF) SCF = MCF
+  if (SCF.lt.0.) SCF = 0
+
+  100 continue
+  return
+end

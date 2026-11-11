@@ -42,12 +42,12 @@ subroutine SVSALV(IYR,MINDBH,MAXDBH,MAXAGE,OKSOFT,PROP,PROPLV)
   !              1 = leave this sp/spgroup in a salvage cut
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'FMPARM.F77'
-  include 'CONTRL.F77'
-  include 'FMCOM.F77'
-  include 'SVDATA.F77'
-  include 'SVDEAD.F77'
+  include 'PRGPRM.f90'
+  include 'FMPARM.f90'
+  include 'CONTRL.f90'
+  include 'FMCOM.f90'
+  include 'SVDATA.f90'
+  include 'SVDEAD.f90'
 
   ! Variables
   integer :: B4SNAGS,B4SVSNG,EL_SNAGS,I,IG,IGRP,ISALFG(MXDEAD),ISREF(MXDEAD),IT,IULIM,IYR,J,NOTFELD, &

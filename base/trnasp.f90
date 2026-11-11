@@ -10,8 +10,8 @@ subroutine TRNASP
   !  ASPECT.
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'PLOT.F77'
+  include 'PRGPRM.f90'
+  include 'PLOT.f90'
 
   !   CONVERT ASPECT TO RADIANS.
 

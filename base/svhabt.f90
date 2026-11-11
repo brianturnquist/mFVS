@@ -11,8 +11,8 @@ subroutine SVHABT(XMOD)
   !     USED FOR PROCESSING HABITAT INFORMATION FOR SNAGS
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'SVDEAD.F77'
+  include 'PRGPRM.f90'
+  include 'SVDEAD.f90'
 
   ! Variables
   real    :: XMOD

@@ -12,15 +12,15 @@ subroutine DENSE
   !   TO RELATIVE DENSITY FOR NON-STOCKABLE POINTS, AND LOADS PCT
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'PLOT.F77'
-  include 'CALCOM.F77'
-  include 'ARRAYS.F77'
-  include 'CONTRL.F77'
-  include 'OUTCOM.F77'
-  include 'HTCAL.F77'
-  include 'PDEN.F77'
-  include 'VARCOM.F77'
+  include 'PRGPRM.f90'
+  include 'PLOT.f90'
+  include 'CALCOM.f90'
+  include 'ARRAYS.f90'
+  include 'CONTRL.f90'
+  include 'OUTCOM.f90'
+  include 'HTCAL.f90'
+  include 'PDEN.f90'
+  include 'VARCOM.f90'
 
   ! Variables
   integer :: I,IS,IP,ISPC,I1,I2,I3,II

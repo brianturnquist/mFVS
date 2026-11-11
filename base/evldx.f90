@@ -18,15 +18,15 @@ subroutine EVLDX (XLDREG,NXLDX,INSTR,IRC)
   !             2=INSTRUCTION CODE COULD NOT BE DECIPHERED.
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'OPCOM.F77'
-  include 'ARRAYS.F77'
-  include 'OUTCOM.F77'
-  include 'CONTRL.F77'
-  include 'PLOT.F77'
-  include 'STDSTK.F77'
-  include 'WORKCM.F77'
-  include 'SSTGMC.F77'
+  include 'PRGPRM.f90'
+  include 'OPCOM.f90'
+  include 'ARRAYS.f90'
+  include 'OUTCOM.f90'
+  include 'CONTRL.f90'
+  include 'PLOT.f90'
+  include 'STDSTK.f90'
+  include 'WORKCM.f90'
+  include 'SSTGMC.f90'
 
   ! Variables
   integer :: M,I1,I2,I3,I4,INDEX(MAXTRE),ISRTI

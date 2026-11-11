@@ -14,8 +14,8 @@ function BEHRE(L1,L2)
   !  BEHRE VOLUMES USED IN CALLING ROUTINE 'VOLS'.
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'COEFFS.F77'
+  include 'PRGPRM.f90'
+  include 'COEFFS.f90'
 
   ! Variables
   real    :: L1,L2,BEHRE,ALB1,ALB2

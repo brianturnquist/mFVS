@@ -1,0 +1,151 @@
+!========================!
+!   canada/bc : r6crwd   !
+!========================!
+! CANADA-BC $Id$
+subroutine R6CRWD(ISPC,D,H,CRWDTH)
+  implicit none
+
+  !  THIS ROUTINE COMPUTES CROWN WIDTH FOR INDIVIDUAL TREES.
+  !  CALLED FROM CCFCAL IN ALL REGION 6 VARIANTS, AND FOR THE
+  !  NI, KT, AND IE VARIANTS.
+
+  !  EQUATIONS FOR TREES LARGER THAN 4.5 FEET TALL WERE FIT BY
+  !  DENNIS DONNELLY (FOREST MANAGEMENT SERVICE CENTER, FORT COLLINS,
+  !  COLORADO) FROM INVENTORY DATA PROVIDED SPECIFICALLY FOR THIS
+  !  PURPOSE BY TOMMY GREGG IN REGION 6.  EQUATIONS ARE OF THE FORM:
+  !  CW = A * (DBH)**B     CW IN FEET, DBH IN INCHES
+
+  !  EQUATIONS FOR TREES LESS THAN 4.5 FEET TALL ARE OF THE FORM
+  !  CW = CONSTANT * HEIGHT, WHERE THE CONSTANT IS THE SLOPE OF A
+  !  STRAIGHT LINE THROUGH THE POINTS (H=0, CW=0) AND
+  !  (H=4.5, CW=VALUE OF DONNELLY EQUATION AT BUD WIDTH)
+
+  !  DEFINITION OF VARIABLES:
+
+  !     CROWN WIDTH COEFFICIENTS FOR TREES WITH HEIGHT > 4.5 FEET
+  !      CRWDTH = BG1() * D**BG2()
+  !      BG1 -- CONSTANT TERM OR INTERCEPT, SUBSCRIPTED BY SPECIES.
+  !      BG1 -- EXPONENT, SUBSCRIPTED BY SPECIES.
+
+  !     CROWN WIDTH COEFFICIENTS FOR TREE WITH HEIGHT <= 4.5 FEET
+  !      CRWDTH = SM * H
+  !      SM  -- SLOPE, SUBSCRIPTED BY SPECIES
+
+  !     CRWDTH = CROWN WIDTH FOR A TREE (FEET)
+  !     D      = DIAMETER AT BREAST HEIGHT (INCHES)
+  !     H      = TOTAL TREE HEIGHT (FEET)
+  !     ISPC   = NUMERIC SPECIES CODE
+
+  !  ORDER OF COEFFICIENTS IN THIS SUBROUTINE:
+
+  !   1 = DOUGLAS FIR                     PSEUDOTSUGA MENZIESII
+  !   2 = PACIFIC SILVER FIR              ABIES AMABILIS
+  !   3 = WHITE FIR                       ABIES CONCOLOR
+  !   4 = GRAND FIR                       ABIES GRANDIS
+  !   5 = SUBALPINE FIR                   ABIES LASIOCARPA
+  !   6 = RED FIR                         ABIES MAGNIFICA
+  !   7 = NOBLE FIR                       ABIES PROCERA
+
+  !   8 = INCENSE CEDAR                   CALOCEFRUS DECURRENS
+  !   9 = PORT ORFORD CEDAR               CHAMAECYPARIS LAWSONIA
+  !  10 = ALASKA CEDAR                    CHAMAECYPARIS NOOTKATENSIS
+  !  11 = WESTERN RED CEDAR               THUJA PLICATA
+
+  !  12 = SUBALPINE LARCH                 LARIX LYALLII
+  !  13 = WESTERN LARCH                   LARIX OCCIDENTALIS
+
+  !  14 = WESTERN HEMLOCK                 TSUGA HETEROPHYLLA
+  !  15 = MOUNTAIN HEMLOCK                TSUGA MERTENSIANA
+
+  !  16 = PACIFIC YEW                     TAXUS BREVIFOLIA
+
+  !  17 = WHITEBARK PINE                  PINUS ALBICAULIS
+  !  18 = KNOBCONE PINE                   PINUS ATTENUATA
+  !  19 = LODGEPOLE PINE                  PINUS CONTORTA
+  !  20 = JEFFREY PINE                    PINUS JEFFREYI
+  !  21 = SUGAR PINE                      PINUS LAMBERTIANA
+  !  22 = WESTERN WHITE PINE              PINUS MONTICOLA
+  !  23 = PONDEROSA PINE                  PINUS PONDEROSA
+
+  !  24 = ENGELMANN SPRUCE                PICEA ENGELMANNII
+  !  25 = SITKA SPRUCE                    PICEA SITCHENSIS
+
+  !  26 = BIG LEAF MAPLE                  ACER MACROPHYLLUM
+  !  27 = RED ALDER                       ALNUS RUBRA
+  !  28 = PAPER BIRCH                     BETULA PAPYRIFERA
+  !  29 = QUAKING ASPEN                   POPULUS TREMULOIDES
+  !  30 = OREGON WHITE OAK                QUERCUS GARRYANA
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'CONTRL.f90'
+
+  ! Variables
+  integer :: ISPC,INDX
+  integer :: MAPBC(15)
+  real    :: D,H,CRWDTH
+  real    :: BG1(30),BG2(30),SM(30)
+
+  data BG1/&
+       &4.4215, 3.9723, 3.8166, 4.1870, 3.2348, 3.1146, 3.0614, 4.0920,&
+       &5.3864, 3.5341, 6.2318, 2.1039, 2.9571, 5.4864, 2.9372, 4.5859,&
+       &2.1606, 2.1451, 2.4132, 3.2367, 3.0610, 3.4447, 2.8541, 3.6802,&
+       &4.2857, 7.5183, 7.0806, 5.8980, 4.0910, 2.4922/
+  data BG2/&
+       &0.5329, 0.5177, 0.5229, 0.5341, 0.5179, 0.5780, 0.6276, 0.4912,&
+       &0.4213, 0.5374, 0.4259, 0.6758, 0.6081, 0.5144, 0.5878, 0.4841,&
+       &0.6897, 0.7132, 0.6403, 0.6247, 0.6201, 0.5185, 0.6400, 0.4940,&
+       &0.5940, 0.4461, 0.4771, 0.4841, 0.5907, 0.8544/
+  data SM/&
+       &0.517,  0.473,  0.452,  0.489,  0.385,  0.345,  0.320,  0.412,&
+       &0.608,  0.331,  0.698,  0.207,  0.316,  0.533,  0.253,  0.468,&
+       &0.255,  0.248,  0.298,  0.406,  0.385,  0.476,  0.407,  0.451,&
+       &0.466,  0.815,  0.730,  0.601,  0.351,  0.140/
+
+  ! MAPPING FUNCTION FOR SPECIES IN THE --SEI-- VARIANT
+  !  1=pw,  2=lw,  3=fd,  4=bg, 5=hw, 6=cw, 7=pl, 8=se, 9=bl, 10=pp,
+  ! 11=ep, 12=at, 13=ac, 14=oc(fd), 15=oh(ep)
+
+  ! ONLY ISPC=11,12,13,15 ARE USED
+  ! SURROGATES: RA(27) FOR AC - COTTONWOOD
+
+  data MAPBC/&
+       &22, 13,  1,  4, 14,&
+       &11, 19, 24,  5, 23,&
+       &28, 29, 27,  1, 28 /
+
+  ! IF SPECIES IS ZERO, RETURN
+
+  if (ISPC .eq.0) then
+     CRWDTH = 0.
+     go to 100
+  end if
+
+  ! ASSIGN THE APPROPRIATE EQUATION NUMBER.
+
+  select case (VARACD)
+
+  case ('BC')
+     INDX = MAPBC(ISPC)
+
+  case default
+     INDX = 99
+
+  end select
+
+  ! COMPUTE CROWN WIDTH
+
+  if (INDX .eq.99) then
+     CRWDTH = 0.
+     go to 100
+  end if
+
+  if (H .gt.4.5) then
+     CRWDTH = BG1(INDX) * D**BG2(INDX)
+  else
+     CRWDTH = SM(INDX) * H
+  end if
+
+  100 continue
+  return
+end

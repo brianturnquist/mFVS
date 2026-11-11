@@ -1,0 +1,321 @@
+!======================================!
+!   Compute large tree height growth   !
+!======================================!
+! SN $Id$
+subroutine HTGF
+  implicit none
+
+  !  THIS SUBROUTINE COMPUTES THE PREDICTED PERIODIC HEIGHT INCREMENT FOR
+  !  EACH CYCLE AND LOADS IT INTO THE ARRAY HTG. HEIGHT INCREMENT IS
+  !  PREDICTED IN THE HTCALC ROUTINE USING NC128 SITE CURVES.  A
+  !  A RELATIVE HEIGHT MODIFIER EMPLOYS THE CHAPMAN-RICHARDS FUNCTION
+  !  AND A HOERL'S EQUATION IS USED TO MODEL THE CONTIBUTION OF
+  !  CROWN RATIO. THIS ROUTINE IS CALLED FROM **TREGRO** DURING REGULAR
+  !  CYCLING.  ENTRY **HTCONS** IS CALLED FROM **RCON** TO LOAD SITE
+  !  DEPENDENT CONSTANTS THAT NEED ONLY BE RESOLVED ONCE.
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'CALCOM.f90'
+  include 'ARRAYS.f90'
+  include 'COEFFS.f90'
+  include 'CONTRL.f90'
+  include 'PLOT.f90'
+  include 'MULTCM.f90'
+  include 'HTCAL.f90'
+  include 'VARCOM.f90'
+
+  !   SCALE -- TIME FACTOR DERIVED BY DIVIDING FIXED POINT CYCLE
+  !            LENGTH  (10 YEARS) BY THE CYCLE LENGTH USED IN THE
+  !            CURRENT SIMULATION
+  !   SCALE2-- TIME LENGTH FACTOR DERIVED BY DIVIDING THE CURRENT
+  !            CYCLE LENGTH BY THE TIME INCREMENT USED TO DEVELOP
+  !            REGRESSION EQUATIONS (5 YRS FOR THE SN VARIANT)
+
+  ! Variables
+  integer :: MODE0,MODE9
+  integer :: ITFN,I,I3,I2,I1,ISPC
+  real    :: REGYR,CRC,CRB,CRA,SCALE,SCALE2,HTG11,HTG1,XHT,SI,HTI
+  real    :: HTMAX,AGET,RELHT,HGMDCR,RHX,FCTRKX,FCTRRB,FCTRXB
+  real    :: FCTRM,HGMDRH,WTCR,WTRH,HTGMOD,HTNEW,TEMHTG
+  logical :: DEBUG
+
+  data REGYR /5.0/
+
+  !  COEFFICIENTS--CROWN RATIO (CR) BASED HT. GRTH. MODIFIER
+
+  data CRA /100.0/, CRB /3.0/, CRC /-5.0/
+
+  !  COEFFICIENTS--RELATIVE HEIGHT (RH) BASED HT. GRTH. MODIFIER
+
+  real    :: RHR(MAXSP),RHYXS(MAXSP),RHM(MAXSP),RHB(MAXSP),RHK(MAXSP),RHXS(MAXSP)
+
+  !  COEFFICIENTS--RELATIVE HEIGHT (RH) BASED HT. GRTH. MODIFIER
+  !  COEFFS BASED ON SPECIES SHADE TOLERANCE AS FOLLOWS:
+  !                          RHR  RHYXS    RHM    RHB  RHXS   RHK
+  !        VERY TOLERANT    20.0   0.20    1.1  -1.10  0.00  1.00
+  !        TOLERANT         16.0   0.15    1.1  -1.20  0.00  1.00
+  !        INTERMEDIATE     15.0   0.10    1.1  -1.45  0.00  1.00
+  !        INTOLERANT       13.0   0.05    1.1  -1.60  0.00  1.00
+  !        VERY INTOLERANT  12.0   0.01    1.1  -1.60  0.00  1.00
+
+  !  COEFF VALUES FOR REL.HT. MOD. VALUE(Y) AT REL.HT. START(X=0)
+  !  9 LINES OF 10 VALUES EACH LINE
+
+  data RHYXS&
+       &/0.20,0.05,0.15,0.05,0.05,0.05,0.20,0.05,0.05,0.05,&
+       &0.05,0.10,0.05,0.05,0.10,0.10,0.20,0.15,0.15,0.15,&
+       &0.15,0.20,0.15,0.05,0.05,0.20,0.10,0.05,0.10,0.15,&
+       &0.20,0.20,0.20,0.15,0.05,0.05,0.15,0.05,0.15,0.15,&
+       &0.20,0.05,0.05,0.05,0.05,0.15,0.10,0.15,0.10,0.15,&
+       &0.05,0.15,0.05,0.15,0.05,0.15,0.15,0.15,0.10,0.01,&
+       &0.01,0.05,0.10,0.01,0.10,0.05,0.05,0.15,0.10,0.05,&
+       &0.05,0.05,0.05,0.10,0.10,0.05,0.05,0.10,0.10,0.01,&
+       &0.01,0.05,0.15,0.10,0.15,0.10,0.15,0.10,0.10,0.10/
+
+  !  COEFF VALUES FOR REL.HT. GCRF R COEFF
+  !  10 LINES OF 9 VALUES EACH LINE.
+
+  data RHR&
+       &/20.0,13.0,16.0,13.0,13.0,13.0,20.0,13.0,13.0,&
+       &13.0,13.0,15.0,13.0,13.0,15.0,15.0,20.0,16.0,&
+       &16.0,16.0,16.0,20.0,16.0,13.0,13.0,20.0,15.0,&
+       &13.0,15.0,16.0,20.0,20.0,20.0,16.0,13.0,13.0,&
+       &16.0,13.0,16.0,16.0,20.0,13.0,13.0,13.0,13.0,&
+       &16.0,15.0,16.0,15.0,16.0,13.0,16.0,13.0,16.0,&
+       &13.0,16.0,16.0,16.0,15.0,12.0,12.0,13.0,15.0,&
+       &12.0,15.0,13.0,13.0,16.0,15.0,13.0,13.0,13.0,&
+       &13.0,15.0,15.0,13.0,13.0,15.0,15.0,12.0,12.0,&
+       &13.0,16.0,15.0,16.0,15.0,16.0,15.0,15.0,15.0/
+
+  !  COEFF VALUES FOR REL.HT. GCRF B COEFF
+  !  10 LINES OF 9 VALUES EACH LINE.
+
+  data RHB&
+       &/-1.10,-1.60,-1.20,-1.60,-1.60,-1.60,-1.10,-1.60,-1.60,&
+       &-1.60,-1.60,-1.45,-1.60,-1.60,-1.45,-1.45,-1.10,-1.20,&
+       &-1.20,-1.20,-1.20,-1.10,-1.20,-1.60,-1.60,-1.10,-1.45,&
+       &-1.60,-1.45,-1.20,-1.10,-1.10,-1.10,-1.20,-1.60,-1.60,&
+       &-1.20,-1.60,-1.20,-1.20,-1.10,-1.60,-1.60,-1.60,-1.60,&
+       &-1.20,-1.45,-1.20,-1.45,-1.20,-1.60,-1.20,-1.60,-1.20,&
+       &-1.60,-1.20,-1.20,-1.20,-1.45,-1.60,-1.60,-1.60,-1.45,&
+       &-1.60,-1.45,-1.60,-1.60,-1.20,-1.45,-1.60,-1.60,-1.60,&
+       &-1.60,-1.45,-1.45,-1.60,-1.60,-1.45,-1.45,-1.60,-1.60,&
+       &-1.60,-1.20,-1.45,-1.20,-1.45,-1.20,-1.45,-1.45,-1.45/
+
+  !  COEFF VALUES FOR REL.HT. MOD. GCRF M COEFF.
+  !  THESE 90 VALUES CAN BE DIVIDED BY SPECIES ATTRIB. IF NEEDED.
+
+  data RHM  /90*1.10/
+
+  !  COEFF VALUES FOR REL.HT. MOD. GCRF X(REL.HT.) START (X=0).
+  !  THESE 90 VALUES CAN BE DIVIDED BY SPECIES ATTRIB. IF NEEDED.
+
+  data RHXS /90*0.0/
+
+  !  COEFF VALUES FOR REL.HT. MOD. GCRF ASYMPTOTE COEFF.
+  !  THESE 90 VALUES CAN BE DIVIDED BY SPECIES ATTRIB. IF NEEDED.
+
+  data RHK  /90*1.0/
+
+  !  CHECK FOR DEBUG.
+
+  call DBCHK (DEBUG,'HTGF',4,ICYC)
+  if (DEBUG) then
+     write(JOSTND,*) ' ENTERING HTGF, CYCLE= ', ICYC,' BA= ',BA
+  end if
+
+  SCALE = FINT/YR
+  SCALE2 = FINT/REGYR
+  HTG11 = 0.
+  HTG1 = 0.
+
+  !  SEE IF USER PROVIDED HEIGHT GROWTH ADJUSTMENT MULTIPLIERS
+
+  call MULTS (2,IY(ICYC),XHMULT)
+
+  !   BEGIN SPECIES LOOP:
+
+  do ISPC = 1,MAXSP
+     I1 = ISCT(ISPC,1)
+     if (I1.eq.0) go to 40
+     I2 = ISCT(ISPC,2)
+     XHT = 1.0
+     XHT = XHMULT(ISPC)
+
+     !   SET SITE INDEX
+
+     SI = SITEAR(ISPC)
+
+     !   BEGIN TREE LOOP WITHIN SPECIES LOOP
+
+     do I3 = I1,I2
+        I = IND1(I3)
+        HTG(I) = 0.
+        if (PROB(I).le.0.0) go to 4
+        HTI = HT(I)
+
+        !  CALCULATE
+        !  HTMAX=(B1*SI**B2)
+
+        MODE0 = 0
+        AGET = 0.
+        call HTCALC (MODE0,ISPC,AGET,HTI,HTMAX,HTG1,JOSTND,DEBUG)
+
+        if (HTMAX-HTI.le.1.) then
+
+           !  IF INITIAL TREE HEIGHT IS >= MAX HEIGHT FOR SITE (HTMAX).
+           !  THEN SET HTG= 0.1 FT.
+
+           if (DEBUG) write(JOSTND,*) ' HTI>=HTMAX , ABIRTH= ',ABIRTH(I),&
+                &' XHT=',XHT,' HTCON=',HTCON(ISPC)
+
+           HTG(I) = 0.10
+           HTG(I) = HTG(I)*XHT*SCALE*EXP(HTCON(ISPC))
+           go to 4
+        end if
+
+        !    HEIGHT GROWTH EQUATION, USING NC128 TREE HEIGHT COEFFS.
+        !    EVALUATED FOR EACH TREE EACH CYCLE, 5.0 YEAR CYCLE
+
+        MODE9 = 9
+        HTG1 = 0.
+        call HTCALC (MODE9,ISPC,AGET,HTI,HTMAX,HTG1,JOSTND,DEBUG)
+
+        if (DEBUG) write(JOSTND,*)' HTGF,MAIN HT CALC, AGET,HTMAX,HTG1= ',&
+             &AGET,HTMAX,HTG1
+
+        !  HEIGHT GROWTH MODIFIERS
+
+        RELHT = 0.0
+        if (AVH .gt.0.0) RELHT = HT(I)/AVH
+        if (RELHT .gt.1.5)RELHT = 1.5
+
+        !     REVISED HEIGHT GROWTH MODIFIER APPROACH.
+
+        !     CROWN RATIO CONTRIBUTION(HGMDCR).DATA AND READINGS INDICATE HEIGHT
+        !     GROWTH PEAKS IN MID-RANGE OF CR, DECREASES SOMEWHAT FOR LARGE
+        !     CROWN RATIOS DUE TO PHOTOSYNTHETIC ENERGY PUT INTO CROWN SUPPORT
+        !     RATHER THAN HT. GROWTH.  CROWN RATIO FOR THIS COMPUTATION NEEDS
+        !     TO BE IN (0-1) RANGE; DIVIDE BY 100.  FUNCTION IS HOERL'S
+        !     SPECIAL FUNCTION (REF. P.23, CUTHBERT&WOOD, FITTING EQNS. TO DATA
+        !     WILEY, 1971).
+
+        HGMDCR = (CRA * (ICR(I)/100.0)**CRB) * EXP(CRC*(ICR(I)/100.0))
+        if (HGMDCR .gt.1.0) HGMDCR = 1.0
+
+        !     RELATIVE HEIGHT CONTRIBUTION(HGMDRH). DATA AND READINGS INDICATE
+        !     HEIGHT GROWTH IS ENHANCED BY STRONG TOP LIGHT AND HINDERED BY HIGH
+        !     SHADE EVEN IF SOME LIGHT FILTERS THROUGH.  ALSO RESPONSE IS
+        !     GREATER FOR GIVEN LIGHT AS SHADE TOLERANCE INCREASES.  FUNCTION
+        !     IS GENERALIZED CHAPMAN-RICHARDS (REF. P.2 DONNELLY ET AL. 1992.
+        !     THINNING EVEN-AGED FOREST STANDS...OPTIMAL CONTROL ANALYSES.
+        !     USDA FOR. SERV. RES. PAPER RM-307).
+
+        RHX = RELHT
+        FCTRKX = ( (RHK(ISPC)/RHYXS(ISPC))**(RHM(ISPC)-1.0) ) - 1.0
+        FCTRRB = -1.0*( RHR(ISPC)/(1.0-RHB(ISPC)) )
+        FCTRXB = RHX**(1.0-RHB(ISPC)) - RHXS(ISPC)**(1.0-RHB(ISPC))
+        FCTRM = -1.0/(RHM(ISPC)-1.0)
+        if (DEBUG)&
+             &write(JOSTND,*) ' HTGF-HGMDRH FACTORS = ',&
+             &ISPC, RHX, FCTRKX, FCTRRB, FCTRXB, FCTRM
+        HGMDRH = RHK(ISPC) * ( 1.0 + FCTRKX*EXP(FCTRRB*FCTRXB) ) ** FCTRM
+
+        !     APPLY WEIGHTED MODIFIER VALUES.
+
+        WTCR = .25
+        WTRH = 1.0 - WTCR
+        HTGMOD = WTCR*HGMDCR + WTRH*HGMDRH
+
+        !    MULTIPLIED BY SCALE TO CHANGE FROM A YR. PERIOD TO FINT AND
+        !    MULTIPLIED BY XHT TO APPLY USER SUPPLIED GROWTH MULTIPLIERS.
+
+        if (DEBUG) write(JOSTND,*)' IN HTGF, HTGMOD= ',HTGMOD,'ICR=',ICR(I)&
+             &,' ABIRTH= ',ABIRTH(I)
+
+        if (HTGMOD .ge.2.0) HTGMOD = 2.0
+        if (HTGMOD .le.0.1) HTGMOD = 0.1
+        HTG(I) = HTG1 * (HTGMOD)
+        if (HTG(I).lt.0.1)HTG(I) = 0.1
+        HTG(I) = HTG(I)*XHT*SCALE*EXP(HTCON(ISPC))
+
+        if (DEBUG) then
+           write(JOSTND,*)' I,ISPC,XHT,HTCON,SCALE,HTG= ',&
+                &I,ISPC,XHT,HTCON(ISPC),SCALE,HTG(I)
+           HTNEW = HT(I)+HTG(I)
+           write(JOSTND,*) 'ISPC5= ',ISPC,' I5= ',I,' ICYC= ',ICYC,&
+                &' FINT= ',FINT
+           write (JOSTND,9000)HTG(I),DBH(I),XHT,ABIRTH(I),SI,HT(I),WK1(I),&
+                &HTNEW, HTGMOD,RELHT,AVH,HTMAX,SCALE,&
+                &SCALE2,HGMDCR,HGMDRH,RHB(ISPC)
+           9000 format(' 9000HTGF,HTG=',F8.4,'D=',F8.4,' XHT=',F8.4,&
+                &' AGET=',F8.4/' SI =',F8.4,' HT(I)= ',F8.4,' WK1= ',f8.4,&
+                &'HTNEW= ',F8.4,' HTGMOD= ',F8.4/&
+                &' RELHT= ',F8.4,' AVH= ',F8.4/&
+                &' HTMAX= ',F10.3,' SCALE= ',F5.1,'SCALE2= ',F5.1,&
+                &' HGMDCR=',F9.3,' HGMDRH=',F9.3,' RHB(ISPC)=',F6.2)
+        end if
+
+        !  BRANCH FROM MAX HEIGHT TEST. TREE > MAX HEIGHT
+
+        4 continue
+        TEMHTG = HTG(I)
+
+        ! CHECK FOR SIZE CAP COMPLIANCE.
+
+        if ((HT(I)+HTG(I)).gt.SIZCAP(ISPC,4)) then
+           HTG(I) = SIZCAP(ISPC,4)-HT(I)
+           if (HTG(I) .lt.0.1) HTG(I) = 0.1
+        end if
+
+        if (.not.LTRIP) go to 30
+        ITFN = ITRN+2*I-1
+        HTG(ITFN) = TEMHTG
+
+        ! CHECK FOR SIZE CAP COMPLIANCE.
+
+        if ((HT(ITFN)+HTG(ITFN)).gt.SIZCAP(ISPC,4)) then
+           HTG(ITFN) = SIZCAP(ISPC,4)-HT(ITFN)
+           if (HTG(ITFN) .lt.0.1) HTG(ITFN) = 0.1
+        end if
+
+        HTG(ITFN+1) = TEMHTG
+
+        ! CHECK FOR SIZE CAP COMPLIANCE.
+
+        if ((HT(ITFN+1)+HTG(ITFN+1)).gt.SIZCAP(ISPC,4)) then
+           HTG(ITFN+1) = SIZCAP(ISPC,4)-HT(ITFN+1)
+           if (HTG(ITFN+1) .lt.0.1) HTG(ITFN+1) = 0.1
+        end if
+
+        if (DEBUG) write(JOSTND,8010) HTG(ITFN),HTG(ITFN+1)
+        8010 format( ' UPPER HTG =',F8.4,' LOWER HTG =',F8.4)
+
+        !   END OF TREE LOOP
+
+        30 continue
+     end do
+
+     !   END OF SPECIES LOOP
+
+     40 continue
+  end do
+  return
+
+  entry HTCONS
+
+  !  ENTRY POINT FOR LOADING HEIGHT INCREMENT MODEL COEFFICIENTS THAT
+  !  REQUIRE A A ONE-TIME RESOLUTION.
+  !  FIRSTLY TREE AGE IS CALCULATED BASED ON TREELIST OR DUBBED HEIGHT
+  !  VALUES.
+
+  do ISPC = 1,MAXSP
+     HTCON(ISPC) = 0.0
+     if (LHCOR2.and. HCOR2(ISPC).gt.0.0) HTCON(ISPC) = &
+          &HTCON(ISPC)+ALOG(HCOR2(ISPC))
+     60 continue
+  end do
+
+  return
+end

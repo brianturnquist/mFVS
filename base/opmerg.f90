@@ -15,8 +15,8 @@ subroutine OPMERG (NMYA,MYACTS,NTODO)
   integer :: MYACTS(NMYA),NTODO,NMYA,IPA,IMYA,MY,I,IA
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'OPCOM.F77'
+  include 'PRGPRM.f90'
+  include 'OPCOM.f90'
 
   !     SET THE NUMBER OF ACTIVITIES TO DO EQUAL TO ZERO.
 

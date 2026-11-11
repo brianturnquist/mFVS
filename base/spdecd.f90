@@ -20,8 +20,8 @@ subroutine SPDECD (IPOS,ISP,CNSP,JOSTND,IRECNT, &
   !     KARD  = C*10 ARRAY OF PARAMETERS.
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'PLOT.F77'
+  include 'PRGPRM.f90'
+  include 'PLOT.f90'
 
   ! Variables
   integer :: IRECNT,JOSTND,ISP,IPOS,IFLAG,J,I

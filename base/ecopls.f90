@@ -21,7 +21,7 @@ subroutine ECOPLS (KEYWRD,IDISP,PARMS,J1,J2)
   !     J2     = THE LOCATION OF THE LAST PARAMETER FOR THE ACTIVITY.
 
   ! Common blocks
-  include 'ECON.F77'
+  include 'ECON.f90'
 
   ! Variables
   integer :: J1,J2,IDISP,ITBSZ,I,JTWO,J

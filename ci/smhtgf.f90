@@ -1,0 +1,139 @@
+!=================!
+!   ci : smhtgf   !
+!=================!
+! CI $Id$
+subroutine SMHTGF(ISPC,I,HTGRTH,CR,TPCCF,LESTB,DEBUG)
+  implicit none
+
+  ! THIS SUBROUTINE COMPUTES THE HEIGHT GROWTH FOR SMALL TREES (HTGRTH)
+  ! ONLY USED IN THE CI VARIANT FOR 11=WB, 12=PY, AND 16=LM
+  ! CALLED FROM **REGENT.
+  ! CALLS **FINDAG
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
+  include 'PLOT.f90'
+  include 'CALCOM.f90'
+  include 'COEFFS.f90'
+  include 'CONTRL.f90'
+  include 'OUTCOM.f90'
+  include 'PDEN.f90'
+
+  external RANN
+  ! Variables
+  logical :: DEBUG,LESTB
+  integer :: I,ISPC
+  real    :: D1,D2,H,SITAGE,SITHT,AGMAX,HTMAX,HTMAX2
+  real    :: TPCCF,CR,HTGRTH,BACHLO,D,BETA1,BETA2,HTG1,STDDEV,HITE1
+  real    :: HITE2,AG2,HTGR
+
+  !     SPECIES LIST FOR CENTRAL IDAHO VARIANT.
+
+  !     1 = WESTERN WHITE PINE (WP)          PINUS MONTICOLA
+  !     2 = WESTERN LARCH (WL)               LARIX OCCIDENTALIS
+  !     3 = DOUGLAS-FIR (DF)                 PSEUDOTSUGA MENZIESII
+  !     4 = GRAND FIR (GF)                   ABIES GRANDIS
+  !     5 = WESTERN HEMLOCK (WH)             TSUGA HETEROPHYLLA
+  !     6 = WESTERN REDCEDAR (RC)            THUJA PLICATA
+  !     7 = LODGEPOLE PINE (LP)              PINUS CONTORTA
+  !     8 = ENGLEMANN SPRUCE (ES)            PICEA ENGELMANNII
+  !     9 = SUBALPINE FIR (AF)               ABIES LASIOCARPA
+  !    10 = PONDEROSA PINE (PP)              PINUS PONDEROSA
+  !    11 = WHITEBARK PINE (WB)              PINUS ALBICAULIS
+  !    12 = PACIFIC YEW (PY)                 TAXUS BREVIFOLIA
+  !    13 = QUAKING ASPEN (AS)               POPULUS TREMULOIDES
+  !    14 = WESTERN JUNIPER (WJ)             JUNIPERUS OCCIDENTALIS
+  !    15 = CURLLEAF MOUNTAIN-MAHOGANY (MC)  CERCOCARPUS LEDIFOLIUS
+  !    16 = LIMBER PINE (LM)                 PINUS FLEXILIS
+  !    17 = BLACK COTTONWOOD (CW)            POPULUS BALSAMIFERA VAR. TRICHOCARPA
+  !    18 = OTHER SOFTWOODS (OS)
+  !    19 = OTHER HARDWOODS (OH)
+
+  !  SURROGATE EQUATION ASSIGNMENT:
+
+  !  FROM THE IE VARIANT:
+  !      USE 17(PY) FOR 12(PY)             (IE17 IS REALLY TT2=LM)
+  !      USE 18(AS) FOR 13(AS)             (IE18 IS REALLY UT6=AS)
+  !      USE 13(LM) FOR 11(WB) AND 16(LM)  (IE13 IS REALLY TT2=LM)
+  !      USE 19(CO) FOR 17(CW) AND 19(OH)  (IE19 IS REALLY CR38=OH)
+
+  !  FROM THE UT VARIANT:
+  !      USE 12(WJ) FOR 14(WJ)
+  !      USE 20(MC) FOR 15(MC)             (UT20 = SO30=MC, WHICH IS
+  !                                                  REALLY WC39=OT)
+
+  !  RESET ZRAND IF THIS IS THE START OF THE PROJECTION, THIS IS THE FIRST
+  !  PREDICTION FOR A NEW TRIPLE, OR IF GROWTH IN THE PREVIOUS CYCLE WAS
+  !  LESS THAN 0.1 FT.
+
+  if (ZRAND(I).ne.-999.) go to 20
+  10 continue
+  ZRAND(I) = BACHLO(0.0,1.0,RANN)
+  if (ZRAND(I).lt.-2.0.or. ZRAND(I).gt.2.0) go to 10
+  20 continue
+
+  D = DBH(I)
+  if (D.le.0.0) then
+     HTGRTH = 0.0
+     go to 900
+  end if
+
+  select case (ISPC)
+
+     ! QUAKING ASPEN
+
+  case(13)
+     SITAGE = 0.0
+     SITHT = 0.0
+     AGMAX = 0.0
+     HTMAX = 0.0
+     HTMAX2 = 0.0
+     D1 = DBH(I)
+     H = HT(I)
+     D2 = 0.0
+     if (DEBUG)write(JOSTND,*)' IN HTGF, CALLING FINDAG I= ',I
+     call FINDAG(I,ISPC,D1,D2,H,SITAGE,SITHT,AGMAX,HTMAX,HTMAX2,&
+          &DEBUG)
+
+     !  COMPUTE HT GROWTH AND AGE FOR ASPEN.  EQUATION FORMULATED BY
+     !  WAYNE SHEPPERD, ROCKY MNT FOREST EXP STN, FORT COLLINS, CO.
+
+     if (LESTB) then
+        SITAGE = ABIRTH(I)
+     end if
+     HITE1 = 26.9825*SITAGE**1.1752
+     AG2 = SITAGE + 5.
+     HITE2 = 26.9825*AG2**1.1752
+     HTGR = (HITE2-HITE1)/(2.54*12.0)
+     HTGRTH = HTGR+ZRAND(I)*.1
+
+     ! GROWTH RATES APPEAR HIGH, REDUCE BY 25 PERCENT. DIXON 8-27-92.
+
+     HTGRTH = HTGRTH * .75
+
+     ! WHITEBARK PINE, PACIFIC YEW, LIMBER PINE
+
+  case(11,12,16)
+     BETA1 = EXP(1.17527 - 0.42124*ALOG(TPCCF))
+     BETA2 = EXP(-2.56002 - 0.58642*ALOG(TPCCF))
+     HTG1 = BETA1 + BETA2*CR
+     STDDEV = HTG1*(1.08720 - 0.00230*CR)
+     HTGRTH = HTG1 + ZRAND(I)*STDDEV
+
+  case default
+     HTGRTH = 0.
+  end select
+
+  !  IF ESTIMATED HEIGHT INCREMENT IS CLOSE TO ZERO, SET FLAG TO DRAW
+  !  A NEW RANDOM ERROR ON NEXT PASS THROUGH.
+
+  if (HTGRTH .gt.0.1) goto 900
+  HTGRTH = 0.1
+  ZRAND(I) = -999.
+  900 continue
+
+  if (DEBUG)write(JOSTND,*)' SMHTGF-I,ISPC,HTGRTH,D=',I,ISPC,HTGRTH,D
+
+  return
+end

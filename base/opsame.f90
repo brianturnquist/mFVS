@@ -19,8 +19,8 @@ subroutine OPSAME (MAE,MAELNK,IOUT,LDEB)
   !             (2,.)= POINTS TO THE ENTRY IN IEVNTS
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'OPCOM.F77'
+  include 'PRGPRM.f90'
+  include 'OPCOM.f90'
 
   ! Variables
   integer :: IOUT,MAE,IDEL,I1,J1,MF1,MF2,NMF,II,I2,J2,MS1,MS2,NMS

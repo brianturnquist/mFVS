@@ -1,0 +1,138 @@
+!==============================================!
+!   Predict subsequent species probabilities   !
+!==============================================!
+! ESTB $Id$
+subroutine ESPSUB
+  implicit none
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'ESPARM.f90'
+  include 'ESCOMN.f90'
+  include 'ESCOM2.f90'
+  include 'PLOT.f90'
+  include 'PDEN.f90'
+  include 'ESHAP.f90'
+  include 'ESHAP2.f90'
+
+  !     PREDICT THE PROBABILITY OF SUBSEQUENT SPECIES.
+  !     PLANTING COEFFICIENTS NOT INCLUDED IN THIS SUBROUTINE.
+  !     P(SUBSEQUENT WHITE PINE)  7/12/89
+
+  ! Variables
+  real    :: PN
+
+  PN = -2.4158523 +DHAB(IHAB,1) -.0190109*XCOS -1.3862606*XSIN&
+       &-1.8366897*SLO +DPRE(IPREP,1) -.0096275*BAA&
+       &-0.0480603*ELEV +.5816639*SQRT(TIME)
+  if (IFO.eq.7.or.IFO.eq.10.or.IFO.eq.16) PN = PN-1.5468744
+  if (OVER(1,NNID).gt.9.95) PN = PN +1.1525173
+  PSUB(1) = (1.0/(1.0+EXP(-PN))) * OCURHT(IHAB,1)  *XESMLT(1)&
+       &*OCURNF(IFO,1)
+
+  !     P(SUBSEQUENT WESTERN LARCH).
+
+  PN = -6.6374979 +DHAB(IHAB,2) +1.4214396*XCOS +0.7795442*XSIN&
+       &-.4926099*SLO +DPRE(IPREP,2) -0.0097349*BAA +0.1260484*ELEV&
+       &-0.0016995*ELEVSQ
+  if (OVER(2,NNID).gt.9.95) PN = PN +1.1026379
+  if (IFO.eq.9.or.IFO.eq.10.or.IFO.eq.14.or.IFO.eq.16)&
+       &PN = PN+1.8727359
+  PSUB(2) = (1.0/(1.0+EXP(-PN))) * OCURHT(IHAB,2)  *XESMLT(2)&
+       &*OCURNF(IFO,2)
+
+  !     P(SUBSEQUENT DOUGLAS-FIR).  7/12/89
+
+  PN = -2.6235752 +DHAB(IHAB,3) +DPRE(IPREP,3) +0.5771993*XCOS&
+       &-.0248810*XSIN +0.2794252*SLO -.0058675*BAA -0.0229114*ELEV&
+       &+0.6120327*SQREGT      +0.5549276*SQBWAF
+  if (OVER(3,NNID).gt.9.95) PN = PN+0.2350508
+  if (IFO.eq.19.or.IFO.eq.20) PN = PN-0.6635007
+  if (IFO.eq.7.or.IFO.eq.9.or.IFO.eq.10.or.IFO.eq.11.or.IFO.&
+       &EQ.12.or.IFO.eq.3) PN = PN+0.6195183
+  PSUB(3) = (1.0/(1.0+EXP(-PN))) * OCURHT(IHAB,3)  *XESMLT(3)&
+       &*OCURNF(IFO,3)
+
+  !     P(SUBSEQUENT GRAND FIR) 3/13/87
+
+  PN = -4.2174864 +0.7765163*XCOS +0.8718039*XSIN -0.4550694*SLO&
+       &-.0045320*BAA +0.1369318*ELEV -.0017545*ELEVSQ +DHAB(IHAB,4)&
+       &+.555869*SQREGT -.249851*BWB4 +.412380*SQBWAF +DPRE(IPREP,4)
+  if (OVER(4,NNID).gt.9.95) PN = PN+0.2759684
+  if (IFO.eq.3.or.IFO.eq.10) PN = PN-1.8014250
+  if (IFO.eq.14.or.IFO.eq.16.or.IFO.eq.19.or.IFO.eq.20)&
+       &PN = PN -1.1073681
+  PSUB(4) = (1.0/(1.0+EXP(-PN))) * OCURHT(IHAB,4)  *XESMLT(4)&
+       &*OCURNF(IFO,4)
+
+  !     P(SUBSEQUENT WESTERN HEMLOCK). 07/11/89
+
+  PN = -12.3053122 +2.5642173*XCOS -0.4392772*XSIN -1.4051726*SLO&
+       &+DPRE(IPREP,5)&
+       &+0.4534289*ELEV -0.0058291*ELEVSQ +0.7455533*SQRT(TIME)
+  if (OVER(5,NNID).gt.9.95) PN = PN+0.7780439
+  PSUB(5) = (1.0/(1.0+EXP(-PN))) * OCURHT(IHAB,5)  *XESMLT(5)&
+       &*OCURNF(IFO,5)
+
+  !     P(SUBSEQUENT WESTERN REDCEDAR).
+
+  PN = -3.6279063 +DHAB(IHAB,6) +1.5773680*XCOS +0.7379712*XSIN&
+       &-1.7963310*SLO +DPRE(IPREP,6) -.0039867*BAA -.0259884*ELEV&
+       &+0.9247357*SQRT(TIME)
+  if (OVER(6,NNID).gt.9.95) PN = PN +0.9973589
+  PSUB(6) = (1.0/(1.0+EXP(-PN))) * OCURHT(IHAB,6)  *XESMLT(6)&
+       &*OCURNF(IFO,6)
+
+  !     P(SUBSEQUENT LODGEPOLE PINE).
+
+  PN = -0.9637001+DHAB(IHAB,7)  -3.1974275*SLO -0.6840911*XCOS&
+       &-0.1853668*XSIN -0.0317628*BAA +DPRE(IPREP,7)
+  if (OVER(7,NNID).gt.9.95) PN = PN +1.5827047
+  if (IFO.eq.4.or.IFO.eq.5.or.IFO.eq.17.or.IFO.eq.19)&
+       &PN = PN -1.4140185
+  if (IPHY.eq.1) PN = PN +0.7254971
+  PSUB(7) = (1.0/(1.0+EXP(-PN))) * OCURHT(IHAB,7)  *XESMLT(7)&
+       &*OCURNF(IFO,7)
+
+  !     P(SUBSEQUENT ENGELMANN SPRUCE).  7/14/89
+
+  PN = -17.6667213 +DHAB(IHAB,8) +1.5222952*XCOS +1.0029485*XSIN&
+       &-2.0576222*SLO -.2404502*BAALN +3.173367*ALOG(ELEV)&
+       &+DPRE(IPREP,8)    +0.5579416*SQREGT +0.7190073*SQBWAF
+  if (OVER(8,NNID).gt.9.95) PN = PN +1.3091471
+  if (IFO.eq.3.or.IFO.eq.11.or.IFO.eq.12) PN = PN -0.5256087
+  if (IFO.eq.4) PN = PN +1.1098698
+  if (IFO.eq.9.or.IFO.eq.10) PN = PN +0.3115149
+  if (IFO.eq.14) PN = PN +2.3169837
+  if (IFO.eq.19) PN = PN -0.3958037
+  if (IFO.eq.5) PN = PN +.9730915
+  if (IFO.eq.17) PN = PN +0.9142514
+  if (IFO.eq.20) PN = PN +0.7438718
+  PSUB(8) = (1.0/(1.0+EXP(-PN))) * OCURHT(IHAB,8)  *XESMLT(8)&
+       &*OCURNF(IFO,8)
+
+  !     P(SUBSEQUENT SUBALPINE FIR).
+
+  PN = -7.7326031 +DHAB(IHAB,9) +0.8712742*XCOS&
+       &+.4329470*XSIN -1.7512965*SLO -.0112333*BAA +.0526394*ELEV&
+       &+0.5499482*SQREGT +0.4826650*SQBWAF +DPRE(IPREP,9)
+  if (IFO.eq.14.or.IFO.eq.16) PN = PN +0.8137509
+  if (OVER(9,NNID).gt.9.95) PN = PN +0.5798956
+  PSUB(9) = (1.0/(1.0+EXP(-PN))) * OCURHT(IHAB,9)  *XESMLT(9)&
+       &*OCURNF(IFO,9)
+
+  !     P(SUBSEQUENT PONDEROSA PINE). 12/22/86
+
+  PN = -3.9285939 -0.7116187*XCOS -0.2141754*XSIN&
+       &+DHAB(IHAB,10) +DPRE(IPREP,10) -.6540064*SLO -.3319028*BAALN&
+       &-0.0370099*ELEV +0.4603494*SQRT(TIME)
+  if (OVER(10,NNID).gt.9.95) PN = PN +1.0770060
+  if (IFO.eq.16.or.IFO.eq.17) PN = PN +1.8764150
+  if (IFO.eq.3.or.IFO.eq.19.or.IFO.eq.20.or.IFO.eq.14)&
+       &PN = PN+2.4815869
+  if (IPHY.eq.4.or.IPHY.eq.5) PN = PN +0.346372
+  PSUB(10) = (1.0/(1.0+EXP(-PN))) * OCURHT(IHAB,10)*XESMLT(10)&
+       &*OCURNF(IFO,10)
+  PSUB(11) = 0.0
+  return
+end

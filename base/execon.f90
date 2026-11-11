@@ -8,8 +8,8 @@ subroutine EXECON
   !     EXTRA EXTERNAL REFERENCES FOR THE ECON EXTENSION.
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'ECNCOM.F77'
+  include 'PRGPRM.f90'
+  include 'ECNCOM.f90'
 
   ! Variables
   integer :: I1,I2,I3,ICYC,IT,IS,II,IRECNT,KEY

@@ -1,0 +1,215 @@
+!=================================!
+!   Read variant specific state   !
+!=================================!
+! CANADA-BC $Id$
+subroutine VARGET (WK3,IPNT,ILIMIT,REALS,LOGICS,INTS)
+  implicit none
+
+  !     READ THE VARIANT SPECIFIC VARIABLES.
+  !     ALL VARIABLES ARE FROM BCPLOT.F77
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'BCPLOT.f90'
+  include 'ESHAP.f90'
+
+  !     NOTE: THE ACTUAL STORAGE LIMIT FOR INTS, LOGICS, AND REALS
+  !     IS MAXTRE (SEE PRGPRM).
+
+  ! Variables
+  integer :: MXL,MXR,MXI,IRECLN
+  parameter (MXR = 2,MXL = 3,MXI = 1,IRECLN = 1024)
+
+  integer :: ILIMIT,IPNT,I,J,K
+  integer :: INTS(MXI)
+  logical :: LOGICS(MXL),LC(MAXSP)
+  real    :: REALS(MXR),RC(MAXSP)
+  real    :: WK3(MAXTRE)
+
+  !     GET THE INTEGER SCALARS
+  !     CALL IFREAD (WK3, IPNT, ILIMIT, INTS, MXI, 2) ! NONE
+
+  !     GET THE INTEGER ARRAYS
+  !     CALL IFREAD (WK3, IPNT, ILIMIT, JDST, 3, 2)
+
+  !     GET THE LOGICAL SCALARS.
+  call LFREAD (WK3, IPNT, ILIMIT, LOGICS, MXL, 2)
+  LV2ATV = LOGICS(1)
+  LV2HTCP = LOGICS(2)
+  LV2HDR = LOGICS(3)
+
+  !     GET THE LOGICAL ARRAYS
+  call LFREAD (WK3,IPNT,ILIMIT, LLTDGOK, MAXSP, 2)
+  call LFREAD (WK3,IPNT,ILIMIT, LMHTDUB, MAXSP, 2)
+
+  !     GET THE LOGICAL ARRAYS FOR MORT, LTH & STG STRUCTURES
+  call LFREAD (WK3,IPNT,ILIMIT, LC, MAXSP, 2)
+  MORT%FIT = LC
+  call LFREAD (WK3,IPNT,ILIMIT, LC, MAXSP, 2)
+  LTH%FIT = LC
+  call LFREAD (WK3,IPNT,ILIMIT, LC, MAXSP, 2)
+  STG%FIT = LC
+
+  !     GET THE REAL SCALARS
+  call BFREAD (WK3,IPNT,ILIMIT,REALS,  MXR,  2)
+  SEISHT = REALS(1)
+  ZBRSH = REALS(2)
+
+  !     GET THE REAL ARRAYS
+  do I = 1,MRT_PY
+     do J = 1,MRT_BA_UB
+        do K = 1,MRT_DBH_UB
+           call BFREAD (WK3,IPNT,ILIMIT,TMRT(I,J,K), 1, 2)
+        end do
+     end do
+  end do
+  call BFREAD (WK3,IPNT,ILIMIT,DGLD1,    MAXSP,  2)
+  call BFREAD (WK3,IPNT,ILIMIT,DGBAL1,   MAXSP,  2)
+  call BFREAD (WK3,IPNT,ILIMIT,DGCR1,    MAXSP,  2)
+  call BFREAD (WK3,IPNT,ILIMIT,DGDBAL1,  MAXSP,  2)
+  call BFREAD (WK3,IPNT,ILIMIT,DGDBAL2,  MAXSP,  2)
+  call BFREAD (WK3,IPNT,ILIMIT,DGCCF1,   MAXSP,  2)
+  call BFREAD (WK3,IPNT,ILIMIT,DGDSQ1,   MAXSP,  2)
+
+  call BFREAD (WK3,IPNT,ILIMIT,CRHTDBH,  MAXSP,  2)
+  call BFREAD (WK3,IPNT,ILIMIT,CRHT,     MAXSP,  2)
+  call BFREAD (WK3,IPNT,ILIMIT,CRDBH2,   MAXSP,  2)
+  call BFREAD (WK3,IPNT,ILIMIT,CRBAL,    MAXSP,  2)
+  call BFREAD (WK3,IPNT,ILIMIT,CRLNCCF,  MAXSP,  2)
+  call BFREAD (WK3,IPNT,ILIMIT,CRSD,     MAXSP,  2)
+
+  call BFREAD (WK3,IPNT,ILIMIT,V2SEICOR, MAXSP,  2)
+  call BFREAD (WK3,IPNT,ILIMIT,SEICON,   MAXSP,  2)
+  call BFREAD (WK3,IPNT,ILIMIT,XHT1B,    MAXSP,  2)
+  call BFREAD (WK3,IPNT,ILIMIT,XHT2B,    MAXSP,  2)
+
+  !     GET THE REAL ARRAYS FOR MORT STRUCTURE
+  call BFREAD (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  MORT%CON = RC
+  call BFREAD (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  MORT%INVDBH = RC
+  call BFREAD (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  MORT%DBH = RC
+  call BFREAD (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  MORT%DBHSQ = RC
+  call BFREAD (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  MORT%RDBH = RC
+  call BFREAD (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  MORT%BAL = RC
+  call BFREAD (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  MORT%SQRTBA = RC
+  call BFREAD (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  MORT%SPH = RC
+
+  !     GET THE REAL ARRAYS FOR LTH STRUCTURE
+  call BFREAD (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  LTH%MLT = RC
+  call BFREAD (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  LTH%A1 = RC
+  call BFREAD (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  LTH%B1 = RC
+  call BFREAD (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  LTH%B2 = RC
+  call BFREAD (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  LTH%SI = RC
+  call BFREAD (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  LTH%B3 = RC
+  call BFREAD (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  LTH%C = RC
+  call BFREAD (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  LTH%CN = RC
+  call BFREAD (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  LTH%CNSI = RC
+  call BFREAD (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  LTH%DG = RC
+  call BFREAD (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  LTH%DG2 = RC
+  call BFREAD (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  LTH%DBH1 = RC
+  call BFREAD (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  LTH%DBH2 = RC
+  call BFREAD (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  LTH%HT2 = RC
+
+  !     GET THE REAL ARRAYS FOR STG STRUCTURE
+  call BFREAD (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  STG%CON = RC
+  call BFREAD (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  STG%LNHT = RC
+  call BFREAD (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  STG%HT = RC
+  call BFREAD (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  STG%CCF = RC
+  call BFREAD (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  STG%BAL = RC
+  call BFREAD (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  STG%EXPMLT = RC
+  call BFREAD (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  STG%HCCFL = RC
+  call BFREAD (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  STG%CCFSL = RC
+  call BFREAD (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  STG%SD = RC
+
+  return
+end
+
+subroutine VARCHGET (CBUFF, IPNT, LNCBUF)
+  implicit none
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'BCPLOT.f90'
+
+  ! Variables
+  integer :: LNCBUF,IPNT
+  character(len=1) :: CBUFF(*)
+  character(len=1) :: CT
+  integer :: I
+
+  !     GET THE CHARACTER DATA FOR BEC STRUCTURE
+  do I = 1,3
+     call CHREAD (CBUFF,IPNT,LNCBUF,CT,2)
+     BEC%Region(I:I) = CT
+  end do
+  do I = 1,4
+     call CHREAD (CBUFF,IPNT,LNCBUF,CT,2)
+     BEC%Zone(I:I) = CT
+  end do
+  do I = 1,3
+     call CHREAD (CBUFF,IPNT,LNCBUF,CT,2)
+     BEC%SubZone(I:I) = CT
+  end do
+  do I = 1,5
+     call CHREAD (CBUFF,IPNT,LNCBUF,CT,2)
+     BEC%Series(I:I) = CT
+  end do
+  do I = 1,7
+     call CHREAD (CBUFF,IPNT,LNCBUF,CT,2)
+     BEC%FullName(I:I) = CT
+  end do
+  do I = 1,15
+     call CHREAD (CBUFF,IPNT,LNCBUF,CT,2)
+     BEC%PrettyName(I:I) = CT
+  end do
+
+  !     GET THE CHARACTER DATA FOR MORT STRUCTURE
+  do I = 1,15
+     call CHREAD (CBUFF,IPNT,LNCBUF,CT,2)
+     MORT%PrettyName(I:I) = CT
+  end do
+
+  !     GET THE CHARACTER DATA FOR LTH STRUCTURE
+  do I = 1,15
+     call CHREAD (CBUFF,IPNT,LNCBUF,CT,2)
+     LTH%PrettyName(I:I) = CT
+  end do
+
+  !     GET THE CHARACTER DATA FOR STG STRUCTURE
+  do I = 1,15
+     call CHREAD (CBUFF,IPNT,LNCBUF,CT,2)
+     STG%PrettyName(I:I) = CT
+  end do
+
+  return
+end

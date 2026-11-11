@@ -1,0 +1,173 @@
+!============================!
+!   Translate forest codes   !
+!============================!
+! EM $Id$
+subroutine FORKOD
+  implicit none
+
+  !     TRANSLATES FOREST CODE INTO A SUBSCRIPT, IFOR, AND IF
+  !     KODFOR IS ZERO, THE ROUTINE RETURNS THE DEFAULT CODE.
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'PLOT.f90'
+  include 'CONTRL.f90'
+
+  !  NATIONAL FORESTS:
+  !  102 = BEAVERHEAD
+  !  108 = CUSTER
+  !  109 = DEERLODGE
+  !  111 = GALLATIN
+  !  112 = HELENA
+  !  115 = LEWIS AND CLARK
+
+  !  RESERVATION PSUEDO CODES:
+  !  7101 = CHEYENNE RIVER RESERVATION     (MAPPED TO 108 CUSTER)
+  !  7102 = FORT BERTHOLD RESERVATION      (MAPPED TO 108 CUSTER)
+  !  7103 = SPIRIT LAKE RESERVATION        (MAPPED TO 108 CUSTER)
+  !  7107 = LAKE TRAVERSE RESERVATION      (MAPPED TO 108 CUSTER)
+  !  7108 = STANDING ROCK RESERVATION      (MAPPED TO 108 CUSTER)
+  !  7109 = TURTLE MT. OFF-RES. TRUST LAND (MAPPED TO 108 CUSTER)
+  !  7301 = BLACKFEET INDIAN RESERVATION   (MAPPED TO 115 LEWIS & CLARK)
+  !  7302 = CROW RESERVATION               (MAPPED TO 108 CUSTER)
+  !  7303 = FORT BELKNAP V                 (MAPPED TO 115 LEWIS & CLARK)
+  !  7304 = FORT PECK INDIAN RESERVATION   (MAPPED TO 115 LEWIS & CLARK)
+  !  7305 = NORTHERN CHEYENNE INDIAN RES.  (MAPPED TO 108 CUSTER)
+  !  7307 = ROCKY BOY'S RESERVATION        (MAPPED TO 115 LEWIS & CLARK)
+
+  !  FOR THE GEOGRAPHIC LOCATOR (NI KFOR VALUE):
+  !  MAP THE HELENA, AND LEWIS AND CLARK, TO THE LOLO NF
+  !  MAP ALL THE OTHERS TO THE BITTERROOT NF
+
+  ! Variables
+  integer :: JFOR(11),KFOR(11),NUMFOR,I
+  logical :: USEIGL,FORFOUND
+
+  !  SPECIES ORDER:
+  !   1=WB,  2=WL,  3=DF,  4=LM,  5=LL,  6=RM,  7=LP,  8=ES,
+  !   9=AF, 10=PP, 11=GA, 12=AS, 13=CW, 14=BA, 15=PW, 16=NC,
+  !  17=PB, 18=OS, 19=OH
+
+  !  SPECIES EXPANSION
+  !  LM USES IE LM (ORIGINALLY FROM TT VARIANT)
+  !  LL USES IE AF (ORIGINALLY FROM NI VARIANT)
+  !  RM USES IE JU (ORIGINALLY FROM UT VARIANT)
+  !  AS,PB USE IE AS (ORIGINALLY FROM UT VARIANT)
+  !  GA,CW,BA,PW,NC,OH USE IE CO (ORIGINALLY FROM CR VARIANT)
+
+  data JFOR/102,108,109,111,112,115,5*0/, NUMFOR /6/
+  data KFOR/1,1,1,1,1,1,5*1 /
+
+  USEIGL = .true.
+  FORFOUND = .false.
+
+  select case (KODFOR)
+
+     !       CROSSWALK FOR RESERVATION PSUEDO CODES & LOCATION CODE
+  case (7101)
+     write(JOSTND,61)
+     61 format(/,'********',T12,'CHEYENNE RIVER RESERVATION ',&
+          &'(7101) BEING MAPPED TO CUSTER NF (108) FOR FURTHER ',&
+          &'PROCESSING.')
+     IFOR = 2
+  case (7102)
+     write(JOSTND,62)
+     62 format(/,'********',T12,'FORT BERTHOLD RESERVATION (7102)',&
+          &' BEING MAPPED TO CUSTER NF (108) FOR FURTHER PROCESSING.')
+     IFOR = 2
+  case (7103)
+     write(JOSTND,63)
+     63 format(/,'********',T12,'SPIRIT LAKE RESERVATION (7103) ',&
+          &'BEING MAPPED TO CUSTER NF (108) FOR FURTHER PROCESSING.')
+     IFOR = 2
+  case (7107)
+     write(JOSTND,64)
+     64 format(/,'********',T12,'LAKE TRAVERSE RESERVATION (7107)',&
+          &' BEING MAPPED TO CUSTER NF (108) FOR FURTHER PROCESSING.')
+     IFOR = 2
+  case (7108)
+     write(JOSTND,65)
+     65 format(/,'********',T12,'STANDING ROCK RESERVATION (7108)',&
+          &' BEING MAPPED TO CUSTER NF (108) FOR FURTHER PROCESSING.')
+     IFOR = 2
+  case (7109)
+     write(JOSTND,66)
+     66 format(/,'********',T12,'TURTLE MOUNTAIN OFF-RES. LAND ',&
+          &'(7109) BEING MAPPED TO CUSTER NF (108) FOR FURTHER ',&
+          &'PROCESSING.')
+     IFOR = 2
+  case (7301)
+     write(JOSTND,67)
+     67 format(/,'********',T12,'BLACKFEET INDIAN RESERVATION ',&
+          &'(7301) BEING MAPPED TO LEWIS AND CLARK NF (115) FOR ',&
+          &'FURTHER PROCESSING.')
+     IFOR = 6
+  case (7302)
+     write(JOSTND,68)
+     68 format(/,'********',T12,'CROW RESERVATION (7302) BEING ',&
+          &'MAPPED TO CUSTER NF (108) FOR FURTHER PROCESSING.')
+     IFOR = 2
+  case (7303)
+     write(JOSTND,69)
+     69 format(/,'********',T12,'FORT BELKNAP RESERVATION (7303) ',&
+          &'BEING MAPPED TO LEWIS AND CLARK NF (115) FOR FURTHER ',&
+          &'PROCESSING.')
+     IFOR = 6
+  case (7304)
+     write(JOSTND,70)
+     70 format(/,'********',T12,'FORT PECK INDIAN RESERVATION ',&
+          &'(7304) BEING MAPPED TO LEWIS AND CLARK NF (115) FOR ',&
+          &'FURTHER PROCESSING.')
+     IFOR = 6
+  case (7305)
+     write(JOSTND,71)
+     71 format(/,'********',T12,'NORTHERN CHEYENNE INDIAN ',&
+          &'RESERVATION (7305) BEING MAPPED TO CUSTER NF (108) FOR ',&
+          &'FURTHER PROCESSING.')
+     IFOR = 2
+  case (7307)
+     write(JOSTND,72)
+     72 format(/,'********',T12,'ROCKY BOY''S RESERVATION (7307) ',&
+          &'BEING MAPPED TO LEWIS AND CLARK NF (115) FOR FURTHER ',&
+          &'PROCESSING.')
+     IFOR = 6
+     !       END CROSSWALK FOR RESERVATION PSUEDO CODES & LOCATION CODE
+
+  case default
+
+     !         CONFIRMS THAT KODFOR IS AN ACCEPTED FVS LOCATION CODE
+     !         FOR THIS VARIANT FOUND IN DATA ARRAY JFOR
+     do I = 1,NUMFOR
+        if (KODFOR .eq. JFOR(I)) then
+           IFOR = I
+           FORFOUND = .true.
+           exit
+        end if
+        10 continue
+     end do
+
+     !         LOCATION CODE ERROR TRAP
+     if (.not. FORFOUND) then
+        call ERRGRO (.true.,3)
+        write(JOSTND,11) JFOR(IFOR)
+        11 format(/,'********',T12,'FOREST CODE USED IN THIS ',&
+             &'PROJECTION IS',I4)
+        USEIGL = .false.
+     end if
+
+  end select
+
+  !     FOREST MAPPING CORRECTION {NOT USED IN THIS VARIANT}
+  !     SELECT CASE (IFOR)
+  !     END SELECT
+  !     IF(IFOR .EQ. 6) IFOR = 3  THIS WAS COMMENTED OUT
+
+  !     SET THE IGL VARIABLE ONLY IF DEFAULT FOREST IS USED
+  !     GEOGRAPHIC LOCATION CODE: 1=NORTH, 2=CENTRAL, 3=SOUTH
+  !     USED TO SET SOME EQUATIONS IN REGENERATION AND PERHAPS
+  !     HEIGHT-DIAMETER IN DIFFERENT VARIANTS.
+  if (USEIGL) IGL = KFOR(IFOR)
+
+  KODFOR = JFOR(IFOR)
+  return
+end

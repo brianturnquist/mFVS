@@ -11,11 +11,11 @@ subroutine SVCMP3
   !     CALLED FROM COMPRS AND TREDEL.
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'SVDATA.F77'
-  include 'CONTRL.F77'
-  include 'ARRAYS.F77'
-  include 'WORKCM.F77'
+  include 'PRGPRM.f90'
+  include 'SVDATA.f90'
+  include 'CONTRL.f90'
+  include 'ARRAYS.f90'
+  include 'WORKCM.f90'
 
   ! Variables
   integer :: ISVOBJ,IPT

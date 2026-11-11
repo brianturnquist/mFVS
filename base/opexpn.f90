@@ -15,8 +15,8 @@ subroutine OPEXPN (IOUT,NCYC,IY)
   !     ALREADY CONTAINS THAT ACTIVITY.
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'OPCOM.F77'
+  include 'PRGPRM.f90'
+  include 'OPCOM.f90'
 
   ! Variables
   integer :: IY(MAXCY1),NCYC,IOUT,I,IY1,IMG3,IPSYR,ISYR,IC,J,IP,K

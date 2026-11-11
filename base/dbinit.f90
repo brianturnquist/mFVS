@@ -6,7 +6,7 @@ subroutine DBINIT
   implicit none
 
   ! Common blocks
-  include 'DBSTK.F77'
+  include 'DBSTK.f90'
 
   ALLSUB = '$**SUB'
   MAXTOP = 255

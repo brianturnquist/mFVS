@@ -8,10 +8,10 @@ subroutine TREMOV (IREC1,IREC2)
   !      SWITCH THE TREES FROM POSITION IREC1 AND POSITION IREC2.
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'ARRAYS.F77'
-  include 'ESTREE.F77'
-  include 'STDSTK.F77'
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
+  include 'ESTREE.f90'
+  include 'STDSTK.f90'
 
   ! Variables
   real    :: RTEM(36)

@@ -16,10 +16,10 @@ subroutine OPRDAT (JEXOPT,KODE)
   !              IF NEGATIVE, THE NUMBER OF FAILURES TO ADD ACTIVITIES
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'CONTRL.F77'
-  include 'OPCOM.F77'
-  include 'PLOT.F77'
+  include 'PRGPRM.f90'
+  include 'CONTRL.f90'
+  include 'OPCOM.f90'
+  include 'PLOT.f90'
 
   ! Variables
   integer :: MXADDP,IPASS,NADD,I,NPRMS,IACTK,IDT,KODE,JEXOPT,NFAIL

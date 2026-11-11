@@ -13,8 +13,8 @@ subroutine ESTIME
   include 'PRGPRM.f90'
   include 'ESPARM.f90'
   include 'ESCOMN.f90'
-  include 'ESCOM2.F77'
-  include 'ESWSBW.F77'
+  include 'ESCOM2.f90'
+  include 'ESWSBW.f90'
 
   !     DEFINE TIME AND WSBW VARIABLES FOR REGENERATION MODEL.
   !     WSBW NOT INCLUDED IN AK VARIANT. BWB4, BWAF, SQBWAF SET TO 0.

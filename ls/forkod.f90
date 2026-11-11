@@ -1,0 +1,322 @@
+!============================!
+!   Translate forest codes   !
+!============================!
+! LS $Id$
+subroutine FORKOD
+  implicit none
+
+  !     TRANSLATES FOREST CODE INTO A SUBSCRIPT, IFOR, AND IF
+  !     KODFOR IS ZERO, THE ROUTINE RETURNS THE DEFAULT CODE.
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'PLOT.f90'
+  include 'CONTRL.f90'
+
+  !  NATIONAL FORESTS:
+  !  902 = CHEQUAMEGON
+  !  903 = CHIPPEWA
+  !  904 = HURON-MANISTEE
+  !  906 = NICOLET
+  !  907 = OTTAWA
+  !  909 = SUPERIOR
+  !  910 = HIAWATHA
+  !  913 = CHEQUAMEGON-NICOLET
+  !  924 = MANISTEE (MAP TO HURON-MANISTEE)
+
+  !  RESERVATION PSUEDO CODES:
+  !  7107 = LAKE TRAVERSE RESERVATION       (MAPPED TO 903 CHIPPEWA)
+  !  7109 = TURTLE MOUNTAIN OFF-RES. TL     (MAPPED TO 903 CHIPPEWA)
+  !  7501 = UPPER SIOUX COMMUNITY           (MAPPED TO 903 CHIPPEWA)
+  !  7502 = LOWER SIOUX INDIAN COMMUNITY    (MAPPED TO 903 CHIPPEWA)
+  !  7506 = PRAIRIE ISLAND OFF-RES. TL      (MAPPED TO 902 CHEQUAMEGON)
+  !  7507 = SHAKOPEE MDEWAKANTON SIOUX      (MAPPED TO 903 CHIPPEWA)
+  !  7508 = MENOMINEE RESERVATION           (MAPPED TO 906 NICOLET)
+  !  7510 = RED LAKE RESERVATION            (MAPPED TO 903 CHIPPEWA)
+  !  7511 = BOIS FORTE RESERVATION          (MAPPED TO 909 SUPERIOR)
+  !  7512 = FOND DU LAC RESERVATION         (MAPPED TO 909 SUPERIOR)
+  !  7513 = GRAND PORTAGE RESERVATION       (MAPPED TO 909 SUPERIOR)
+  !  7514 = LEECH LAKE RESERVATION          (MAPPED TO 903 CHIPPEWA)
+  !  7515 = WHITE EARTH RESERVATION         (MAPPED TO 903 CHIPPEWA)
+  !  7516 = MILLE LACS RESERVATION          (MAPPED TO 903 CHIPPEWA)
+  !  7517 = BAD RIVER RESERVATION           (MAPPED TO 902 CHEQUAMEGON)
+  !  7518 = LAC COURTE OREILLES RES.        (MAPPED TO 902 CHEQUAMEGON)
+  !  7519 = LAC DU FLAMBEAU RESERVATION     (MAPPED TO 902 CHEQUAMEGON)
+  !  7520 = ONEIDA (WI) RESERVATION         (MAPPED TO 906 NICOLET)
+  !  7521 = FOREST COUNTY POTAWATOMI COMM.  (MAPPED TO 906 NICOLET)
+  !  7522 = POTOWATOMI  * mystery 0F50495 * (MAPPED TO 906 NICOLET)
+  !  7523 = RED CLIFF RESERVATION           (MAPPED TO 902 CHEQUAMEGON)
+  !  7524 = ST. CROIX RESERVATION           (MAPPED TO 902 CHEQUAMEGON)
+  !  7525 = SOKAOGON CHIPPEWA (MOLE LAKE)   (MAPPED TO 906 NICOLET)
+  !  7526 = STOCKBRIDGE MUNSEE COMMUNITY    (MAPPED TO 906 NICOLET)
+  !  7527 = GRAND TRAVERSE OFF-RES. TL      (MAPPED TO 924 MANISTEE)
+  !  7528 = SAULT STE. MARIE OFF-RES. TL    (MAPPED TO 910 HIAWATHA)
+  !  7529 = BAY MILLS RESERVATION           (MAPPED TO 910 HIAWATHA)
+  !  7530 = HANNAHVILLE INDIAN COMMUNITY    (MAPPED TO 910 HIAWATHA)
+  !  7531 = ISABELLA RESERVATION            (MAPPED TO 924 MANISTEE)
+  !  7532 = L'ANSE RESERVATION              (MAPPED TO 907 OTTAWA)
+  !  7533 = ONTONAGON RESERVATION           (MAPPED TO 907 OTTAWA)
+  !  7534 = LAC VIEUX DESERT RESERVATION    (MAPPED TO 907 OTTAWA)
+  !  7535 = HURON POTAWATOMI                (MAPPED TO 924 MANISTEE)
+  !  7536 = LITTLE RIVER OFF-RES. TL        (MAPPED TO 924 MANISTEE)
+  !  7537 = LITTLE TRAVERSE BAY RESERVATION (MAPPED TO 910 HIAWATHA)
+
+  ! Variables
+  integer :: JFOR(9),KFOR(9),NUMFOR,I
+  logical :: USEIGL,FORFOUND
+  data JFOR/902,903,904,906,907,909,910,913,924/
+  data NUMFOR/9/
+  data KFOR/9*1/
+
+  USEIGL = .true.
+  FORFOUND = .false.
+
+  select case (KODFOR)
+
+     !       CROSSWALK FOR RESERVATION PSUEDO CODES & LOCATION CODE
+  case (7107)
+     write(JOSTND,55)
+     55 format(/,'********',T12,'LAKE TRAVERSE RESERVATION (7107) ',&
+          &'BEING MAPPED TO CHIPPEWA NF (903) FOR FURTHER PROCESSING.')
+     IFOR = 2
+  case (7109)
+     write(JOSTND,56)
+     56 format(/,'********',T12,'TURTLE MOUNTAIN OFF-RES. TL ',&
+          &'(7109) BEING MAPPED TO CHIPPEWA NF (903) FOR FURTHER ',&
+          &'PROCESSING.')
+     IFOR = 2
+  case (7501)
+     write(JOSTND,57)
+     57 format(/,'********',T12,'UPPER SIOUX COMMUNITY (7501) ',&
+          &'BEING MAPPED TO CHIPPEWA (903) FOR FURTHER PROCESSING.')
+     IFOR = 2
+  case (7502)
+     write(JOSTND,58)
+     58 format(/,'********',T12,'LOWER SIOUX INDIAN COMMUNITY ',&
+          &'(7502) BEING MAPPED TO CHIPPEWA NF (903) FOR FURTHER ',&
+          &'PROCESSING.')
+     IFOR = 2
+  case (7506)
+     write(JOSTND,59)
+     59 format(/,'********',T12,'PRAIRIE ISLAND OFF-RES. TL ',&
+          &'(7506) BEING MAPPED TO CHEQUAMEGON (902) FOR FURTHER ',&
+          &'PROCESSING.')
+     IFOR = 1
+  case (7507)
+     write(JOSTND,60)
+     60 format(/,'********',T12,'SHAKOPEE MDEWAKANTON SIOUX (7507) ',&
+          &'BEING MAPPED TO CHIPPEWA NF (903) FOR FURTHER PROCESSING.')
+     IFOR = 2
+  case (7508)
+     write(JOSTND,61)
+     61 format(/,'********',T12,'MENOMINEE RESERVATION (7508) BEING ',&
+          &'MAPPED TO NICOLET NF (906) FOR FURTHER PROCESSING.')
+     IFOR = 4
+  case (7510)
+     write(JOSTND,62)
+     62 format(/,'********',T12,'RED LAKE RESERVATION (7510) BEING ',&
+          &'MAPPED TO CHIPPEWA NF (903) FOR FURTHER PROCESSING.')
+     IFOR = 2
+  case (7511)
+     write(JOSTND,63)
+     63 format(/,'********',T12,'BOIS FORTE RESERVATION (7511) BEING',&
+          &' MAPPED TO SUPERIOR NF (909) FOR FURTHER PROCESSING.')
+     IFOR = 6
+  case (7512)
+     write(JOSTND,64)
+     64 format(/,'********',T12,'FOND DU LAC RESERVATION (7512) ',&
+          &'BEING MAPPED TO SUPERIOR NF (909) FOR FURTHER PROCESSING.')
+     IFOR = 6
+  case (7513)
+     write(JOSTND,65)
+     65 format(/,'********',T12,'GRAND PORTAGE RESERVATION (7513) ',&
+          &' BEING MAPPED TO SUPERIOR NF (909) FOR FURTHER PROCESSING.')
+     IFOR = 6
+  case (7514)
+     write(JOSTND,66)
+     66 format(/,'********',T12,'LEECH LAKE RESERVATION (7514) BEING',&
+          &' MAPPED TO CHIPPEWA NF (903) FOR FURTHER PROCESSING.')
+     IFOR = 2
+  case (7515)
+     write(JOSTND,67)
+     67 format(/,'********',T12,'WHITE EARTH RESERVATION (7515) ',&
+          &'BEING MAPPED TO CHIPPEWA NF (903) FOR FURTHER PROCESSING.')
+     IFOR = 2
+  case (7516)
+     write(JOSTND,68)
+     68 format(/,'********',T12,'MILLE LACS RESERVATION (7516) BEING',&
+          &' MAPPED TO CHIPPEWA NF (903) FOR FURTHER PROCESSING.')
+     IFOR = 2
+  case (7517)
+     write(JOSTND,69)
+     69 format(/,'********',T12,'BAD RIVER RESERVATION (7517) BEING ',&
+          &'MAPPED TO CHEQUAMEGON NF (902) FOR FURTHER PROCESSING.')
+     IFOR = 1
+  case (7518)
+     write(JOSTND,70)
+     70 format(/,'********',T12,'LAC COURTE OREILLES RES. (7518) ',&
+          &'BEING MAPPED TO CHEQUAMEGON NF (902) FOR FURTHER ',&
+          &'PROCESSING.')
+     IFOR = 1
+  case (7519)
+     write(JOSTND,71)
+     71 format(/,'********',T12,'LAC DU FLAMBEAU RESERVATION (7519) ',&
+          &'BEING MAPPED TO CHEQUAMEGON NF (902) FOR FURTHER ',&
+          &'PROCESSING.')
+     IFOR = 1
+  case (7520)
+     write(JOSTND,72)
+     72 format(/,'********',T12,'ONEIDA (WI) RESERVATION (7520) ',&
+          &'BEING MAPPED TO NICOLET NF (906) FOR FURTHER PROCESSING.')
+     IFOR = 4
+  case (7521)
+     write(JOSTND,73)
+     73 format(/,'********',T12,'FOREST COUNTY POTAWATOMI COMM. ',&
+          &'(7521) BEING MAPPED TO NICOLET NF (906) FOR FURTHER ',&
+          &'PROCESSING.')
+     IFOR = 4
+  case (7522)
+     write(JOSTND,89)
+     89 format(/,'********',T12,'POTAWATOMI (7522) BEING ',&
+          &'MAPPED TO NICOLET NF (906) FOR FURTHER PROCESSING.')
+     IFOR = 4
+  case (7523)
+     write(JOSTND,74)
+     74 format(/,'********',T12,'RED CLIFF RESERVATION (7523) BEING ',&
+          &'MAPPED TO CHEQUAMEGON NF (902) FOR FURTHER PROCESSING.')
+     IFOR = 1
+  case (7524)
+     write(JOSTND,75)
+     75 format(/,'********',T12,'ST. CROIX RESERVATION (7524) BEING ',&
+          &'MAPPED TO CHEQUAMEGON NF (902) FOR FURTHER PROCESSING.')
+     IFOR = 1
+  case (7525)
+     write(JOSTND,76)
+     76 format(/,'********',T12,'SOKAOGON CHIPPEWA COMMUNITY (7525) ',&
+          &'MAPPED TO NICOLET NF (906) FOR FURTHER PROCESSING.')
+     IFOR = 4
+  case (7526)
+     write(JOSTND,77)
+     77 format(/,'********',T12,'STOCKBRIDGE MUNSEE COMMUNITY (7526)',&
+          &' BEING MAPPED TO NICOLET NF (906) FOR FURTHER PROCESSING.')
+     IFOR = 4
+  case (7527)
+     write(JOSTND,78)
+     78 format(/,'********',T12,'GRAND TRAVERSE OFF-RES. TL (7527) ',&
+          &'BEING MAPPED TO MANISTEE NF (924) FOR FURTHER PROCESSING.')
+     IFOR = 9
+  case (7528)
+     write(JOSTND,79)
+     79 format(/,'********',T12,'SAULT STE. MARIE OFF-RES. TL (7528)',&
+          &' BEING MAPPED TO HIAWATHA NF (910) FOR FURTHER PROCESSING.')
+     IFOR = 7
+  case (7529)
+     write(JOSTND,80)
+     80 format(/,'********',T12,'BAY MILLS RESERVATION (7529) BEING ',&
+          &'MAPPED TO HIAWATHA NF (910) FOR FURTHER PROCESSING.')
+     IFOR = 7
+  case (7530)
+     write(JOSTND,81)
+     81 format(/,'********',T12,'HANNAHVILLE INDIAN COMMUNITY (7530)',&
+          &' BEING MAPPED TO HIAWATHA NF (910) FOR FURTHER PROCESSING.')
+     IFOR = 7
+  case (7531)
+     write(JOSTND,82)
+     82 format(/,'********',T12,'ISABELLA RESERVATION (7531) BEING ',&
+          &'MAPPED TO MANISTEE NF (924) FOR FURTHER PROCESSING.')
+     IFOR = 9
+  case (7532)
+     write(JOSTND,83)
+     83 format(/,'********',T12,'L''ANSE RESERVATION (7532) BEING ',&
+          &'MAPPED TO OTTAWA NF (907) FOR FURTHER PROCESSING.')
+     IFOR = 5
+  case (7533)
+     write(JOSTND,84)
+     84 format(/,'********',T12,'ONTONAGON RESERVATION (7533) ',&
+          &'BEING MAPPED TO OTTAWA NF (907) FOR FURTHER PROCESSING.')
+     IFOR = 5
+  case (7534)
+     write(JOSTND,85)
+     85 format(/,'********',T12,'LAC VIEUX DESERT RESERVATION (7534)',&
+          &' BEING MAPPED TO OTTAWA NF (907) FOR FURTHER PROCESSING.')
+     IFOR = 5
+  case (7535)
+     write(JOSTND,86)
+     86 format(/,'********',T12,'HURON POTAWATOMI (7535) BEING ',&
+          &'MAPPED TO MANISTEE NF (924) FOR FURTHER PROCESSING.')
+     IFOR = 9
+  case (7536)
+     write(JOSTND,87)
+     87 format(/,'********',T12,'LITTLE RIVER OFF-RES. TL (7536) ',&
+          &'BEING MAPPED TO MANISTEE NF (924) FOR FURTHER PROCESSING.')
+     IFOR = 9
+  case (7537)
+     write(JOSTND,88)
+     88 format(/,'********',T12,'LITTLE TRAVERSE BAY RESERVATION ',&
+          &'(7537) BEING MAPPED TO HIAWATHA NF (910) FOR FURTHER ',&
+          &'PROCESSING.')
+     IFOR = 7
+     !       END CROSSWALK FOR RESERVATION PSUEDO CODES & LOCATION CODE
+
+  case default
+
+     !         CONFIRMS THAT KODFOR IS AN ACCEPTED FVS LOCATION CODE
+     !         FOR THIS VARIANT FOUND IN DATA ARRAY JFOR
+     do I = 1,NUMFOR
+        if (KODFOR .eq. JFOR(I)) then
+           IFOR = I
+           FORFOUND = .true.
+           exit
+        end if
+        10 continue
+     end do
+
+     !         LOCATION CODE ERROR TRAP
+     if (.not. FORFOUND) then
+        call ERRGRO (.true.,3)
+        write(JOSTND,11) JFOR(IFOR)
+        11 format(/,'********',T12,'FOREST CODE USED IN THIS ',&
+             &'PROJECTION IS',I4)
+        USEIGL = .false.
+     end if
+
+  end select
+
+  !  SET DEFAULT TLAT, TLONG, AND ELEVATION VALUES, BY FOREST
+
+  select case(IFOR)
+  case(1,4,8)
+     if (TLAT.eq.0) TLAT = 45.93
+     if (TLONG.eq.0)TLONG = 90.44
+     if (ELEV.eq.0) ELEV = 15.
+  case(2)
+     if (TLAT.eq.0) TLAT = 47.38
+     if (TLONG.eq.0)TLONG = 94.60
+     if (ELEV.eq.0) ELEV = 13.
+  case(3)
+     if (TLAT.eq.0) TLAT = 44.25
+     if (TLONG.eq.0)TLONG = 85.40
+     if (ELEV.eq.0) ELEV = 9.
+  case(5)
+     if (TLAT.eq.0) TLAT = 46.45
+     if (TLONG.eq.0)TLONG = 90.17
+     if (ELEV.eq.0) ELEV = 14.
+  case(6)
+     if (TLAT.eq.0) TLAT = 46.78
+     if (TLONG.eq.0)TLONG = 92.11
+     if (ELEV.eq.0) ELEV = 16.
+  case(7)
+     if (TLAT.eq.0) TLAT = 45.75
+     if (TLONG.eq.0)TLONG = 87.06
+     if (ELEV.eq.0) ELEV = 8.
+  end select
+
+  !     SET THE IGL VARIABLE ONLY IF DEFAULT FOREST IS USED
+  !     GEOGRAPHIC LOCATION CODE: 1=NORTH, 2=CENTRAL, 3=SOUTH
+  !     USED TO SET SOME EQUATIONS IN REGENERATION AND PERHAPS
+  !     HEIGHT-DIAMETER IN DIFFERENT VARIANTS.
+  if (USEIGL) IGL = KFOR(IFOR)
+
+  KODFOR = JFOR(IFOR)
+  return
+end

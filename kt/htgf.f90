@@ -1,0 +1,202 @@
+!======================================!
+!   Compute large tree height growth   !
+!======================================!
+! KT $Id$
+subroutine HTGF
+  implicit none
+
+  !  THIS SUBROUTINE COMPUTES THE PREDICTED PERIODIC HEIGHT INCREMENT FOR
+  !  EACH CYCLE AND LOADS IT INTO THE ARRAY HTG. HEIGHT INCREMENT IS
+  !  PREDICTED FROM SPECIES, HABITAT TYPE, HEIGHT, DBH, AND PREDICTED DBH
+  !  INCREMENT.  THIS ROUTINE IS CALLED FROM **TREGRO** DURING REGULAR
+  !  CYCLING.  ENTRY **HTCONS** IS CALLED FROM **RCON** TO LOAD SITE
+  !  DEPENDENT CONSTANTS THAT NEED ONLY BE RESOLVED ONCE.
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'CALCOM.f90'
+  include 'ARRAYS.f90'
+  include 'COEFFS.f90'
+  include 'CONTRL.f90'
+  include 'PLOT.f90'
+  include 'MULTCM.f90'
+  include 'HTCAL.f90'
+
+  !   MODEL COEFFICIENTS AND CONSTANTS:
+
+  !    BIAS -- THE AVERAGE RESIDUAL.
+
+  !   HTCON -- AN ARRAY CONTAINING HABITAT TYPE CONSTANTS FOR
+  !            HEIGHT GROWTH MODEL (SUBSCRIPTED BY SPECIES)
+
+  !  HDGCOF -- COEFFICIENT FOR DIAMETER GROWTH TERMS.
+
+  !    HGLD -- AN ARRAY, SUBSCRIPTED BY SPECIES, OF THE
+  !             COEFFICIENTS FOR THE DIAMETER TERM IN THE HEIGHT
+  !             GROWTH MODEL.
+
+  !   H2COF -- COEFFICIENT FOR HEIGHT SQUARED TERMS.
+  !    IND2 -- ARRAY OF POINTERS TO SMALL TREES.
+
+  !   SCALE -- TIME FACTOR DERIVED BY DIVIDING FIXED POINT CYCLE
+  !            LENGTH BY GROWTH PERIOD LENGTH FOR DATA FROM
+  !            WHICH MODELS WERE DEVELOPED.
+
+  ! Variables
+  logical :: DEBUG
+  real    :: HGLD(MAXSP),HGHC(8),HGLDD(8),HGSC(MAXSP),HGH2(8)
+  integer :: MAPHAB(30)
+  real    :: HGLH,BIAS,SCALE,XHT,HTI,D,CON,HTNEW
+  real    :: MISHGF
+  integer :: ISPC,I1,I2,I3,I,ITFN,IHT
+  data HGLD/-.04935,-.3899,-.4574,-.09775,-.1555,-.1219,&
+       &-.2454,-.5720,-.1997,-.5657,-.1219/
+  data BIAS/ .4809 /, HGLH/ 0.23315 /
+
+  !  CHECK FOR DEBUG.
+
+  call DBCHK (DEBUG,'HTGF',4,ICYC)
+  SCALE = FINT/YR
+  ISMALL = 0
+
+  !  GET THE HEIGHT GROWTH MULTIPLIERS.
+
+  call MULTS (2,IY(ICYC),XHMULT)
+
+  !   BEGIN SPECIES LOOP:
+
+  do ISPC = 1,MAXSP
+     I1 = ISCT(ISPC,1)
+     if (I1.eq.0) go to 40
+     I2 = ISCT(ISPC,2)
+     XHT = 1.0
+     XHT = XHMULT(ISPC)
+
+     !   BEGIN TREE LOOP WITHIN SPECIES LOOP
+
+     do I3 = I1,I2
+        I = IND1(I3)
+        HTG(I) = 0.
+        if (PROB(I).le.0.0) then
+           if (LTRIP) then
+              ITFN = ITRN+2*I-1
+              HTG(ITFN) = 0.
+              HTG(ITFN+1) = 0.
+           end if
+           go to 30
+        end if
+        HTI = HT(I)
+        D = DBH(I)
+        CON = HTCON(ISPC)+H2COF*HTI*HTI+HGLD(ISPC)*ALOG(D)+&
+             &HGLH*ALOG(HTI)
+
+        !   HEIGHT GROWTH EQUATION, EVALUATED FOR EACH TREE EACH CYCLE
+        !    MULTIPLIED BY SCALE TO CHANGE FROM A YR. PERIOD TO FINT AND
+        !    MULTIPLIED BY XHT TO APPLY USER SUPPLIED GROWTH MULTIPLIERS.
+
+        HTG(I) = EXP(CON+HDGCOF*ALOG(DG(I)))+BIAS
+        if (HTG(I).lt.0.1)HTG(I) = 0.1
+        HTG(I) = HTG(I)*SCALE*XHT
+
+        !    APPLY DWARF MISTLETOE HEIGHT GROWTH IMPACT HERE,
+        !    INSTEAD OF AT EACH FUNCTION IF SPECIAL CASES EXIST.
+
+        HTG(I) = HTG(I)*MISHGF(I,ISPC)
+
+        if (DEBUG) then
+           HTNEW = HT(I)+HTG(I)
+           write (JOSTND,9000) HTG(I),CON,HTCON(ISPC),H2COF,D,&
+                &WK1(I),HGLH,HTNEW,HDGCOF,I,ISPC
+           9000 format(' 9000 HTGF, HTG=',F8.4,' CON=',F8.4,' HTCON=',F8.4,&
+                &' H2COF=',F12.8,' D =',F8.4/' WK1=',F8.4,' HGLH=',F8.4,&
+                &' HTNEW=',F8.4,' HDGCOF=',F8.4,' I=',I4,' ISPC=',I2)
+        end if
+
+        ! CHECK FOR SIZE CAP COMPLIANCE.
+
+        if ((HT(I)+HTG(I)).gt.SIZCAP(ISPC,4)) then
+           HTG(I) = SIZCAP(ISPC,4)-HT(I)
+           if (HTG(I) .lt.0.1) HTG(I) = 0.1
+        end if
+
+        if (.not.LTRIP) go to 30
+        ITFN = ITRN+2*I-1
+        HTG(ITFN) = EXP(CON+HDGCOF*ALOG(DG(ITFN)))+BIAS
+        if (HTG(ITFN).lt.0.1)HTG(ITFN) = 0.1
+        HTG(ITFN) = HTG(ITFN)*SCALE*XHT
+
+        ! CHECK FOR SIZE CAP COMPLIANCE.
+
+        if ((HT(ITFN)+HTG(ITFN)).gt.SIZCAP(ISPC,4)) then
+           HTG(ITFN) = SIZCAP(ISPC,4)-HT(ITFN)
+           if (HTG(ITFN) .lt.0.1) HTG(ITFN) = 0.1
+        end if
+
+        HTG(ITFN+1) = EXP(CON+HDGCOF*ALOG(DG(ITFN+1)))+BIAS
+        HTG(ITFN+1) = HTG(ITFN+1)*SCALE*XHT
+        if (HTG(ITFN+1).lt.0.1)HTG(ITFN+1) = 0.1
+
+        ! CHECK FOR SIZE CAP COMPLIANCE.
+
+        if ((HT(ITFN+1)+HTG(ITFN+1)).gt.SIZCAP(ISPC,4)) then
+           HTG(ITFN+1) = SIZCAP(ISPC,4)-HT(ITFN+1)
+           if (HTG(ITFN+1) .lt.0.1) HTG(ITFN+1) = 0.1
+        end if
+
+        if (DEBUG) write(JOSTND,9001) HTG(ITFN),HTG(ITFN+1)
+        9001 format( ' UPPER HTG =',F8.4,' LOWER HTG =',F8.4)
+
+        !   END OF TREE LOOP
+
+        30 continue
+     end do
+
+     !   END OF SPECIES LOOP
+
+     40 continue
+  end do
+  return
+
+  entry HTCONS
+
+  !  ENTRY POINT FOR LOADING HEIGHT INCREMENT MODEL COEFFICIENTS THAT ARE
+  !  SITE DEPENDENT AND REQUIRE ONE-TIME RESOLUTION.  HGHC CONTAINS
+  !  HABITAT TYPE INTERCEPTS, HGLDD CONTAINS HABITAT DEPENDENT
+  !  COEFFICIENTS FOR THE DIAMETER INCREMENT TERM, HGH2 CONTAINS HABITAT
+  !  DEPENDENT COEFFICIENTS FOR THE HEIGHT-SQUARED TERM, AND HGHC CONTAINS
+  !  SPECIES DEPENDENT INTERCEPTS.  HABITAT TYPE IS INDEXED BY ITYPE (SEE
+  !  /PLOT/ COMMON AREA).
+
+  data MAPHAB/&
+       &1,1, 7*2, 3,3,4,5,6, 4*7, 4,4,1,4,4, 3*8, 4*1/
+  data  HGHC /&
+       &2.03035, 1.72222, 1.19728, 1.81759, 2.14781, 1.76998, 2.21104,&
+       &1.74090/
+  data  HGLDD /&
+       &0.62144, 1.02372, 0.85493, 0.75756, 0.46238, 0.49643, 0.37042,&
+       &0.34003/
+  data  HGH2 /&
+       &-13.358E-05, -3.809E-05, -3.715E-05, -2.607E-05, -5.200E-05,&
+       &-1.605E-05, -3.631E-05, -4.460E-05/
+  data  HGSC /&
+       &-.5342,.1433,.1641,-.6458,-.6959,-.9941,-.6004,.2089,&
+       &-.5478,.7316, -.9941 /
+
+  !  ASSIGN HABITAT DEPENDENT COEFFICIENTS.
+
+  IHT = MAPHAB(ITYPE)
+  HGHCH = HGHC(IHT)
+  H2COF = HGH2(IHT)
+  HDGCOF = HGLDD(IHT)
+
+  !  LOAD OVERALL INTERCEPT FOR EACH SPECIES.
+
+  do ISPC = 1,MAXSP
+     HTCON(ISPC) = HGHCH+HGSC(ISPC)
+     if (LHCOR2.and. HCOR2(ISPC).gt.0.0) HTCON(ISPC) = &
+          &HTCON(ISPC)+ALOG(HCOR2(ISPC))
+     50 continue
+  end do
+
+  return
+end

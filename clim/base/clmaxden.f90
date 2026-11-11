@@ -1,0 +1,133 @@
+!==========================!
+!   clim/base : clmaxden   !
+!==========================!
+! CLIM-BASE $Id$
+subroutine CLMAXDEN (SDIDEF,XMAX)
+  implicit none
+
+  !     CLIMATE EXTENSION
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'CONTRL.f90'
+  include 'CLIMATE.f90'
+
+  ! Variables
+  real    :: SDIDEF(MAXSP),XMAX
+  real    :: SUMWTSFIRST,WEISUMFIRST,SUMWTSCURR,WEISUMCURR,FIRSTYEAR,CURRENTYEAR,FIRSTYRSCORE,&
+       &CURRENTSCORE,MAXFIRST,MAXCURR,XX
+  real    :: ALGSLP
+  integer :: I,I2
+  logical :: DEBUG
+
+  integer :: MYACT(1),IDT,IACT,NP,ITODO,NTODO
+  real    :: PRMS(1)
+  data MYACT/2804/
+
+  if (.not.LCLIMATE) return
+
+  call DBCHK (DEBUG,'CLMAXDEN',8,ICYC)
+
+  if (DEBUG) write (JOSTND,10) ICYC,XMAX
+  10 format ('IN CLMAXDEN, ICYC=',I2,' INITIAL XMAX=',F10.4)
+
+  call OPFIND(1,MYACT,NTODO)
+  if (NTODO.gt.0) then
+     do ITODO = 1,NTODO
+        call OPGET(ITODO,1,IDT,IACT,NP,PRMS)
+        if (IACT.lt.0.or. NP.ne.1) cycle
+        call OPDONE (ITODO,IY(ICYC))
+        CLMXDENMULT = PRMS(1)
+     end do
+  end if
+
+  MXDENMLT = 1.0
+
+  if (ICYC.le.1) return
+
+  !     IF ALL OF THE SPECIES ARE NOT BEING MODELED, THEN RETURN.
+
+  do I = 1,MAXSP
+     if (INDXSPECIES(I).gt.0) goto 15
+  end do
+  return
+  15 continue
+
+  SUMWTSCURR = 0
+  WEISUMCURR = 0
+  SUMWTSFIRST = 0
+  WEISUMFIRST = 0
+  FIRSTYEAR = FLOAT(IY(1))
+  CURRENTYEAR = FLOAT(IY(ICYC)+ ((IY(ICYC+1)-IY(ICYC))/2) )
+
+  MAXFIRST = 0
+  MAXCURR = 0
+  do I = 1,MAXSP
+
+     if (INDXSPECIES(I).gt.0) then
+        I2 = INDXSPECIES(I)
+
+        !         CURRENTSCORE AND FIRSTYRSCORE ARE THE SPECIES VIABILITY SCORES.
+
+        XX = ALGSLP (FIRSTYEAR,FLOAT(YEARS),ATTRS(1,I2),NYEARS)
+        XX = -1. + 2.5*XX
+        if (XX.lt.0.) XX = 0.
+        if (XX.gt.1.) XX = 1.
+        FIRSTYRSCORE = XX
+
+        XX = ALGSLP (CURRENTYEAR, FLOAT(YEARS),ATTRS(1,I2),NYEARS)
+        XX = -1. + 2.5*XX
+        if (XX.lt.0.) XX = 0.
+        if (XX.gt.1.) XX = 1.
+        CURRENTSCORE = XX
+
+        if (FIRSTYRSCORE.gt.MAXFIRST) MAXFIRST = FIRSTYRSCORE
+        if (CURRENTSCORE.gt.MAXCURR ) MAXCURR = CURRENTSCORE
+        SUMWTSFIRST = SUMWTSFIRST + FIRSTYRSCORE
+        WEISUMFIRST = WEISUMFIRST + (FIRSTYRSCORE*SDIDEF(I))
+        SUMWTSCURR = SUMWTSCURR  + CURRENTSCORE
+        WEISUMCURR = WEISUMCURR  + (CURRENTSCORE*SDIDEF(I))
+     end if
+  end do
+
+  !     ADD THE COMPLIMENT OF THE MAXIMUM WEIGHT TO THE SUM OF THE WEIGHTS
+  !     THIS WILL ACCOUNT FOR A "TYPE" THAT HAS ZERO POTENTIAL MAXIMUM DENSITY
+  !     ...DO THIS WITH SCALED VALUES USING THE SCALING RULES FROM CLAUESTB.
+
+  SUMWTSFIRST = SUMWTSFIRST+(1.-MAXFIRST)
+  SUMWTSCURR = SUMWTSCURR +(1.-MAXCURR)
+
+  FIRSTYRSCORE = WEISUMFIRST/SUMWTSFIRST
+  CURRENTSCORE = WEISUMCURR /SUMWTSCURR
+
+  !     WATCH OUT FOR THE TYRANNY OF ZEROS!
+  if (ABS(CURRENTSCORE-FIRSTYRSCORE) .le.1E-5) then
+     XX = 1.
+  else if (FIRSTYRSCORE .le.1E-10) then
+     if (CURRENTSCORE .gt.1E-10) then
+        XX = 1.5819767
+     else
+        XX = 1.
+     end if
+  else
+     XX = CURRENTSCORE/FIRSTYRSCORE
+
+     !       1.5819767 = (1./(1-EXP(-1.))) AND CAUSES XX=1 TO STAY 1.
+
+     XX = 1.5819767*(1.-(EXP(-XX)))
+     if (XX .lt..15) XX = .15
+  end if
+
+  MXDENMLT = 1.+((XX-1.)*CLMXDENMULT)
+  if (MXDENMLT .lt.0) MXDENMLT = 0.
+
+  XMAX = XMAX * MXDENMLT
+
+  if (DEBUG) write (JOSTND,20) MAXFIRST,MAXCURR,&
+       &FIRSTYRSCORE,CURRENTSCORE,XX,XMAX
+  20 format ('LEAVING CLMAXDEN, MAXFIRST, MAXCURR=',2E14.7,&
+       &' FIRSTYRSCORE,CURRENTSCORE=',2E14.7,&
+       &' XX=',F10.4,' ADJUSTED XMAX=',F10.4)
+
+  return
+end

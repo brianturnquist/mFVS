@@ -12,11 +12,11 @@ subroutine TRIPLE
   !  NOW, OTHER TREE ATTRIBUTES ARE COPIED TO THE TRIPLES.
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'ARRAYS.F77'
-  include 'CONTRL.F77'
-  include 'ESTREE.F77'
-  include 'STDSTK.F77'
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
+  include 'CONTRL.f90'
+  include 'ESTREE.f90'
+  include 'STDSTK.f90'
 
   ! Variables
   integer :: I,ITFN,IDMR

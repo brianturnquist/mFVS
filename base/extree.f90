@@ -8,11 +8,11 @@ subroutine EXTREE
   !     ASSIGNS THE EXAMPLE TREES TO THE OUTPUT ARRAYS.
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'ARRAYS.F77'
-  include 'CONTRL.F77'
-  include 'OUTCOM.F77'
-  include 'PLOT.F77'
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
+  include 'CONTRL.f90'
+  include 'OUTCOM.f90'
+  include 'PLOT.f90'
 
   ! Variables
   integer :: I,INS1,IMCI,ISP1

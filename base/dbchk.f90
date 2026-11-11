@@ -10,7 +10,7 @@ subroutine DBCHK (LDEBG,SUBIN,NC,ICYC)
   !     IS THE NUMBER OF CHARACTER IN STRING SUBIN.
 
   ! Common blocks
-  include 'DBSTK.F77'
+  include 'DBSTK.f90'
 
   ! Variables
   character(len=*) :: SUBIN

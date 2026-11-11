@@ -9,8 +9,8 @@ subroutine BEHPRM (VMAX,D,H,BARK,LCONE)
   !  BEHRE HYPERBOLA   (I.E. AHAT, BHAT, LCONE)
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'COEFFS.F77'
+  include 'PRGPRM.f90'
+  include 'COEFFS.f90'
 
   ! Variables
   logical :: LCONE

@@ -22,13 +22,13 @@ subroutine DGF(DIAM)
 
   ! Common blocks
   include 'PRGPRM.f90'
-  include 'CALCOM.F77'
-  include 'ARRAYS.F77'
-  include 'COEFFS.F77'
-  include 'CONTRL.F77'
-  include 'OUTCOM.F77'
-  include 'PLOT.F77'
-  include 'PDEN.F77'
+  include 'CALCOM.f90'
+  include 'ARRAYS.f90'
+  include 'COEFFS.f90'
+  include 'CONTRL.f90'
+  include 'OUTCOM.f90'
+  include 'PLOT.f90'
+  include 'PDEN.f90'
 
   !  VARIABLES DEFINED:
   !  POTBAG--POTENTIAL BASAL AREA GROWTH (PER YEAR)

@@ -7,9 +7,9 @@ subroutine TWIGBF(ISPC,H,D,VMAX,BBFV)
 
   ! Common blocks
   include 'PRGPRM.f90'
-  include 'PLOT.F77'
-  include 'CONTRL.F77'
-  include 'VOLSTD.F77'
+  include 'PLOT.f90'
+  include 'CONTRL.f90'
+  include 'VOLSTD.f90'
 
   !  ************** BOARD FOOT MERCHANTABILITY SPECIFICATIONS ********
 

@@ -10,9 +10,9 @@ subroutine SPESRT
   !     REGENERATION ESTABLISHMENT SUBMODEL.
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'CONTRL.F77'
-  include 'ARRAYS.F77'
+  include 'PRGPRM.f90'
+  include 'CONTRL.f90'
+  include 'ARRAYS.f90'
 
   ! Variables
   integer :: I

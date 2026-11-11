@@ -28,7 +28,7 @@ subroutine SVRANN(SEL)
   !     AND THE GENERATOR 'GGUBS' IN THE 1981 EDITION OF IMSL.
 
   ! Common blocks
-  include 'SVRCOM.F77'
+  include 'SVRCOM.f90'
 
   double precision :: PASSS0
   ! Variables

@@ -1,0 +1,189 @@
+!============================!
+!   Translate forest codes   !
+!============================!
+! UT $Id$
+subroutine FORKOD
+  implicit none
+
+  !     TRANSLATES FOREST CODE INTO A SUBSCRIPT, IFOR, AND IF
+  !     KODFOR IS ZERO, THE ROUTINE RETURNS THE DEFAULT CODE.
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'PLOT.f90'
+  include 'CONTRL.f90'
+
+  !  NATIONAL FORESTS:
+  !  401 = ASHLEY
+  !  407 = DIXIE
+  !  408 = FISHLAKE
+  !  410 = MANTI LASAL
+  !  418 = UINTA
+  !  419 = WASATCH
+  !  404 = CACHE (MAPPED TO WASATCH)
+  !  409 = HUMBOLDT (MAPPED TO FISHLAKE)
+  !  417 = TOIYABE (MAPPED TO FISHLAKE)
+
+  !  RESERVATION PSUEDO CODES:
+  !  7702 = FORT MOJAVE RESERVATION       (MAPPED TO 417 TOIYABE)
+  !  7711 = FORT MCDERMITT INDIAN RES.    (MAPPED TO 409 HUMBOLDT)
+  !  7712 = PYRAMID LAKE PAIUTE RES.      (MAPPED TO 409 HUMBOLDT)
+  !  7714 = SUMMIT LAKE RESERVATION       (MAPPED TO 409 HUMBOLDT)
+  !  7715 = WALKER RIVER RESERVATION      (MAPPED TO 417 TOIYABE)
+  !  7716 = YOMBA RESERVATION             (MAPPED TO 417 TOIYABE)
+  !  7717 = SKULL VALLEY RESERVATION      (MAPPED TO 419 WASATCH)
+  !  7718 = UINTAH AND OURAY RESERVATION  (MAPPED TO 401 ASHLEY)
+  !  7721 = DUCK VALLEY RESERVATION       (MAPPED TO 409 HUMBOLDT)
+  !  7722 = SOUTH FORK RESERVATION        (MAPPED TO 409 HUMBOLDT)
+  !  7723 = GOSHUTE RESERVATION           (MAPPED TO 409 HUMBOLDT)
+  !  7728 = KAIBAB INDIAN RESERVATION     (MAPPED TO 407 DIXIE)
+  !  7729 = PAIUTE (UT) RESERVATION       (MAPPED TO 407 DIXIE)
+  !  7835 = TIMBI-SHA SHOSHONE RES.       (MAPPED TO 417 TOIYABE)
+  !  7920 = UTE MOUNTAIN RESERVATION      (MAPPED TO 410 MANTI-LA SAL)
+  !  8001 = NAVAJO NATION RESERVATION     (MAPPED TO 410 MANTI-LA SAL)
+
+  ! Variables
+  integer :: JFOR(9),KFOR(9),NUMFOR,I
+  logical :: USEIGL,FORFOUND
+  data JFOR/401,407,408,410,418,419,404,409,417/,NUMFOR/9/
+  data KFOR/9*1/
+
+  USEIGL = .true.
+  FORFOUND = .false.
+
+  select case (KODFOR)
+     !       CROSSWALK FOR RESERVATION PSUEDO CODES & LOCATION CODE
+  case (7702)
+     write(JOSTND,61)
+     61 format(/,'********',T12,'FORT MOJAVE RESERVATION (7702) ',&
+          &'BEING MAPPED TO TOIYABE (417) FOR FURTHER PROCESSING.')
+     IFOR = 9
+  case (7711)
+     write(JOSTND,62)
+     62 format(/,'********',T12,'FORT MCDERMITT INDIAN RES. (7711) ',&
+          &'BEING MAPPED TO HUMBOLDT (409) FOR FURTHER PROCESSING.')
+     IFOR = 8
+  case (7712)
+     write(JOSTND,63)
+     63 format(/,'********',T12,'PYRAMID LAKE PAIUTE RES. (7712) ',&
+          &'BEING MAPPED TO HUMBOLDT (409) FOR FURTHER PROCESSING.')
+     IFOR = 8
+  case (7714)
+     write(JOSTND,64)
+     64 format(/,'********',T12,'SUMMIT LAKE RESERVATION (7714) ',&
+          &'BEING MAPPED TO HUMBOLDT (409) FOR FURTHER PROCESSING.')
+     IFOR = 8
+  case (7715)
+     write(JOSTND,65)
+     65 format(/,'********',T12,'WALKER RIVER RESERVATION (7715) ',&
+          &'BEING MAPPED TO TOIYABE (417) FOR FURTHER PROCESSING.')
+     IFOR = 9
+  case (7716)
+     write(JOSTND,66)
+     66 format(/,'********',T12,'YOMBA RESERVATION (7716) BEING ',&
+          &'MAPPED TO TOIYABE (417) FOR FURTHER PROCESSING.')
+     IFOR = 9
+  case (7717)
+     write(JOSTND,67)
+     67 format(/,'********',T12,'SKULL VALLEY RESERVATION (7717) ',&
+          &'BEING MAPPED TO WASATCH (419) FOR FURTHER PROCESSING.')
+     IFOR = 6
+  case (7718)
+     write(JOSTND,68)
+     68 format(/,'********',T12,'UINTAH AND OURAY RESERVATION (7718)',&
+          &' BEING MAPPED TO ASHLEY (401) FOR FURTHER PROCESSING.')
+     IFOR = 1
+  case (7721)
+     write(JOSTND,69)
+     69 format(/,'********',T12,'DUCK VALLEY RESERVATION (7721) ',&
+          &'BEING MAPPED TO HUMBOLDT (409) FOR FURTHER PROCESSING.')
+     IFOR = 8
+  case (7722)
+     write(JOSTND,70)
+     70 format(/,'********',T12,'SOUTH FORK RESERVATION (7722) ',&
+          &'BEING MAPPED TO HUMBOLDT (409) FOR FURTHER PROCESSING.')
+     IFOR = 8
+  case (7723)
+     write(JOSTND,71)
+     71 format(/,'********',T12,'GOSHUTE RESERVATION (7723) BEING ',&
+          &'MAPPED TO HUMBOLDT (409) FOR FURTHER PROCESSING.')
+     IFOR = 8
+  case (7728)
+     write(JOSTND,72)
+     72 format(/,'********',T12,'KAIBAB INDIAN RESERVATION (7728) ',&
+          &'BEING MAPPED TO DIXIE (407) FOR FURTHER PROCESSING.')
+     IFOR = 2
+  case (7729)
+     write(JOSTND,73)
+     73 format(/,'********',T12,'PAIUTE (UT) RESERVATION (7729) ',&
+          &'BEING MAPPED TO DIXIE (407) FOR FURTHER PROCESSING.')
+     IFOR = 2
+  case (7835)
+     write(JOSTND,74)
+     74 format(/,'********',T12,'TIMBI-SHA SHOSHONE RES. (7835) ',&
+          &'BEING MAPPED TO TOIYABE (417) FOR FURTHER PROCESSING.')
+     IFOR = 9
+  case (7920)
+     write(JOSTND,75)
+     75 format(/,'********',T12,'UTE MOUNTAIN RESERVATION (7920) ',&
+          &'BEING MAPPED TO MANTI-LA SAL (410) FOR FURTHER PROCESSING.')
+     IFOR = 4
+  case (8001)
+     write(JOSTND,76)
+     76 format(/,'********',T12,'NAVAJO NATION RESERVATION (8001) ',&
+          &'BEING MAPPED TO MANTI-LA SAL (410) FOR FURTHER PROCESSING.')
+     IFOR = 4
+     !       END CROSSWALK FOR RESERVATION PSUEDO CODES & LOCATION CODE
+
+  case default
+
+     !         CONFIRMS THAT KODFOR IS AN ACCEPTED FVS LOCATION CODE
+     !         FOR THIS VARIANT FOUND IN DATA ARRAY JFOR
+     do I = 1,NUMFOR
+        if (KODFOR .eq. JFOR(I)) then
+           IFOR = I
+           FORFOUND = .true.
+           exit
+        end if
+        10 continue
+     end do
+
+     !         LOCATION CODE ERROR TRAP
+     if (.not. FORFOUND) then
+        call ERRGRO (.true.,3)
+        write(JOSTND,11) JFOR(IFOR)
+        11 format(/,'********',T12,'FOREST CODE USED IN THIS ',&
+             &'PROJECTION IS',I4)
+        USEIGL = .false.
+     end if
+
+  end select
+
+  !     FOREST MAPPING CORRECTION
+  select case (IFOR)
+  case (7)
+     write(JOSTND,21)
+     21 format(/,'********',T12,'CACHE NF (404) BEING MAPPED TO ',&
+          &'WASATCH (419) FOR FURTHER PROCESSING.')
+     IFOR = 6
+  case (8)
+     write(JOSTND,22)
+     22 format(/,'********',T12,'HUMBOLDT NF (409) BEING MAPPED TO ',&
+          &'FISHLAKE (408) FOR FURTHER PROCESSING.')
+     IFOR = 3
+  case (9)
+     write(JOSTND,23)
+     23 format(/,'********',T12,'TOIYABE NF (417) BEING MAPPED TO ',&
+          &'FISHLAKE (408) FOR FURTHER PROCESSING.')
+     IFOR = 3
+  end select
+
+  !     SET THE IGL VARIABLE ONLY IF DEFAULT FOREST IS USED
+  !     GEOGRAPHIC LOCATION CODE: 1=NORTH, 2=CENTRAL, 3=SOUTH
+  !     USED TO SET SOME EQUATIONS IN REGENERATION AND PERHAPS
+  !     HEIGHT-DIAMETER IN DIFFERENT VARIANTS.
+  if (USEIGL) IGL = KFOR(IFOR)
+
+  KODFOR = JFOR(IFOR)
+  return
+end

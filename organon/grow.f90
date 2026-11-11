@@ -1,0 +1,215 @@
+!====================!
+!   organon : grow   !
+!====================!
+! ORGANON $Id$
+
+  !  04/25/2014 - THERE ARE COMMON SUBROUTINE NAMES IN THE SOURCE CODE
+  !               USED TO BUILD THE ORGANON DLLS. IN ORDER TO LINK THE
+  !               ORGANON SOURCE CODE WITH THE FVS SOURCE CODE WE CHANGED
+  !               THE DUPLICATED SUBROUTINE NAMES TO MAKE THEM UNIQUE.
+
+  !  CHANGED THE NAME OF SUBROUTINE DIAMGRO TO DIAMGRO_RUN IN THE
+  !               DIAGRO.FOR FILE, SO IN THIS FILE WE EDITED
+  !               THE CALL TO DIAMGRO TO DIAMGRO_RUN
+  !  CHANGED THE NAME OF SUBROUTINE CALL - MORTAL TO MORTAL_RUN
+
+subroutine GROW(VERSION,CYCLG,NTREES,IB,BIG6,OTHER,NSPN,STAGE,&
+     &BHAGE,POINT,TREENO,TDATAI,PRAGE,BRCNT,BRHT,BRDIA,&
+     &JCORE,NPR,TCYCLE,FCYCLE,TRIPLE,WOODQ,POST,MORT,&
+     &GENETICS,SWISSNC,TDATAR,SI_1,SI_2,SBA1,BALL1,BAL1,&
+     &CALIB,PN,YF,BABT,BART,YT,GROWTH,PRLH,PRDBH,PRHT,&
+     &PRCR,PREXP,SCR,VOLTR,SYTVOL,CCH,OLD,MGEXP,DEADEXP,&
+     &A1,A2,A1MAX,PA1MAX,NO,RD0,RAAGE,RASI,CCFLL1,CCFL1,&
+     &SBA2,CCFLL2,CCFL2,BALL2,BAL2,TPA2,SCCF2,GWDG,GWHG,&
+     &FR,PDEN)
+  implicit none
+  ! Variables
+  integer*4 :: VERSION,CYCLG,NTREES,IB,BIG6,OTHER,NSPN,STAGE,BHAGE,POINT(2000),TREENO(2000),&
+       &TDATAI(2000,3),PRAGE(2000,3),BRCNT(2000,3),BRHT(2000,40),BRDIA(2000,40),JCORE(2000,40),NPR(2000),&
+       &TCYCLE,FCYCLE,J,NTCAL1,NTCAL2,NTCAL3,NTCAL4,NTCAL5,NTCAL6,M,ON,IWQ,I,II,NZERO,BZERO,OZERO
+  real*4  :: TDATAR(2000,8),SI_1,SI_2,SBA1,BALL1(51),BAL1(500),CALIB(6,18),PN(5),YF(5),BABT,BART(5),&
+       &YT(5),GROWTH(2000,4),PRLH(2000,3),PRDBH(2000,3),PRHT(2000,3),PRCR(2000,3),PREXP(2000,3),SCR(2000,3),&
+       &VOLTR(2000,4),SYTVOL(2000,2),CCH(41),OLD,MGEXP(2000),DEADEXP(2000),A1,A2,A1MAX,PA1MAX,NO,RD0,RAAGE,&
+       &RASI,CCFLL1(51),CCFL1(500),SBA2,CCFLL2(51),CCFL2(500),BALL2(51),BAL2(500),TPA2,SCCF2,MCALIB,PDEN
+  real*4  :: TAGE,GWDG,GWHG,FR,DGMOD_GG,HGMOD_GG,DGMOD_SNC,HGMOD_SNC
+  logical*2 :: TRIPLE,WOODQ,POST,MORT
+  logical*2 :: GENETICS,SWISSNC
+
+  !     M=0 NO TRIPLING
+  !     M=1 TRIPLE EVERY TREE
+  !     M=2 TRIPLE EVERY OTHER TREE
+  !     M=3 RANDOM ERROR
+
+  DGMOD_GG = 1.0
+  HGMOD_GG = 1.0
+  DGMOD_SNC = 1.0
+  HGMOD_SNC = 1.0
+  if (STAGE .gt.0.and. GENETICS) then
+     TAGE = FLOAT(STAGE)
+     call GG_MODS(TAGE,GWDG,GWHG,DGMOD_GG,HGMOD_GG)
+  end if
+  if (SWISSNC .and. (VERSION .eq.2.or. VERSION .eq.3)) then
+     call SNC_MODS(FR,DGMOD_SNC,HGMOD_SNC)
+  end if
+  !     GROWTH 1
+  !     CALCULATE DIAMGRO
+
+  NZERO = 0
+  BZERO = 0
+  OZERO = 0
+  do I = 1,NTREES
+     if (TDATAR(I,4) .le.0.0) then
+        NZERO = NZERO+1
+        if (TDATAI(I,2) .le. IB) then
+           BZERO = BZERO+1
+        else
+           OZERO = OZERO+1
+        end if
+     end if
+  end do
+  J = NTREES+1
+  NTCAL1 = (NTREES-NZERO)*3
+  NTCAL2 = NZERO+NTCAL1
+  NTCAL3 = (NTREES-NZERO)*2
+  NTCAL4 = NZERO+NTCAL3
+  NTCAL5 = BIG6+2*(BIG6-BZERO)
+  NTCAL6 = BIG6+(BIG6-BZERO)
+  M = 0
+  if (TRIPLE) then
+     if (NTCAL1.le.2000.and. NTCAL2.le.2000) then
+        M = 1
+        if (WOODQ .and. NTCAL5.gt.2000)M = 0
+     else if (NTCAL3.le.2000.and. NTCAL4.le.2000) then
+        M = 2
+        if (WOODQ .and. NTCAL6.gt.2000)M = 0
+     end if
+  end if
+  ON = 0
+  IWQ = 0
+  do I = 1,NTREES
+     if (WOODQ.and.TDATAI(I,2).le. IB) IWQ = IWQ+1
+     if (TDATAR(I,4) .le.0.) then
+        GROWTH(I,2) = 0.
+     else
+        call DIAMGRO_RUN(VERSION,I,CYCLG,TDATAI,TDATAR,SI_1,SI_2,&
+             &SBA1,BALL1,BAL1,CALIB,PN,YF,BABT,BART,YT,GROWTH)
+        if (TDATAI(I,1) .eq.202) then
+           GROWTH(I,2) = GROWTH(I,2)*DGMOD_GG*DGMOD_SNC
+        end if
+        call XTRIP(I,J,M,ON,IWQ,WOODQ,IB,BIG6,POINT,TREENO,&
+             &TDATAI,PRAGE,BRCNT,BRHT,BRDIA,JCORE,NPR,PRLH,&
+             &PRDBH,PRHT,PRCR,PREXP,SCR,VOLTR,SYTVOL)
+        call DGTRIP(I,J,M,ON,VERSION,IB,BIG6,OTHER,TDATAI,&
+             &TDATAR,GROWTH,MGEXP,DEADEXP)
+     end if
+  end do
+  if (TRIPLE)NTREES = J-1
+
+  !     GROWTH 2
+  !     CALCULATE HTGRO FOR BIG6
+
+  NTCAL1 = (BIG6-BZERO)*3+(OTHER-OZERO)
+  NTCAL2 = BZERO+OZERO+NTCAL1
+  NTCAL3 = (BIG6-BZERO)*2+(OTHER-OZERO)
+  NTCAL4 = BZERO+OZERO+NTCAL3
+  NTCAL5 = BIG6+2*(BIG6-BZERO)
+  NTCAL6 = BIG6+(BIG6-BZERO)
+  M = 0
+  if (TRIPLE) then
+     if (NTCAL1.le.2000.and. NTCAL2.le.2000) then
+        M = 1
+        if (WOODQ .and. NTCAL5.gt.2000)M = 0
+     else if (NTCAL3.le.2000.and. NTCAL4.le.2000) then
+        M = 2
+        if (WOODQ .and. NTCAL6.gt.2000)M = 0
+     end if
+  end if
+  ON = 0
+  IWQ = 0
+  do I = 1,NTREES
+     if (TDATAI(I,2) .le. IB) then
+        if (WOODQ) IWQ = IWQ+1
+        if (TDATAR(I,4) .le.0.) then
+           GROWTH(I,1) = 0.
+        else
+           call HTGRO1(I,M,ON,VERSION,CYCLG,IB,TDATAI,TDATAR,SI_1,&
+                &SI_2,CCH,CALIB,PN,YF,BABT,BART,YT,OLD,PDEN,&
+                &GROWTH)
+           if (TDATAI(I,1) .eq.202) then
+              GROWTH(I,1) = GROWTH(I,1)*HGMOD_GG*HGMOD_SNC
+           end if
+           call XTRIP(I,J,M,ON,IWQ,WOODQ,IB,BIG6,POINT,TREENO,&
+                &TDATAI,PRAGE,BRCNT,BRHT,BRDIA,JCORE,NPR,PRLH,&
+                &PRDBH,PRHT,PRCR,PREXP,SCR,VOLTR,SYTVOL)
+           call HGTRIP(I,J,M,ON,VERSION,BIG6,OTHER,TDATAI,&
+                &TDATAR,GROWTH,MGEXP,DEADEXP)
+        end if
+     end if
+  end do
+  if (TRIPLE)NTREES = J-1
+
+  !          DETERMINE MORTALITY, IF REQUIRED
+
+  call MORTAL_RUN(VERSION,CYCLG,NTREES,IB,TDATAI,POST,MORT,TDATAR,&
+       &SCR,GROWTH,MGEXP,DEADEXP,BALL1,BAL1,SI_1,SI_2,PN,YF,&
+       &A1,A2,A1MAX,PA1MAX,NO,RD0,RAAGE,PDEN)
+
+  !     UPDATE DIAMETERS
+
+  do I = 1,NTREES
+     TDATAR(I,1) = TDATAR(I,1)+GROWTH(I,2)
+  end do
+
+  !     CALC EOG SBA, CCF/TREE, CCF IN LARGER TREES AND STAND CCF
+
+  call SSTATS(VERSION,NTREES,TDATAI,TDATAR,SBA2,TPA2,SCCF2,&
+       &BAL2,BALL2,CCFL2,CCFLL2)
+
+  !     CALCULATE HTGRO FOR 'OTHER' & CROWN ALL SPECIES
+
+  IWQ = 0
+  do I = 1,NTREES
+     if (TDATAI(I,2) .gt. IB) then
+        if (TDATAR(I,4) .le.0.) then
+           GROWTH(I,1) = 0.
+        else
+           call HTGRO2(I,VERSION,IB,TDATAI,TDATAR,RASI,CALIB,&
+                &GROWTH)
+        end if
+     end if
+     TDATAR(I,2) = TDATAR(I,2)+GROWTH(I,1)
+  end do
+
+  !     CALC CROWN GROWTH
+
+  call CROWGRO(VERSION,CYCLG,NTREES,IB,TDATAI,TDATAR,SCR,&
+       &GROWTH,MGEXP,DEADEXP,CCFLL1,CCFL1,CCFLL2,CCFL2,SBA1,&
+       &SBA2,SI_1,SI_2,CALIB,CCH)
+
+  !     UPDATE STAND VARIABLES
+
+  if (VERSION .le.3) then
+     STAGE = STAGE+5
+     BHAGE = BHAGE+5
+  else
+     STAGE = STAGE+1
+     BHAGE = BHAGE+1
+  end if
+  CYCLG = CYCLG+1
+  if (FCYCLE.gt.2) then
+     FCYCLE = 0
+  else if (FCYCLE.gt.0) then
+     FCYCLE = FCYCLE+1
+  end if
+  if (TCYCLE.gt.0) TCYCLE = TCYCLE+1
+  !     REDUCE CALIBRATION RATIOS
+  do I = 1,3
+     do II = 1, NSPN
+        if (CALIB(I,II) .lt.1.0.or. CALIB(I,II) .gt.1.0) then
+           MCALIB = (1.0+CALIB(I+3,II))/2.0
+           CALIB(I,II) = MCALIB+SQRT(0.5)*(CALIB(I,II)-MCALIB)
+        end if
+     end do
+  end do
+  return
+end

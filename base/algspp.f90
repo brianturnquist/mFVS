@@ -16,9 +16,9 @@ subroutine ALGSPP (CTOK,LEN,NUM,IRC)
   !             1=CTOK WAS NOT FOUND, NUM IS UNDEFINED.
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'CONTRL.F77'
-  include 'PLOT.F77'
+  include 'PRGPRM.f90'
+  include 'CONTRL.f90'
+  include 'PLOT.f90'
 
   ! Variables
   character(len=20) :: CTOK

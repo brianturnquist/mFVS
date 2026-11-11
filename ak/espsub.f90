@@ -11,11 +11,11 @@ subroutine ESPSUB (IFT)
   include 'PRGPRM.f90'
   include 'ESPARM.f90'
   include 'ESCOMN.f90'
-  include 'ESCOM2.F77'
-  include 'PLOT.F77'
-  include 'PDEN.F77'
-  include 'ESHAP.F77'
-  include 'ESHAP2.F77'
+  include 'ESCOM2.f90'
+  include 'PLOT.f90'
+  include 'PDEN.f90'
+  include 'ESHAP.f90'
+  include 'ESHAP2.f90'
 
   !  VARIABLE DEFINITIONS:
 

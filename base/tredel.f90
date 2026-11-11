@@ -23,10 +23,10 @@ subroutine TREDEL (IVACT,INDEX)
   !     NL CROOKSTON-FORESTRY SCIENCES LAB, MOSCOW, ID.-JUNE 1982.
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'ARRAYS.F77'
-  include 'CONTRL.F77'
-  include 'ESTREE.F77'
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
+  include 'CONTRL.f90'
+  include 'ESTREE.f90'
 
   ! Variables
   integer :: INDEX(MAXTRE),IVACT,IV,IR,IVAC,IREC

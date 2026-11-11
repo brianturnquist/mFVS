@@ -6,8 +6,8 @@ subroutine MULTS (KIND,IDT,XMULT)
   implicit none
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'CONTRL.F77'
+  include 'PRGPRM.f90'
+  include 'CONTRL.f90'
 
   !     GETS THE MULTIPLIERS - NL CROOKSTON - JAN 1981 - MOSCOW.
 

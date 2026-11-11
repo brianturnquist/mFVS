@@ -9,9 +9,9 @@ subroutine SETUP
   !     THE DEFINITION OF MOST VARIABLES OCCURES IN **INTREE**
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'ARRAYS.F77'
-  include 'CONTRL.F77'
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
+  include 'CONTRL.f90'
 
   ! Variables
   integer :: IX,LAST,I,IR,KNT,ISTART,NEXT,J

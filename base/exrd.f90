@@ -9,7 +9,7 @@ subroutine EXRD
   !     VERSION 3.0
 
   ! Common blocks
-  include 'PRGPRM.F77'
+  include 'PRGPRM.f90'
 
   ! Variables
   integer :: ICODES(6),I3(*),I2(*),ITN1,ITN2,II,I,I1,II1

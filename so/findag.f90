@@ -1,0 +1,169 @@
+!=======================================!
+!   Estimate tree age and site height   !
+!=======================================!
+! SO $Id$
+subroutine FINDAG(I,ISPC,D1,D2,H,SITAGE,SITHT,AGMAX1,HTMAX1,&
+     &HTMAX2,DEBUG)
+  implicit none
+
+  !  THIS ROUTINE FINDS EFFECTIVE TREE AGE BASED ON INPUT VARIABLE(S)
+  !  CALLED FROM **COMCUP
+  !  CALLED FROM **CRATET
+  !  CALLED FROM **HTGF
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'CONTRL.f90'
+  include 'ARRAYS.f90'
+  include 'PLOT.f90'
+
+  !  LOCAL VARIABLE DEFINITIONS:
+
+  !  INCRNG = HAS A VALUE OF 1 WHEN THE SITE CURVE HAS BEEN MONOTONICALLY
+  !           INCREASING IN PREVIOUS ITERATIONS.
+  !   OLDHG = HEIGHT GUESS FROM PREVIOUS ITERATION.
+
+  !  DECLARATIONS
+
+  ! Variables
+  logical :: DEBUG
+  integer :: I,ISPC,INCRNG
+  real    :: AGMAX(MAXSP),HTMAX(MAXSP)
+  real    :: AG,DIFF,H,HGUESS,SINDX,TOLER
+  real    :: SITAGE,SITHT,AGMAX1,HTMAX1,HTMAX2,D1,D2
+  real    :: RDANUW,OLDHG
+
+  !  DATA STATEMENTS
+
+  data AGMAX/&
+       &500., 400., 900., 450., 650., 650., 350., 400., 500., 900.,&
+       &900., 350., 350., 400., 400., 400., 400., 550., 550., 350.,&
+       &350., 100., 100., 100., 100.,  50., 250.,  50.,  75.,  50.,&
+       &50., 400., 100./
+
+  data HTMAX/&
+       &165., 160., 180., 180., 150., 150., 130., 165., 180., 175.,&
+       &80., 165., 120., 165., 165.,  85., 175., 165., 165.,  50.,&
+       &50., 100., 100.,  75., 125.,  30.,  75.,  30.,  30.,  20,&
+       &25., 165., 100./
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  RDANUW = D1
+  RDANUW = D2
+  RDANUW = HTMAX2
+
+  !  INITIALIZATIONS
+
+  TOLER = 2.0
+  SINDX = SITEAR(ISPC)
+  AGMAX1 = AGMAX(ISPC)
+  if (IFOR.gt.3.and. IFOR.lt.10) AGMAX1 = 400.
+  HTMAX1 = HTMAX(ISPC)
+  AG = 2.0
+
+  ! THE FOLLOWING LINES ARE AN RJ FIX 7-28-88
+
+  if (ISPC.eq.2.or. ISPC.eq.10) AG = (98.38*EXP(SINDX*(-0.0422)))+1.0
+  if (AG .lt.2.0)AG = 2.0
+  if (ISPC .eq.3)AG = 18.0
+
+  !  CRATET CALLS FINDAG AT THE BEGINING OF THE SIMULATION TO
+  !  CALCULATE THE AGE OF INCOMING TREES.  AT THIS POINT ABIRTH(I)=0.
+  !  THE AGE OF INCOMING TREES HAVING H>=HTMAX1 IS CALCULATED BY
+  !  ASSUMING A GROWTH RATE OF 0.10FT/YEAR FOR THE INTERVAL H-HTMAX1.
+  !  TREES REACHING HTMAX1 DURING THE SIMULATION ARE IDENTIFIED IN HTGF.
+
+  if (H .ge. HTMAX1) then
+     SITAGE = AGMAX1 + (H - HTMAX1)/0.10
+     SITHT = H
+     if (DEBUG)write(JOSTND,*)' ISPC,AGMAX1,H,HTMAX1= ',ISPC,&
+          &AGMAX1,H,HTMAX1
+     go to 30
+  end if
+
+  !  DEAL WITH SPECIES THAT DON'T NEED ITEATION HERE:
+
+  !  COMPUTE HT GROWTH AND AGE FOR ASPEN. EQN FROM WAYNE SHEPPARD RMRS.
+
+  if (ISPC.eq.24) then
+     SITAGE = (H*2.54*12.0/26.9825)**(1.0/1.1752)
+     SITHT = H
+     go to 30
+
+     !  WESTERN JUNIPER
+     !  WHITEBARK PINE
+
+  else if (ISPC.eq.11.or. ISPC.eq.16) then
+     SITAGE = 0.
+     SITHT = H
+     go to 30
+  end if
+
+  INCRNG = 0
+  HGUESS = 0.
+  75 continue
+  OLDHG = HGUESS
+
+  if (DEBUG)write(JOSTND,*)' IN FINDAG, CALLING HTCALC'
+  call HTCALC(IFOR,SINDX,ISPC,AG,HGUESS,JOSTND,DEBUG)
+
+  if (DEBUG)write(JOSTND,91200)I,IFOR,ISPC,AG,HGUESS,H
+  91200 format(' FINDAG I,IFOR,ISPC,AG,HGUESS,H ',3I5,3F10.2)
+
+  !  AVOID NEGATIVE PREDICTED HEIGHTS AT SMALL AGES FROM SOME SI CURVES
+  !  GED 4/20/18
+
+  if (HGUESS .lt.1.)go to 175
+
+  DIFF = ABS(HGUESS-H)
+  if (DIFF .le. TOLER .or. H .lt. HGUESS) then
+     SITAGE = AG
+     SITHT = HGUESS
+     if (DEBUG) then
+        write(JOSTND, *)' DIFF,TOLER,H,HGUESS,AG,SITAGE,SITHT= ',&
+             &DIFF,TOLER,H,HGUESS,AG,SITAGE,SITHT
+     end if
+     go to 30
+  end if
+
+  !  SOME SITE CURVES DECREASE AT THE START BEFORE INCREASING. IF DECREASING,
+  !  KEEP GOING; IF SITE CURVE WAS INCREASING, BUT NOW HAS FLATTENED OFF, STOP
+  !  THE ITERATION GED 04/19/18
+
+  DIFF = (HGUESS-OLDHG)
+  if (OLDHG.ne.0.0.and. DIFF.ge.0.05) INCRNG = 1
+  if (DEBUG)write(JOSTND,*)' IN FINDAG OLDHG,DIFF,INCRNG= ',&
+       &OLDHG,DIFF,INCRNG
+  if (INCRNG.eq.1.and. DIFF .lt.0.05) then
+     SITAGE = AG
+     SITHT = HGUESS
+     if (DEBUG) then
+        write(JOSTND, *)' SITE CURVE FLAT OLDHG,AG,HGUESS,SITAGE,',&
+             &'SITHT= ',OLDHG,AG,HGUESS,SITAGE,SITHT
+     end if
+     go to 30
+  end if
+
+  175 continue
+  AG = AG + 2.
+
+  if (AG .gt. AGMAX1) then
+
+     !  H IS TOO GREAT AND MAX AGE IS EXCEEDED
+
+     SITAGE = AGMAX1
+     SITHT = H
+     go to 30
+  else
+     go to 75
+  end if
+
+  30 continue
+  if (DEBUG)write(JOSTND,50)I,SITAGE,SITHT,AGMAX1,HTMAX1
+  50 format(' LEAVING SUBROUTINE FINDAG  I,SITAGE,SITHT,AGMAX1,',&
+       &'HTMAX1 = ',I5,4F10.3)
+
+  return
+end
+  !**END OF CODE SEGMENT

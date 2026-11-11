@@ -18,8 +18,8 @@ subroutine EVPOST (JOSTND,IEN,IDTE,NGRPS,IALNK)
   !             THAT CORRESPONDS TO THE EVENT.
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'OPCOM.F77'
+  include 'PRGPRM.f90'
+  include 'OPCOM.f90'
 
   ! Variables
   integer :: IALNK,IDTE,IEN,JOSTND,NEVA,I,NGRPS

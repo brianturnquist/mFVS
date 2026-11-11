@@ -1,0 +1,243 @@
+!=======================================!
+!   Estimate tree age and site height   !
+!=======================================!
+! EC $Id$
+subroutine FINDAG(I,ISPC,D1,D2,H,SITAGE,SITHT,AGMAX1,HTMAX1,&
+     &HTMAX2,DEBUG)
+  implicit none
+
+  !  THIS ROUTINE FINDS EFFECTIVE TREE AGE BASED ON INPUT VARIABLE(S)
+  !  CALLED FROM **COMCUP
+  !  CALLED FROM **CRATET
+  !  CALLED FROM **HTGF
+
+  !  SITAGE  --  LOADED WITH EFECTIVE AGE BASED ON CURRENT H
+  !  SITHT   --  LOADED WITH POTENTIAL HEIGHT CORRESPONDING TO
+  !              AGE IN SITAGE ARRAY
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'CONTRL.f90'
+  include 'ARRAYS.f90'
+  include 'PLOT.f90'
+
+  !  LOCAL VARIABLE DEFINITIONS:
+
+  !  INCRNG = HAS A VALUE OF 1 WHEN THE SITE CURVE HAS BEEN MONOTONICALLY
+  !           INCREASING IN PREVIOUS ITERATIONS.
+  !   OLDHG = HEIGHT GUESS FROM PREVIOUS ITERATION.
+
+  !  DECLARATIONS
+
+  ! Variables
+  logical :: DEBUG
+  integer :: I,ISPC,INCRNG
+  real    :: AGMAX(MAXSP),AHMAX(MAXSP),BHMAX(MAXSP),AGMAX1,HTMAX1,HTMAX2
+  real    :: AG,DIFF,H,HGUESS,SINDX,TOLER,SITAGE,SITHT,D1,D2,OLDHG
+
+  !  SPECIES LIST FOR EAST CASCADES VARIANT.
+
+  !   1 = WESTERN WHITE PINE      (WP)    PINUS MONTICOLA
+  !   2 = WESTERN LARCH           (WL)    LARIX OCCIDENTALIS
+  !   3 = DOUGLAS-FIR             (DF)    PSEUDOTSUGA MENZIESII
+  !   4 = PACIFIC SILVER FIR      (SF)    ABIES AMABILIS
+  !   5 = WESTERN REDCEDAR        (RC)    THUJA PLICATA
+  !   6 = GRAND FIR               (GF)    ABIES GRANDIS
+  !   7 = LODGEPOLE PINE          (LP)    PINUS CONTORTA
+  !   8 = ENGELMANN SPRUCE        (ES)    PICEA ENGELMANNII
+  !   9 = SUBALPINE FIR           (AF)    ABIES LASIOCARPA
+  !  10 = PONDEROSA PINE          (PP)    PINUS PONDEROSA
+  !  11 = WESTERN HEMLOCK         (WH)    TSUGA HETEROPHYLLA
+  !  12 = MOUNTAIN HEMLOCK        (MH)    TSUGA MERTENSIANA
+  !  13 = PACIFIC YEW             (PY)    TAXUS BREVIFOLIA
+  !  14 = WHITEBARK PINE          (WB)    PINUS ALBICAULIS
+  !  15 = NOBLE FIR               (NF)    ABIES PROCERA
+  !  16 = WHITE FIR               (WF)    ABIES CONCOLOR
+  !  17 = SUBALPINE LARCH         (LL)    LARIX LYALLII
+  !  18 = ALASKA CEDAR            (YC)    CALLITROPSIS NOOTKATENSIS
+  !  19 = WESTERN JUNIPER         (WJ)    JUNIPERUS OCCIDENTALIS
+  !  20 = BIGLEAF MAPLE           (BM)    ACER MACROPHYLLUM
+  !  21 = VINE MAPLE              (VN)    ACER CIRCINATUM
+  !  22 = RED ALDER               (RA)    ALNUS RUBRA
+  !  23 = PAPER BIRCH             (PB)    BETULA PAPYRIFERA
+  !  24 = GIANT CHINQUAPIN        (GC)    CHRYSOLEPIS CHRYSOPHYLLA
+  !  25 = PACIFIC DOGWOOD         (DG)    CORNUS NUTTALLII
+  !  26 = QUAKING ASPEN           (AS)    POPULUS TREMULOIDES
+  !  27 = BLACK COTTONWOOD        (CW)    POPULUS BALSAMIFERA var. TRICHOCARPA
+  !  28 = OREGON WHITE OAK        (WO)    QUERCUS GARRYANA
+  !  29 = CHERRY AND PLUM SPECIES (PL)    PRUNUS sp.
+  !  30 = WILLOW SPECIES          (WI)    SALIX sp.
+  !  31 = OTHER SOFTWOODS         (OS)
+  !  32 = OTHER HARDWOODS         (OH)
+
+  !  SURROGATE EQUATION ASSIGNMENT:
+
+  !  FROM THE EC VARIANT:
+  !      USE 6(GF) FOR 16(WF)
+  !      USE OLD 11(OT) FOR NEW 12(MH) AND 31(OS)
+
+  !  FROM THE WC VARIANT:
+  !      USE 19(WH) FOR 11(WH)
+  !      USE 33(PY) FOR 13(PY)
+  !      USE 31(WB) FOR 14(WB)
+  !      USE  7(NF) FOR 15(NF)
+  !      USE 30(LL) FOR 17(LL)
+  !      USE  8(YC) FOR 18(YC)
+  !      USE 29(WJ) FOR 19(WJ)
+  !      USE 21(BM) FOR 20(BM) AND 21(VN)
+  !      USE 22(RA) FOR 22(RA)
+  !      USE 24(PB) FOR 23(PB)
+  !      USE 25(GC) FOR 24(GC)
+  !      USE 34(DG) FOR 25(DG)
+  !      USE 26(AS) FOR 26(AS) AND 32(OH)
+  !      USE 27(CW) FOR 27(CW)
+  !      USE 28(WO) FOR 28(WO)
+  !      USE 36(CH) FOR 29(PL)
+  !      USE 37(WI) FOR 30(WI)
+
+  !  DATA STATEMENTS
+
+  data AGMAX/&
+       &200.,  110.,  180.,  130.,  250.,&
+       &130.,  140.,  150.,  150.,  200.,&
+       &200.,  180.,  200.,  200.,  200.,&
+       &130.,  200.,  200.,  200.,  200.,&
+       &200.,  200.,  200.,  200.,  200.,&
+       &200.,  200.,  200.,  200.,  200.,&
+       &180.,  200./
+
+  data AHMAX/&
+       &2.3,      12.86,      -2.86,      21.29,      52.27,&
+       &21.29,        2.3,        20.,      45.27,      -5.00,&
+       &4.0156013,      -2.06,  3.2412923,  3.2412923,  4.3149844,&
+       &21.29,  3.2412923,  3.2412923,  3.2412923,  3.9033821,&
+       &3.9033821,  3.9033821,  3.9033821,  3.9033821,  3.9033821,&
+       &3.9033821,  3.9033821,  3.9033821,  3.9033821,  3.9033821,&
+       &-2.06,  3.9033821/
+
+  data BHMAX/&
+       &2.39,       1.32,       1.54,       1.24,       1.14,&
+       &1.24,       1.75,        1.1,       1.24,       1.30,&
+       &51.9732476,       1.54, 62.7139427, 62.7139427, 39.6317079,&
+       &1.24, 62.7139427, 62.7139427, 62.7139427, 59.3370816,&
+       &59.3370816, 59.3370816, 59.3370816, 59.3370816, 59.3370816,&
+       &59.3370816, 59.3370816, 59.3370816, 59.3370816, 59.3370816,&
+       &1.54, 59.3370816/
+
+  !  INITIALIZATIONS
+
+  TOLER = 2.0
+  SINDX = SITEAR(ISPC)
+  AGMAX1 = AGMAX(ISPC)
+  HTMAX1 = 0.0
+  HTMAX2 = 0.0
+
+  select case (ISPC)
+
+     !  SPECIES USING EC LOGIC
+
+  case(1:10,16)
+     AG = 0.5
+
+     ! THE FOLLOWING LINES ARE AN RJ FIX 7-28-88
+
+     if (ISPC .eq.10) AG = (98.38*EXP(SINDX*(-0.0422)))+1.0
+     if (AG .lt.0.5)AG = 0.5
+     if (ISPC .eq.3)AG = 18.0
+
+     HTMAX1 = AHMAX(ISPC) + BHMAX(ISPC)*SINDX
+  case(12,31)
+     AG = 0.5
+     HTMAX1 = AHMAX(ISPC) + BHMAX(ISPC)*SINDX*3.281
+
+     !  SPECIES USING WC LOGIC
+
+  case(11,13:15,17:30,32)
+     AG = 2.0
+     HTMAX1 = AHMAX(ISPC)*D1 + BHMAX(ISPC)
+     HTMAX2 = AHMAX(ISPC)*D2 + BHMAX(ISPC)
+  end select
+
+  !  CRATET CALLS FINDAG AT THE BEGINING OF THE SIMULATION TO
+  !  CALCULATE THE AGE OF INCOMING TREES.  AT THIS POINT ABIRTH(I)=0.
+  !  THE AGE OF INCOMING TREES HAVING H>=HMAX IS CALCULATED BY
+  !  ASSUMEING A GROWTH RATE OF 0.10FT/YEAR FOR THE INTERVAL H-HMAX.
+  !  TREES REACHING HMAX DURING THE SIMULATION ARE IDENTIFIED IN HTGF.
+
+  if (H .ge. HTMAX1) then
+     SITAGE = AGMAX1 + (H - HTMAX1)/0.10
+     SITHT = H
+     if (DEBUG)write(JOSTND,*)' ISPC,H,HTMAX1,AGMAX1,SITAGE,SITHT= ',&
+          &ISPC,H,HTMAX1,AGMAX1,SITAGE,SITHT
+     go to 30
+  end if
+
+  INCRNG = 0
+  HGUESS = 0.
+  75 continue
+  OLDHG = HGUESS
+
+  !  CALL HTCALC TO CALCULATE POTENTIAL HT GROWTH
+
+  if (DEBUG)write(JOSTND,*)' IN FINDAG, CALLING HTCALC'
+  call HTCALC(SINDX,ISPC,AG,HGUESS,JOSTND,DEBUG)
+
+  if (DEBUG)write(JOSTND,91200)I,ISPC,AG,HGUESS,H
+  91200 format(' FINDAG I,ISPC,AG,HGUESS,H ',2I5,3F10.2)
+
+  !  AVOID NEGATIVE PREDICTED HEIGHTS AT SMALL AGES FROM SOME SI CURVES
+  !  GED 4/20/18
+
+  if (HGUESS .lt.1.)go to 175
+
+  DIFF = ABS(HGUESS-H)
+  if (DIFF .le. TOLER .or. H .lt. HGUESS) then
+     SITAGE = AG
+     SITHT = HGUESS
+     if (DEBUG) then
+        write(JOSTND, *)' DIFF,TOLER,H,HGUESS,AG,SITAGE,SITHT= ',&
+             &DIFF,TOLER,H,HGUESS,AG,SITAGE,SITHT
+     end if
+     go to 30
+  end if
+
+  !  SOME SITE CURVES DECREASE AT THE START BEFORE INCREASING. IF DECREASING,
+  !  KEEP GOING; IF SITE CURVE WAS INCREASING, BUT NOW HAS FLATTENED OFF, STOP
+  !  THE ITERATION GED 04/19/18
+
+  DIFF = (HGUESS-OLDHG)
+  if (OLDHG.ne.0.0.and. DIFF.ge.0.05) INCRNG = 1
+  if (DEBUG)write(JOSTND,*)' IN FINDAG OLDHG,DIFF,INCRNG= ',&
+       &OLDHG,DIFF,INCRNG
+  if (INCRNG.eq.1.and. DIFF .lt.0.05) then
+     SITAGE = AG
+     SITHT = HGUESS
+     if (DEBUG) then
+        write(JOSTND, *)' SITE CURVE FLAT OLDHG,AG,HGUESS,SITAGE,',&
+             &'SITHT= ',OLDHG,AG,HGUESS,SITAGE,SITHT
+     end if
+     go to 30
+  end if
+
+  175 continue
+  AG = AG + 2.
+
+  if (AG .gt. AGMAX1) then
+
+     !  H IS TOO GREAT AND MAX AGE IS EXCEEDED
+
+     SITAGE = AGMAX1
+     SITHT = H
+     go to 30
+  else
+     go to 75
+  end if
+
+  30 continue
+  if (DEBUG)write(JOSTND,50)I,SITAGE,SITHT,AGMAX1,HTMAX1
+  50 format(' LEAVING SUBROUTINE FINDAG  I,SITAGE,SITHT,AGMAX1,',&
+       &'HTMAX1 = ',I5,4F10.3)
+
+  return
+end
+  !**END OF CODE SEGMENT

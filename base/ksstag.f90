@@ -12,8 +12,8 @@ subroutine KSSTAG (IPRINT,KEYWRD,LNOTBK,ARRAY,LKECHO)
   !   A.R.STAGE - INT MOSCOW - JUNE 1997
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'SSTGMC.F77'
+  include 'PRGPRM.f90'
+  include 'SSTGMC.f90'
 
   ! Variables
   character(len=8) :: KEYWRD

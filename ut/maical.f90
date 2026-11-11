@@ -1,0 +1,65 @@
+!=========================================!
+!   Compute stand mean annual increment   !
+!=========================================!
+! UT $Id$
+subroutine MAICAL
+  implicit none
+
+  !  THIS SUBROUTINE CALCULATES THE MAI FOR THE STAND. IT IS CALLED
+  !  FROM CRATET.
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
+  include 'PLOT.f90'
+  include 'COEFFS.f90'
+  include 'CONTRL.f90'
+  include 'OUTCOM.f90'
+  include 'HTCAL.f90'
+
+  ! Variables
+  logical :: DEBUG
+  integer :: ISPNUM(MAXSP),ISICD,IERR
+  real    :: SSSI,ADJMAI
+
+  !  INITIALIZE INTERNAL VARIABLES:
+
+  ! SPECIES ORDER FOR UTAH VARIANT:
+
+  !  1=WB,  2=LM,  3=DF,  4=WF,  5=BS,  6=AS,  7=LP,  8=ES,  9=AF, 10=PP,
+  ! 11=PI, 12=WJ, 13=GO, 14=PM, 15=RM, 16=UJ, 17=GB, 18=NC, 19=FC, 20=MC,
+  ! 21=BI, 22=BE, 23=OS, 24=OH
+
+  ! VARIANT EXPANSION:
+  ! GO AND OH USE OA (OAK SP.) EQUATIONS FROM UT
+  ! PM USES PI (COMMON PINYON) EQUATIONS FROM UT
+  ! RM AND UJ USE WJ (WESTERN JUNIPER) EQUATIONS FROM UT
+  ! GB USES BC (BRISTLECONE PINE) EQUATIONS FROM CR
+  ! NC, FC, AND BE USE NC (NARROWLEAF COTTONWOOD) EQUATIONS FROM CR
+  ! MC USES MC (CURL-LEAF MTN-MAHOGANY) EQUATIONS FROM SO
+  ! BI USES BM (BIGLEAF MAPLE) EQUATIONS FROM SO
+  ! OS USES OT (OTHER SP.) EQUATIONS FROM UT
+
+  data ISPNUM/&
+       &101, 101, 202, 015, 093, 746, 108, 093, 019, 122,&
+       &101, 101, 101, 101, 101, 101, 101, 101, 101, 746,&
+       &746, 101, 101, 101/
+
+  ! Check whether debugging is enabled
+  call DBCHK (DEBUG,'MAICAL',6,ICYC)
+
+  if (DEBUG) write(JOSTND,3)ICYC
+  3 format(' ENTERING SUBROUTINE MAICAL  CYCLE =',I5)
+
+  !   RMAI IS FUNCTION TO CALCULATE ADJUSTED MAI.
+
+  if (ISISP .eq.0) ISISP = 3
+  SSSI = SITEAR(ISISP)
+  if (SSSI .eq.0.) SSSI = 140.0
+  ISICD = ISPNUM(ISISP)
+  RMAI = ADJMAI(ISICD,SSSI,10.0,IERR)
+  if (RMAI .gt.128.0)RMAI = 128.0
+  if (DEBUG) write(JOSTND,10)ICYC,RMAI
+  10 format(' LEAVING SUBROUTINE MAICAL  CYCLE =',I5,5X,'RMAI =',F10.3)
+  return
+end

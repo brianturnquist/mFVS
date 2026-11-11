@@ -7,9 +7,9 @@ subroutine BADIST(DEBUG)
 
   ! Common blocks
   include 'PRGPRM.f90'
-  include 'ARRAYS.F77'
-  include 'CONTRL.F77'
-  include 'TWIGCOM.F77'
+  include 'ARRAYS.f90'
+  include 'CONTRL.f90'
+  include 'TWIGCOM.f90'
 
   ! Arguments
   logical :: DEBUG

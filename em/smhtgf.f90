@@ -1,0 +1,67 @@
+!=================!
+!   em : smhtgf   !
+!=================!
+! EM $Id$
+subroutine SMHTGF(ISPC,I,HTGRTH,CR,TPCCF)
+  implicit none
+
+  ! THIS SUBROUTINE COMPUTES THE HEIGHT GROWTH FOR SMALL TREES (HTGRTH)
+  ! IN REAL SCALE.  THIS ROUTINE IS CALLED FROM REGENT.
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
+  include 'PLOT.f90'
+  include 'CALCOM.f90'
+  include 'COEFFS.f90'
+  include 'CONTRL.f90'
+  include 'OUTCOM.f90'
+  include 'PDEN.f90'
+  include 'VARCOM.f90'
+
+  external RANN
+
+  ! Variables
+  integer :: I,ISPC
+  real    :: TPCCF,CR,HTGRTH,BACHLO,D,BETA1,BETA2,HTG1,STDDEV
+
+  !  SPECIES ORDER:
+  !   1=WB,  2=WL,  3=DF,  4=LM,  5=LL,  6=RM,  7=LP,  8=ES,
+  !   9=AF, 10=PP, 11=GA, 12=AS, 13=CW, 14=BA, 15=PW, 16=NC,
+  !  17=PB, 18=OS, 19=OH
+
+  !  SPECIES EXPANSION
+  !  LM USES IE LM (ORIGINALLY FROM TT VARIANT)
+  !  LL USES IE AF (ORIGINALLY FROM NI VARIANT)
+  !  RM USES IE JU (ORIGINALLY FROM UT VARIANT)
+  !  AS,PB USE IE AS (ORIGINALLY FROM UT VARIANT)
+  !  GA,CW,BA,PW,NC,OH USE IE CO (ORIGINALLY FROM CR VARIANT)
+
+  !  RESET ZRAND IF THIS IS THE START OF THE PROJECTION, THIS IS THE FIRST
+  !  PREDICTION FOR A NEW TRIPLE, OR IF GROWTH IN THE PREVIOUS CYCLE WAS
+  !  LESS THAN 0.1 FT.
+
+  if (ZRAND(I).ne.-999.) go to 20
+  10 continue
+  ZRAND(I) = BACHLO(0.0,1.0,RANN)
+  if (ZRAND(I).lt.-2.0.or. ZRAND(I).gt.2.0) go to 10
+  20 continue
+  D = DBH(I)
+  if (D.le.0.0) then
+     HTGRTH = 0.0
+     return
+  end if
+  BETA1 = EXP(B0ACCF(ISPC) + B1ACCF(ISPC)*ALOG(TPCCF))
+  BETA2 = EXP(B0BCCF(ISPC) + B1BCCF(ISPC)*ALOG(TPCCF))
+  HTG1 = BETA1 + BETA2*CR
+  STDDEV = HTG1*(B0ASTD(ISPC) + B1BSTD(ISPC)*CR)
+  HTGRTH = HTG1 + ZRAND(I)*STDDEV
+
+  !  IF ESTIMATED HEIGHT INCREMENT IS CLOSE TO ZERO, SET FLAG TO DRAW
+  !  A NEW RANDOM ERROR ON NEXT PASS THROUGH.
+
+  if (HTGRTH .gt.0.1) return
+  HTGRTH = 0.1
+  ZRAND(I) = -999.
+  return
+end

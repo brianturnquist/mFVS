@@ -1,0 +1,165 @@
+!=================================================!
+!   Compute subsequent and planted tree heights   !
+!=================================================!
+! TT $Id$
+subroutine ESSUBH (I,HHT,EMSQR,DILATE,DELAY,ELEV,ISER,GENTIM,&
+     &TRAGE)
+  implicit none
+
+  !     ASSIGNS HEIGHTS TO SUBSEQUENT AND PLANTED TREE RECORDS
+  !     CREATED BY THE ESTABLISHMENT MODEL.
+
+  !     COMING INTO ESSUBH, TRAGE IS THE AGE OF THE TREE AS SPECIFIED ON
+  !     THE PLANT OR NATURAL KEYWORD.  LEAVING ESSUBH, TRAGE IS THE NUMBER
+  !     BETWEEN PLANTING (OR NATURAL REGENERATION) AND THE END OF THE
+  !     CYCLE.  AGE IS TREE AGE UP TO THE TIME REGENT WILL BEGIN GROWING
+  !     THE TREE.
+  !     CALLED FORM **ESTAB
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'ESPARM.f90'
+  include 'ESCOMN.f90'
+
+  !  DECLARATIONS
+
+  ! Variables
+  integer :: I,ISER,N,IAGE,ITIME
+  real    :: HHT,DELAY,DILATE,ELEV,EMSQR,GENTIM,TRAGE,AGE
+  real    :: UPRE(4),AGELN,BNORM,PN
+  integer :: IDANUW
+
+  ! SPECIES ORDER FOR TETONS VARIANT:
+
+  !  1=WB,  2=LM,  3=DF,  4=PM,  5=BS,  6=AS,  7=LP,  8=ES,  9=AF, 10=PP,
+  ! 11=UJ, 12=RM, 13=BI, 14=MM, 15=NC, 16=MC, 17=OS, 18=OH
+
+  ! VARIANT EXPANSION:
+  ! BS USES ES EQUATIONS FROM TT
+  ! PM USES PI (COMMON PINYON) EQUATIONS FROM UT
+  ! PP USES PP EQUATIONS FROM CI
+  ! UJ AND RM USE WJ (WESTERN JUNIPER) EQUATIONS FROM UT
+  ! BI USES BM (BIGLEAF MAPLE) EQUATIONS FROM SO
+  ! MM USES MM EQUATIONS FROM IE
+  ! NC AND OH USE NC (NARROWLEAF COTTONWOOD) EQUATIONS FROM CR
+  ! MC USES MC (CURL-LEAF MTN-MAHOGANY) EQUATIONS FROM SO
+  ! OS USES OT (OTHER SP.) EQUATIONS FROM TT
+
+  !     FOR PONDEROSA PINE FROM THE CI VARIANT,
+  !     UPRE HOLDS COEFFICIENTS FOR SUBSEQUENT HEIGHTS BY PREP/SPECIES
+  !     SITE PREP--> NONE      MECH       BURN      ROAD
+
+  data UPRE/   0.0,   0.20729,   0.18491,  0.11864 /
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  IDANUW = ISER
+
+  N = INT(DELAY+0.5)
+  if (N.lt.-3) N = -3
+  DELAY = FLOAT(N)
+  ITIME = INT(TIME+0.5)
+  if (N.gt.ITIME) DELAY = TIME
+  AGE = TIME-DELAY-GENTIM+TRAGE
+  if (AGE.lt.1.0) AGE = 1.0
+  IAGE = INT(AGE+0.5)
+  AGELN = ALOG(AGE)
+  BNORM = BNORML(IAGE)
+  TRAGE = TIME-DELAY
+
+  select case (I)
+
+     !     HEIGHT OF TALLEST SUBSEQUENT SPECIES 1 (WB)
+
+  case (1)
+     HHT = 1.0
+
+     !     HEIGHT OF TALLEST SUBS. SPECIES 2 (LM)
+
+  case (2)
+     HHT = 0.5
+
+     !     HEIGHT OF TALLEST SUBS. SPECIES 3 (DF)
+
+  case (3)
+     HHT = 2.0
+
+     !     HEIGHT OF TALLEST SUBS. SPECIES 4 (PM)
+
+  case (4)
+     HHT = 0.5
+
+     !     HEIGHT OF TALLEST SUBS. SPECIES 6 (AS)
+
+  case (6)
+     HHT = 5.0
+
+     !     HEIGHT OF TALLEST SUBS. SPECIES 7 (LP)
+
+  case (7)
+     HHT = 3.0
+
+     !     HEIGHT OF TALLEST SUBS. SPECIES 5 & 8 (BS, ES)
+
+  case (5,8)
+     HHT = 1.5
+
+     !     HEIGHT OF TALLEST SUBS. SPECIES 9 (AF)
+
+  case (9)
+     HHT = 0.75
+
+     !     HEIGHT OF TALLEST SUBS. SPECIES 10 (PP)
+     !     USE PSME/CARU, CAGE, AGSP, FEID, PHMA, ACGL, SYAL, SPBE, SYOR,
+     !     ARUV, MISC HABITAT TYPE CONSTANT.
+
+  case (10)
+     PN = -1.99480 +1.53946*AGELN -0.00402*BAA -0.14710&
+          &+UPRE(IPREP) -0.01155*ELEV
+     HHT = EXP(PN +EMSQR*DILATE*BNORM*0.49076)
+
+     !     HEIGHT OF TALLEST SUBS. SPECIES 11 (UJ)
+
+  case (11)
+     HHT = 0.5
+
+     !     HEIGHT OF TALLEST SUBS. SPECIES 12 (RM)
+
+  case (12)
+     HHT = 0.5
+
+     !     HEIGHT OF TALLEST SUBS. SPECIES 13 (BI)
+
+  case (13)
+     HHT = 1.0
+
+     !     HEIGHT OF TALLEST SUBS. SPECIES 14 (MM)
+
+  case (14)
+     HHT = 5.0
+
+     !     HEIGHT OF TALLEST SUBS. SPECIES 15 (NC)
+
+  case (15)
+     HHT = 10.0
+
+     !     HEIGHT OF TALLEST SUBS. SPECIES 16 (MC)
+
+  case (16)
+     HHT = 1.0
+
+     !     HEIGHT OF TALLEST SUBS. SPECIES 17 (OS)
+
+  case (17)
+     HHT = 1.0
+
+     !     HEIGHT OF TALLEST SUBS. SPECIES 18 (OH)
+
+  case (18)
+     HHT = 10.0
+
+  end select
+
+  return
+end
+  !**END OF CODE SEGMENT

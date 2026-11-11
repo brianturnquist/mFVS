@@ -14,10 +14,10 @@ subroutine COMCUP
   !     N.L. CROOKSTON       INT-MOSCOW     DEC. 1981 & JUNE 1982
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'ARRAYS.F77'
-  include 'CONTRL.F77'
-  include 'OUTCOM.F77'
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
+  include 'CONTRL.f90'
+  include 'OUTCOM.f90'
 
   ! Variables
   logical :: LDEBU,LCMPRS

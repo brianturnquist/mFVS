@@ -10,7 +10,7 @@ block data KEYWDS
   !     DATA STATEMENT FOR TABLE OF KEYWORDS
 
   ! Common blocks
-  include 'KEYCOM.F77'
+  include 'KEYCOM.f90'
 
   ! Variables
   integer :: I

@@ -6,7 +6,7 @@ subroutine DBPRSE (IREAD,RECORD,JOUT,ICYC,IRC)
   implicit none
 
   ! Common blocks
-  include 'DBSTK.F77'
+  include 'DBSTK.f90'
 
   ! Variables
   integer :: IRC,ICYC,JOUT,IREAD,ISTLNB,IS,IE,IP,LP,NC,IQ,II

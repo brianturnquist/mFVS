@@ -1,0 +1,74 @@
+!====================!
+!   tt : siterange   !
+!====================!
+! TT $Id$
+subroutine SITERANGE(IWHO,IS,SILOW,SIHIGH)
+  implicit none
+
+  ! SUBROUTINE TO RETURN THE SITE INDEX RANGE FOR A SPECIES.
+
+  ! THIS SUBROUTINE IS CALLED FROM **SITSET** AND **REGENT**.
+
+  ! SPECIES ORDER FOR TETONS VARIANT:
+
+  !  1=WB,  2=LM,  3=DF,  4=PM,  5=BS,  6=AS,  7=LP,  8=ES,  9=AF, 10=PP,
+  ! 11=UJ, 12=RM, 13=BI, 14=MM, 15=NC, 16=MC, 17=OS, 18=OH
+
+  ! VARIANT EXPANSION:
+  ! BS USES ES EQUATIONS FROM TT
+  ! PM USES PI (COMMON PINYON) EQUATIONS FROM UT
+  ! PP USES PP EQUATIONS FROM CI
+  ! UJ AND RM USE WJ (WESTERN JUNIPER) EQUATIONS FROM UT
+  ! BI USES BM (BIGLEAF MAPLE) EQUATIONS FROM SO
+  ! MM USES MM EQUATIONS FROM IE
+  ! NC AND OH USE NC (NARROWLEAF COTTONWOOD) EQUATIONS FROM CR
+  ! MC USES MC (CURL-LEAF MTN-MAHOGANY) EQUATIONS FROM SO
+  ! OS USES OT (OTHER SP.) EQUATIONS FROM TT
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+
+  ! Variables
+  real    :: SITELO(MAXSP),SITEHI(MAXSP)
+  real    :: SILOW,SIHIGH
+  integer :: IS,IWHO
+
+  !  DEFINITION OF VARIABLES:
+
+  !      IS -- FVS SPECIES INDEX NUMBER
+  !    IWHO -- 1 IF CALLED FROM SUBROUTINE **SITSET**
+  !            2 IF CALLED FROM SUBROUTINE **REGENT**
+  !  SITEHI -- UPPER SITE INDEX VALUES
+  !  SITELO -- LOWER SITE INDEX VALUES
+
+  !  DATA STATEMENTS:
+
+  !  THESE VALUES SHOULD BE BASED ON THE BASE-AGE OF THE SITE CURVE
+  !  BEING USED FOR THAT SPECIES.
+
+  data SITELO/&
+       &25.,  25.,  20.,   5.,  40.,  30.,  20.,  40.,  40.,  40.,&
+       &5.,   5.,   5.,   5.,  30.,   5.,  20.,   5./
+
+  data SITEHI/&
+       &50.,  50.,  60.,  20., 100.,  70., 100., 100.,  90.,  80.,&
+       &15.,  15.,  30.,  30., 120.,  15.,  50.,  20./
+
+  select case (IWHO)
+
+     !  CALLED FROM SUBROUTINES **SITSET** AND **REGENT**
+
+  case (1,2)
+     SILOW = SITELO(IS)
+     SIHIGH = SITEHI(IS)
+
+     !  SPACE FOR ADDITIONAL CALLS
+
+  case default
+     SILOW = 0.
+     SIHIGH = 999.
+
+  end select
+
+  return
+end

@@ -1,0 +1,28 @@
+!================!
+!   dftm : uv1   !
+!================!
+! DFTM $Id$
+function UV1 (KP,X,B,ALPHA,G)
+  implicit none
+
+  !     DFTM MODEL SUBROUTINE - JIM COLBERT - JAN 1978.
+
+  ! Variables
+  integer :: I,KP
+  real    :: ALPHA,B(21),G(12),U,UV1,X(4)
+
+  UV1 = 0.0
+  if (G(12) .le.0.000001) return
+  if (KP .eq.0.or. KP .gt.6) return
+  U = X(3) * X(4)
+  I = KP + 6
+
+  !     IF(G(12).LE.0.0.OR.B(21).LE.0.0) PRINT 998,KP,G(6),G(12),B(21)
+  ! 998 FORMAT(' DEBUG 998:',I5,3(2X,G10.4))
+
+  UV1 = U * (B(19) + B(20) / G(12)) * (EXP(G(12)) - 1.0) * 0.001 /&
+       &B(21) * B(I) * (1.0 - (G(6) * EXP(G(12)))**ALPHA) /&
+       &(1.0 - G(6) * EXP(G(12)))
+
+  return
+end

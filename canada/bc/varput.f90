@@ -1,0 +1,215 @@
+!==================================!
+!   Write variant specific state   !
+!==================================!
+! CANADA-BC $Id$
+subroutine VARPUT (WK3,IPNT,ILIMIT,REALS,LOGICS,INTS)
+  implicit none
+
+  !     WRITE THE VARIANT SPECIFIC VARIABLES.
+  !     ALL VARIABLES ARE FROM BCPLOT.F77
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'BCPLOT.f90'
+  include 'ESHAP.f90'
+
+  !     NOTE: THE ACTUAL STORAGE LIMIT FOR INTS, LOGICS, AND REALS
+  !     IS MAXTRE (SEE PRGPRM).
+
+  ! Variables
+  integer :: MXL,MXR,MXI,IRECLN
+  parameter (MXR = 2,MXL = 3,MXI = 1,IRECLN = 1024)
+
+  integer :: ILIMIT,IPNT,I,J,K
+  logical :: LOGICS(MXL),LC(MAXSP)
+  integer :: INTS(MXI)
+  real    :: REALS(MXR),RC(MAXSP)
+  real    :: WK3(MAXTRE)
+
+  !     PUT THE INTEGER SCALARS
+  !     CALL IFWRIT (WK3, IPNT, ILIMIT, INTS, MXI, 2) ! NONE
+
+  !     PUT THE INTEGER ARRAYS
+  !      CALL IFWRIT (WK3, IPNT, ILIMIT, JDST, 3, 2)
+
+  !     PUT THE LOGICAL SCALARS
+  LOGICS(1) = LV2ATV
+  LOGICS(2) = LV2HTCP
+  LOGICS(3) = LV2HDR
+  call LFWRIT (WK3, IPNT, ILIMIT, LOGICS, MXL, 2)
+
+  !     PUT THE LOGICAL ARRAYS
+  call LFWRIT (WK3, IPNT, ILIMIT, LLTDGOK, MAXSP, 2)
+  call LFWRIT (WK3, IPNT, ILIMIT, LMHTDUB, MAXSP, 2)
+
+  !     PUT THE LOGICAL ARRAYS FOR MORT, LTH & STG STRUCTURES
+  LC = MORT%FIT
+  call LFWRIT (WK3,IPNT,ILIMIT, LC, MAXSP, 2)
+  LC = LTH%FIT
+  call LFWRIT (WK3,IPNT,ILIMIT, LC, MAXSP, 2)
+  LC = STG%FIT
+  call LFWRIT (WK3,IPNT,ILIMIT, LC, MAXSP, 2)
+
+  !     PUT THE REAL SCALARS
+  REALS(1) = SEISHT
+  REALS(2) = ZBRSH
+  call BFWRIT (WK3, IPNT, ILIMIT, REALS, MXR, 2)
+
+  !     PUT THE REAL ARRAYS
+  do I = 1,MRT_PY
+     do J = 1,MRT_BA_UB
+        do K = 1,MRT_DBH_UB
+           call BFWRIT (WK3,IPNT,ILIMIT,TMRT(I,J,K), 1, 2)
+        end do
+     end do
+  end do
+  call BFWRIT (WK3,IPNT,ILIMIT,DGLD1,    MAXSP,  2)
+  call BFWRIT (WK3,IPNT,ILIMIT,DGBAL1,   MAXSP,  2)
+  call BFWRIT (WK3,IPNT,ILIMIT,DGCR1,    MAXSP,  2)
+  call BFWRIT (WK3,IPNT,ILIMIT,DGDBAL1,  MAXSP,  2)
+  call BFWRIT (WK3,IPNT,ILIMIT,DGDBAL2,  MAXSP,  2)
+  call BFWRIT (WK3,IPNT,ILIMIT,DGCCF1,   MAXSP,  2)
+  call BFWRIT (WK3,IPNT,ILIMIT,DGDSQ1,   MAXSP,  2)
+
+  call BFWRIT (WK3,IPNT,ILIMIT,CRHTDBH,  MAXSP,  2)
+  call BFWRIT (WK3,IPNT,ILIMIT,CRHT,     MAXSP,  2)
+  call BFWRIT (WK3,IPNT,ILIMIT,CRDBH2,   MAXSP,  2)
+  call BFWRIT (WK3,IPNT,ILIMIT,CRBAL,    MAXSP,  2)
+  call BFWRIT (WK3,IPNT,ILIMIT,CRLNCCF,  MAXSP,  2)
+  call BFWRIT (WK3,IPNT,ILIMIT,CRSD,     MAXSP,  2)
+
+  call BFWRIT (WK3,IPNT,ILIMIT,V2SEICOR, MAXSP,  2)
+  call BFWRIT (WK3,IPNT,ILIMIT,SEICON,   MAXSP,  2)
+  call BFWRIT (WK3,IPNT,ILIMIT,XHT1B,    MAXSP,  2)
+  call BFWRIT (WK3,IPNT,ILIMIT,XHT2B,    MAXSP,  2)
+
+  !     PUT THE REAL ARRAYS FOR MORT STRUCTURE
+  RC = MORT%CON
+  call BFWRIT (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  RC = MORT%INVDBH
+  call BFWRIT (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  RC = MORT%DBH
+  call BFWRIT (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  RC = MORT%DBHSQ
+  call BFWRIT (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  RC = MORT%RDBH
+  call BFWRIT (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  RC = MORT%BAL
+  call BFWRIT (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  RC = MORT%SQRTBA
+  call BFWRIT (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  RC = MORT%SPH
+  call BFWRIT (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+
+  !     PUT THE REAL ARRAYS FOR LTH STRUCTURE
+  RC = LTH%MLT
+  call BFWRIT (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  RC = LTH%A1
+  call BFWRIT (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  RC = LTH%B1
+  call BFWRIT (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  RC = LTH%B2
+  call BFWRIT (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  RC = LTH%SI
+  call BFWRIT (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  RC = LTH%B3
+  call BFWRIT (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  RC = LTH%C
+  call BFWRIT (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  RC = LTH%CN
+  call BFWRIT (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  RC = LTH%CNSI
+  call BFWRIT (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  RC = LTH%DG
+  call BFWRIT (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  RC = LTH%DG2
+  call BFWRIT (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  RC = LTH%DBH1
+  call BFWRIT (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  RC = LTH%DBH2
+  call BFWRIT (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  RC = LTH%HT2
+  call BFWRIT (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+
+  !     PUT THE REAL ARRAYS FOR STG STRUCTURE
+  RC = STG%CON
+  call BFWRIT (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  RC = STG%LNHT
+  call BFWRIT (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  RC = STG%HT
+  call BFWRIT (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  RC = STG%CCF
+  call BFWRIT (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  RC = STG%BAL
+  call BFWRIT (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  RC = STG%EXPMLT
+  call BFWRIT (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  RC = STG%HCCFL
+  call BFWRIT (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  RC = STG%CCFSL
+  call BFWRIT (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+  RC = STG%SD
+  call BFWRIT (WK3,IPNT,ILIMIT, RC,    MAXSP,  2)
+
+  return
+end
+
+subroutine VARCHPUT (CBUFF, IPNT, LNCBUF)
+  implicit none
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'BCPLOT.f90'
+
+  ! Variables
+  integer :: LNCBUF,IPNT
+  character(len=1) :: CBUFF(LNCBUF)
+  character(len=1) :: CT
+  integer :: I
+
+  !     PUT THE CHARACTER DATA FOR BEC STRUCTURE
+  do I = 1,3
+     CT = BEC%Region(I:I)
+     call CHWRIT (CBUFF,IPNT,LNCBUF,CT,2)
+  end do
+  do I = 1,4
+     CT = BEC%Zone(I:I)
+     call CHWRIT (CBUFF,IPNT,LNCBUF,CT,2)
+  end do
+  do I = 1,3
+     CT = BEC%SubZone(I:I)
+     call CHWRIT (CBUFF,IPNT,LNCBUF,CT,2)
+  end do
+  do I = 1,5
+     CT = BEC%Series(I:I)
+     call CHWRIT (CBUFF,IPNT,LNCBUF,CT,2)
+  end do
+  do I = 1,7
+     CT = BEC%FullName(I:I)
+     call CHWRIT (CBUFF,IPNT,LNCBUF,CT,2)
+  end do
+  do I = 1,15
+     CT = BEC%PrettyName(I:I)
+     call CHWRIT (CBUFF,IPNT,LNCBUF,CT,2)
+  end do
+
+  !     PUT THE CHARACTER DATA FOR MORT STRUCTURE
+  do I = 1,15
+     CT = MORT%PrettyName(I:I)
+     call CHWRIT (CBUFF,IPNT,LNCBUF,CT,2)
+  end do
+
+  !     PUT THE CHARACTER DATA FOR LTH STRUCTURE
+  do I = 1,15
+     CT = LTH%PrettyName(I:I)
+     call CHWRIT (CBUFF,IPNT,LNCBUF,CT,2)
+  end do
+
+  !     PUT THE CHARACTER DATA FOR STG STRUCTURE
+  do I = 1,15
+     CT = STG%PrettyName(I:I)
+     call CHWRIT (CBUFF,IPNT,LNCBUF,CT,2)
+  end do
+
+  return
+end

@@ -10,8 +10,8 @@ subroutine HABTYP (KARD2,ARRAY2)
 
   ! Common blocks
   include 'PRGPRM.f90'
-  include 'CONTRL.F77'
-  include 'VARCOM.F77'
+  include 'CONTRL.f90'
+  include 'VARCOM.f90'
 
   ! Variables
   character(len=10) :: KARD2

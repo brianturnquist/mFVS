@@ -18,8 +18,8 @@ subroutine EVCOMP (IRC,IREAD,JOSTND,RECORD,LDEBUG,IRECNT,LKECHO)
   !     IRECNT= RECORD COUNTER.
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'OPCOM.F77'
+  include 'PRGPRM.f90'
+  include 'OPCOM.f90'
 
   ! Variables
   integer :: IRECNT,JOSTND,IREAD,IRC,I,J,ISTLNB,I1,I2,II,IRTNCD

@@ -20,11 +20,11 @@ subroutine SVCDBH (REMOV,IST)
   !        = 0 IF IT SHOULD NOT BE TAKEN INTO ACCOUNT
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'ARRAYS.F77'
-  include 'CONTRL.F77'
-  include 'SVDATA.F77'
-  include 'PLOT.F77'
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
+  include 'CONTRL.f90'
+  include 'SVDATA.f90'
+  include 'PLOT.f90'
 
   !     WPP     - SUM OF REMOV PER PLOT
   !     PPP     - SUM OF PROB PER PLOT FROM FVS TREE LIST

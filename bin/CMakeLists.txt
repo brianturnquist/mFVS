@@ -194,14 +194,23 @@ set(CsourceSQL "")
 set(CsourceFFE "")
 set(includeDirs "")
 
+# Converted include files use .f90 names and remain header-only.
+file(STRINGS "${FVS_ROOT}/bin/fortran_includes.txt" FortranIncludePaths)
+set(FortranIncludeFiles "")
+foreach(header ${FortranIncludePaths})
+    get_filename_component(header_abs "${FVS_ROOT}/${header}" ABSOLUTE)
+    list(APPEND FortranIncludeFiles "${header_abs}")
+endforeach()
+
 foreach(fn ${fileList})
     string(STRIP "${fn}" fn)
     get_filename_component(pname ${fn} PATH)
     get_filename_component(fname ${fn} NAME)
     string(TOLOWER "${fn}" fn_low)
+    get_filename_component(source_abs "${fn}" ABSOLUTE BASE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 
     # Split Headers: Fortran vs C
-    if(fn_low MATCHES "\\.(f77|inc)$")
+    if(fn_low MATCHES "\\.(f77|inc)$" OR source_abs IN_LIST FortranIncludeFiles)
         list(APPEND FortranHeaders "${fn}")
         set(is_header TRUE)
 #    elseif(fn_low MATCHES "\\.h$")

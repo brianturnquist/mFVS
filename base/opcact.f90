@@ -20,9 +20,9 @@ subroutine OPCACT (KODE,CSTR)
   !     CSTR = THE STRING THAT IS BEING ADDED.
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'OPCOM.F77'
-  include 'CONTRL.F77'
+  include 'PRGPRM.f90'
+  include 'OPCOM.f90'
+  include 'CONTRL.f90'
 
   ! Variables
   logical :: LDEB

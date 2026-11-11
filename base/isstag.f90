@@ -12,8 +12,8 @@ subroutine ISSTAG
   !   A.R.STAGE - INT MOSCOW - JUNE 1997
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'SSTGMC.F77'
+  include 'PRGPRM.f90'
+  include 'SSTGMC.f90'
 
   ! Variables
   logical :: LON,LPRT

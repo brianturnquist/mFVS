@@ -1,0 +1,38 @@
+!=================!
+!   kt : ktfctr   !
+!=================!
+! KT $Id$
+subroutine KTFCTR (ISPC,DTOP,D,RCF)
+  implicit none
+
+  !  THIS SUBROUTINE CALCULATES FACTORS TO CONVER TOTAL VOLUME
+  !  TO MERCHANTABLE VOLUME FOR WP, WL, DF, GF, LP, AND PP.
+  !  TOTAL AND MERCHANTABLE CUBIC FOOT VOLUME EQUATIONS FOR THESE
+  !  SPECIES DEVELOPED BY MOISEN, CHOJNACKY, AND CUTLER.
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+
+  !  DIMENSION STATEMENT FOR INTERNAL ARRAYS.
+
+  ! Variables
+  real    :: RCF1(MAXSP),RCF2(MAXSP),RCF3(MAXSP),RCF,DTOP,D
+  integer :: ISPC
+
+  data RCF1/0.620,1.133,0.709,0.592,0.000,0.000,0.688,0.000,&
+       &0.000,1.047,0.000/
+  data RCF2/3.358,3.561,3.475,3.595,0.000,0.000,3.580,0.000,&
+       &0.000,3.450,0.000/
+  data RCF3/3.137,3.418,3.229,3.329,0.000,0.000,3.405,0.000,&
+       &0.000,3.290,0.000/
+
+  !  COMPUTE CONVERSION FACTOR.
+
+  if (ISPC.le.4.or. ISPC.eq.7.or. ISPC.eq.10) then
+     RCF = 1-(RCF1(ISPC)*DTOP**RCF2(ISPC)/(D**RCF3(ISPC)))
+  else
+     RCF = 0.
+  end if
+
+  return
+end

@@ -1,0 +1,103 @@
+!========================!
+!   dbsqlite : dbsopen   !
+!========================!
+! DBSQLITE $Id$
+subroutine DBSOPEN(LCOUT,LCIN,KODE)
+  implicit none
+
+  !     PURPOSE: TO OPEN BOTH THE INPUT AND OUTPUT DATABASE CONNECTIONS
+  !            LCOUT and LCIN - passed in a TRUE if you want to open the
+  !             correspoinding databases, 0 if you do not
+  !            KODE     - RETURN CODE 0: OPEN SUCCESSFUL
+  !                                   1: OPEN NOT SUCCESSFUL
+
+  ! Common blocks
+  include 'DBSCOM.f90'
+
+  !DEC$ ATTRIBUTES DLLIMPORT :: FSQL3_ADDCOLIFABSENT
+  !DEC$ ATTRIBUTES DLLIMPORT :: FSQL3_BIND_DOUBLE
+  !DEC$ ATTRIBUTES DLLIMPORT :: FSQL3_BIND_INT
+  !DEC$ ATTRIBUTES DLLIMPORT :: FSQL3_BIND_TEXT
+  !DEC$ ATTRIBUTES DLLIMPORT :: FSQL3_CLOSE
+  !DEC$ ATTRIBUTES DLLIMPORT :: FSQL3_COLCNT
+  !DEC$ ATTRIBUTES DLLIMPORT :: FSQL3_COLDOUBLE
+  !DEC$ ATTRIBUTES DLLIMPORT :: FSQL3_COLINT
+  !DEC$ ATTRIBUTES DLLIMPORT :: FSQL3_COLISNULL
+  !DEC$ ATTRIBUTES DLLIMPORT :: FSQL3_COLNAME
+  !DEC$ ATTRIBUTES DLLIMPORT :: FSQL3_COLREAL
+  !DEC$ ATTRIBUTES DLLIMPORT :: FSQL3_COLTEXT
+  !DEC$ ATTRIBUTES DLLIMPORT :: FSQL3_COLTYPE
+  !DEC$ ATTRIBUTES DLLIMPORT :: FSQL3_ERRMSG
+  !DEC$ ATTRIBUTES DLLIMPORT :: FSQL3_EXEC
+  !DEC$ ATTRIBUTES DLLIMPORT :: FSQL3_FINALIZE
+  !DEC$ ATTRIBUTES DLLIMPORT :: FSQL3_OPEN
+  !DEC$ ATTRIBUTES DLLIMPORT :: FSQL3_PREPARE
+  !DEC$ ATTRIBUTES DLLIMPORT :: FSQL3_RESET
+  !DEC$ ATTRIBUTES DLLIMPORT :: FSQL3_STEP
+  !DEC$ ATTRIBUTES DLLIMPORT :: FSQL3_TABLEEXISTS
+#if !(_WIN64)
+  !DEC$ ATTRIBUTES ALIAS:'_FSQL3_ADDCOLIFABSENT' :: FSQL3_ADDCOLIFABSENT
+  !DEC$ ATTRIBUTES ALIAS:'_FSQL3_BIND_DOUBLE'    :: FSQL3_BIND_DOUBLE
+  !DEC$ ATTRIBUTES ALIAS:'_FSQL3_BIND_INT'       :: FSQL3_BIND_INT
+  !DEC$ ATTRIBUTES ALIAS:'_FSQL3_BIND_TEXT'      :: FSQL3_BIND_TEXT
+  !DEC$ ATTRIBUTES ALIAS:'_FSQL3_CLOSE'          :: FSQL3_CLOSE
+  !DEC$ ATTRIBUTES ALIAS:'_FSQL3_COLCNT'         :: FSQL3_COLCNT
+  !DEC$ ATTRIBUTES ALIAS:'_FSQL3_COLDOUBLE'      :: FSQL3_COLDOUBLE
+  !DEC$ ATTRIBUTES ALIAS:'_FSQL3_COLINT'         :: FSQL3_COLINT
+  !DEC$ ATTRIBUTES ALIAS:'_FSQL3_COLISNULL'      :: FSQL3_COLISNULL
+  !DEC$ ATTRIBUTES ALIAS:'_FSQL3_COLNAME'        :: FSQL3_COLNAME
+  !DEC$ ATTRIBUTES ALIAS:'_FSQL3_COLREAL'        :: FSQL3_COLREAL
+  !DEC$ ATTRIBUTES ALIAS:'_FSQL3_COLTEXT'        :: FSQL3_COLTEXT
+  !DEC$ ATTRIBUTES ALIAS:'_FSQL3_COLTYPE'        :: FSQL3_COLTYPE
+  !DEC$ ATTRIBUTES ALIAS:'_FSQL3_ERRMSG'         :: FSQL3_ERRMSG
+  !DEC$ ATTRIBUTES ALIAS:'_FSQL3_EXEC'           :: FSQL3_EXEC
+  !DEC$ ATTRIBUTES ALIAS:'_FSQL3_FINALIZE'       :: FSQL3_FINALIZE
+  !DEC$ ATTRIBUTES ALIAS:'_FSQL3_OPEN'           :: FSQL3_OPEN
+  !DEC$ ATTRIBUTES ALIAS:'_FSQL3_PREPARE'        :: FSQL3_PREPARE
+  !DEC$ ATTRIBUTES ALIAS:'_FSQL3_RESET'          :: FSQL3_RESET
+  !DEC$ ATTRIBUTES ALIAS:'_FSQL3_STEP'           :: FSQL3_STEP
+  !DEC$ ATTRIBUTES ALIAS:'_FSQL3_TABLEEXISTS'    :: FSQL3_TABLEEXISTS
+#endif
+
+  ! Variables
+  integer,parameter :: MxMsg = 100
+  character(LEN = MxMsg) :: Msg
+  integer :: I,KODE,fsql3_open,fsql3_errmsg
+  logical :: LCOUT,LCIN
+
+  !     CLOSE ANY OPEN CONNECTIONS
+
+  call DBSCLOSE(LCOUT,LCIN)
+
+  KODE = 0
+  if (LCOUT) then
+     if (IMEMDB.eq.1) then
+        !         MEMORY MODE: ONE IN-MEMORY OUTPUT DATABASE FOR THE WHOLE RUN.
+        !         DBSCLOSE LEAVES IT OPEN, SO ONLY OPEN IT THE FIRST TIME.
+        I = 0
+        if (IoutDBref.eq.-1)&
+             &I = fsql3_open(IoutDBref,":memory:"//CHAR(0))
+     else
+        I = fsql3_open(IoutDBref,trim(DSNOUT)//CHAR(0))
+     end if
+     if (I.ne.0) then
+        I = fsql3_errmsg(IoutDBref,Msg,MxMsg)
+        print *," IoutDBref=",IoutDBref,&
+             &"DBS open error msg for DSNOUT=",Msg(:I)
+        KODE = 1
+        if (.not.LCIN) return
+     end if
+  end if
+
+  if (LCIN) then
+     I = fsql3_open(IinDBref,trim(DSNIN)//CHAR(0))
+     if (I.ne.0) then
+        I = fsql3_errmsg(IinDBref,Msg,MxMsg)
+        print *," IinDBref=",IinDBref,&
+             &" DBS open error msg for DSNIN=",Msg(:I)
+        KODE = 1
+        return
+     end if
+  end if
+  return
+end

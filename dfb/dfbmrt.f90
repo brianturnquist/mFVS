@@ -1,0 +1,181 @@
+!==================!
+!   dfb : dfbmrt   !
+!==================!
+! DFB $Id$
+subroutine DFBMRT
+  implicit none
+
+  !  MORTALITY ROUTINE FOR DFB MODEL.  THIS ROUTINE LOADS WK2 (PROGNOSIS
+  !  MORTALITY ARRAY) WITH THE MORTALITY CAUSED BY DOUGLAS-FIR
+  !  BEETLE.
+
+  !  CALLED BY :
+  !     DFBDRV  [DFB]
+
+  !  CALLS :
+  !     DFBIND  (SUBROUTINE)   [DFB]
+  !     DFBTAB  (SUBROUTINE)   [DFB]
+
+  !  LOCAL VARIABLES :
+  !     BA     - BASAL AREA OF THE CURRENT TREE RECORD.
+  !     CFTVOL - ARRAY THAT HOLDS THE CUBIC FOOT VOLUME LOST DUE TO DFB
+  !              FOR EACH DBH CLASS.
+  !     D      - DBH OF THE CURRENT TREE RECORD.
+  !     I      - COUNTER INDEX
+  !     I1,I2  - INDEXES FOR THE ARRAY IND1.  I1 IS THE STARTING
+  !              INDEX FOR A SPECIES IN ARRAY IND1 (DF = IDFSPC).
+  !              I2 IS THE ENDING INDEX FOR A SPECIES IN ARRAY IND1
+  !              (DF = IDFSPC).
+  !     DCLAS  - DIAMETER CLASS INDEX.
+  !     J      - INDEX TO DOUGLAS-FIR TREES.
+  !     P      - TREES/ACRE FOR THE CURRENT TREE RECORD (TEMPORARY
+  !              PROB(I)).
+  !     SUMDBH - THE SUM OF THE DBH MULTIPLIED BY THE TREES/ACRE FOR ALL
+  !              DF TREE RECORDS >= 9 INCHES DBH.
+  !     TAMORT - THE NUMBER OF TREES/ACRE KILLED IN THE CURRENT TREE
+  !              RECORD.
+
+  !  COMMON BLOCK VARIABLES USED :
+  !     BADF9  - (DFBCOM)  INPUT
+  !     CFV    - (ARRAYS)  INPUT
+  !     DBH    - (ARRAYS)  INPUT
+  !     DEADDF - (DFBCOM)  OUTPUT
+  !     DEBUIN - (DFBCOM)  INPUT
+  !     DFKILL - (DFBCOM)  INPUT
+  !     IDFSPC - (DFBCOM)  INPUT
+  !     IND1   - (ARRAYS)  INPUT
+  !     ISCT   - (CONTRL)  INPUT
+  !     JODFB  - (DFBCOM)  INPUT
+  !     LBAMOD - (DFBCOM)  INPUT
+  !     LIVEDF - (DFBCOM)  OUTPUT
+  !     OKILL  - (DFBCOM)  INPUT/OUTPUT
+  !     PROB   - (ARRAYS)  INPUT
+  !     START  - (DFBCOM)  INPUT
+  !     WK2    - (ARRAYS)  OUTPUT
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
+  include 'CONTRL.f90'
+  include 'DFBCOM.f90'
+
+  ! Variables
+  integer :: I,I1,I2,DCLAS,J
+
+  real    :: CFTVOL(20),TAMORT,P,D,BA
+  real    :: SUMDBH
+
+  if (DEBUIN) write (JODFB,*) ' ** ENTERING SUBROUTINE DFBMRT'
+
+  !.... INITIALIZE LIVEDF AND DEADDF.
+
+  do I = 1,20
+     LIVEDF(I) = START(I)
+     DEADDF(I) = 0.0
+     CFTVOL(I) = 0.0
+     100 continue
+  end do
+
+  !.... SET UP INDEXES INTO THE DOUGLAS-FIR TREE RECORDS.
+
+  I1 = ISCT(IDFSPC,1)
+  if (I1.eq.0) goto 1000
+  I2 = ISCT(IDFSPC,2)
+
+  !.... IF THE DBH METHOD IS TO BE USED TO CALCULATE MORTALITY THEN
+  !.... CALCULATE THE SUM OF TREES/ACRE MULTIPLIED TO DBH FOR TREES WITH
+  !.... A DBH >= 9".
+
+  if (.not. LBAMOD) then
+     SUMDBH = 0.0
+     do I = I1,I2
+        J = IND1(I)
+        if (DBH(J) .ge.9.0) then
+           SUMDBH = SUMDBH + PROB(J) * DBH(J)
+        end if
+        150 continue
+     end do
+  end if
+
+  !.... START LOOP TO CALCULATE THE TREES/ACRE THAT ARE KILLED BY THE
+  !.... DOUGLAS-FIR BEETLE IN EACH TREE RECORD.
+
+  do I = I1,I2
+
+     !....    SETUP TREE RECORD INDEX AND CALCULATE THE BASAL AREA FOR THE
+     !....    TREE RECORD.
+
+     J = IND1(I)
+     P = PROB(J)
+     D = DBH(J)
+
+     !....    IF THE BASAL AREA METHOD IS TO BE USED TO CALCULATE MORTALITY
+     !....    THEN CALCULATE THE BASAL AREA FOR THE CURRENT TREE RECORD.
+
+     if (LBAMOD) then
+        BA = 0.005454154 * D * D * P
+     end if
+
+     !....    IF THE TREE RECORD HAS A DBH >= 9 INCHES (DBH CLASS >= 5)
+     !....    THEN CALCULATE THE NUMBER OF TREES/ACRE TO KILL FOR THE TREE
+     !....    RECORD.  IF LBAMOD IS .TRUE. THEN USE THE BASAL AREA MORTALITY
+     !....    DISTRIBUTION METHOD.  OTHERWISE USE THE DBH MORTALITY
+     !....    DISTRIBUTION METHOD (THE DEFAULT).  SUM UP THE LIVE DOUGLAS-FIR
+     !....    AND DEAD DOUGLAS-FIR FOR THE DBH CLASS.
+
+     call DFBIND (DBH(J),DCLAS)
+
+     if (DCLAS .ge.5) then
+        if (LBAMOD) then
+           TAMORT = DFKILL * BA / BADF9
+        else
+           TAMORT = DFKILL * (D * P / SUMDBH)
+        end if
+
+        if (TAMORT .gt. P) TAMORT = P
+        LIVEDF(DCLAS) = LIVEDF(DCLAS) - TAMORT
+        DEADDF(DCLAS) = DEADDF(DCLAS) + TAMORT
+     else
+        TAMORT = 0.0
+     end if
+
+     !....    CALCULATE THE CUBIC FOOT VOLUME LOST DUE TO THE DOUGLAS-FIR
+     !....    BEETLE.
+
+     CFTVOL(DCLAS) = CFTVOL(DCLAS) + TAMORT * CFV(J)
+
+     if (OKILL .gt.0.0) then
+
+        !....       IF WINDTHROW OCCURED THEN ADD DFB MORTALITY TO WINDTHROW
+        !....       MORTALITY.
+
+        WK2(J) = WK2(J) + TAMORT
+     else
+
+        !....       IF NO WINDTHROW THEN COMPARE THE DFB MORTALITY TO THE
+        !....       BACKGROUND MORTALITY AND TAKE THE GREATER OF THE TWO.
+
+        if (TAMORT .gt. WK2(J)) WK2(J) = TAMORT
+     end if
+
+     !....    MAKE SURE THAT THE NUMBER OF TREES/ACRE TO KILL FOR THE CURRENT
+     !....    TREE RECORD IS NOT GREATER THAN THE NUMBER THAT EXIST.
+
+     if (WK2(J) .gt. PROB(J)) WK2(J) = PROB(J)
+
+     200 continue
+  end do
+
+  !.... CLEAR OKILL
+
+  OKILL = 0.0
+
+  !.... PRINT OUT TABLE OF DFB MORALITY INFORMATION.
+
+  call DFBTAB(CFTVOL)
+
+  1000 continue
+  if (DEBUIN) write (JODFB,*) ' ** LEAVING SUBROUTINE DFBMRT'
+
+  return
+end

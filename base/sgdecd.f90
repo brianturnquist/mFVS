@@ -11,8 +11,8 @@ subroutine SGDECD (ISPC,KARD,IFLAG)
   !     KARD  = CHARACTER REPRESENTATION OF SPECIES FIELD
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'CONTRL.F77'
+  include 'PRGPRM.f90'
+  include 'CONTRL.f90'
 
   ! Variables
   integer :: IFLAG,ISPC,J,I

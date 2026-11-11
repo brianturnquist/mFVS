@@ -14,13 +14,13 @@ subroutine ESGENT (ITRNIN)
 
   ! Common blocks
   include 'PRGPRM.f90'
-  include 'ARRAYS.F77'
-  include 'CONTRL.F77'
+  include 'ARRAYS.f90'
+  include 'CONTRL.f90'
   include 'ESPARM.f90'
   include 'ESCOMN.f90'
-  include 'ESCOM2.F77'
-  include 'ESHAP.F77'
-  include 'ESHAP2.F77'
+  include 'ESCOM2.f90'
+  include 'ESHAP.f90'
+  include 'ESHAP2.f90'
 
   ! Variables
   integer :: ITRNIN,I,N

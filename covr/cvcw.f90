@@ -1,0 +1,89 @@
+!=================!
+!   covr : cvcw   !
+!=================!
+! COVR $Id$
+subroutine CVCW (LTHIN)
+  implicit none
+
+  !  COMPUTES CROWN WIDTH FOR INDIVIDUAL TREES.
+  !  ALSO COMPUTES SUM OF CROWN AREAS, CRAREA.
+
+  !  CROWN WIDTH RELATIONSHIPS ARE DOCUMENTED IN :
+  !  MOEUR,MELINDA. 1981. CROWN WIDTH AND FOLIAGE WEIGHT OF NORTHERN
+  !      ROCKY MOUNTAIN CONIFERS.  USDA FOR. SERV. RES. PAP. INT- 283.
+
+  !  VARIABLE DEFINITIONS
+
+  !  BH1(MAXSP)-- ARRAY OF COEFFICIENTS FOR HEIGHT TERM FOR CROWN
+  !             WIDTH FUNCTION FOR TREES LESS THAN 3.5 INCHES DBH
+  !  BINT2(MAXSP)- ARRAY OF INTERCEPTS FOR CROWN WIDTH FUNCTION
+  !             FOR TREES 3.5 INCHES AND LARGER
+  !  BH2(MAXSP)-- ARRAY OF COEFFICIENTS FOR HEIGHT TERM FOR TREES
+  !             .GE. 3.5 INCHES
+  !  BAREA   -- STAND BASAL AREA
+  !  CL      -- CROWN LENGTH
+  !  D       -- TREE DBH
+  !  H       -- TREE HEIGHT
+  !  TRECW(MAXTRE) PREDICTED CROWN WIDTH IN FEET
+  !  CRAREA -- SUM OF ALL CROWN PROJECTION AREAS (PI/4*TRECW*TRECW)
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'CONTRL.f90'
+  include 'ARRAYS.f90'
+  include 'PLOT.f90'
+  include 'CVCOM.f90'
+
+  ! Variables
+  logical :: LTHIN,DEBUG
+  integer :: I,ISPI,IICR
+  real    :: D,H,P
+  logical :: LDANUW
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  LDANUW = LTHIN
+
+  !  CHECK FOR DEBUG.
+
+  call DBCHK(DEBUG,'CVCW',4,ICYC)
+  if (DEBUG) write (JOSTND,9000) ICYC
+  9000 format (/'**CALLING CVCW, CYCLE = ',I2 / '        I      ISPI',&
+       &'         D         H        CL     BAREA     TRECW    CRAREA')
+
+  !  RETURN IF NOTREES OPTION IN EFFECT.
+
+  if (ITRN .gt.0) go to 5
+  if (DEBUG) write (JOSTND,9001) ITRN
+  9001 format ('ITRN =', I5,' : NOTREES : RETURN TO **CVCNOP**')
+  return
+  5 continue
+
+  !  ENTER TREE LOOP
+
+  CRAREA = 0.0
+
+  do I = 1,ITRN
+     D = DBH(I)
+     H = HT(I)
+     ISPI = ISP(I)
+     IICR = ICR(I)
+     P = PROB(I)
+     TRECW(I) = CRWDTH(I)
+
+     !  COMPUTE SUM OF CROWN PROJECTION AREAS.
+
+     CRAREA = CRAREA + TRECW(I)*TRECW(I)*P
+     if (DEBUG) write (JOSTND,9002) I,ISPI,D,H,IICR,&
+          &TRECW(I),CRAREA
+     9002 format (2I10,2F10.1,I10,2F10.1)
+
+     100 continue
+  end do
+
+  !  COMPUTE TOTAL CROWN AREA.
+  !  CONSTANT = PI*TRECW/2*TRECW/2 = .785398
+
+  CRAREA = CRAREA*0.785398
+  return
+end

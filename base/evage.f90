@@ -13,8 +13,8 @@ subroutine EVAGE (IDTE)
   !     IDTE  = POSTING DATE
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'OPCOM.F77'
+  include 'PRGPRM.f90'
+  include 'OPCOM.f90'
 
   ! Variables
   integer :: IDTE,ISTRT,NEVA,NE,IEN,I1,I

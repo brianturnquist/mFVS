@@ -13,10 +13,10 @@ subroutine OPLIST (LFIRST,NPLT,MGMID,ITITLE)
   !     DISPOSITION OF ACTIVITIES, IS WRITTEN.
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'CONTRL.F77'
-  include 'OPCOM.F77'
-  include 'KEYCOM.F77'
+  include 'PRGPRM.f90'
+  include 'CONTRL.f90'
+  include 'OPCOM.f90'
+  include 'KEYCOM.f90'
 
   ! Variables
   integer :: NTRSLT,I1,I,ICY,I2,II,IACTK,IDT,KEY,LOC,J1,J2,J,ID,K

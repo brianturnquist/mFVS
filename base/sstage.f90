@@ -17,12 +17,12 @@ subroutine SSTAGE(INBA,INICYCLE,LSUPRT)
   !   LSUPRT = IF TRUE, SUPPRESS THE PRINTING, EVEN IF IT IS REQUESTED.
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'ARRAYS.F77'
-  include 'CONTRL.F77'
-  include 'OUTCOM.F77'
-  include 'PLOT.F77'
-  include 'SSTGMC.F77'
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
+  include 'CONTRL.f90'
+  include 'OUTCOM.f90'
+  include 'PLOT.f90'
+  include 'SSTGMC.f90'
 
   ! Variables
   integer :: IOUT,ICD,MSP1,MSP2,IS3OK,IS2OK,I2,IS1OK,IS3I2,IS3I1
@@ -895,8 +895,8 @@ subroutine UPDATECCCOEF(INICYCLE,INBA)
   !     PROCESS CCADJ ACTIVITIES TO INSURE CCCOEF IS UP TO DATE
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'CONTRL.F77'
+  include 'PRGPRM.f90'
+  include 'CONTRL.f90'
 
   !     ACTIVITY 444 = CCADJ KEYWORD
 

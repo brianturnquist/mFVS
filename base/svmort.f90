@@ -31,10 +31,10 @@ subroutine SVMORT (ICALLER, CUMMORT, ICURYEAR)
   !     CALLED FROM GRADD JUST BEFORE UPDATE.
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'ARRAYS.F77'
-  include 'CONTRL.F77'
-  include 'SVDATA.F77'
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
+  include 'CONTRL.f90'
+  include 'SVDATA.f90'
 
   !     SUM= TOTAL CHANGE IN MORT THIS CALL
   !     CREATE DUMMY VERSIONS OF SSNG,DSNG,CTCRWN

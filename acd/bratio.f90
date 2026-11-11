@@ -10,7 +10,7 @@ function BRATIO(IS,D,H)
 
   ! Common blocks
   include 'PRGPRM.f90'
-  include 'COEFFS.F77'
+  include 'COEFFS.f90'
 
   ! Variables
   integer :: IS

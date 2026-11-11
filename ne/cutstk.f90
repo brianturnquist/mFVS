@@ -1,0 +1,164 @@
+!=================!
+!   ne : cutstk   !
+!=================!
+! NE $Id$
+subroutine CUTSTK
+  implicit none
+
+  !  THIS SUBROUTINE CONTAINS ENTRY POINTS FOR CALCULATING STOCKING
+  !  LEVELS FOR VARIOUS THINNING OPTIONS.
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'CONTRL.f90'
+  include 'ARRAYS.f90'
+  include 'PLOT.f90'
+
+  ! Variables
+  logical :: LINCL
+  real    :: TPRED(7),B0(7),SPPRO(7),SPTPA(8)
+  integer :: JJSP(MAXSP)
+  integer :: I,IISPG,JPNUM,JSPCUT,JTYP,IC,IGRP,IULIM,IG
+  real    :: TPA,H,D,CSTOCK,DL,DU,HL,HU,TPAPRD,RSD,SPATOT,FSTOCK
+  data B0/4.129,3.990,3.938,4.029,3.969,4.135,4.101/
+
+  !  PUT SPECIES IN ONE OF 8 STOCKING CATEGORIES
+
+  !  SPECIES GROUP 1 - CHERRY/OAK/POPLAR 80%
+  !  SPECIES GROUP 2 - NORTHERN HARDWOODS
+  !  SPECIES GROUP 3 - UPLAND OAK
+  !  SPECIES GROUP 4 - PAPER BIRCH
+  !  SPECIES GROUP 5 - RED OAK
+  !  SPECIES GROUP 6 - SPRUCE/FIR
+  !  SPECIES GROUP 7 - WHITE PINE
+  !  SPECIES GROUP 8 - MISCELLANEOUS
+
+  data JJSP/7*6,4*7,6*6,8*7,7*2,2*4,5*3,2,8*1,5*2,1,12*3,2*5,&
+       &2*3,38*8/
+
+  !  ENTRY AUTSTK CALCULATES NORMAL STOCKING FOR AUTOMATIC THINS.
+
+  !  VARIABLE DEFINITIONS:
+  !  B0 --  CONSTANT TO PREDICT STOCKING PERCENT.  ONE B0 FOR EACH
+  !         STOCKING PERCENT CATEGORY.
+  !  SPATOT TOTAL NUMBER OF TREES IN THE SEVEN STOCKING PERCENT
+  !         CATEGORIES.
+  !  SPPRO  PROPORTION OF TREES BY STOCKING PERCENT CATEGORY.
+  !  TPRED  NUMBER OF TREES PER ACRE FOR THE STAND AT 100% STOCKING-
+  !           BY STOCKING CATEGORY.
+  ! TPAPRD  NUMBER OF TREES PER ACRE PREDICTED FOR THE NEW STAND AT
+  !           100% STOCKING--INCLUDES ALL SEVEN STOCKING PERCENT
+  !           CATEGORIES.
+
+  entry AUTSTK (FSTOCK)
+  do I = 1,7
+     TPRED(I) = 0.0
+     10 continue
+  end do
+
+  !  DETERMINE TOTAL NUMBER OF TREES PER ACRE IN EACH SPECIES GROUP
+
+  do I = 1,ITRN
+     IISPG = JJSP(ISP(I))
+     SPTPA(IISPG) = SPTPA(IISPG) + PROB(I)
+     20 continue
+  end do
+  do I = 1,7
+     SPATOT = SPATOT + SPTPA(I)
+     30 continue
+  end do
+  if (SPATOT .eq.0.0) go to 50
+
+  !  ADD THE TREES PER ACRE FROM THE MISCELLANEOUS SPECIES GROUP INTO
+  !  OTHER SPECIES GROUPS PROPORTIONALLY.
+
+  do I = 1,7
+     SPPRO(I) = SPTPA(I)/SPATOT
+     SPTPA(I) = SPTPA(I) + (SPPRO(I)*SPTPA(8))
+  end do
+
+  !  IF ALL TREES PER ACRE ARE IN THE MISCELLANEOUS SPECIES GROUP
+  !  READJUST OTHER SPECIES GROUPS.
+
+  50 continue
+  SPATOT = SPTPA(8)
+  do I = 1,7
+     SPTPA(I) = SPTPA(I) + (.14286*SPATOT)
+     60 continue
+  end do
+
+  !  RECALCULATE STOCKING PERCENT FOR LIVE TREES ONLY (ISTATUS = 1).
+
+  do I = 1,7
+     if (SPTPA(I) .eq.0.0) then
+        TPRED(I) = 1.0
+        go to 80
+     end if
+
+     !  CALCULATE PREDICTED NUMBER OF TREES FOR EACH SPECIES GROUP
+
+     TPRED(I) = 10.0**(B0(I) - 1.605*(LOG10(ORMSQD)))
+     80 continue
+  end do
+
+  !  CALCULATE RELATIVE STAND DENSITY
+
+  RSD = ((SPTPA(1)/TPRED(1))+(SPTPA(2)/TPRED(2))+&
+       &(SPTPA(3)/TPRED(3))+(SPTPA(4)/TPRED(3))+&
+       &(SPTPA(5)/TPRED(5))+(SPTPA(6)/TPRED(6))+&
+       &(SPTPA(7)/TPRED(7)))
+  TPAPRD = (100.0/RSD)*OLDTPA
+  FSTOCK = TPAPRD
+  return
+
+  !  ENTRY CLSSTK COMPUTES BA OR TPA STOCKING IN A SPECIFIED
+  !  DBH/HT/SPECIES CLASS.
+
+  !  CSTOCK = CLASS STOCKING
+  !  JTYP   = 1 IF STOCKING IS IN TPA,  2 IF STOCKING IS IN BA
+  !  JSPCUT = SPECIES WHICH WILL BE CUT
+  !  LINCL  = LOGICAL VARIABLE USED TO INCLUDE SPECIES OR NOT.
+  !  DL,DU  = LOWER AND UPPER DIAMETER LIMITS RESPECTIVELY (GE,LT)
+  !  HL,HU  = LOWER AND UPPER HEIGHT LIMITS RESPECTIVELY (GE,LT)
+  !  JPNUM = POINT NUMBER (IN FVS SEQUENCE FORMAT), 0 = ALL POINTS
+
+  entry CLSSTK (CSTOCK,JTYP,JSPCUT,DL,DU,HL,HU,JPNUM)
+  CSTOCK = 0.0
+  do IC = 1,ITRN
+     if (JPNUM.gt.0.and. ITRE(IC).ne.JPNUM)go to 100
+
+     LINCL = .false.
+     if ((JSPCUT.eq.0.or. JSPCUT.eq.ISP(IC)).and.&
+          &.not.LEAVESP(ISP(IC))) then
+        LINCL = .true.
+     else if (JSPCUT.lt.0) then
+        IGRP = -JSPCUT
+        IULIM = ISPGRP(IGRP,1)+1
+        do IG = 2,IULIM
+           if ((ISP(IC) .eq. ISPGRP(IGRP,IG)).and..not.LEAVESP(ISP(IC))) then
+              LINCL = .true.
+              go to 91
+           end if
+           90 continue
+        end do
+     end if
+     91 continue
+
+     if (LINCL) then
+        D = DBH(IC)
+        H = HT(IC)
+        TPA = WK4(IC)
+        if (JPNUM.gt.0)TPA = TPA*(PI-FLOAT(NONSTK))
+        if (D.lt.DL .or. D.ge.DU) go to 100
+        if (H.lt.HL .or. H.ge.HU) go to 100
+        if (JTYP.eq.1) then
+           CSTOCK = CSTOCK + TPA
+        else
+           CSTOCK = CSTOCK + TPA*(D*D*0.005454154)
+        end if
+     end if
+     100 continue
+  end do
+  return
+
+end

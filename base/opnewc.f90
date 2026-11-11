@@ -24,8 +24,8 @@ subroutine OPNEWC (KODE,JOSTND,IREAD,IDT,IACTK,KEYWRD,KARD, &
   !     IPRMPT= FIELD NUMBER WHERE 'PARMS' STARTS.
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'OPCOM.F77'
+  include 'PRGPRM.f90'
+  include 'OPCOM.f90'
 
   ! Variables
   integer :: ICYC,IRECNT,IPRMPT,IACTK,IDT,IREAD,JOSTND,KODE,ICEX

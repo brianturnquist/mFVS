@@ -1,0 +1,31 @@
+!=====================!
+!   common : SUMTAB   !
+!=====================!
+! COMMON $Id$
+
+! Variables
+integer :: MAIFLG,NEWSTD
+
+integer :: IBTAVH(MAXCY1),IBTCCF(MAXCY1),IOLDBA(MAXCY1),ISDI(MAXCY1),ISDIAT(MAXCY1)
+
+real    :: AGELST,TOTREM
+
+real    :: BCYMAI(MAXCY1),QDBHAT(MAXCY1),QSDBT(MAXCY1)
+
+common /SUMTAB/ AGELST,BCYMAI,IBTAVH,IBTCCF,IOLDBA,ISDI,ISDIAT,&
+     &MAIFLG,NEWSTD,QDBHAT,QSDBT,TOTREM
+
+!  VARIABLE DEFINITIONS:
+
+!  AGELST =
+!  BCYMAI =
+!  IBTAVH =
+!  IBTCCF =
+!  IOLDBA =
+!    ISDI =
+!  ISDIAT =
+!  MAIFLG =
+!  NEWSTD =
+!  QDBHAT =
+!   QSDBT =
+!  TOTREM =

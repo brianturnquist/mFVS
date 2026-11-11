@@ -38,7 +38,7 @@ subroutine EXMIST
   !  PARAMETER INCLUDE FILES.
 
   ! Common blocks
-  include 'PRGPRM.F77'
+  include 'PRGPRM.f90'
 
   !  VARIABLE DECLARATIONS.
 

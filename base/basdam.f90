@@ -23,8 +23,8 @@ subroutine BASDAM(ITREE,ICODES)
   !       44 = BF DEFECT % USED FOR A GIVEN CYCLE
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'ARRAYS.F77'
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
 
   ! Variables
   integer :: ICODES(6),ITREE,J,ITEMP

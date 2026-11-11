@@ -12,8 +12,8 @@ subroutine ESTOCK (ELEV,IFT,XBA,XTPA,PN,DEBUG)
   include 'PRGPRM.f90'
   include 'ESPARM.f90'
   include 'ESCOMN.f90'
-  include 'ESCOM2.F77'
-  include 'CONTRL.F77'
+  include 'ESCOM2.f90'
+  include 'CONTRL.f90'
 
   !  VARIABLE DEFINITIONS:
 

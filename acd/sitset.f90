@@ -14,10 +14,10 @@ subroutine SITSET
 
   ! Common blocks
   include 'PRGPRM.f90'
-  include 'COEFFS.F77'
-  include 'CONTRL.F77'
-  include 'PLOT.F77'
-  include 'VOLSTD.F77'
+  include 'COEFFS.f90'
+  include 'CONTRL.f90'
+  include 'PLOT.f90'
+  include 'VOLSTD.f90'
 
   ! Variables
   real    :: SICOEF(28,28),BAMAXA(MAXSP)

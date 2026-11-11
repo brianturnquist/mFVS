@@ -1,0 +1,77 @@
+!====================!
+!   bm : siterange   !
+!====================!
+! BM $Id$
+subroutine SITERANGE(IWHO,IS,SILOW,SIHIGH)
+  implicit none
+
+  ! SUBROUTINE TO RETURN THE SITE INDEX RANGE FOR A SPECIES.
+
+  ! THIS SUBROUTINE IS CALLED FROM **HTGF**,**REGENT**, AND **SITSET**.
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+
+  !  VARIABLE DEFINITIONS:
+
+  !      IS -- FVS SPECIES INDEX NUMBER
+  !    IWHO -- 1 IF CALLED FROM SUBROUTINE **SITSET**
+  !            2 IF CALLED FROM SUBROUTINE **REGENT**
+  !            3 IF CALLED FROM SUBROUTINE **HTGF**
+  !  SITEHI -- UPPER SITE INDEX VALUES
+  !  SITELO -- LOWER SITE INDEX VALUES
+
+  ! Variables
+  integer :: IS,IWHO
+
+  real    :: SIHIGH,SILOW
+
+  real    :: SITEHI(MAXSP),SITELO(MAXSP)
+
+  !  DATA STATEMENTS
+
+  !  SPECIES ORDER:
+  !   1=WP,  2=WL,  3=DF,  4=GF,  5=MH,  6=WJ,  7=LP,  8=ES,
+  !   9=AF, 10=PP, 11=WB, 12=LM, 13=PY, 14=YC, 15=AS, 16=CW,
+  !  17=OS, 18=OH
+
+  !  SPECIES EXPANSION:
+  !  WJ USES SO JU (ORIGINALLY FROM UT VARIANT; REALLY PP FROM CR VARIANT)
+  !  WB USES SO WB (ORIGINALLY FROM TT VARIANT)
+  !  LM USES UT LM
+  !  PY USES SO PY (ORIGINALLY FROM WC VARIANT)
+  !  YC USES WC YC
+  !  AS USES SO AS (ORIGINALLY FROM UT VARIANT)
+  !  CW USES SO CW (ORIGINALLY FROM WC VARIANT)
+  !  OS USES BM PP BARK COEFFICIENT
+  !  OH USES SO OH (ORIGINALLY FROM WC VARIANT)
+
+  !  THESE VALUES SHOULD BE BASED ON THE BASE-AGE OF THE SITE CURVE
+  !  BEING USED FOR THAT SPECIES.
+
+  data SITELO/&
+       &20.,  50.,  50.,  50.,  15.,   5.,  30.,  40.,  50.,  70.,&
+       &20.,  20.,   5.,  50.,  30.,  10.,  70.,   5./
+
+  data SITEHI/&
+       &80., 110., 110., 110.,  30.,  40.,  70., 120., 150., 140.,&
+       &65.,  50.,  75., 110.,  66., 191., 140., 125./
+
+  select case (IWHO)
+
+     !  CALLED FROM SUBROUTINES **SITSET** AND **REGENT**
+
+  case (1,2,3)
+     SILOW = SITELO(IS)
+     SIHIGH = SITEHI(IS)
+
+     !  SPACE FOR ADDITIONAL CALLS
+
+  case default
+     SILOW = 0.
+     SIHIGH = 999.
+
+  end select
+
+  return
+end

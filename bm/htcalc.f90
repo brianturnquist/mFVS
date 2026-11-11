@@ -1,0 +1,155 @@
+!===============================================!
+!   Compute tree age height and height growth   !
+!===============================================!
+! BM $Id$
+subroutine HTCALC (SINDX,ISPC,AG,HGUESS,JOSTND,DEBUG)
+  implicit none
+
+  ! THIS ROUTINE CALCULATES A POTENTIAL HT GIVEN AN SPECIES SITE AND AGE
+  ! IT IS USED TO CAL POTHTG AND SITE
+
+  ! Variables
+  logical :: DEBUG
+
+  integer :: ISPC,JOSTND
+
+  real    :: AG,HGUESS,SINDX,X2,X3
+
+  !  SPECIES ORDER:
+  !   1=WP,  2=WL,  3=DF,  4=GF,  5=MH,  6=WJ,  7=LP,  8=ES,
+  !   9=AF, 10=PP, 11=WB, 12=LM, 13=PY, 14=YC, 15=AS, 16=CW,
+  !  17=OS, 18=OH
+
+  !  SPECIES EXPANSION:
+  !  WJ USES SO JU (ORIGINALLY FROM UT VARIANT; REALLY PP FROM CR VARIANT)
+  !  WB USES SO WB (ORIGINALLY FROM TT VARIANT)
+  !  LM USES UT LM
+  !  PY USES SO PY (ORIGINALLY FROM WC VARIANT)
+  !  YC USES WC YC
+  !  AS USES SO AS (ORIGINALLY FROM UT VARIANT)
+  !  CW USES SO CW (ORIGINALLY FROM WC VARIANT)
+  !  OS USES BM PP BARK COEFFICIENT
+  !  OH USES SO OH (ORIGINALLY FROM WC VARIANT)
+
+  if (DEBUG) write(JOSTND,10)
+  10 format(' ENTERING HTCALC')
+  if (DEBUG)write(JOSTND,30)ISPC,AG,SINDX
+  30 format(' IN HTCALC 30F ISPC,AG,SINDX= ',I4,2F13.8)
+
+  ! GO TO A DIFFERENT POTENTIAL HEIGHT CURVE DEPENDING ON THE SPECIES
+
+  select case (ISPC)
+
+     ! WESTERN WHITE PINE USE BRICKELL EQUATIONS
+
+  case (1)
+     HGUESS = SINDX/(0.37504453*(1.0-0.92503*&
+          &EXP(-0.0207959*AG))**(-2.4881068))
+     if (DEBUG)write(JOSTND,*)' HTCALC WP HGUESS= ',HGUESS
+
+     ! WESTERN LARCH USE COCHRAN PNW 424
+
+  case (2)
+     HGUESS = 4.5 + 1.46897*AG + 0.0092466*AG*AG - 0.00023957*AG**3 +&
+          &1.1122E-6*AG**4 + (SINDX -4.5)*(-0.12528 + 0.039636*AG&
+          &- 0.0004278*AG*AG + 1.7039E-6*AG**3) -&
+          &73.57*(-0.12528 + 0.039636*AG - 0.0004278*AG*AG&
+          &+ 1.7039E-6*AG**3)
+     if (DEBUG)write(JOSTND,*)' HTCALC WL HGUESS= ',HGUESS
+
+     ! DOUGLAS-FIR USE COCHRAN PNW 251. THIS EQUATION ALSO USED FOR MISC. SPP
+
+  case (3)
+     HGUESS = 4.5 + EXP(-0.37496 + 1.36164*ALOG(AG)&
+          &- 0.00243434*(ALOG(AG))**4)&
+          &- 79.97*(-0.2828 + 1.87947*&
+          &(1.0 - EXP(-0.022399*AG))**0.966998) + (SINDX - 4.5)*&
+          &(-0.2828 + 1.87947*(1.0 - EXP(-0.022399*AG)**0.966998))
+     if (DEBUG)write(JOSTND,*)' HTCALC DF HGUESS= ',HGUESS
+
+     ! GRAND FIR USE COCHRAN PNW 252
+
+  case (4)
+     X2 = -0.30935 + 1.2383*ALOG(AG) + 0.001762*(ALOG(AG))**4&
+          &- 5.4E-6*(ALOG(AG))**9 + 2.046E-7*(ALOG(AG))**11&
+          &- 4.04E-13*(ALOG(AG))**18
+     X3 = -6.2056 + 2.097*ALOG(AG) - 0.09411*(ALOG(AG))**2&
+          &- 0.00004382*(ALOG(AG))**7 + 2.007E-11*(ALOG(AG))**16&
+          &- 2.054E-17*(ALOG(AG))**24
+     HGUESS = EXP(X2) - 84.73*EXP(X3) + (SINDX - 4.5)*EXP(X3)&
+          &+ 4.5
+     if (DEBUG)write(JOSTND,*)' HTCALC GF HGUESS= ',HGUESS
+
+     ! MTN HEMLOCK USE INTERIM MEANS PUB
+
+  case (5)
+     HGUESS = (22.8741 + 0.950234*SINDX)*(1.0 -&
+          &EXP(-0.00206465*SQRT(SINDX)*AG))&
+          &**(1.365566 + 2.045963/SINDX)
+     HGUESS = (HGUESS + 1.37)*3.281
+     if (DEBUG)write(JOSTND,*)' HTCALC MH HGUESS= ',HGUESS
+
+     ! WESTERN JUNIPER
+
+  case(6)
+     HGUESS = 0.
+
+     ! LODGEPOLE PINE USE DAHMS PNW 8
+
+  case(7)
+     HGUESS = SINDX*(-0.0968 + 0.02679*AG - 0.00009309*AG*AG)
+     if (DEBUG)write(JOSTND,*)' HTCALC LP HGUESS= ',HGUESS
+
+     ! ENGLEMANN SPRUCE USE ALEXANDER
+
+  case(8)
+     HGUESS = 4.5+((2.75780*SINDX**0.83312)*&
+          &(1.0-EXP(-0.015701*AG))**(22.71944*SINDX**(-0.63557)))
+     if (DEBUG)write(JOSTND,*)' HTCALC ES HGUESS= ',HGUESS
+
+     ! SUBALPINE FIR USE JOHNSON'S EQUIV OF DEMARS
+
+  case(9)
+     HGUESS = SINDX*(-0.07831 + 0.0149*AG - 4.0818E-5*AG*AG)
+     if (DEBUG)write(JOSTND,*)' HTCALC AF HGUESS= ',HGUESS
+
+     ! PONDEROSA PINE AND OTHER SOFTWOODS USE BARRETT
+
+  case(10,17)
+     HGUESS = ( 128.8952205*(1.0 -EXP(-0.016959*AG))**1.23114)&
+          &- ((-0.7864 + 2.49717*(1.0-EXP(-0.0045042*AG))**0.33022)*&
+          &100.43) + ((-0.7864 + 2.49717*(1.0 - EXP(-0.0045042*AG))&
+          &**0.33022)*(SINDX-4.5))+ 4.5
+     if (DEBUG)write(JOSTND,*)' HTCALC PP/OS HGUESS= ',HGUESS
+
+     !   WHITEBARK PINE (11)
+     !   LIMBER PINE (12)
+     !   QUAKING ASPEN (15)
+
+  case(11,12,15)
+     HGUESS = 0.
+
+     !  MISC SPECIES FROM THE WC VARIANT - USE CURTIS, FOR. SCI. 20:307-316.
+     !  CURTIS'S CURVES ARE PRESENTED IN METRIC (3.2808 ?).
+     !  BECAUSE OF EXCESSIVE HT GROWTH -- APPROX 30-40 FT/CYCLE, TOOK OUT
+     !  THE METRIC MULTIPLIER DIXON 11-05-92
+     !    PACIFIC YEW (13)
+     !    ALASKA CEDAR (14)
+     !    BLACK COTTONWOOD (16)
+     !    OTHER HARDWOODS (18)
+
+  case(13,14,16,18)
+     HGUESS = (SINDX - 4.5) / (0.6192 - 5.3394/(SINDX-4.5)&
+          &+ 240.29*AG**(-1.4) +(3368.9/(SINDX-4.5))*AG**(-1.4))
+     HGUESS = HGUESS + 4.5
+     if (DEBUG)write(JOSTND,*)' HTCALC PY/YC/BC/OH HGUESS= ',HGUESS
+
+     !  FUTURE SPECIES
+
+  case default
+     HGUESS = 0.
+
+  end select
+
+  return
+end

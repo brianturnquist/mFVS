@@ -13,8 +13,8 @@ subroutine OPDON2(IACTK,IDT,IYR1,IYR2,ISQNUM,KODE)
   !     IDT   = THE YEAR THE ACTIVITY WAS ACCOMPLISHED.
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'OPCOM.F77'
+  include 'PRGPRM.f90'
+  include 'OPCOM.f90'
 
   ! Variables
   integer :: KODE,ISQNUM,IYR1,IYR2,IDT,IACTK,IFIND,NTIMES,I2,II,I,ID

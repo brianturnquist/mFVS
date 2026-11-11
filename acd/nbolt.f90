@@ -12,8 +12,8 @@ subroutine NBOLT(ISPC,H,D,DBHMIN,BFMIND,SINDX,TOPDOB,BFTDOB, &
 
   ! Common blocks
   include 'PRGPRM.f90'
-  include 'VARCOM.F77'
-  include 'PLOT.F77'
+  include 'VARCOM.f90'
+  include 'PLOT.f90'
 
   ! Variables
   logical :: DEBUG

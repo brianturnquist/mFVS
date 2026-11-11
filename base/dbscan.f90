@@ -6,7 +6,7 @@ subroutine DBSCAN (LDEBG,SUBIN,NC,ICYC)
   implicit none
 
   ! Common blocks
-  include 'DBSTK.F77'
+  include 'DBSTK.f90'
 
   ! Variables
   integer :: ICYC,NC,IB1,IS,IE,IP,IQ

@@ -18,7 +18,7 @@ subroutine FINDAG(I,ISPC,D1,D2,H,SITAGE,SITHT,AGMAX1,HTMAX1, &
 
   ! Common blocks
   include 'PRGPRM.f90'
-  include 'CONTRL.F77'
+  include 'CONTRL.f90'
 
   ! Variables
   logical :: DEBUG

@@ -11,9 +11,9 @@ subroutine COMP(CMP,ICMP,ATTR)
   !  CORRESPONDING SPECIES-TREE CLASS LABELS.
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'CONTRL.F77'
-  include 'PLOT.F77'
+  include 'PRGPRM.f90'
+  include 'CONTRL.f90'
+  include 'PLOT.f90'
 
   ! Variables
   integer :: MXSP3

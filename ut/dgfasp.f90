@@ -1,0 +1,68 @@
+!=================!
+!   ut : dgfasp   !
+!=================!
+! UT $Id$
+subroutine DGFASP(D,ASPDG,CR,BARK,SI,DEBUG)
+  implicit none
+
+  !   CALCULATES DIAMETER GROWTH RATES FOR LARGE ASPEN TREES
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
+  include 'COEFFS.f90'
+  include 'CONTRL.f90'
+  include 'OUTCOM.f90'
+  include 'PLOT.f90'
+  include 'PDEN.f90'
+
+  ! Variables
+  logical :: DEBUG
+  real    :: SI,BARK,CR,ASPDG,D,XSITE,REL,ASPCR,POT,FOFR,GOFAD,BAACT
+  real    :: VALMOD,PREDGR
+
+  ! PEEL OFF THE SPECIES INDICATOR ON THE SITE INDEX
+
+  XSITE = SI
+  REL = D/RMSQD
+  ASPCR = CR/10.0
+
+  ! CALC THE POTENTIAL GROWTH
+
+  POT = (.4755 - 3.8336E-6 * D **4.1488)&
+       &+ (4.510E-2 * ASPCR * D **.67266)
+  if (POT .le.0.0)POT = 0.01
+
+  ! CALC FUNCTION OF RELATIVE DENSITY
+
+  FOFR = 1.07528 * (1.0 - EXP(-1.89022 * REL))
+
+  ! CALC FUNCTION OF AVE DIA
+
+  GOFAD = 2.1963E-1 * (RMSQD + 1.0) **0.73355
+
+  ! CALC MODIFIER VALUE CORRECTED FOR PLOT DENSITY
+  ! THE NEXT TWO LINES ARE A TEMPORARY FIX.
+
+  BAACT = BA
+  if (BAACT .ge.310.0) BAACT = 305.
+  VALMOD = 1.0 - EXP(-FOFR * GOFAD * ((310.0-BAACT)/310.0)&
+       &**0.5)
+
+  ! CALC PRED DIA IN REAL TERMS CORRECTED FOR SITE
+
+  PREDGR = POT * VALMOD * (.48630 + 0.01258 * XSITE)
+
+  ! CHANGE DG TO LN(DDS)
+
+  ASPDG = ALOG(2.0*D*BARK*PREDGR + PREDGR*PREDGR)
+
+  if (DEBUG)write(JOSTND,900)D,CR,POT,FOFR,GOFAD,VALMOD,&
+       &ASPDG,PREDGR,BARK,XSITE
+  900 format(' IN ASPEN DIA GR: D=',F6.1,&
+       &' ASPCR=',F5.1,' POT=',E10.4,' FOFR=',E10.4,' GOFAD=',E10.4,&
+       &' VALMOD=',E10.4,' ASPDG=',E10.4,/,15X,' PREDGR =',&
+       &E10.4,'  BARK =',F10.6,'XSITE =',F10.2)
+
+  return
+end

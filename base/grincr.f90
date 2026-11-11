@@ -11,16 +11,16 @@ subroutine GRINCR (DEBUG,IPMODI,LTMGO,LMPBGO,LDFBGO, &
   !     CALLED FROM: TREGRO.
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'PLOT.F77'
-  include 'ARRAYS.F77'
-  include 'CONTRL.F77'
-  include 'PDEN.F77'
-  include 'OUTCOM.F77'
-  include 'STDSTK.F77'
-  include 'ESHAP.F77'
-  include 'VARCOM.F77'
-  include 'OPCOM.F77'
+  include 'PRGPRM.f90'
+  include 'PLOT.f90'
+  include 'ARRAYS.f90'
+  include 'CONTRL.f90'
+  include 'PDEN.f90'
+  include 'OUTCOM.f90'
+  include 'STDSTK.f90'
+  include 'ESHAP.f90'
+  include 'VARCOM.f90'
+  include 'OPCOM.f90'
 
   ! Variables
   real    :: PRM(6)

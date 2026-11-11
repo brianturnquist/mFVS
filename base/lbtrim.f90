@@ -19,8 +19,8 @@ subroutine LBTRIM (MAE,MAELNK)
   !             (2,.)= POINTS TO THE ENTRY IN IEVNTS
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'OPCOM.F77'
+  include 'PRGPRM.f90'
+  include 'OPCOM.f90'
 
   ! Variables
   integer :: MAELNK(2,50),MAE,IDEL,I,J,KODE,LEN

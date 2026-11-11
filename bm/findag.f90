@@ -1,0 +1,198 @@
+!=======================================!
+!   Estimate tree age and site height   !
+!=======================================!
+! BM $Id$
+subroutine FINDAG(I,ISPC,D1,D2,H,SITAGE,SITHT,AGMAX1,HTMAX1,&
+     &HTMAX2,DEBUG)
+  implicit none
+
+  !  THIS ROUTINE FINDS EFFECTIVE TREE AGE BASED ON INPUT VARIABLE(S)
+  !  CALLED FROM ***COMCUP
+  !  CALLED FROM ***CRATET
+  !  CALLED FROM ***HTGF
+  !  CALLED FROM ***REGENT
+
+  !  CALLS ***HTCALC
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
+  include 'CONTRL.f90'
+  include 'PLOT.f90'
+
+  !  VARIABLE DEFINITIONS:
+
+  !  INCRNG = HAS A VALUE OF 1 WHEN THE SITE CURVE HAS BEEN MONOTONICALLY
+  !           INCREASING IN PREVIOUS ITERATIONS.
+  !   OLDHG = HEIGHT GUESS FROM PREVIOUS ITERATION.
+
+  ! Variables
+  logical :: DEBUG
+
+  integer :: I,INCRNG,ISPC
+
+  real    :: AG,AGMAX1,D1,D2,DIFF,H,HGUESS,HTMAX1,HTMAX2,OLDHG,RDANUW
+  real    :: SINDX,SITAGE,SITHT,TOLER
+
+  real    :: AGMAX(MAXSP),AHMAX(MAXSP),BHMAX(MAXSP)
+
+  !  DATA STATEMENTS
+
+  !  SPECIES ORDER:
+  !   1=WP,  2=WL,  3=DF,  4=GF,  5=MH,  6=WJ,  7=LP,  8=ES,
+  !   9=AF, 10=PP, 11=WB, 12=LM, 13=PY, 14=YC, 15=AS, 16=CW,
+  !  17=OS, 18=OH
+
+  !  SPECIES EXPANSION:
+  !  WJ USES SO JU (ORIGINALLY FROM UT VARIANT; REALLY PP FROM CR VARIANT)
+  !  WB USES SO WB (ORIGINALLY FROM TT VARIANT)
+  !  LM USES UT LM
+  !  PY USES SO PY (ORIGINALLY FROM WC VARIANT)
+  !  YC USES WC YC
+  !  AS USES SO AS (ORIGINALLY FROM UT VARIANT)
+  !  CW USES SO CW (ORIGINALLY FROM WC VARIANT)
+  !  OS USES BM PP BARK COEFFICIENT
+  !  OH USES SO OH (ORIGINALLY FROM WC VARIANT)
+
+  data AGMAX/&
+       &200., 110., 180., 130., 250., 900., 140., 150., 150., 200.,&
+       &400., 400., 200., 200., 100., 100., 200., 100./
+
+  data AHMAX/&
+       &2.3,     12.86,   -2.86,     21.29,     52.27,       80.,&
+       &2.3,       20.,   45.27,     -5.00,       85.,       85.,&
+       &50.,      100.,     75.,      125.,     -5.00,      100./
+
+  data BHMAX/&
+       &2.39,      1.32,    1.54,      1.24,      1.14,        0.,&
+       &1.75,       1.1,    1.24,      1.30,        0.,        0.,&
+       &0.,        0.,      0.,        0.,      1.30,        0./
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  RDANUW = D1
+  RDANUW = D2
+  RDANUW = HTMAX2
+
+  !  INITIALIZATIONS
+
+  TOLER = 2.0
+  AGMAX1 = AGMAX(ISPC)
+  SINDX = SITEAR(ISPC)
+  HTMAX1 = AHMAX(ISPC) + BHMAX(ISPC)*SINDX
+  if (ISPC.eq.5)HTMAX1 = HTMAX1 * 3.281
+
+  !  CRATET CALLS FINDAG AT THE BEGINING OF THE SIMULATION TO
+  !  CALCULATE THE AGE OF INCOMMING TREES.  AT THIS POINT ABIRTH(I)=0.
+  !  THE AGE OF INCOMMING TREES HAVING H>=HMAX IS CALCULATED BY
+  !  ASSUMEING A GROWTH RATE OF 0.10FT/YEAR FOR THE INTERVAL H-HMAX.
+  !  TREES REACHING HMAX DURING THE SIMULATION ARE IDENTIFIED IN HTGF.
+
+  if (H .ge. HTMAX1) then
+     SITAGE = AGMAX1 + (H - HTMAX1)/0.10
+     SITHT = H
+     go to 30
+  end if
+
+  !  DEAL WITH SPECIES THAT DON'T NEED ITEATION HERE:
+
+  !  COMPUTE HT GROWTH AND AGE FOR ASPEN. EQN FROM WAYNE SHEPPARD RMRS.
+
+  if (ISPC.eq.15) then
+     SITAGE = (H*2.54*12.0/26.9825)**(1.0/1.1752)
+     SITHT = H
+     go to 30
+
+     !  WESTERN JUNIPER
+     !  WHITEBARK PINE
+     !  LIMBER PINE
+
+  else if (ISPC.eq.6.or. ISPC.eq.11.or. ISPC.eq.12) then
+     SITAGE = 0.
+     SITHT = H
+     go to 30
+  end if
+
+  AG = 2.0
+
+  ! THE FOLLOWING 5 LINES ARE AN RJ FIX 7-28-88
+
+  if (ISPC.eq.10.or. ISPC.eq.17) AG = (98.38*EXP(SINDX*(-0.0422)))+1.0
+  if (AG .lt.2.0)AG = 2.0
+  if (ISPC.eq.3)AG = 18.0
+
+  INCRNG = 0
+  HGUESS = 0.
+  75 continue
+  OLDHG = HGUESS
+
+  !  ORIGINAL BM SPECIES
+  !  SPECIES FROM THE WC VARIANT (PY, YC, CW, OH)
+
+  !  CALL HTCALC TO CALCULATE POTENTIAL HT GROWTH
+
+  call HTCALC(SINDX,ISPC,AG,HGUESS,JOSTND,DEBUG)
+
+  if (DEBUG)write(JOSTND,91200)I,ISPC,AG,HGUESS,H
+  91200 format(' IN GUESS AN AGE--I,ISPC,AGE,HGUESS,H ',2I5,3F10.2)
+
+  !  AVOID NEGATIVE PREDICTED HEIGHTS AT SMALL AGES FROM SOME SI CURVES
+  !  GED 4/20/18
+
+  if (HGUESS .lt.1.)go to 175
+
+  if (HGUESS .le.0.0) then
+     AG = AG + 2.0
+     go to 75
+  end if
+  DIFF = ABS(HGUESS-H)
+  if (DIFF .le. TOLER .or. H .lt. HGUESS) then
+     SITAGE = AG
+     SITHT = HGUESS
+     if (DEBUG) then
+        write(JOSTND, *)' DIFF,TOLER,H,HGUESS,AG,SITAGE,SITHT= ',&
+             &DIFF,TOLER,H,HGUESS,AG,SITAGE,SITHT
+     end if
+     go to 30
+  end if
+
+  !  SOME SITE CURVES DECREASE AT THE START BEFORE INCREASING. IF DECREASING,
+  !  KEEP GOING; IF SITE CURVE WAS INCREASING, BUT NOW HAS FLATTENED OFF, STOP
+  !  THE ITERATION GED 04/19/18
+
+  DIFF = (HGUESS-OLDHG)
+  if (OLDHG.ne.0.0.and. DIFF.ge.0.05) INCRNG = 1
+  if (DEBUG)write(JOSTND,*)' IN FINDAG OLDHG,DIFF,INCRNG= ',&
+       &OLDHG,DIFF,INCRNG
+  if (INCRNG.eq.1.and. DIFF .lt.0.05) then
+     SITAGE = AG
+     SITHT = HGUESS
+     if (DEBUG) then
+        write(JOSTND, *)' SITE CURVE FLAT OLDHG,AG,HGUESS,SITAGE,',&
+             &'SITHT= ',OLDHG,AG,HGUESS,SITAGE,SITHT
+     end if
+     go to 30
+  end if
+
+  175 continue
+  AG = AG + 2.
+
+  if (AG .gt. AGMAX1) then
+
+     !  H IS TOO GREAT AND MAX AGE IS EXCEEDED
+
+     SITAGE = AGMAX1
+     SITHT = H
+     go to 30
+  else
+     go to 75
+  end if
+
+  30 continue
+
+  if (DEBUG)write(JOSTND,50)I,SITAGE,SITHT
+  50 format(' LEAVING SUBROUTINE FINDAG  I,SITAGE,SITHT =',&
+       &I5,2F10.3)
+
+  return
+end

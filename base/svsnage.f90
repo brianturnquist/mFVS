@@ -25,13 +25,13 @@ subroutine SVSNAGE(IYEAR,IDEAD,SNCRDI,SNCRTO,SNHT,SNDI)
   !     SNDI  = CURRENT SNAG DIAMETER
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'CONTRL.F77'
-  include 'FMPARM.F77'
-  include 'FMCOM.F77'
-  include 'PLOT.F77'
-  include 'SVDEAD.F77'
-  include 'SVDATA.F77'
+  include 'PRGPRM.f90'
+  include 'CONTRL.f90'
+  include 'FMPARM.f90'
+  include 'FMCOM.f90'
+  include 'PLOT.f90'
+  include 'SVDEAD.f90'
+  include 'SVDATA.f90'
 
   ! Variables
   integer :: IDEAD,ISTMLT,ITIDIF,ITSTYR,ICURYR,IYEAR,J,KSP,NFALLD

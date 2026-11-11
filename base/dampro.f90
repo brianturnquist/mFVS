@@ -12,9 +12,9 @@ subroutine DAMPRO
   !  CREATED: 07/06/2007 LANCE R. DAVID
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'ARRAYS.F77'
-  include 'CONTRL.F77'
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
+  include 'CONTRL.f90'
 
   ! Variables
   integer :: I1,I2,II,I

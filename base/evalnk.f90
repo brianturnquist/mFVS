@@ -12,8 +12,8 @@ subroutine EVALNK (JOSTND,IEN,IALNK)
   !     EVENT MONITOR ROUTINE - NL CROOKSTON - JAN 1987 - MOSCOW, ID
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'OPCOM.F77'
+  include 'PRGPRM.f90'
+  include 'OPCOM.f90'
 
   ! Variables
   integer :: IALNK,IEN,JOSTND,N,I

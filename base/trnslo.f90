@@ -8,8 +8,8 @@ subroutine TRNSLO
   !  TRNSLO DECODES THE INPUT SLOPE VALUE TO A RATIO.
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'PLOT.F77'
+  include 'PRGPRM.f90'
+  include 'PLOT.f90'
 
   !     CONVERT SLOPE TO A RATIO.
 

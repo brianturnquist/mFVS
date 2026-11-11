@@ -6,8 +6,8 @@ subroutine DBALL (ICYC)
   implicit none
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'DBSTK.F77'
+  include 'PRGPRM.f90'
+  include 'DBSTK.f90'
 
   ! Variables
   integer :: ICYC,IRC

@@ -1,0 +1,62 @@
+!=================================================!
+!   Compute subsequent and planted tree heights   !
+!=================================================!
+! SN $Id$
+subroutine ESSUBH (I,HHT,EMSQR,DILATE,DELAY,ELEV,IHTSER,GENTIM,&
+     &TRAGE)
+  implicit none
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'CONTRL.f90'
+  include 'ESPARM.f90'
+  include 'ESCOMN.f90'
+
+  !     ASSIGNS HEIGHTS TO SUBSEQUENT AND PLANTED TREE RECORDS
+  !     CREATED BY THE ESTABLISHMENT MODEL.
+
+  !     COMING INTO ESSUBH, TRAGE IS THE AGE OF THE TREE AS SPECIFIED ON
+  !     THE PLANT OR NATURAL KEYWORD.  LEAVING ESSUBH, TRAGE IS THE NUMBER
+  !     BETWEEN PLANTING (OR NATURAL REGENERATION) AND THE END OF THE
+  !     CYCLE.  AGE IS TREE AGE UP TO THE TIME REGENT WILL BEGIN GROWING
+  !     THE TREE.
+
+  ! Variables
+  integer :: IHTSER,I,ITIME,N
+  real    :: HTMAX,HTG1,AGE,HHT,EMSQR,DILATE,DELAY,ELEV,GENTIM,TRAGE
+  integer :: MODE1
+  logical :: DEBUG
+  real    :: RDANUW
+  integer :: IDANUW
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  RDANUW = DILATE
+  RDANUW = ELEV
+  RDANUW = EMSQR
+  IDANUW = IHTSER
+
+  !  CHECK FOR DEBUG
+
+  call DBCHK (DEBUG,'ESSUBH',6,ICYC)
+  HHT = 0.0
+
+  N = INT(DELAY+0.5)
+  if (N.lt.-3) N = -3
+  DELAY = FLOAT(N)
+  ITIME = INT(TIME+0.5)
+  if (N.gt.ITIME) DELAY = TIME
+  AGE = TIME-DELAY-GENTIM+TRAGE
+  if (AGE.lt.1.0) AGE = 1.0
+  TRAGE = TIME-DELAY
+
+  !     CALCULATE TREE HEIGHT BASED ON SITE CURVE
+
+  MODE1 = 1
+  call HTCALC (MODE1,I,AGE,HHT,HTMAX,HTG1,JOSTND,DEBUG)
+
+  if (DEBUG)&
+       &write (JOSTND,*)' IN ESSUBH - TRAGE,AGE,TIME,DELAY,HHT= ',&
+       &TRAGE,AGE,TIME,DELAY,HHT
+  return
+end

@@ -10,8 +10,8 @@ subroutine FORKOD
 
   ! Common blocks
   include 'PRGPRM.f90'
-  include 'PLOT.F77'
-  include 'CONTRL.F77'
+  include 'PLOT.f90'
+  include 'CONTRL.f90'
 
   !  NATIONAL FORESTS:
   !  914 = WAYNE

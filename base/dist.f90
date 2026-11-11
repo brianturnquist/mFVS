@@ -15,9 +15,9 @@ subroutine DIST(N,ATTR,PCTWK)
   !  LENGTH OF THE TREE RECORD LIST (ITRN).
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'ARRAYS.F77'
-  include 'CONTRL.F77'
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
+  include 'CONTRL.f90'
 
   !  DIMENSIONS FOR INTERNAL VARIABLES.
 

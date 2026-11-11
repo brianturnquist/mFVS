@@ -11,8 +11,8 @@ block data SVBLKD
   !     INITIALIZE VISUALIZATION VARIABLES
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'SVDATA.F77'
+  include 'PRGPRM.f90'
+  include 'SVDATA.f90'
 
   data NIMAGE/0/
 end block data SVBLKD

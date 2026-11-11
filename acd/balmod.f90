@@ -14,7 +14,7 @@ subroutine BALMOD(ISPC,D,GMOD)
 
   ! Common blocks
   include 'PRGPRM.f90'
-  include 'TWIGCOM.F77'
+  include 'TWIGCOM.f90'
 
   ! Variables
   real    :: B3(MAXSP)

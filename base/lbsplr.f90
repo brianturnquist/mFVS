@@ -18,8 +18,8 @@ subroutine LBSPLR (KEYWRD,JOSTND,IREAD,IRECNT,RECORD,KODE,LKECHO)
   !     KODE  = 0: OK, 1: END-OF-DATA FOUND ON IREAD.
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'OPCOM.F77'
+  include 'PRGPRM.f90'
+  include 'OPCOM.f90'
 
   ! Variables
   character(len=8) :: KEYWRD

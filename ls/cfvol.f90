@@ -1,0 +1,230 @@
+!================!
+!   ls : cfvol   !
+!================!
+! LS $Id$
+subroutine CFVOL(ISPC,D,HZ,D2H,VN,VM,VMAX,TKILL,LCONE,BARK,ITHT,&
+     &CTKFLG)
+  implicit none
+
+  ! THIS ROUTINE CALCULATES CUBIC FOOT VOLUME USING A
+  ! USER DEFINED EQUATION.
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
+  include 'COEFFS.f90'
+  include 'CONTRL.f90'
+  include 'OUTCOM.f90'
+  include 'PLOT.f90'
+  include 'VOLSTD.f90'
+
+  !  DIMENSION STATEMENT FOR INTERNAL ARRAYS.
+
+  ! Variables
+  logical :: TKILL,LCONE,CTKFLG,BTKFLG,DEBUG,DONE
+  integer :: ITHT,ISPC,IHT1,IHT2
+  real    :: BARK,VMAX,VM,VN,D2H,HZ,D,H,TSIZE,TOPDOB,BFTDOB,SINDX,HM1
+  real    :: HM2,TOTCU,SAWCU
+  integer :: IDANUW
+  logical :: LDANUW
+
+  !  DEFINE VARIABLES
+  !    DONE = LOGICAL OPERATOR TO SIGNIFY ALL VOLUMES HAVE BEEN COMPUTED
+  !     HM1 = MERCH HEIGHT TO SAWLOG TOP
+  !     HM2 = MERCH HEIGHT TO PULPWOOD TOP
+  !    IHT1 = # OF SAWLOG 8' BOLTS
+  !    IHT2 = # OF PULPWOOD 8' BOLTS
+  !   TOTCU = CUBIC FOOT VOLUME TO THE PULPWOOD TOP
+  !   SAWCU = CUBIC FOOT VOLUME TO THE SAWLOG TOP
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  IDANUW = ITHT
+  LDANUW = LCONE
+  LDANUW = TKILL
+
+  !  CHECK FOR DEBUG
+
+  call DBCHK(DEBUG,'CFVOL',5,ICYC)
+  if (DEBUG)write(JOSTND,*)'IN CFVOL, ICYC= ',ICYC
+
+  ! FIRST COMPUTE VMAX BASED ON TOTAL HEIGHT
+
+  H = HZ
+  TSIZE = D
+  if (ICTRAN(ISPC).gt.0) TSIZE = D2H
+  if (TSIZE.lt.CTRAN(ISPC)) then
+     VMAX = CFVEQS(1,ISPC)&
+          &+CFVEQS(2,ISPC)*D&
+          &+CFVEQS(3,ISPC)*D*H&
+          &+CFVEQS(4,ISPC)*D*D*H&
+          &+CFVEQS(5,ISPC)*D**CFVEQS(6,ISPC)*H**CFVEQS(7,ISPC)
+  else
+     VMAX = CFVEQL(1,ISPC)&
+          &+CFVEQL(2,ISPC)*D&
+          &+CFVEQL(3,ISPC)*D*H&
+          &+CFVEQL(4,ISPC)*D*D*H&
+          &+CFVEQL(5,ISPC)*D**CFVEQL(6,ISPC)*H**CFVEQL(7,ISPC)
+  end if
+  if (VMAX .lt.0.) VMAX = 0.
+
+  !  METHC = 1: VOLUME COMPUTED USING REGRESSION MODEL WITH EITHER DEFAULT
+  !  (SEE **CUBRDS**) OR USER SUPPLIED PARAMETERS (SEE CFVOLEQ KEYWORD).
+
+  !  **NBOLT** IS CALLED TO COMPUTE NUMBER OF 8' BOLTS TO SPECIFIED PULPWOOD
+  !  AND SAWLOG TOPS.  THE NUMBER OF BOLTS IS THEN MULTIPLIED BY 8.333 TO
+  !  GET THE MERCHANTABLE BOLE HEIGHT FOR THIS EQUATION.
+
+  DONE = .false.
+  TOPDOB = TOPD(ISPC)/BARK
+  BFTDOB = BFTOPD(ISPC)/BARK
+  SINDX = SITEAR(ISPC)
+
+  if (DEBUG)write(JOSTND,*)&
+       &' TOPDOB= ',TOPDOB,' BFTDOB=',BFTDOB,' BRATIO=',BARK
+
+  !  CALL NBOLT TO COMPUTE THE TOTAL NUMBER OF 8' BOLTS TO A SPECIFIED
+  !  PULPWOOD AND SAWTIMBER TOP DIAMETER.
+
+  call NBOLT(ISPC,H,D,DBHMIN,BFMIND,SINDX,TOPDOB,BFTDOB,&
+       &JOSTND,DEBUG,IHT1,IHT2)
+  HM1 = FLOAT(IHT1)*8.333333
+  HM2 = FLOAT(IHT2)*8.333333
+
+  !  COMPUTE TOTAL MERCH CUBIC AND SAWLOG CUBIC VOLUMES
+
+  !  CASES 1-3 ASSUME THE MINIMUM SAWTIMBER DBH IS GREATER THAN THE
+  !  MINIMUM PULPWOOD DBH
+
+  if (DEBUG)write(JOSTND,*)' D,DBHMIN,BFMIND,IHT1,IHT2,HM1,HM2= ',&
+       &D,DBHMIN(ISPC),BFMIND(ISPC),IHT1,IHT2,HM1,HM2
+
+  if (D.lt.DBHMIN(ISPC) .or. IHT2.le.0) then
+
+     !  CASE 1: TREE DOES NOT MEET PULPWOOD SPECS
+
+     TOTCU = 0.
+
+     !  TREE DBH IS GREATER THAN PULPWOOD MIN DBH
+     !  FIRST CASE ASSUMES DEFAULT SAWTIMBER DBH IS GREATER THAN DEFAULT PULPWOOD
+
+  else if (D.lt.BFMIND(ISPC).or. IHT1.le.0) then
+
+     !  CASE 2: TREE ONLY HAS PULPWOOD
+
+     H = HM2
+     TSIZE = D
+     if (ICTRAN(ISPC).gt.0) TSIZE = D2H
+     if (TSIZE.lt.CTRAN(ISPC)) then
+        TOTCU = CFVEQS(1,ISPC)&
+             &+CFVEQS(2,ISPC)*D&
+             &+CFVEQS(3,ISPC)*D*H&
+             &+CFVEQS(4,ISPC)*D*D*H&
+             &+CFVEQS(5,ISPC)*D**CFVEQS(6,ISPC)*H**CFVEQS(7,ISPC)
+     else
+        TOTCU = CFVEQL(1,ISPC)&
+             &+CFVEQL(2,ISPC)*D&
+             &+CFVEQL(3,ISPC)*D*H&
+             &+CFVEQL(4,ISPC)*D*D*H&
+             &+CFVEQL(5,ISPC)*D**CFVEQL(6,ISPC)*H**CFVEQL(7,ISPC)
+     end if
+     if (TOTCU .lt.0.) TOTCU = 0.
+
+     SAWCU = 0.0
+     DONE = .true.
+  else
+
+     !  CASE 3: TREE HAS PULPWOOD AND SAWTIMBER
+
+     H = HM2
+     TSIZE = D
+     if (ICTRAN(ISPC).gt.0) TSIZE = D2H
+     if (TSIZE.lt.CTRAN(ISPC)) then
+        TOTCU = CFVEQS(1,ISPC)&
+             &+CFVEQS(2,ISPC)*D&
+             &+CFVEQS(3,ISPC)*D*H&
+             &+CFVEQS(4,ISPC)*D*D*H&
+             &+CFVEQS(5,ISPC)*D**CFVEQS(6,ISPC)*H**CFVEQS(7,ISPC)
+     else
+        TOTCU = CFVEQL(1,ISPC)&
+             &+CFVEQL(2,ISPC)*D&
+             &+CFVEQL(3,ISPC)*D*H&
+             &+CFVEQL(4,ISPC)*D*D*H&
+             &+CFVEQL(5,ISPC)*D**CFVEQL(6,ISPC)*H**CFVEQL(7,ISPC)
+     end if
+     if (TOTCU .lt.0.) TOTCU = 0.
+
+     H = HM1
+     TSIZE = D
+     if (ICTRAN(ISPC).gt.0) TSIZE = D2H
+     if (TSIZE.lt.CTRAN(ISPC)) then
+        SAWCU = CFVEQS(1,ISPC)&
+             &+CFVEQS(2,ISPC)*D&
+             &+CFVEQS(3,ISPC)*D*H&
+             &+CFVEQS(4,ISPC)*D*D*H&
+             &+CFVEQS(5,ISPC)*D**CFVEQS(6,ISPC)*H**CFVEQS(7,ISPC)
+     else
+        SAWCU = CFVEQL(1,ISPC)&
+             &+CFVEQL(2,ISPC)*D&
+             &+CFVEQL(3,ISPC)*D*H&
+             &+CFVEQL(4,ISPC)*D*D*H&
+             &+CFVEQL(5,ISPC)*D**CFVEQL(6,ISPC)*H**CFVEQL(7,ISPC)
+     end if
+     if (SAWCU .lt.0.) SAWCU = 0.
+     DONE = .true.
+  end if
+  if (DONE)goto 50
+
+  !--STRANGE CASE IF SAWTIMBER MIN DBH IS LESS THAN PULPWOOD MIN DBH
+
+  if (D .lt. BFMIND(ISPC)) then
+
+     !  CASE 4: STRANGE CASE SPECS MET AND TREE DOES NOT MEET SAWTIMBER SPECS
+
+     SAWCU = 0.0
+  else
+
+     !  CASE 5: STRANGE CASE SPECS MET AND TREE ONLY HAS SAWTIMBER
+
+     H = HM1
+     TSIZE = D
+     if (ICTRAN(ISPC).gt.0) TSIZE = D2H
+     if (TSIZE.lt.CTRAN(ISPC)) then
+        SAWCU = CFVEQS(1,ISPC)&
+             &+CFVEQS(2,ISPC)*D&
+             &+CFVEQS(3,ISPC)*D*H&
+             &+CFVEQS(4,ISPC)*D*D*H&
+             &+CFVEQS(5,ISPC)*D**CFVEQS(6,ISPC)*H**CFVEQS(7,ISPC)
+     else
+        SAWCU = CFVEQL(1,ISPC)&
+             &+CFVEQL(2,ISPC)*D&
+             &+CFVEQL(3,ISPC)*D*H&
+             &+CFVEQL(4,ISPC)*D*D*H&
+             &+CFVEQL(5,ISPC)*D**CFVEQL(6,ISPC)*H**CFVEQL(7,ISPC)
+     end if
+     if (SAWCU .lt.0.) SAWCU = 0.
+  end if
+
+  !  SET RETURN VALUES.
+
+  50 continue
+  if (DEBUG)write(JOSTND,*)' TOTCU=',TOTCU,' SAWCU=',SAWCU
+  VN = TOTCU
+  VM = SAWCU
+  CTKFLG = .true.
+  BTKFLG = .true.
+  if (VN.le.0.) then
+     VN = 0.
+     CTKFLG = .false.
+  end if
+  if (VM.le.0.) then
+     VM = 0.
+     BTKFLG = .false.
+  end if
+
+  if (DEBUG)write(JOSTND,*)' RETURNING VN,VMAX,VM,CTKFLG,BTKFLG= ',&
+       &VN,VMAX,VM,CTKFLG,BTKFLG
+
+  return
+
+end

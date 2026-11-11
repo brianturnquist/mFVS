@@ -1,0 +1,576 @@
+!===========================!
+!   vorganon : org_intree   !
+!===========================!
+! VORGANON $Id$
+subroutine ORG_INTREE (ORGINP,LKECHO)
+  implicit none
+
+  !     IRDPLV= 0 IF PLOT SPECIFIC SITE VARIABLES ARE NOT BEING READ,
+  !             1 IF THEY ARE BEING READ.
+
+  !  THIS ROUTINE READS THE ORGANON TREE DATA FROM THE .INP FILE AND
+  !  SETS ALL VARIABLES WHICH ARE TREE RECORD SPECIFIC.
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
+  include 'CONTRL.f90'
+  include 'PLOT.f90'
+  include 'HTCAL.f90'
+  include 'ESTREE.f90'
+  include 'STDSTK.f90'
+  include 'ORGANON.f90'
+
+  ! Variables
+  character(len=20) :: TITLE
+  character(len=1) :: EVEN
+  character(len=1) :: RAD
+  character(len=1) :: TYPE(5)
+  integer :: ORGINP,ONPTS,NTREES,OSTAGE,OBHAGE,MAJOR,MINOR,MEXP,NEST,OVER,EDITION,FTYPE(5),OSPP,OSPGP,&
+       &OUSER,OPOINT,KG
+  real    :: SITE1,SITE2,OMSDI_1,OMSDI_2,OMSDI_3,OPDEN,ODBH,OHT,OCR,OEXPF,ODGRO
+  real    :: OCALIB(3,19),OBAF(5),VALUE(5)
+
+  integer :: IG,IULIM,IGRP,IPP,IAXE,ISPI,IUP,IHIT3,IHIT2,IHIT1,I,IK
+  integer :: J,ITREI,ITH,IMC1,ITRRR,ITP1RR,K,NPNVRS,ISCRN,IPTKNT,IMAX
+  integer :: II,INOSPC,IPVARS,IDAMCD,ISDSP,IRTNCD
+  real    :: SDHI,SDLO,THT
+  logical :: DEBUG,LDELTR,LRDGO,LRDTE,LKECHO,LINCL
+  integer*4 :: IDCMP1,DBSKODE
+  character(len=3) :: CSPI
+  character(len=8) :: ANOSPC(1000)
+  integer :: ICNTR2,I3
+  dimension IPVARS(5),IDAMCD(6)
+  data IDCMP1/10000000/
+
+  ! Check whether debugging is enabled
+  call DBCHK (DEBUG,'ORG_INTREE',10,ICYC)
+
+  if ( .not. DEBUG ) go to 8
+  write (JOSTND,5) ORGINP,MORDAT
+  5 format (/' ENTERING SUBROUTINE ORG_INTREE.',/&
+       &' DATA SET REFERENCE NUMBER =',I2,/&
+       &' MORDAT: ',L2)
+  8 continue
+  SDLO = 0.0
+  SDHI = 999.0
+  ISDSP = 0
+
+  !  IF MORE TREE RECORDS ARE TO BE READ AS IF THEY ARE PART
+  !  OF THE STAND THAT WAS BEING READ DURING THE LAST CALL TO
+  !  THIS SUBROUTINE THE LOGICAL VARIABLE 'MORDAT' MUST BE SET
+  !  TRUE.  IF IT IS FALSE, WE ASSUME THAT A NEW STAND IS BEING READ.
+
+  if (.not.MORDAT) then
+
+     !        SET INITIAL VALUES
+
+     do II = 1,MAXTRE
+        do I = 1,6
+           DAMSEV(I,II) = 0
+        end do
+     end do
+
+     IRECRD = 0
+     IREC2 = MAXTP1
+     IMAX = MAXTP1
+     LSTKNT = 1
+     NSTKNT = 0
+  end if
+  IPTKNT = 0
+  if (LSTKNT.gt.1) IPTKNT = LSTKNT-1
+  ISCRN = 0
+  DBSKODE = 0
+  do I = 1,5
+     IPVARS(I) = 0
+     9 continue
+  end do
+
+  !  PROCESS 1ST LINE OF THE .INP FILE
+
+  read(ORGINP,404)TITLE,ONPTS,NTREES,SITE1,SITE2,EVEN,RAD,OSTAGE,&
+       &OBHAGE,MAJOR,MINOR,MEXP,NEST,OVER,EDITION,OMSDI_1,OMSDI_2,&
+       &OMSDI_3,OPDEN
+  404 format(A20,2I4,2F5.1,2A1,2I3,3I4,3I1,19X,3F5.0,F6.0)
+
+  select case (VARACD)
+
+  case ('OC')
+     SITEAR(7) = SITE1 ! DOUGLAS-FIR SITE INDEX
+     SITEAR(18) = SITE2 ! PONDEROSA PINE SITE INDEX
+     if (OMSDI_1.gt.0.) SDIDEF( 7) = OMSDI_1 !DF MAX SDI
+     if (OMSDI_2.gt.0.) SDIDEF(18) = OMSDI_2 !PP MAX SDI
+     if (OMSDI_3.gt.0.) SDIDEF( 4) = OMSDI_3 !GF MAX SDI
+
+  case ('OP')
+     SITEAR(16) = SITE1 ! DOUGLAS-FIR SITE INDEX
+     SITEAR(19) = SITE2 ! WESTERN HEMLOCK SITE INDEX
+     if (OMSDI_1.gt.0.) SDIDEF(16) = OMSDI_1 !DF MAX SDI
+     if (OMSDI_2.gt.0.) SDIDEF(15) = OMSDI_2 !PP MAX SDI
+     if (OMSDI_3.gt.0.) then
+        SDIDEF( 2) = OMSDI_3 !WF MAX SDI
+        SDIDEF( 3) = OMSDI_3 !GF MAX SDI
+     end if
+
+  end select
+
+  if (EVEN .eq. 'F')INDS(4) = 0 !DEFAULT IS 1=.TRUE. IN GRINIT
+  if (RAD  .eq. 'F')INDS(3) = 0 !DEFAULT IS 1=.TRUE. IN GRINIT
+  if (OSTAGE .gt.0.)IAGE = OSTAGE
+  if (OVER .gt.0) IMODTY = OVER
+  if (ONPTS .gt.0)IPTINV = ONPTS
+
+  !  PROCESS 2ND, 3RD, AND 4TH LINES OF THE .INP FILE
+  !  IGNORE THE 19TH POSITION
+
+  read(ORGINP,406)(OCALIB(1,I),I = 1,19)
+  read(ORGINP,406)(OCALIB(2,I),I = 1,19)
+  read(ORGINP,406)(OCALIB(3,I),I = 1,19)
+  406 format(19F5.2)
+  do I = 1,3
+     do II = 1,18
+        if (OCALIB(I,II) .ne.1.) ACALIB(I,II) = OCALIB(I,II)
+     end do
+  end do
+
+  !  PROCESS 5TH LINE OF THE .INP FILE
+
+  read(ORGINP,408)TYPE(1),TYPE(2),TYPE(3),TYPE(4),TYPE(5),&
+       &FTYPE(1),FTYPE(2),FTYPE(3),FTYPE(4),FTYPE(5),&
+       &OBAF(1),OBAF(2),OBAF(3),OBAF(4),OBAF(5),&
+       &VALUE(1),VALUE(2),VALUE(3),VALUE(4),VALUE(5)
+  408 format(5A1,5I1,5F4.1,5F6.1)
+
+  10 continue
+
+  !     SET THE UPPER LIMIT ON THE NUMBER OF VALUES BEING READ ON EACH
+  !     RECORD.
+
+  NPNVRS = 1
+
+  !   CHECK TO SEE IF THE WESTERN ROOT DISEASE MODEL VER. 3.0 IS ACTIVE
+  !   AND IF TREELIST INITIALIZATION IS BEING USED. IF IT IS THEN SET
+  !   MAX NUMBER OF TREE RECORDS THAT MODEL CAN PROCESS TO IRRTRE.
+
+  call RDATV(LRDGO,LRDTE)
+  if (LRDGO .and. LRDTE) then
+     call RDTRES(ITRRR,ITP1RR)
+     IMAX = ITP1RR
+  end if
+
+  !  INSURE THERE IS ROOM IN THE ARRAYS TO STORE MORE TREE RECORDS
+
+  if (IREC1+1.lt. MIN0(IREC2,IMAX)) go to 30
+  15 continue
+  LSTKNT = IPTKNT
+
+  if (LRDGO .and. LRDTE) write(JOSTND,895) ITRRR
+  895 format('**** MAX NUMBER OF TREE RECORDS',I5,' EXCEEDED FOR',&
+       &' WESTERN ROOT DISEASE MODEL VER 3.0 ****')
+
+  call ERRGRO(.false.,13)
+  call fvsGetRtnCode(IRTNCD)
+  if (IRTNCD.ne.0) return
+
+  !  PROCESS TREE DATA RECORDS            **********
+
+  30 continue
+  if (IRECRD .ge. NTREES) go to 900
+  I = IREC1 + 1
+  read(ORGINP,410)OSPP,OSPGP,OUSER,ODBH,OHT,OCR,OEXPF,ODGRO,OPOINT,&
+       &CSPI
+  410 format(I3,2I2,2F5.1,F4.2,F8.4,F5.2,I3,T1,A3)
+
+  !  ZERO FILL CHARACTER FIA CODES LESS THAN 100 COMING IN FROM
+  !  THE .INP FILE.
+
+  if (CSPI(1:1) .eq. ' ') CSPI(1:1) = '0'
+
+  ITREI = OPOINT
+  IDTREE(I) = I
+  !      PROB(I) = OEXPF / ONPTS
+  PROB(I) = OEXPF
+  ITH = 1
+  DBH(I) = ODBH
+  DG(I) = ODGRO
+  HT(I) = OHT
+  THT = 0
+  HTG(I) = 0
+  ICR(I) = NINT(OCR * 100.)
+  do KG = 1,6
+     IDAMCD(KG) = 0
+  end do
+  IMC1 = 0
+  KUTKOD = 0
+  ABIRTH(I) = 0
+  ISPECL(I) = OUSER
+  if (NPNVRS.eq.1) then
+     do IK = 1,5
+        IPVARS(IK) = 0
+     end do
+  end if
+  IRECRD = IRECRD + 1
+  if ( DEBUG ) then
+     write(JOSTND,*) ' ',I,' IRECRD=',IRECRD,' OSPP=',OSPP,' OSPGP=',&
+          &OSPGP,' OUSER=',OUSER,' ODBH=',ODBH,' OHT=',OHT,&
+          &' OCR=',OCR,' OEXPF=',OEXPF,' ODGRO=',ODGRO,' OPOINT=',OPOINT
+  end if
+  if (IDTREE(I) .gt. IDCMP1-1) write(JOSTND,35)
+  35 format('IN ORG_INTREE: TREE ID NUMBER IS LARGER THAN MAXIMUM',&
+       &' ALLOWED')
+
+  ! IF THIS IS A SITE TREE, THEN STORE THE SITE RELATED INFORMATION.
+  ! IF THE TREE IS ON THE PLOT, THEN CONTINUE TO PROCESS THE TREE NORMALLY.
+  ! IF THE TREE IS OFF THE PLOT, THEN READ THE NEXT TREE RECORD.
+
+  IHIT1 = 0
+  IHIT2 = 0
+  IHIT3 = 0
+  if (IDAMCD(1) .eq.28) then
+     IHIT1 = 1
+  else if (IDAMCD(3) .eq.28) then
+     IHIT2 = 1
+  else if (IDAMCD(5) .eq.28) then
+     IHIT3 = 1
+  end if
+  if (IHIT1.gt.0.or. IHIT2.gt.0.or. IHIT3.gt.0) then
+     NSITET = NSITET + 1
+     if (NSITET .gt. MAXSTR)go to 34
+     CSPI = ADJUSTL(CSPI)
+     do IUP = 1,8
+        call UPCASE(CSPI(IUP:IUP))
+     end do
+
+     !  CHECK FOR VALID SPECIES CODE AND SET OUTPUT DATA BASE
+     !  TABLE FORMAT ARRAY JSPIN BASED ON INPUT SPECIES CODE FORMAT
+
+     do ISPI = 1,MAXSP
+        if (CSPI.eq.JSP(ISPI)) then
+           JSPIN(ISPI) = 1
+           if (JSPINDEF.le.0)JSPINDEF = 1
+           go to 33
+        else if (CSPI.eq.FIAJSP(ISPI)) then
+           JSPIN(ISPI) = 2
+           if (JSPINDEF.le.0)JSPINDEF = 2
+           go to 33
+        else if (CSPI.eq.PLNJSP(ISPI)) then
+           JSPIN(ISPI) = 3
+           if (JSPINDEF.le.0)JSPINDEF = 3
+           go to 33
+        end if
+     end do
+     call SPCTRN (CSPI, ISPI)
+     33 continue
+     SITETR(NSITET,1) = ISPI
+     SITETR(NSITET,2) = DBH(I)
+     SITETR(NSITET,3) = HT(I)
+     SITETR(NSITET,4) = ABIRTH(I)
+     IAXE = 0
+     if (IHIT1.gt.0) then
+        if (IDAMCD(2).eq.1.or. IDAMCD(2).eq.3)SITETR(NSITET,5) = 1.
+        if (IDAMCD(2).eq.2.or. IDAMCD(2).eq.4)SITETR(NSITET,5) = 2.
+        if (IDAMCD(2).eq.1.or. IDAMCD(2).eq.2)SITETR(NSITET,6) = 1.
+        if (IDAMCD(2).eq.3.or. IDAMCD(2).eq.4) then
+           SITETR(NSITET,6) = 2.
+           IAXE = 1
+        end if
+     else if (IHIT2.gt.0) then
+        if (IDAMCD(4).eq.1.or. IDAMCD(4).eq.3)SITETR(NSITET,5) = 1.
+        if (IDAMCD(4).eq.2.or. IDAMCD(4).eq.4)SITETR(NSITET,5) = 2.
+        if (IDAMCD(4).eq.1.or. IDAMCD(4).eq.2)SITETR(NSITET,6) = 1.
+        if (IDAMCD(4).eq.3.or. IDAMCD(4).eq.4) then
+           SITETR(NSITET,6) = 2.
+           IAXE = 1
+        end if
+     else
+        if (IDAMCD(6).eq.1.or. IDAMCD(6).eq.3)SITETR(NSITET,5) = 1
+        if (IDAMCD(6).eq.2.or. IDAMCD(6).eq.4)SITETR(NSITET,5) = 2
+        if (IDAMCD(6).eq.1.or. IDAMCD(6).eq.2)SITETR(NSITET,6) = 1
+        if (IDAMCD(6).eq.3.or. IDAMCD(6).eq.4) then
+           SITETR(NSITET,6) = 2
+           IAXE = 1
+        end if
+     end if
+     if (IAXE .eq.1)go to 30
+  end if
+  34 continue
+
+  !  COUNT UP THE NUMBER OF POINTS.  'IPVEC' IS A SUB-PLOT I.D. VECTOR
+  !  USED TO KEEP TRACK OF SUB-PLOT IDENTIFICATION CODES THAT HAVE
+  !  ALREADY BEEN USED.
+
+  if ( IPTKNT .lt. LSTKNT ) go to 50
+  do IPP = LSTKNT, IPTKNT
+     if ( IPVEC(IPP) .eq. ITREI) go to 60
+     40 continue
+  end do
+  50 continue
+  IPTKNT = IPTKNT + 1
+  if (IPTKNT .gt. MAXPLT) go to 15
+  IPVEC(IPTKNT) = ITREI
+  ITRE(I) = IPTKNT
+
+  !  IF POINT SPECIFIC SITE DATA ARE BEING READ AND IF THIS PLOT IS
+  !  A STOCKABLE PLOT (IMC1.GT.800), THEN: CALL THE ESTABLISHMENT
+  !  SYSTEM TO STORE THE SITE DATA.
+
+  call ESPLT1 (ITREI,IMC1,NPNVRS,IPVARS(1))
+  call fvsGetRtnCode(IRTNCD)
+  if (IRTNCD.ne.0) return
+  goto 65
+  60 continue
+  ITRE(I) = IPP
+  65 continue
+
+  !  FLAG INCOMING TREE RECORDS SO MORTS WILL BE ABLE TO APPLY CORRECT
+  !  MORTALITY RATES.  VECTOR IESTAT IS PART OF THE REGENERATION
+  !  ESTABLISHMENT SYSTEM.
+
+  IESTAT(I) = 0
+
+  !  INITIALIZE SERIAL CORRELATION.
+
+  ZRAND(I) = -999.
+
+  !  COUNT THE NUMBER ON NON-STOCKABLE SUB-PLOTS.
+  !  IF IMC1 IS EQUAL TO 8 THE POINT IS NON-STOCKABLE
+
+  if ( IMC1.ne.8 ) go to 70
+  NSTKNT = NSTKNT + 1
+  go to 30
+  70 continue
+
+  !  TRANSLATE SPECIES CODES TO 1 THROUGH MAXSP AND
+  !  SET SPECIES DATA BASE TABLE OUTPUT FORMAT ARRAY
+  !  JSPIN BASED ON INPUT SPECIES CODE FORMAT
+
+  CSPI = ADJUSTL(CSPI)
+  do IUP = 1,8
+     call UPCASE(CSPI(IUP:IUP))
+  end do
+  do ISPI = 1,MAXSP
+     if (CSPI.eq.JSP(ISPI)) then
+        JSPIN(ISPI) = 1
+        if (JSPINDEF.le.0)JSPINDEF = 1
+        go to 72
+     else if (CSPI.eq.FIAJSP(ISPI)) then
+        JSPIN(ISPI) = 2
+        if (JSPINDEF.le.0)JSPINDEF = 2
+        go to 72
+     else if (CSPI.eq.PLNJSP(ISPI)) then
+        JSPIN(ISPI) = 3
+        LFIA = .true.
+        if (JSPINDEF.le.0)JSPINDEF = 3
+        go to 72
+     end if
+     71 continue
+  end do
+
+  !  SET SPECIES CODE TO MAXSP IF CODE GIVEN IS INVALID.
+  !  SPECIES ARE TRANSLATED TO APPROPRIATE VALID SPECIES CODE.
+
+  call SPCTRN (CSPI, ISPI)
+
+  !  WRITE SPECIES MAPPING
+
+  if (INOSPC.eq.0) then
+     write(JOSTND,73)
+     INOSPC = 1
+  end if
+  73 format(/)
+  do ICNTR2 = 1,INOSPC
+     if (CSPI.eq.ANOSPC(ICNTR2)) go to 74
+  end do
+  write(JOSTND,75) CSPI,JSP(ISPI)
+  75 format(T12,'NOTE: INPUT SPECIES CODE (',A8,')WAS SET TO ('&
+       &,A4,') FOR THIS PROJECTION.')
+  INOSPC = INOSPC+1
+  if (INOSPC.gt.1000)INOSPC = 1000
+  ANOSPC(INOSPC) = CSPI
+  74 continue
+
+  72 continue
+
+  !  SAVE SPECIES POINTERS IN ISP
+
+  ISP(I) = ISPI
+
+  !  CHECK TO SEE IF THIS IS A PROJECTABLE TREE RECORD. TREES WITH
+  !  HISTORY CODES 6,7,8 AND 9 ARE DEAD TREES ACCORDING TO REGION 1
+  !  STANDARDS. CODES 6 AND 7 REPRESENT RECENT DEAD TREES.
+
+  !  SCREEN TREE OUT IF IT FALLS WITHIN THE SPECIES/DBH SCREEN. THIS WAS
+  !  SET UP FOR VARIANTS LIKE AK TO INSURE THAT LARGE NUMBER OF SEEDLINGS
+  !  DO NOT ENTER THE SYSTEM AND GIVE MISLEADING RESULTS WHEN THEY
+  !  GET LARGER AND CREATE 100'S OF FT SQ OF BASAL AREA.
+
+  !  SET LINCL
+
+  LINCL = .false.
+  if (ISDSP.eq.0.or. ISDSP.eq.ISP(I)) then
+     LINCL = .true.
+  else if (ISDSP.lt.0) then
+     IGRP = -ISDSP
+     IULIM = ISPGRP(IGRP,1)+1
+     do IG = 2,IULIM
+        if (ISP(I) .eq. ISPGRP(IGRP,IG)) then
+           LINCL = .true.
+           go to 710
+        end if
+        705 continue
+     end do
+  end if
+  710 continue
+
+  LDELTR = (DBH(I) .lt.0.0001) .or.&
+       &(LINCL .and. (DBH(I) .lt. SDLO .or. DBH(I) .ge. SDHI))
+
+  !   CALL DAMCDS TO PROCESS DAMAGE CODES AND OTHER TREE ATTRIBUTES FOR
+  !   ANY EXTENSIONS THAT MAY BE ACTIVE.
+
+  call DAMCDS (I,IDAMCD)
+
+  !     NOW, IF THE TREE IS 'FLAGED' TO BE DELETED, THEN BRANCH TO
+  !     READ ANOTHER TREE RECORD.
+
+  if (LDELTR) then
+     if (DBH(I) .ge.0.0001) ISCRN = ISCRN+1
+     go to 30
+  end if
+
+  !  IF THE TREE WAS TOPKILLED (AS OBSERVED DURING SAMPLING), THE
+  !  VALUE OF HEIGHT IS FLAGGED AS NEGATIVE - THIS IS CORRECTED TO
+  !  A HEIGHT AS PREDICTED BY THE HEIGHT-DIAMETER CURVE IN SUBROUTINE
+  !  'CRATET'. REGION 1 DAMAGE CODES: 96=BROKEN TOP, 97=DEAD TOP.
+  !   SEARCH THROUGH THE DAMAGE ARRAY TO FIND ANY TOP DEAD OR BROKEN
+  !   TREES. EVEN IF DAMAGE CODE 96 OR 97 ARE NOT PRESENT, IF HEIGHT
+  !   TO THE BROKEN TOP IS ENTERED, FLAG THE TREE.
+
+  ITRUNC(I) = 0
+  NORMHT(I) = 0
+  do K = 1,5,2
+     if (IDAMCD(K) .ne.96.and. IDAMCD(K) .ne.97) go to 81
+     go to 82
+     81 continue
+  end do
+  if (THT .gt.0.)go to 82
+  go to 90
+
+  82 continue
+  NORMHT(I) = -1
+  if (THT.le.0.0) go to 90
+  ITRUNC(I) = INT(THT*100.0+0.5)
+  90 continue
+
+  !  IF THE TREE HEIGHT IS ZERO (MISSING), THEN INSURE THAT THE HEIGHT
+  !  GROWTH IS ZERO AS WELL
+
+  if (HT(I).eq.0.0.and. IHTG.eq.3) HTG(I) = 0.0
+
+  !  IF GROWTH METHODS ARE FOR REMEASUREMENT DATA, STORE THE
+  !  INCOMING VALUES FOR PRINTING IN **FVSSTD**
+
+  if (IDG.eq.1.or. IDG.eq.3) PDBH(I) = DG(I)
+  if (IHTG.eq.1.or. IHTG.eq.3) PHT(I) = HTG(I)
+
+  !  STORE ALL DEAD TREES IN THE BOTTOM OF THE ARRAYS
+  !  TREES WITH HISTORY CODES 6,7 ARE RECENT DEAD (GET IMC()=7)
+  !  TREES WITH HISTORY CODES 8,9 ARE OLDER  DEAD (GET IMC()=9)
+
+  if ( ITH .lt.6.or. ITH .gt.9 ) go to  100
+  IREC2 = IREC2 - 1
+  ITRE(IREC2) = ITRE(I)
+  IDTREE(IREC2) = IDTREE(I)
+
+  !  NOTE: INFLATION OF DEAD TREE PROB'S IS IN NOTRE.  CROWN RATIOS
+  !        FOR TREES LESS THAN 3 INCHES ARE SET ZERO IN CRATET.
+
+  PROB(IREC2) = PROB(I)
+  DBH(IREC2) = DBH(I)
+  DG(IREC2) = DG(I)
+  HT(IREC2) = HT(I)
+  ITRUNC(IREC2) = ITRUNC(I)
+  NORMHT(IREC2) = NORMHT(I)
+  ICR(IREC2) = ICR(I)
+  ISP(IREC2) = ISP(I)
+  ISPECL(IREC2) = ISPECL(I)
+  DEFECT(IREC2) = DEFECT(I)
+  IMC(IREC2) = 7
+  if (ITH.eq.8.or. ITH.eq.9) IMC(IREC2) = 9
+  ABIRTH(IREC2) = ABIRTH(I)
+  KUTKOD(IREC2) = KUTKOD(I)
+  do I3 = 1,6
+     DAMSEV(I3,IREC2) = DAMSEV(I3,I)
+  end do
+
+  ! RESET ARRAY VALUES TO ZERO IN CASE THIS IS THE LAST RECORD
+  ! IN THE INPUT DATA --- DON'T WANT THESE VALUES HANGING AROUND
+  ! WHERE THEY AREN'T SUPPOSED TO BE.  GD 5/10/96
+
+  PROB(I) = 0.
+  DBH(I) = 0.
+  DG(I) = 0.
+  HT(I) = 0.
+  ITRUNC(I) = 0
+  NORMHT(I) = 0
+  ICR(I) = 0
+  ISP(I) = 0
+  ISPECL(I) = 0
+  DEFECT(I) = 0
+  IDTREE(I) = 0
+  HTG(I) = 0.
+  ITRE(I) = 0
+  NORMHT(I) = 0
+  PDBH(I) = 0.
+  PHT(I) = 0.
+  ZRAND(I) = -999.
+  ABIRTH(I) = 0.
+  KUTKOD(I) = 0
+  do I3 = 1,6
+     DAMSEV(I3,I) = 0
+  end do
+
+  I = IREC2
+  go to 200
+  100 continue
+  if (IMC1.gt.3)IMC1 = 3
+  if (IMC1.le.0)IMC1 = 1
+  IMC(I) = IMC1
+  IREC1 = I
+  200 continue
+
+  !  ESTABLISH THIS TREE RECORD AS A LINK IN THE CHAIN SORT.
+
+  call LNKCHN (I)
+
+  go to 10
+
+  900 continue
+
+  !  END OF TREE DATA ON THIS FILE
+
+  LSTKNT = IPTKNT + 1
+
+  if (NSITET .gt. MAXSTR)NSITET = MAXSTR
+
+  !   CALL INTREX TO READ ANY ADDITIONAL DATA THAT MAY BE NEEDED BY
+  !   EXTENSIONS.
+
+  !***  CALL INTREX (IDTREE)
+
+  if (ISCRN .gt.0) write(JOSTND,901) ISCRN
+  901 format(/,T12,'**** NOTE: ',I5,' TREE RECORDS HAVE BEEN',&
+       &' SCREENED OUT BY THE DIAMETER SCREEN.')
+  if ((DBSKODE.eq.-1).and.LKECHO)write (JOSTND,940) IRECRD
+  940 format (T12,'NUMBER ROWS PROCESSED:',I5)
+  if (DEBUG) then
+     write(JOSTND,945) IRECRD,IPTKNT,DBSKODE
+     945 format (/' LEAVING SUBROUTINE INTREE.   RECORDS READ=',I5,&
+          &'; PLOTS COUNTED = ',I5,'; DBSKODE=',I4)
+     if (NSITET.gt.0)write(JOSTND,950)((SITETR(I,J),J = 1,6),I = 1,NSITET)
+     950 format(/' SITE INDEX TREES:',/,7X,'ISPC',7X,'DBH',8X,'HT',&
+          &7X,'AGE',4X,'T OR B',4X,'ON OFF',20(/,1X,F10.0,2F10.1,3F10.0))
+  end if
+
+  return
+end

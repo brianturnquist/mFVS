@@ -15,9 +15,9 @@ subroutine SVKEY(KEYWRD,LNOTBK,ARRAY)
   !     ALL ARGUMENTS ARE INPUT, STD FROM INITRE
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'CONTRL.F77'
-  include 'SVDATA.F77'
+  include 'PRGPRM.f90'
+  include 'CONTRL.f90'
+  include 'SVDATA.f90'
 
   ! Variables
   logical :: LNOTBK(12),LOPEN

@@ -44,16 +44,16 @@ subroutine MORTS
 
   ! Common blocks
   include 'PRGPRM.f90'
-  include 'ARRAYS.F77'
-  include 'PLOT.F77'
-  include 'CALCOM.F77'
-  include 'CONTRL.F77'
-  include 'COEFFS.F77'
-  include 'ESTREE.F77'
-  include 'MULTCM.F77'
-  include 'PDEN.F77'
-  include 'WORKCM.F77'
-  include 'VARCOM.F77'
+  include 'ARRAYS.f90'
+  include 'PLOT.f90'
+  include 'CALCOM.f90'
+  include 'CONTRL.f90'
+  include 'COEFFS.f90'
+  include 'ESTREE.f90'
+  include 'MULTCM.f90'
+  include 'PDEN.f90'
+  include 'WORKCM.f90'
+  include 'VARCOM.f90'
 
   !  DEFINITIONS:
   !      BM1 --  ARRAY CONTAINING INTERCEPT COEFFICIENTS FOR SURVIVAL EQUATION

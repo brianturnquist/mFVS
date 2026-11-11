@@ -28,7 +28,7 @@ subroutine RANN(SEL)
   !     AND THE GENERATOR 'GGUBS' IN THE 1981 EDITION OF IMSL.
 
   ! Common blocks
-  include 'RANCOM.F77'
+  include 'RANCOM.f90'
 
   ! Variables
   real    :: SEL,SEED

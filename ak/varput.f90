@@ -13,8 +13,8 @@ subroutine VARPUT (WK3,IPNT,ILIMIT,REALS,LOGICS,INTS)
   include 'PRGPRM.f90'
   include 'ESPARM.f90'
   include 'ESCOMN.f90'
-  include 'PLOT.F77'
-  include 'VARCOM.F77'
+  include 'PLOT.f90'
+  include 'VARCOM.f90'
 
   !     NOTE: THE ACTUAL STORAGE LIMIT FOR INTS, LOGICS, AND REALS
   !     IS MAXTRE (SEE PRGPRM).

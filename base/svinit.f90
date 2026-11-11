@@ -12,9 +12,9 @@ subroutine SVINIT
   !     INITIALIZE VISUALIZATION VARIABLES
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'SVDATA.F77'
-  include 'SVDEAD.F77'
+  include 'PRGPRM.f90'
+  include 'SVDATA.f90'
+  include 'SVDEAD.f90'
 
   ! Variables
   integer :: I

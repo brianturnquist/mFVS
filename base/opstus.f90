@@ -38,8 +38,8 @@ subroutine OPSTUS(IACTK,IYR1,IYR2,ISQNUM, &
   !     HAS BEEN SET UP TO OCCUR AFTER AN EVENT.
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'OPCOM.F77'
+  include 'PRGPRM.f90'
+  include 'OPCOM.f90'
 
   ! Variables
   integer :: KODE,ISTAT,NPRMS,IDT,NTIMES,ISQNUM,IYR1,IACTK

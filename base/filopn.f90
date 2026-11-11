@@ -12,13 +12,13 @@ subroutine FILOPN
   !  IF PROMPTS ARE NOT WANTED, SET LPT FALSE.
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'CONTRL.F77'
-  include 'FMPARM.F77'
-  include 'FMFCOM.F77'
-  include 'ECON.F77'
-  include 'SVDATA.F77'
-  include 'FVSSTDCM.F77'
+  include 'PRGPRM.f90'
+  include 'CONTRL.f90'
+  include 'FMPARM.f90'
+  include 'FMFCOM.f90'
+  include 'ECON.f90'
+  include 'SVDATA.f90'
+  include 'FVSSTDCM.f90'
 
   ! Variables
   integer :: LENKEY,KODE,I,LENNAM,ISTLNB,IRTNCD

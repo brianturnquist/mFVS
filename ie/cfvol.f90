@@ -1,0 +1,261 @@
+!================!
+!   ie : cfvol   !
+!================!
+! IE $Id$
+subroutine CFVOL(ISPC,D,H,D2H,VN,VM,VMAX,TKILL,LCONE,BARK,ITHT,&
+     &CTKFLG)
+  implicit none
+
+  ! THIS ROUTINE CALCULATES TOTAL CUBIC FOOT VOLUME USING A NUMBER OF
+  ! DIFFERENT METHODS.
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
+  include 'COEFFS.f90'
+  include 'CONTRL.f90'
+  include 'OUTCOM.f90'
+  include 'PLOT.f90'
+  include 'VOLSTD.f90'
+
+  !  DIMENSION STATEMENT FOR INTERNAL ARRAYS.
+
+  ! Variables
+  real    :: SMDIA(20),GLOGLN(20)
+  real    :: VM,VN,D2H,H,D,TSIZE,VOLT,BEHRE,STUMP,DMRCH,HTMRCH,VOLM,S3
+  real    :: TD,DIB,FC,HTRUNC,D1SQ,TLOG,D2SQ,XLOG,PLEFT,VOLLOG,DTSQ,PK
+  real    :: BARK,VMAX
+  integer :: ITHT,ISPC,NUMLOG,I,INC,LAST
+  logical :: TKILL,LCONE,LOGOK,LMRCH,CTKFLG
+
+  !  METHC = 1: VOLUME COMPUTED USING REGRESSION MODEL WITH EITHER DEFAULT
+  !  (SEE **CUBRDS**) OR USER SUPPLIED PARAMETERS (SEE CFVOLEQ KEYWORD).
+  !  THE REGRESSION MODEL ESTIMATE IS ALSO NEEDED TO PERMIT TAPER
+  !  PARAMETER ESTIMATION WHEN CUBIC FOOT VOLUME IS DETERMINED BY LOG RULE
+  !  AND BOARD FOOT VOLUME WILL BE COMPUTED FROM FORMULA.
+
+  TSIZE = D
+  if (ICTRAN(ISPC).gt.0) TSIZE = D2H
+  if (TSIZE.lt.CTRAN(ISPC)) then
+     VMAX = CFVEQS(1,ISPC)&
+          &+CFVEQS(2,ISPC)*D&
+          &+CFVEQS(3,ISPC)*D*H&
+          &+CFVEQS(4,ISPC)*D2H&
+          &+CFVEQS(5,ISPC)*D**CFVEQS(6,ISPC)*H**CFVEQS(7,ISPC)
+  else
+     VMAX = CFVEQL(1,ISPC)&
+          &+CFVEQL(2,ISPC)*D&
+          &+CFVEQL(3,ISPC)*D*H&
+          &+CFVEQL(4,ISPC)*D2H&
+          &+CFVEQL(5,ISPC)*D**CFVEQL(6,ISPC)*H**CFVEQL(7,ISPC)
+  end if
+  if (VMAX .lt.0.) VMAX = 0.
+
+  !  BRANCH TO STMT 100 TO COMPUTE VOLUME FROM LOG RULE (METHC=2 OR 3).
+
+  if (METHC(ISPC).eq.2.or. METHC(ISPC).eq.3) then
+     CTKFLG = .false.
+     go to 100
+  else
+     CTKFLG = .true.
+     VN = VMAX
+     if (VN .eq.0.) then
+        VM = 0.
+        CTKFLG = .false.
+        go to 50
+     end if
+     call BEHPRM (VMAX,D,H,BARK,LCONE)
+     VOLT = BEHRE(0.0,1.0)
+
+     !  COMPUTE MERCHANTABLE CUBIC VOLUME USING TOP DIAMETER, MINIMUM
+     !  DBH, AND STUMP HEIGHT SPECIFIED BY THE USER.
+
+     STUMP = 1. - (STMP(ISPC)/H)
+     if (D.lt.DBHMIN(ISPC).or.D.lt.TOPD(ISPC)) then
+        VM = 0.0
+     else
+        DMRCH = TOPD(ISPC)/D
+        HTMRCH = ((BHAT*DMRCH)/(1.0-(AHAT*DMRCH)))
+        if (.not.LCONE) then
+           VOLM = BEHRE(HTMRCH,STUMP)
+           VM = VMAX*VOLM/VOLT
+        else
+
+           !         PROCESS CONES.
+
+           S3 = STUMP**3
+           VOLM = S3-HTMRCH**3
+           VM = VMAX*VOLM
+        end if
+     end if
+  end if
+  50 continue
+  return
+
+  !  METHC = 2 OR 3:  VOLUME COMPUTED USING ONE OF THE REGION 6 LOG
+  !  RULES.  BOUND VMAX TO A NUMBER GREATER THAN OR EQUAL TO ZERO.
+
+  100 continue
+  if (VMAX.lt.0.0) VMAX = 0.0
+  TD = TOPD(ISPC)*BARK
+  DIB = D*BARK
+
+  !  CALL **FORMCL** TO DETERMINE FORM CLASS
+
+  call FORMCL(ISPC,IFOR,D,FC)
+
+  !  ZERO VOLUME RETURNED IF DIB IS LESS THAN 1 INCH.
+
+  if (DIB.lt.1.0) return
+
+  !  LOAD HTRUNC AND H FOR TOP DAMAGED TREES.
+
+  HTRUNC = 0.0
+  if (TKILL) HTRUNC = ITHT/100.0
+
+  !  CALL **RXDIBS** TO COMPUTE NUMBER OF 16FT LOGS AND EACH SMALL-END DIB
+
+  call RXDIBS(D,FC,H,1.0,SMDIA,GLOGLN,NUMLOG,JOSTND)
+
+  !  INITIALIZE:
+  !     D1SQ=SQUARED DIAMETER AT LARGE END OF CURRENT LOG.
+  !     D2SQ=SQUARED DIAMETER AT SMALL END OF CURRENT LOG.
+  !     TLOG=CUMULATIVE LENGTH OF LOGS ALREADY PROCESSED.
+  !     LMRCH=SET TO FALSE WHEN LOG CONTAINING MERCHANTABLE TOP IS
+  !           PROCESSED.  LMRCH IS ALSO SET FALSE WHEN TREE DOES NOT
+  !           MEET MINIMUM DBH FOR MERCHANTABILITY STANDARD.
+  !     LOGOK=SET TO FALSE WHEN LOG CONTAINING BROKEN TOP IS PROCESSED.
+  !     VOLM=MERCHANTABLE VOLUME OF LOG CONTAINING MERCHANTABLE TOP.
+
+  D1SQ = DIB*DIB
+  TLOG = 0.0
+  VOLM = 0.0
+  LMRCH = .true.
+  if (D.lt.DBHMIN(ISPC)) LMRCH = .false.
+  LOGOK = .true.
+  if (METHC(ISPC).eq.3) go to 200
+
+  !  REGION 6 EAST SIDE VOLUME (16 FOOT LOGS).  BRANCH TO STATEMENT 200 FOR
+  !  WESTSIDE CALCULATIONS (32 FOOT LOGS).
+
+  do I = 1,NUMLOG
+
+     !  EXIT LOOP IF LAST LOG INCLUDED A BROKEN TOP.
+
+     if (.not.LOGOK) go to 120
+     if (SMDIA(I).gt.120.) then
+        SMDIA(I) = 120.0
+        write(JOSTND,105)
+        105 format(/' ******** ERROR: SMALL END LOG DIAMETER GREATER THAN',&
+             &' 120 INCHES; RESET TO 120 INCHES')
+        call RCDSET(2,.true.)
+     end if
+     D2SQ = SMDIA(I)*SMDIA(I)
+     XLOG = GLOGLN(I)
+
+     !  SET FLAG AND ADJUST THE TOP DIAMETER AND LOG LENGTH IF THIS LOG
+     !  CONTAINS A DEAD TOP.
+
+     if (TKILL .and. (TLOG+XLOG).gt.HTRUNC) then
+        PLEFT = (HTRUNC-TLOG)/XLOG
+        if (PLEFT.le.0.0) go to 120
+        XLOG = HTRUNC-TLOG
+        D2SQ = D1SQ-PLEFT*(D1SQ-D2SQ)
+        LOGOK = .false.
+     end if
+     TLOG = TLOG+XLOG
+     VOLLOG = 0.00272708*XLOG*(D1SQ+D2SQ)
+
+     !  CHECK TO SEE IF THE MERCHANTABLE TOP IS IN THIS LOG.  IF SO, COMPUTE
+     !  THE MERCHANTABLE VOLUME.
+
+     if (LMRCH .and. (.not.LOGOK .or. TD.ge.SMDIA(I))) then
+        LMRCH = .false.
+        if (.not.LOGOK .and. TD.le.SQRT(D2SQ)) then
+           VOLM = VOLLOG
+        else
+           DTSQ = TD*TD
+
+           !         ESTIMATE NEW LOG LENGTH CORRESPONDING TO TOPD BY ASSUMING LOG
+           !         IS A FRUSTRUM OF A PARABALOID.  LOG LENGTH IS PROPORTIONAL TO
+           !         THE DIFFERENCE BETWEEN THE SQUARED DIAMETERS OF THE LOG ENDS.
+
+           PK = XLOG/(D1SQ-D2SQ)
+           XLOG = PK*(D1SQ-DTSQ)
+           VOLM = 0.00272708*XLOG*(D1SQ+DTSQ)
+        end if
+        VM = VN+VOLM
+     end if
+     VN = VN+VOLLOG
+     D1SQ = D2SQ
+     110 continue
+  end do
+  120 continue
+  return
+
+  !  REGION 6 WESTSIDE VOLUME.  32 FOOT LOGS; PROCESS EVERY OTHER LOG.
+
+  200 continue
+  I = 0
+  INC = 2
+  205 continue
+  I = I+INC
+
+  !  EXIT LOOP IF LAST LOG INCLUDED A BROKEN TOP.
+
+  if (.not.LOGOK) go to 220
+  if (SMDIA(I).gt.120.) then
+     SMDIA(I) = 120.0
+     write(JOSTND,105)
+     call RCDSET(2,.true.)
+  end if
+  D2SQ = SMDIA(I)*SMDIA(I)
+  if (INC .eq.2) then
+     XLOG = GLOGLN(I)+GLOGLN(I-1)
+  else
+     XLOG = GLOGLN(I)
+  end if
+
+  !  SET FLAG AND ADJUST THE TOP DIAMETER AND LOG LENGTH IF THIS LOG
+  !  CONTAINS A DEAD TOP.
+
+  if (TKILL .and. (TLOG+XLOG).gt.HTRUNC) then
+     PLEFT = (HTRUNC-TLOG)/XLOG
+     if (PLEFT.le.0.0) go to 220
+     XLOG = HTRUNC-TLOG
+     D2SQ = D1SQ-PLEFT*(D1SQ-D2SQ)
+     LOGOK = .false.
+  end if
+  TLOG = TLOG+XLOG
+  VOLLOG = 0.00272708*XLOG*(D1SQ+D2SQ)
+
+  !  CHECK TO SEE IF THE MERCHANTABLE TOP IS IN THIS LOG.  IF SO, COMPUTE
+  !  THE MERCHANTABLE VOLUME.
+
+  if (LMRCH .and. (.not.LOGOK .or. TD.ge.SMDIA(I))) then
+     LMRCH = .false.
+     if (.not.LOGOK.and.TD.le.SQRT(D2SQ)) then
+        VOLM = VOLLOG
+     else
+        DTSQ = TD*TD
+
+        !         ESTIMATE NEW LOG LENGTH CORRESPONDING TO TOPD BY ASSUMING LOG
+        !         IS A FRUSTRUM OF A PARABALOID.  LOG LENGTH IS PROPORTIONAL TO
+        !         THE DIFFERENCE BETWEEN THE SQUARED DIAMETERS OF THE LOG ENDS.
+
+        PK = XLOG/(D1SQ-D2SQ)
+        XLOG = PK*(D1SQ-DTSQ)
+        VOLM = 0.00272708*XLOG*(D1SQ+DTSQ)
+     end if
+     VM = VN+VOLM
+  end if
+  VN = VN+VOLLOG
+  D1SQ = D2SQ
+  if (I .lt. NUMLOG) then
+     LAST = NUMLOG-I
+     if (LAST .eq.1) INC = 1
+     go to 205
+  end if
+  220 continue
+  return
+end

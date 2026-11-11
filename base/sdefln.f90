@@ -6,9 +6,9 @@ subroutine SDEFLN (LNOTBK,ARRAY,KEYWRD,B0,B1,KARD,IS)
   implicit none
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'CONTRL.F77'
-  include 'PLOT.F77'
+  include 'PRGPRM.f90'
+  include 'CONTRL.f90'
+  include 'PLOT.f90'
 
   !     PROCESSES BFFDLN OR MCFDLN KEYWORDS - CALLED FROM INITRE.
   !     NL CROOKSTON - INT. MOSCOW - 4/80.

@@ -13,13 +13,13 @@ subroutine GRADD (DEBUG,IPMODI,LTMGO,LMPBGO,LDFBGO, &
   !     CALLED FROM: TREGRO
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'ARRAYS.F77'
-  include 'COEFFS.F77'
-  include 'CONTRL.F77'
-  include 'OUTCOM.F77'
-  include 'PLOT.F77'
-  include 'OPCOM.F77'
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
+  include 'COEFFS.f90'
+  include 'CONTRL.f90'
+  include 'OUTCOM.f90'
+  include 'PLOT.f90'
+  include 'OPCOM.f90'
 
   ! Variables
   logical :: LTMGO,LMPBGO,LDFBGO,LBWEGO,LCVATV,DEBUG

@@ -10,7 +10,7 @@ subroutine GROHED (IUNIT)
 
   ! Common blocks
   include 'PRGPRM.f90'
-  include 'CONTRL.F77'
+  include 'CONTRL.f90'
 
   ! Variables
   character(len=10) :: DAT

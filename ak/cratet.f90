@@ -24,13 +24,13 @@ subroutine CRATET
 
   ! Common blocks
   include 'PRGPRM.f90'
-  include 'ARRAYS.F77'
-  include 'COEFFS.F77'
-  include 'CONTRL.F77'
-  include 'HTCAL.F77'
-  include 'OUTCOM.F77'
-  include 'PLOT.F77'
-  include 'VARCOM.F77'
+  include 'ARRAYS.f90'
+  include 'COEFFS.f90'
+  include 'CONTRL.f90'
+  include 'HTCAL.f90'
+  include 'OUTCOM.f90'
+  include 'PLOT.f90'
+  include 'VARCOM.f90'
 
   !  VARIABLE DEFINITIONS:
 

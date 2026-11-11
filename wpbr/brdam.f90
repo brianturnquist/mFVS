@@ -1,0 +1,61 @@
+!==================!
+!   wpbr : brdam   !
+!==================!
+! WPBR $Id$
+subroutine BRDAM(II,ICODES)
+  implicit none
+
+  !  Purpose:
+  !   This subroutine processes damage codes to determine whether
+  !   the tree in question is infected with Blister Rust.
+  !   The Region 1 code for White Pine Blister Rust is 36.
+
+  !   *** NOTE ***
+
+  !   At this point nothing is done with this information from the
+  !   treelist damage codes.
+
+  !   Parameters:
+  !      II     - current tree ID
+  !      ICODES - integer array (size 6) holding 3 pairs of damage
+  !               codes and severity ratings
+
+  !  Revision History:
+
+  !  dd-MMM-YYYY programmer_name
+  !     description of change or update.
+  !  14-SEP-2000 Lance David (FHTET)
+  !     Transfered Glen Brink's July, 2000 modifications from older version
+  !     of blister rust source code:
+  !     Changed literal value for rust damage code to variable IBRDAM.
+
+  !.... Common include files.
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
+  include 'BRCOM.f90'
+
+  !.... Local variable declarations.
+
+  ! Variables
+  integer :: ICODES(6),II,J,ISEVRT
+
+  !.... Process damage codes.
+
+  do J = 1,5,2
+     if (ICODES(J).eq.IBRDAM) then
+
+        !....       Get the severity rating code.
+
+        ISEVRT = ICODES(J+1)
+        go to 110
+     end if
+     100 continue
+  end do
+
+  !.... Common return.
+
+  110 continue
+  return
+end

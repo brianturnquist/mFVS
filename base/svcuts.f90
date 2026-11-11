@@ -18,10 +18,10 @@ subroutine SVCUTS (IVAC,SSNG,DSNG,CTCRWN)
   !     IVAC=THE NUMBER OF COMPLETELY CUT TREES
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'ARRAYS.F77'
-  include 'CONTRL.F77'
-  include 'SVDATA.F77'
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
+  include 'CONTRL.f90'
+  include 'SVDATA.f90'
 
   !     SSNG  = SNAGS/ACRE CREATED BY CUTTING, BUT LEFT STANDING
   !     DSNG  = SNAGS/ACRE CREATED BY CUTTING, DOWN LEFT IN STAND

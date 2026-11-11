@@ -1,0 +1,103 @@
+!=======================================!
+!   Check maximum stand density index   !
+!=======================================!
+! METRIC-BASE $Id$
+subroutine SDICHK
+  implicit none
+
+  !  THIS SUBROUTINE CHECKS TO SEE IF THE INITIAL STAND SDI
+  !  IS ABOVE THE SPECIFIED MAXIMUM SDI.  IF IT IS, THE MAXIMUM SDI
+  !  IS RESET AND A MESSAGE IS PRINTED.
+  !  THIS ROUTINE IS CALLED FROM **SITSET** IN VARIANTS THAT USE
+  !  THE SDI-BASED MORTALITY MODEL.
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'CONTRL.f90'
+  include 'PLOT.f90'
+  include 'VARCOM.f90'
+  include 'METRIC.f90'
+
+  !  DEFINITIONS:
+
+  !  DQ0    = START OF CYCLE MEAN SQUARE DIAMETER
+  !  SDIMAX = SDI MAXIMUM WEIGHTED BY BASAL AREA
+  !  TEMTPA = TREES/ACRE AT START OF CYCLE
+  !  TMD0   = MAXIMUM NUMBER OF TREES FOR A GIVEN DQ0
+
+  ! Variables
+  integer :: I
+  real    :: DQ0,CONST,UPMAX,TEMD0,TEMTPA,TEMMAX,TEM,TEM2,UPLIM,TMD0
+  logical :: DEBUG
+
+  ! Check whether debugging is enabled
+  call DBCHK (DEBUG,'SDICHK',6,ICYC)
+  if (DEBUG)write(JOSTND,9000)
+  9000 format(' ENTERING SUBROUTINE SDICHK')
+  if (DEBUG)write(JOSTND,9010)ICYC,RMSQD
+  9010 format(1H0,'IN SDICHK 9010 ICYC,RMSQD= ',&
+       &I5,5X,F6.2)
+
+  ! CONVERT PMSDIL & PMSDIU TO PROPORTION
+
+  PMSDIL = PMSDIL/100.
+  PMSDIU = PMSDIU/100.
+
+  DQ0 = RMSQD
+  if (LZEIDE)DQ0 = DR016
+
+  !  IF QMD IS TOO LOW, NUMERICAL PROBLEMS OCCUR. RESET IF NECESSARY.
+
+  if (DQ0.lt.0.3) then
+     DQ0 = 0.3
+     if (DEBUG) write(JOSTND,*)' RESETTING DQ0= ',DQ0
+  end if
+  if (DEBUG) write(JOSTND,*)' DQ0,RMSQD,DR016= ',&
+       &DQ0,RMSQD,DR016
+
+  ! SDIMAX IS USED HERE TO CARRY WEIGHTED SDI MAXIMUM
+
+  call SDICAL(0,SDIMAX)
+  CONST = SDIMAX / 0.02483133
+  TMD0 = CONST * (DQ0 ** (-1.605))
+  if (TMD0.gt.35000.0) TMD0 = 35000.0
+
+  ! IF TOTAL NUMBER OF TREES IS GREATER THAN THE PMSDIU+5% LEVEL,
+  ! RAISE MAXIMUM TO MATCH TOTAL NUMBER OF TREES, PRINT MESSAGE.
+
+  UPMAX = PMSDIU + .05
+  if (UPMAX .gt.1.) UPMAX = 1.
+  TEMD0 = RMSQD
+  if (LZEIDE)TEMD0 = DR016
+  TEMTPA = TPROB
+  TEMMAX = CONST*(TEMD0**(-1.605))
+  if (TEMTPA .le. UPMAX*TEMMAX) go to 200
+  TEM = CONST * .02483133
+  TEM = UPMAX * TEM
+  if (DEBUG)write(JOSTND,9030)CONST,TEM,TEMTPA,TEMD0
+  9030 format(1H ,'IN SDICHK 9030',4F10.2)
+  CONST = EXP(ALOG(TEMTPA + 1.) + 1.605*ALOG(TEMD0)) / PMSDIU
+  TEM2 = CONST * .02483133
+  do I = 1,MAXSP
+     SDIDEF(I) = TEM2
+     194 continue
+  end do
+  UPLIM = TMD0*PMSDIU
+  write(JOSTND,195)&
+       &TEMTPA /ACRtoHA,&
+       &UPLIM  /ACRtoHA,&
+       &SDIMAX /ACRtoHA,&
+       &PMSDIU*100.,&
+       &TEM2   /ACRtoHA
+  195 format(/,2(' ***************'/),' WARNING: INITIAL STAND ',&
+       &'STOCKING OF ',&
+       &F8.1,' TREES/HA IS MORE THAN 5% ABOVE THE UPPER LIMIT OF ',&
+       &F8.1,' TREES/HA.'/,9X,&
+       &'UPPER LIMIT IS BASED ON A SDI MAXIMUM OF ',F10.1,' AND AN UPPER',&
+       &' BOUND OF ',F5.1,' PERCENT OF MAXIMUM.',/,&
+       &9X,'MAXIMUM SDI BEING RESET TO',F10.1,' FOR FURTHER PROCESSING.',&
+       &/2(' ***************'/),/)
+  LFIXSD = .true.
+  200 continue
+  return
+end

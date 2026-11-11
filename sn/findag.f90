@@ -1,0 +1,66 @@
+!=======================================!
+!   Estimate tree age and site height   !
+!=======================================!
+! SN $Id$
+subroutine FINDAG(I,ISPC,D1,D2,H,SITAGE,SITHT,AGMAX1,HTMAX1,&
+     &HTMAX2,DEBUG)
+  implicit none
+
+  !  THIS ROUTINE FINDS EFFECTIVE TREE AGE BASED ON INPUT VARIABLE(S)
+  !  CALLED FROM **CRATET
+  !  CALLED FROM **COMCUP
+  !  CALLS **HTCALC
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'CONTRL.f90'
+  include 'ARRAYS.f90'
+
+  !  DECLARATIONS
+
+  ! Variables
+  logical :: DEBUG
+  integer :: I,ISPC,MODE0
+  real    :: AGET,H,HTG1,HTMAX,HM1
+  real    :: D1,D2,SITAGE,SITHT,AGMAX1,HTMAX1,HTMAX2
+  real    :: RDANUW
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  RDANUW = AGMAX1
+  RDANUW = D1
+  RDANUW = D2
+  RDANUW = HTMAX1
+  RDANUW = HTMAX2
+
+  !  INITIALIZATION
+
+  HTG1 = 0.0
+
+  !   CALL HTCALC TO CALCULATE AGE BASED ON INITIAL TREE HEIGHT
+
+  MODE0 = 0
+  SITHT = H
+  AGET = 0.
+  call HTCALC (MODE0,ISPC,AGET,H,HTMAX,HTG1,JOSTND,DEBUG)
+
+  !  IF H >= HTMAX THEN CALCULATE AGE BASED ON HTMAX - 1. FT.
+  !  THE FORMULA FOR AGE IS UNSTABLE FOR HEIGHTS >= HTMAX.
+
+  if (HTMAX-H.le.1.) then
+     HM1 = HTMAX - 1.1
+     MODE0 = 0
+     SITHT = HM1
+     AGET = 0.
+     call HTCALC (MODE0,ISPC,AGET,HM1,HTMAX,HTG1,JOSTND,DEBUG)
+  end if
+
+  SITAGE = AGET
+
+  if (DEBUG)write(JOSTND,50)I,ISPC,SITAGE,SITHT
+  50 format(' LEAVING SUBROUTINE FINDAG I,ISPC,SITAGE,SITHT= ',&
+       &2I5,2F10.4)
+
+  return
+end
+  !**END OF CODE SEGMENT

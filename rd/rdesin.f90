@@ -1,0 +1,38 @@
+!=================!
+!   rd : rdesin   !
+!=================!
+! RD $Id$
+subroutine RDESIN
+  implicit none
+
+  !  THIS SUBROUTINE HAS ONE FUNCTION: TO CHANGE THE VALUE OF
+  !  MINREP FROM 50 TO 30 WHEN THE ROOT DISEASE MODEL IS
+  !  BEING USED. THIS SUBROUTINE IS BEING CALLED FROM INITRE
+  !  AFTER THE CALL TO ESINIT BUT BEFORE THE CALL TO THE ESTAB
+  !  KEYWORD PROCESSOR. THUS, THE FOLLOWING CONDITIONS WILL EXIST
+  !  DEPENDING ON USER-SPECIFIED OPTIONS.
+  !  1) IF ROOT DISEASE IS NOT ACTIVE MINREP WILL BE THE DEFAULT OF
+  !     50 UNLESS THE MINREP KEYWORD IS SPECIFIED.
+  !  2) IF ROOT DISEASE IS ACTIVE MINREP WILL HAVE THE VALUE OF 30
+  !     UNLESS THE MINREP KEYWORD IS SPECIFIED.
+
+  !  CALLED BY :
+  !     INITRE  [PROGNOSIS]
+
+  !  CALLS     :
+  !     NONE
+
+  !  Revision History :
+  !   08/24/89 - Last revision date.
+  !   08/28/14 Lance R. David (FMSC)
+  !     Added implicit none and declared variables.
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'PLOT.f90'
+  include 'ESHAP.f90'
+
+  MINREP = 30
+
+  return
+end

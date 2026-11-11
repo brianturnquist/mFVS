@@ -1,0 +1,154 @@
+!====================================================!
+!   Estimate missing and regeneration crown ratios   !
+!====================================================!
+! BM $Id$
+subroutine DUBSCR(ISPC,D,H,CR,TPCT,TPCCF)
+  implicit none
+
+  !  THIS SUBROUTINE CALCULATES CROWN RATIOS FOR TREES INSERTED BY
+  !  THE REGENERATION ESTABLISHMENT MODEL.  IT ALSO DUBS CROWN RATIOS
+  !  FOR TREES IN THE INVENTORY THAT ARE MISSING CROWN RATIO
+  !  MEASUREMENTS AND ARE LESS THAN 5.0 INCHES DBH.  FINALLY, IT IS
+  !  USED TO REPLACE CROWN RATIO ESTIMATES FOR ALL TREES THAT
+  !  CROSS THE THRESHOLD BETWEEN THE SMALL AND LARGE TREE MODELS.
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
+  include 'CONTRL.f90'
+  include 'PDEN.f90'
+  include 'PLOT.f90'
+
+  ! Variables
+  external RANN
+
+  ! Variables
+  logical :: DEBUG
+
+  integer :: ISPC
+
+  real    :: BACHLO,CR,D,FCR,H,RDANUW,SD,TPCCF,TPCT
+
+  real    :: BCR0(MAXSP),BCR1(MAXSP),BCR2(MAXSP),BCR3(MAXSP),BCR5(MAXSP)
+  real    :: BCR6(MAXSP),BCR8(MAXSP),BCR9(MAXSP),BCR10(MAXSP),CRSD(MAXSP)
+
+  !  DATA STATEMENTS:
+
+  !  SPECIES ORDER:
+  !   1=WP,  2=WL,  3=DF,  4=GF,  5=MH,  6=WJ,  7=LP,  8=ES,
+  !   9=AF, 10=PP, 11=WB, 12=LM, 13=PY, 14=YC, 15=AS, 16=CW,
+  !  17=OS, 18=OH
+
+  !  SPECIES EXPANSION:
+  !  WJ USES SO JU (ORIGINALLY FROM UT VARIANT; REALLY PP FROM CR VARIANT)
+  !  WB USES SO WB (ORIGINALLY FROM TT VARIANT)
+  !  LM USES UT LM
+  !  PY USES SO PY (ORIGINALLY FROM WC VARIANT)
+  !  YC USES WC YC
+  !  AS USES SO AS (ORIGINALLY FROM UT VARIANT)
+  !  CW USES SO CW (ORIGINALLY FROM WC VARIANT)
+  !  OS USES BM PP BARK COEFFICIENT
+  !  OH USES SO OH (ORIGINALLY FROM WC VARIANT)
+
+  data BCR0/&
+       &-1.669490, -1.669490,  -.426688,  -.426688,  -.426688,  -2.19723,&
+       &-1.669490,  -.426688,  -.426688, -1.669490,  -1.66949,  -1.66949,&
+       &6.489813,  7.558538,  -.426688,       5.0, -1.669490,       5.0/
+
+  data BCR1/&
+       &-.209765,  -.209765,  -.093105,  -.093105,  -.093105,       0.0,&
+       &-.209765,  -.093105,  -.093105,  -.209765,  -.209765,  -.209765,&
+       &0.0,       0.0,  -.093105,       0.0,  -.209765,       0.0/
+
+  data BCR2/&
+       &.000000,   .000000,   .022409,   .022409,   .022409,       0.0,&
+       &.000000,   .022409,   .022409,   .000000,       0.0,       0.0,&
+       &-0.029815, -0.015637,   .022409,       0.0,   .000000,       0.0/
+
+  data BCR3/&
+       &.003359,   .003359,   .002633,   .002633,   .002633,       0.0,&
+       &.003359,   .002633,   .002633,   .003359,   .003359,   .003359,&
+       &-0.009276, -0.009064,   .002633,       0.0,   .003359,       0.0/
+
+  data BCR5/&
+       &.011032,   .011032,   .000000,   .000000,   .000000,       0.0,&
+       &.011032,   .000000,   .000000,   .011032,   .011032,   .011032,&
+       &0.0,       0.0,       0.0,       0.0,   .011032,       0.0/
+
+  data BCR6/&
+       &.000000,   .000000,  -.045532,  -.045532,  -.045532,       0.0,&
+       &.000000,  -.045532,  -.045532,   .000000,       0.0,       0.0,&
+       &0.0,       0.0,  -.045532,       0.0,   .000000,       0.0/
+
+  data BCR8/&
+       &.017727,   .017727,   .000000,   .000000,   .000000,       0.0,&
+       &.017727,   .000000,   .000000,   .017727,   .017727,   .017727,&
+       &0.0,       0.0,       0.0,       0.0,   .017727,       0.0/
+
+  data BCR9/&
+       &-.000053,  -.000053,   .000022,   .000022,   .000022,       0.0,&
+       &-.000053,   .000022,   .000022,  -.000053,  -.000053,  -.000053,&
+       &0.0,       0.0,   .000022,       0.0,  -.000053,       0.0/
+
+  data BCR10/&
+       &.014098,   .014098,  -.013115,  -.013115,  -.013115,       0.0,&
+       &.014098,  -.013115,  -.013115,   .014098,   .014098,   .014098,&
+       &0.0,       0.0,  -.013115,       0.0,   .014098,       0.0/
+
+  data CRSD/&
+       &.5000, .5000, .6957, .6957, .6957, 0.200,&
+       &.6124, .6957, .6957, .4942, .5000, .5000,&
+       &2.0426,1.9658, .9310, 0.500, .4942, 0.500/
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  RDANUW = TPCT
+
+  !  CHECK FOR DEBUG.
+
+  call DBCHK (DEBUG,'DUBSCR',6,ICYC)
+  if (DEBUG) write(JOSTND,3)ICYC
+  3 format(' ENTERING SUBROUTINE DUBSCR  CYCLE =',I5)
+
+  !  EXPECTED CROWN RATIO IS A FUNCTION OF SPECIES, DBH, BASAL AREA, BAL,
+  !  AND PCCF.  THE MODEL IS BASED ON THE LOGISTIC FUNCTION,
+  !  AND RETURNS A VALUE BETWEEN ZERO AND ONE.
+
+  CR = BCR2(ISPC)*H&
+       &+ BCR1(ISPC)*D&
+       &+ BCR5(ISPC)*TPCCF&
+       &+ BCR6(ISPC)*(AVH/H)&
+       &+ BCR8(ISPC)*AVH&
+       &+ BCR3(ISPC)*BA&
+       &+ BCR9(ISPC)*(BA*TPCCF)&
+       &+ BCR10(ISPC)*RMAI&
+       &+ BCR0(ISPC)
+
+  !  A RANDOM ERROR IS ASSIGNED TO THE CROWN RATIO PREDICTION
+  !  PRIOR TO THE LOGISTIC TRANSFORMATION.  LINEAR REGRESSION
+  !  WAS USED TO FIT THE MODELS AND THE ELEMENTS OF CRSD
+  !  ARE THE STANDARD ERRORS FOR THE LINEARIZED MODELS BY SPECIES.
+
+  SD = CRSD(ISPC)
+  10 FCR = BACHLO(0.0,SD,RANN)
+  if (ABS(FCR).gt.SD) go to 10
+
+  select case (ISPC)
+
+  case(1:12,15,17)
+     if (ABS(CR+FCR).ge.86.)CR = 86.
+     CR = 1.0/(1.0+EXP(CR+FCR))
+
+  case(13,14,16,18)
+     CR = CR+FCR
+     CR = ((CR-1.0)*10.0 + 1.0)/100.
+  end select
+
+  if (CR .gt..95) CR = .95
+  if (CR .lt..05) CR = .05
+  if (DEBUG)write(JOSTND,600)ISPC,D,H,BA,TPCCF,CR,FCR,RMAI,AVH
+  600 format(' IN DUBSCR, ISPC=',I2,' DBH=',F4.1,' H=',F5.1,&
+       &' BA=',F7.3,' TPCCF=',F8.4,' CR=',F4.3,&
+       &' RAN ERR = ',F9.4,' RMAI= ',F9.4,' AVH=',F9.4)
+  return
+end

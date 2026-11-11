@@ -1,0 +1,39 @@
+!=================!
+!   rd : rdtres   !
+!=================!
+! RD $Id$
+subroutine RDTRES (IRNTRE,IRTP1)
+  implicit none
+
+  !  ROUTINE THAT RETURNS THE NUMBER OF TREE RECORDS THAT WILL
+  !  BE PERMITTED FOR THE ROOT DISEASE MODEL.  THIS VALUE FOR
+  !  NUMBER OF TREES IS THE NUMBER THAT IS CONTAINED IN THE ROUTINE
+  !  ANPARM AS A PARAMETER VALUE.  THIS ROUTINE IS CALLED FROM INTREE
+  !  TO ESTABLISH THE MAXIMUM NUMBER OF TREE RECORDS TO BE READ.
+
+  !  CALLED BY :
+  !     INTREE  [PROGNOSIS]
+
+  !  CALLS     :
+  !     NONE
+
+  !  PARAMETERS :
+  !     IRNTRE -
+  !     IRTP1  -
+
+  !  Revision History:
+  !   11/20/89 - Last revision date.
+  !   09/04/14 Lance R. David (FMSC)
+  !     Added implicit none and declared variables.
+
+  ! Common blocks
+  include 'RDPARM.f90'
+
+  ! Variables
+  integer :: IRNTRE,IRTP1
+
+  IRNTRE = IRRTRE
+  IRTP1 = IRRTP1
+
+  return
+end

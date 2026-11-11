@@ -8,8 +8,8 @@ subroutine TREGRO
   !    CALLED FROM **MAIN** EACH CYCLE.
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'CONTRL.F77'
+  include 'PRGPRM.f90'
+  include 'CONTRL.f90'
 
   !  DECLARATIONS:
 

@@ -11,11 +11,11 @@ subroutine STATS
   !  CONSTRUCTION OF CONFIDENCE INTERVALS.
 
   ! Common blocks
-  include 'PRGPRM.F77'
-  include 'ARRAYS.F77'
-  include 'CONTRL.F77'
-  include 'VOLSTD.F77'
-  include 'PLOT.F77'
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
+  include 'CONTRL.f90'
+  include 'VOLSTD.f90'
+  include 'PLOT.f90'
 
   ! Variables
   character(len=19) :: LABELS(6)
