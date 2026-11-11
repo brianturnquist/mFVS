@@ -1,0 +1,246 @@
+!==========================================!
+!   Provide root disease extension stubs   !
+!==========================================!
+! BASE $Id$
+subroutine EXRD
+  implicit none
+
+  !     EXTRA EXTERNAL REFERENCES FOR THE WESTERN ROOT DISEASE MODEL
+  !     VERSION 3.0
+
+  ! Common blocks
+  include 'PRGPRM.F77'
+
+  ! Variables
+  integer :: ICODES(6),I3(*),I2(*),ITN1,ITN2,II,I,I1,II1
+  integer :: ILIMIT,IPNT,II2,III2,KEY
+  real    :: ARRAY(12),R1(*),RR2,RR1,OLD,WK3
+  logical :: L,LNOTBK(12),LTR,LTEE,LDUM,LKECHO
+  character(len=8) :: KEYWRD
+  character(len=8) :: NORR
+  real    :: RDANUW
+  integer :: IDANUW
+  character(len=8) :: CDANUW
+  logical :: LDANUW
+
+  data NORR/'*NO RROT'/
+
+  !  ENTRY RDIN CALLED FROM INITRE
+
+  entry RDIN (KEYWRD,ARRAY,LNOTBK,LKECHO)
+  call ERRGRO (.true.,11)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  RDANUW = ARRAY(1)
+  CDANUW(1:8) = KEYWRD(1:8)
+  LDANUW = LNOTBK(1)
+  LDANUW = LKECHO
+  return
+
+  !  ENTRY RDATV CALLED FROM INTREE
+
+  entry RDATV(L,LTEE)
+  L = .false.
+  LTEE = .false.
+  return
+
+  !  ENTRY RDTRES CALLED FROM INTREE
+
+  entry RDTRES (ITN1,ITN2)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  IDANUW = ITN1
+  IDANUW = ITN2
+  return
+
+  !  ENTRY RDINIT CALLED FROM INITRE
+
+  entry RDINIT
+  return
+
+  !  ENTRY RDDAM CALLED FROM DAMCDS
+
+  entry RDDAM  (II,ICODES)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  IDANUW = II
+  IDANUW = ICODES(1)
+  return
+
+  !  ENTRY RDTRP CALLED FROM MAIN, GRINCR
+
+  entry RDTRP(LTR)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  LDANUW = LTR
+  return
+
+  !  ENTRY RDROUT CALLED FROM MAIN
+
+  entry RDROUT
+  return
+
+  !  ENTRY RDPRIN CALLED FROM NOTRE
+
+  entry RDPRIN (I)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  IDANUW = I
+  return
+
+  !  ENTRY RDESIN CALLED FROM INITRE
+
+  entry RDESIN
+  return
+
+  ! RDTREG CALLED FROM GRADD
+
+  entry RDTREG
+  return
+
+  !  ENTRY RDCMPR CALLED FROM COMPRS
+
+  entry RDCMPR (I1,R1,I2,I3)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  IDANUW = I1
+  IDANUW = I2(1)
+  IDANUW = I3(1)
+  RDANUW = R1(1)
+  return
+
+  !  ENTRY RDSTR CALLED FROM CUTS
+
+  entry RDSTR (II1,RR1,RR2)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  IDANUW = II1
+  RDANUW = RR1
+  RDANUW = RR2
+  return
+
+  !  ENTRY RDESCP CALLED FROM ESTAB, ESUCKR
+
+  entry RDESCP (II1,II2)
+  II2 = II1
+  return
+
+  !  ENTRY RDESTB CALLED FROM ESTAB
+
+  entry RDESTB (I1,R1)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  IDANUW = I1
+  RDANUW = R1(1)
+  return
+
+  !  ENTRY RDMN1 CALLED FROM MAIN
+
+  entry RDMN1 (II)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  IDANUW = II
+  return
+
+  !  ENTRY RDMN2 CALLED FROM GRINCR
+
+  entry RDMN2 (OLD)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  RDANUW = OLD
+  return
+
+  !  ENTRY RDPR CALLED FROM MAIN
+
+  entry RDPR
+  return
+
+  !  ENTRY RDTRIP CALLED FROM TRIPLE
+
+  entry RDTRIP (II1,III2,RR1)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  IDANUW = II1
+  IDANUW = III2
+  RDANUW = RR1
+  return
+
+  !  ENTRY RDTDEL CALLED FROM TREDEL
+
+  entry RDTDEL (II1,II2)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  IDANUW = II1
+  IDANUW = II2
+  return
+
+  !  ENTRY RDKEY CALLED FROM OPLIST
+
+  entry RDKEY (KEY,KEYWRD)
+  KEYWRD = NORR
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  IDANUW = KEY
+  return
+
+  !  ENTRY RDPPATV - PPE -
+
+  entry RDPPATV (LDUM)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  LDANUW = LDUM
+  return
+
+  !  ENTRY RDPPPT - PPE -
+
+  entry RDPPPT (WK3,IPNT,ILIMIT)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  RDANUW = WK3
+  IDANUW = IPNT
+  IDANUW = ILIMIT
+  return
+
+  !  ENTRY RDPPGT - PPE -
+
+  entry RDPPGT (WK3,IPNT,ILIMIT)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  RDANUW = WK3
+  IDANUW = IPNT
+  IDANUW = ILIMIT
+  return
+
+end subroutine EXRD

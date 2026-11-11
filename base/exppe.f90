@@ -1,0 +1,189 @@
+!=================================================!
+!   Provide parallel processing extension stubs   !
+!=================================================!
+! BASE $Id$
+subroutine EXPPE
+  implicit none
+
+  !     ENTRY EXTERNAL REGERENCES FOR THE PARALLEL PROCESSING EXTENSION.
+
+  ! Variables
+  logical :: L
+  character(len=8) :: C
+  character(len=11) :: CISN
+  integer :: IA(*),JA(*)
+  integer :: I,J,I2,I3
+  real    :: R,X,R2,X1,X2
+  real    :: RDANUW
+  integer :: IDANUW
+  character(len=8) :: CDANUW
+
+  !  ENTRY PPECYC
+  !     CALLED BY INSCYC TO FIND OUT IF IS LEGAL TO INSERT A CYCLE AT
+  !     YEAR I
+
+  entry PPECYC (I,L)
+  L = .true.
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  IDANUW = I
+  return
+
+  !  ENTRY PPEATV
+  !     RETURNS L, TO INDICATE THAT PPE IS NOT PART OF THE PROGRAM.
+
+  entry PPEATV (L)
+  L = .false.
+  return
+
+  !  ENTRY PPEVMI: EVENT MONITOR/PPE INTERFACE. SIMPLY RETURNS.
+
+  entry PPEVMI (I,IA,JA,J)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  IDANUW = I
+  IDANUW = J
+  IDANUW = IA(1)
+  IDANUW = JA(1)
+  return
+
+  !  ENTRY PPLDEV: LOAD THE EVENT MONITOR PPE VARIABLES.
+
+  entry PPLDEV
+  return
+
+  !  ENTRY PPLDX
+  !     CALLED TO LOAD PPE VARIALBES FOR EXPRESSION EVALUATION.  RETURN
+  !     A CODE INDICATING THAT THE REQUESTED VARIABLE IS UNDEFINED.
+
+  entry PPLDX (R,I,I2)
+  I2 = 1
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  IDANUW = I
+  RDANUW = R
+  return
+
+  !  ENTRY PPKEY
+  !     CALLED TO FIND THE NUMBER OF USER-DEFINED VARIALBES.  PASS BACK
+  !     A CODE INDICATING THAT THE VARIABLE COULD NOT BE FOUND.
+
+  entry PPKEY (C,I,I2)
+  I2 = 1
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  IDANUW = I
+  CDANUW(1:8) = C(1:8)
+  return
+
+  !  ENTRY PPBRPH
+  !     CALLED BY TREGRO TO FIND OUT IF SOME PARTS OF TREGRO NEED TO
+  !     BE SKIPPED.
+
+  entry PPBRPH (I)
+  I = 0
+  return
+
+  !  ENTRY PPLABS
+  !     NEEDED BY CVOUT AND OTHER ROUTINES TO WRITE THE CORRECT LABELS
+
+  entry PPLABS (J)
+
+  !     WRITE THE STAND POLICY LABEL...
+
+  call LBSPLW (J)
+  return
+
+  !  ENTRY PPISN: RETURNS THE CURRENT ISN.
+
+  entry PPISN (CISN)
+  CISN = '00000000000'
+  return
+
+  !  ENTRY PPISND: RETURNS THE CURRENT STAND NUMBER.
+
+  entry PPISND (I)
+  I = 0
+  return
+
+  !  ENTRY PPWEIG
+  !     CALLED BY PRTRLS TO GET THE SAMPLING WEIGHT FOR THE TREELIST.
+
+  entry PPWEIG (I,X)
+  X = 0.0
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  IDANUW = I
+  return
+
+  !  ENTRY PPCLOP
+  !     CALLED BY GROHED TO CLOSE THE OPTION OUTPUT TABLE, IF NEEDED.
+
+  entry PPCLOP (I)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  IDANUW = I
+  return
+
+  !  ENTRY MSTRGT
+
+  entry MSTRGT
+  return
+
+  !  ENTRY MSTRPT
+
+  entry MSTRPT
+  return
+
+  !  ENTRY GPNEW
+
+  entry GPNEW (I,I2,I3,R,R2)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  IDANUW = I
+  IDANUW = I2
+  IDANUW = I3
+  RDANUW = R
+  RDANUW = R2
+  return
+
+  !  ENTRY GPCLOS
+
+  entry GPCLOS
+  return
+
+  !  ENTRY PPPDEN
+  !     CALLED TO MODIFIY THE POINT DENSITY STATISTICS FOR THE ESTAB
+  !     MODEL FOR MODELING EFFECTS OF NEIGHBORING DENSITY.
+  !     (CALLED FROM GRADD).
+
+  entry PPPDEN
+  return
+
+  ! ENTRY FMPPHV_REPORT
+  ! CALLED BY THE FFE POTENTIAL FIRE PROGRAM TO STORE SOME DATA
+
+  entry FMPPHV_REPORT(X1,X2)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  RDANUW = X1
+  RDANUW = X2
+  return
+
+end subroutine EXPPE

@@ -1,0 +1,357 @@
+!===========================================!
+!   Update tree descriptions after growth   !
+!===========================================!
+! BASE $Id$
+subroutine GRADD (DEBUG,IPMODI,LTMGO,LMPBGO,LDFBGO, &
+     & LBWEGO,LCVATV)
+  implicit none
+
+  !     UPDATES TREE DESCRIPTIONS, COMPUTES END-OF-CYCLE SHRUB AND
+  !     CVBROW STATISTICS, ESTABLISHIES NEW TREES, AND COMPUTES OTHER
+  !     END-OF-CYCLE STATISTICS.
+
+  !     CALLED FROM: TREGRO
+
+  ! Common blocks
+  include 'PRGPRM.F77'
+  include 'ARRAYS.F77'
+  include 'COEFFS.F77'
+  include 'CONTRL.F77'
+  include 'OUTCOM.F77'
+  include 'PLOT.F77'
+  include 'OPCOM.F77'
+
+  ! Variables
+  logical :: LTMGO,LMPBGO,LDFBGO,LBWEGO,LCVATV,DEBUG
+
+  !     DIMENSION SPCNT -- CUMULATIVE TREES PER ACRE BY SPECIES AND
+  !                        TREE CLASS.
+
+  real    :: SPCNT(MAXSP,3)
+  integer :: IPMODI,I,IS,IYR1,IYR2,IFIRES,IDT,ISTAT,KODE,NPRMS,ILE,IM,ISTOPRES,IRTNCD
+  real    :: SCALE,D,BARK,BRATIO,DDS
+
+  !     GET THE RESTART CODE AND BRANCH ACCORDINGLY
+
+  call fvsGetRestartCode (ISTOPRES)
+
+  if (DEBUG) write (JOSTND,10) NPLT,ICYC,ISTOPRES
+  10 format (/' IN GRADD, NPLT=',A26,'; ICYC=',I2,'; ISTOPRES=',I2)
+  if (ISTOPRES.eq.5) goto 57
+  if (ISTOPRES.eq.6) goto 97
+
+  !  CALL **MPBCUP** IF THERE IS A MOUNTAIN PINE BEETLE OUTBREAK THIS
+  !  CYCLE. NOTE THAT DG MUST BE ON A YR-PERIOD BASIS FOR MPBMOD.
+
+  if (IPMODI.eq.1 .and.LMPBGO) then
+     if (DEBUG) write(JOSTND,20) ICYC
+     20 format (' CALLING MPBCUP, CYCLE=',I2)
+     call MPBCUP
+  end if
+
+  !     CALL DFBDRV IF THERE IS A DOUGLAS-FIR BEETLE OUTBREAK THIS
+  !     CYCLE.
+
+  call DFBWIN(LDFBGO)
+  if (IPMODI .eq. 1 .and. LDFBGO) then
+     call DFBDRV
+  end if
+
+  !     SCALE DIAMETER GROWTH TO A FINT-YEAR BASIS.
+
+  if (ITRN.gt.0 .and. FINT.ne.YR) then
+     SCALE = FINT/YR
+     do I = 1,ITRN
+        IS = ISP(I)
+        D = DBH(I)
+        BARK = BRATIO(IS,D,HT(I))
+        if (DG(I) .gt. 0.) then
+           DDS = (DG(I)*(2.0*BARK*D+DG(I)))*SCALE
+           DG(I) = SQRT((D*BARK)**2+DDS)-BARK*D
+        else
+           DG(I) = 0.0
+        end if
+        30 continue
+     end do
+  end if
+
+  !     CALL MISTLETOE SUBROUTINE
+
+  call MISTOE
+
+  !     CALL **TMCOUP** IF THERE IS A TUSSOCK MOTH OUTBREAK THIS CYCLE.
+
+  if (IPMODI.eq.1 .and. LTMGO) then
+     if (DEBUG) write (JOSTND,40) ICYC
+     40 format(' CALLING TMCOUP, CYCLE=',I2)
+     call TMCOUP
+  end if
+
+  !     CALL THE WESTERN SPRUCE BUDWORM (BUDLITE) MODEL INTERFACE.
+
+  if (IPMODI.eq.1 .and. LBWEGO) then
+     if (DEBUG) write(JOSTND,50) ICYC
+     50 format (' CALLING BWECUP, CYCLE=',I2)
+     call BWECUP
+  end if
+
+  !     CALL THE FIRE MODEL
+
+  if (DEBUG) write(JOSTND,51) ICYC
+  51 format (' CALLING FMMAIN, CYCLE=',I2)
+  call FMMAIN
+  call fvsGetRtnCode(IRTNCD)
+  if (IRTNCD.ne.0) return
+
+  call FMKILL(1)
+
+  !     CALL BLISTER RUST SUBROUTINE TO BEGIN SIMULATION.
+
+  call BRTREG
+
+  !     CALL WESTERN ROOT DISEASE VER. 3.0 SUBROUTINE TO BEGIN DISEASE
+  !     SIMULATION
+
+  call RDTREG
+
+  !     CALL THE FIRE MODEL MORTALITY ROUTINE
+
+  call FMKILL(2)
+
+  !  SET LFIRE=.TRUE. IF A SIMFIRE KEYWORD WAS USED THIS CYCLE
+  !  LFIRE CONTROLS USE OF OLDBA, OLDTPA AND ORMSQD IN POST-DISTURBANCE
+  !  COVER CALCULATIONS IN THE **CVCBMS AND CCFCAL** ROUTINES
+
+  if (ICYC.le.0) then
+     IYR1 = IY(1)
+     IYR2 = IY(1)
+  else
+     IYR1 = IY(ICYC)
+     IYR2 = IY(ICYC+1)
+  end if
+  IFIRES = 0
+  IDT = 0
+  ISTAT = 0
+  call OPSTUS (2506,IYR1,IYR2,0,IFIRES,IDT,NPRMS,ISTAT,KODE)
+  if ((ISTAT.gt.0).and.(IDT.ge.IYR1).and.(IDT.le.IYR2)) then
+     LFIRE = .true.
+  end if
+
+  !     CALL HTGSTP TO PROCESS HTGSTOP OPTION, IF USED.
+
+  call HTGSTP
+
+  !     UPDATE THE VISULIZATION FOR MORTALITY
+
+  if (DEBUG) write (JOSTND,55) ICYC
+  55 format(' CALLING SVMORT, CYCLE=',I2)
+  call SVMORT (0,WK2,IY(ICYC))
+
+  !     UPDATE TREE DESCRIPTIONS.
+
+  !     IS THIS A STOPPING POINT?
+
+  call fvsStopPoint (5,ISTOPRES)
+  if (ISTOPRES.ne.0) return
+  call fvsGetRtnCode(IRTNCD)
+  if (IRTNCD.ne.0) return
+
+  !     BRANCH HERE IF RESTARTING FROM STOPCODE=5.
+
+  57 continue
+  if (DEBUG) write (JOSTND,60) ICYC
+  60 format(' CALLING UPDATE, CYCLE=',I2)
+  call UPDATE
+
+  !     RESORT THE TREE RECORDS BY DIAMETER.
+
+  if (DEBUG) write (JOSTND,70) ICYC
+  70 format(' CALLING RDPSRT, CYCLE=',I2)
+  if (ITRN.gt.0)call RDPSRT(ITRN,DBH,IND,.true.)
+
+  !     CALL **DENSE** TO CALCULATE POST-MORTALITY AND BAI DENSITY STATS.
+
+  if (DEBUG) write (JOSTND,80) ICYC
+  80 format(' CALLING DENSE, CYCLE=',I2)
+  call DENSE
+
+  !     CALL **CVBROW** TO COMPUTE SHRUB DENSITY AND WILDLIFE CVBROW
+  !     STATISTICS.
+
+  call CVGO (LCVATV)
+  if (DEBUG.and.LCVATV) write (JOSTND,90) ICYC
+  90 format(' CALLING CVBROW, CYCLE=',I2)
+  if (LCVATV) call CVBROW (.false.)
+
+  !     INCREMENT ABIRTH ARRAY
+
+  do I = 1, ITRN
+     ABIRTH(I) = ABIRTH(I) + FINT
+     95 continue
+  end do
+
+  !     IS THIS A STOPPING POINT?
+
+  call fvsStopPoint (6,ISTOPRES)
+  if (ISTOPRES.ne.0) return
+  call fvsGetRtnCode(IRTNCD)
+  if (IRTNCD.ne.0) return
+
+  !     BRANCH HERE IF RESTARTING FROM STOPCODE=6.
+
+  97 continue
+
+  !     CALL CLIMATE-DRIVEN ESTABLISHMENT
+
+  if (DEBUG) write(JOSTND,99) ICYC
+  99 format(' CALLING CLAUESTB, CYCLE=',I2)
+  call CLAUESTB
+
+  !     CALL THE REGENERATION ESTABLISHMENT SUBSYSTEM.
+
+  if (DEBUG) write(JOSTND,100) ICYC
+  100 format(' CALLING ESNUTR, CYCLE=',I2)
+  call ESNUTR
+
+  !     UPDATE THE VISULIZATION FOR NEW TREES
+
+  if (DEBUG) write (JOSTND,105) ICYC
+  105 format(' CALLING SVESTB, CYCLE=',I2)
+  call SVESTB(1)
+
+  !     CALL ECCALC TO CALCULATE COSTS & REVENUES FOR ECON EXTENSION
+
+  call ECCALC(IY, ICYC, JSP, MGMID, NPLT, ITITLE)
+
+  !     CALL DENSE TO CALCULATE POST-ESTABLISHMENT DENSITY.
+
+  if (DEBUG) write(JOSTND,80) ICYC
+  call DENSE
+
+  !     CALCULATE CHANGE IN CROWN RATIOS.
+
+  if (DEBUG) write (JOSTND,110) ICYC,NPLT
+  110 format(' CALLING CROWN, CYCLE=',I2,'  NPLT= ',A)
+  call CROWN
+
+  !     UPDATE CROWN WIDTHS
+
+  call CWIDTH
+
+  !     CALL **CVCNOP** TO COMPUTE CROWN AREA AND FOLIAGE BIOMASS
+  !     STATISTICS.
+
+  if (DEBUG.and.LCVATV) write (JOSTND,120) ICYC
+  120 format (' CALLING CVCNOP, CYCLE=',I3)
+  if (LCVATV) call CVCNOP (.false.)
+
+  !     SAVE PCT IN OLDPCT TO RETAIN AN OLD PCTILE VALUE
+
+  if (ITRN.gt.0) then
+     do ILE = 1,ITRN
+        OLDPCT(ILE) = PCT(ILE)
+        130 continue
+     end do
+     do I = 1,MAXSP
+        SPCNT(I,1) = 0.0
+        SPCNT(I,2) = 0.0
+        SPCNT(I,3) = 0.0
+        140 continue
+     end do
+
+     !        ACCUMULATE TREES PER ACRE BY SPECIES AND TREE CLASS.
+
+     do I = 1,ITRN
+        IS = ISP(I)
+        IM = IMC(I)
+        SPCNT(IS,IM) = SPCNT(IS,IM)+PROB(I)
+        150 continue
+     end do
+  end if
+
+  !     COMPUTE DISTRIBUTION OF DIAMETERS AND SPECIES-TREE CLASS COMPOS.
+  !     FOR TREES PER ACRE.  IF NEW TREES HAVE BEEN ADDED VIA THE
+  !     ESTABLISHMENT SUBSYSTEM AND/OR THE TREE COMPRESSION HAS
+  !     TAKEN PLACE, INS WILL BE REDEFINED IN THE NEXT CALL TO DIST.
+
+  call PCTILE(ITRN,IND,PROB,WK3,ONTCUR(7))
+  call DIST(ITRN,ONTCUR,WK3)
+  call COMP(OSPCT,IOSPCT,SPCNT)
+
+  !     COMPUTE PERCENTILE POINTS IN THE DISTRIBUTION OF DIAMETERS FOR
+  !     TOTAL CUBIC VOLUME.  THIS CALL IS PLACED HERE SO THAT ACCRETION
+  !     DISTRIBUTION RELATES TO DIAMETERS AT THE START OF THE CYCLE AND
+  !     TOTAL VOLUME DISTRIBUTION RELATES TO UPDATED DIAMETERS. FIRST
+  !     CONVERT VOLUMES TO A PER ACRE REPRESENTATION.
+
+  if (ITRN.gt.0) then
+     do I = 1,ITRN
+        CFV(I) = CFV(I)*PROB(I)
+        BFV(I) = BFV(I)*PROB(I)
+        MCFV(I) = MCFV(I)*PROB(I)
+        SCFV(I) = SCFV(I)*PROB(I)
+        ABVGRD_BIO(I) = ABVGRD_BIO(I)*PROB(I)
+        MERCH_BIO(I) = MERCH_BIO(I)*PROB(I)
+        CUBSAW_BIO(I) = CUBSAW_BIO(I)*PROB(I)
+        FOLI_BIO(I) = FOLI_BIO(I)*PROB(I)
+        ABVGRD_CARB(I) = ABVGRD_CARB(I)*PROB(I)
+        MERCH_CARB(I) = MERCH_CARB(I)*PROB(I)
+        CUBSAW_CARB(I) = CUBSAW_CARB(I)*PROB(I)
+        FOLI_CARB(I) = FOLI_CARB(I)*PROB(I)
+        160 continue
+     end do
+  end if
+  call PCTILE(ITRN,IND,CFV,WK3,OCVCUR(7))
+  call DIST(ITRN,OCVCUR,WK3)
+  call PCTILE(ITRN,IND,BFV,WK3,OBFCUR(7))
+  call DIST(ITRN,OBFCUR,WK3)
+  call PCTILE(ITRN,IND,MCFV,WK3,OMCCUR(7))
+  call DIST(ITRN,OMCCUR,WK3)
+  call PCTILE(ITRN,IND,SCFV,WK3,OSCCUR(7))
+  call DIST(ITRN,OSCCUR,WK3)
+  !     CARBON AND BIOMASS
+  if (LFIANVB) then
+     call PCTILE(ITRN,IND,ABVGRD_BIO,WK3,OAGBIOCUR(7))
+     call DIST(ITRN,OAGBIOCUR,WK3)
+     call PCTILE(ITRN,IND,MERCH_BIO,WK3,OMERBIOCUR(7))
+     call DIST(ITRN,OMERBIOCUR,WK3)
+     call PCTILE(ITRN,IND,CUBSAW_BIO,WK3,OCSAWBIOCUR(7))
+     call DIST(ITRN,OCSAWBIOCUR,WK3)
+     call PCTILE(ITRN,IND,FOLI_BIO,WK3,OFOLIBIO(7))
+     call DIST(ITRN,OFOLIBIO,WK3)
+     call PCTILE(ITRN,IND,ABVGRD_CARB,WK3,OAGCARBCUR(7))
+     call DIST(ITRN,OAGCARBCUR,WK3)
+     call PCTILE(ITRN,IND,MERCH_CARB,WK3,OMERCARBCUR(7))
+     call DIST(ITRN,OMERCARBCUR,WK3)
+     call PCTILE(ITRN,IND,CUBSAW_CARB,WK3,OCSAWCARBCUR(7))
+     call DIST(ITRN,OCSAWCARBCUR,WK3)
+     call PCTILE(ITRN,IND,FOLI_CARB,WK3,OFOLICARB(7))
+     call DIST(ITRN,OFOLICARB,WK3)
+  end if
+
+  !     CONVERT CFV BACK TO A PER TREE REPRESENTATION. ALLOW FOR THE
+  !     FACT THAT SOME PROBS MAY BE ZERO (NL CROOKSTON, 06/11/91).
+
+  if (ITRN.gt.0) then
+     do I = 1,ITRN
+        if (PROB(I).gt.0.0) then
+           CFV(I) = CFV(I)/PROB(I)
+           MCFV(I) = MCFV(I)/PROB(I)
+           SCFV(I) = SCFV(I)/PROB(I)
+           BFV(I) = BFV(I)/PROB(I)
+           if (LFIANVB) then
+              ABVGRD_BIO(I) = ABVGRD_BIO(I)/PROB(I)
+              MERCH_BIO(I) = MERCH_BIO(I)/PROB(I)
+              CUBSAW_BIO(I) = CUBSAW_BIO(I)/PROB(I)
+              FOLI_BIO(I) = FOLI_BIO(I)/PROB(I)
+              ABVGRD_CARB(I) = ABVGRD_CARB(I)/PROB(I)
+              MERCH_CARB(I) = MERCH_CARB(I)/PROB(I)
+              CUBSAW_CARB(I) = CUBSAW_CARB(I)/PROB(I)
+              FOLI_CARB(I) = FOLI_CARB(I)/PROB(I)
+           end if
+        end if
+        170 continue
+     end do
+  end if
+  return
+end subroutine GRADD

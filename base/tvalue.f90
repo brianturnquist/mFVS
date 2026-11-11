@@ -1,0 +1,91 @@
+!==================================!
+!   Approximate Student t values   !
+!==================================!
+! BASE $Id$
+subroutine TVALUE(N,P,T,IERR)
+  implicit none
+
+  !  THIS SUBROUTINE APPROXIMATES THE VALUE OF STUDENT'S T ASSOCIATED
+  !  WITH 'N' DEGREES OF FREEDOM FOR THE 'P' LEVEL OF PROBABILITY.
+  !  WHEN THERE ARE NO DEGREES OF FREEDOM, OR WHEN P IS LESS THAN OR
+  !  EQUAL TO 0.0 OR GREATER THAN OR EQUAL TO 1.0, 'T' IS ASSIGNED
+  !  A VALUE OF ZERO AND AN ERROR FLAG (IERR) IS SET.
+  !  THE ALGORITHM USED IS FROM:
+
+  !       HILL, G. W. 1970.  ALGORITHM 396: STUDENT'S T QUANTILES.
+  !          COMMUNICATIONS OF THE ACM 13(10) 619-620.
+
+  !  UNDER CERTAIN CONDITIONS, THIS ALGORITHM REQUIRES AN
+  !  APPROXIMATION OF THE X-DEVIATE ASSOCIATED WITH A GIVEN INTEGRAL
+  !  VALUE FROM THE NEGATIVE TAIL OF THE NORMAL PROBABILITY DENSITY
+  !  FUNCTION.  AN ALGORITHM FROM THE HEWLETT-PACKARD HP-67/HP-97
+  !  STAT PAC 1 IS USED TO APPROXIMATE X-DEVIATES.
+
+  ! Variables
+  integer :: IERR,N
+  real    :: T,P,HALFPI,XN,A,B,C,D,X,Y,Q,QT
+
+  data HALFPI/1.5707963268/
+  T = 0.0
+  IERR = 0
+  if (N.ge.1 .and. P.gt.0.0 .and. P.lt.1.0) go to 10
+
+  !  INVALID ARGUEMENTS: SET ERROR CODES AND RETURN.
+
+  IERR = 1
+  return
+  10 continue
+  if (N.gt.1) go to 15
+
+  !  ONE DEGREE OF FREEDOM.
+
+  T = COS(P*HALFPI)/SIN(P*HALFPI)
+  return
+  15 continue
+  if (N.gt.2) go to 20
+
+  !  TWO DEGREES OF FREEDOM.
+
+  T = SQRT(2.0/(P*(2.0-P))-2.0)
+  return
+
+  !  THREE OR MORE DEGREES OF FREEDOM.
+
+  20 continue
+  XN = FLOAT(N)
+  A = 1.0/(XN-0.5)
+  B = 48.0/(A*A)
+  C = ((20700.0*A/B-98.0)*A-16.0)*A+96.36
+  D = ((94.5/(B+C)-3.0)/B+1.0)*SQRT(A*HALFPI)*XN
+  X = D*P
+  Y = X**(2.0/XN)
+  if (Y.le.A+0.05) go to 25
+
+  !  Y > A+0.05:  USE ASYMPTOTIC INVERSE EXPANSION ABOUT NORMAL.
+
+  Q = P*0.5
+
+  !  APPROXIMATE X-DEVIATE ASSOCIATED WITH THE INTEGRAL VALUE Q FROM
+  !  THE NEGATIVE TAIL OF THE NORMAL PROBABILITY DENSITY FUNCTION.
+
+  QT = SQRT(ALOG(1.0/(Q*Q)))
+  X = -QT+(((0.802853+QT*0.010328)*QT+2.515517)/ &
+       & (((0.189269+QT*0.001308)*QT+1.432788)*QT+1))
+  Y = X*X
+  if (N.lt.5) C = C+0.3*(XN-4.5)*(X+0.6)
+  C = (((0.05*D*X-5.0)*X-7.0)*X-2.0)*X+B+C
+  Y = (((((0.4*Y+6.3)*Y+36.0)*Y+94.5)/C-Y-3.0)/B+1.0)*X
+  Y = A*Y*Y
+  if (Y.gt.0.002) go to 22
+  Y = 0.5*Y*Y+Y
+  go to 30
+  22 continue
+  Y = EXP(Y)-1.0
+  go to 30
+  25 continue
+  Y = ((1.0/(((XN+6.0)/(XN*Y)-0.089*D-0.822)*(XN+2.0)*3.0)+ &
+       & 0.5/(XN+4.0))*Y-1.0)*(XN+1.0)/(XN+2.0)+1.0/Y
+  30 continue
+  T = SQRT(XN*Y)
+  return
+end subroutine TVALUE

@@ -1,0 +1,542 @@
+!===========================================!
+!   Compile expression keyword references   !
+!===========================================!
+! BASE $Id$
+subroutine ALGKEY (CTOK,LEN,NUM,IRC)
+  implicit none
+
+  ! REVISION HISTORY:
+  !     Spring 2023
+  !       Added Lorey's Height (Average height weighted by basal area)
+  !         BHTWTBA= Before thin average height weighted by basal area (code 119)
+  !         AHTWTBA= After thin average height weighted by basal area (code 219)
+  !     Revised June 2024 - D Wagner
+  !       Added monitor variables
+  !         BSCUFT= Before Thin Sawlog Cubic Foot Volume (code 120)
+  !         ASCUFT= After Thin Sawlog Cubic Foot Volume (code 220)
+  !         RSCUFT= Removed Sawlog Cubic Foot Volume (code 221)
+  !       CARBON AND BIOMASS VARIABLES
+  !         BABVBIO= Before thin above ground biomass (code 151)
+  !         BMERBIO= Before thin merchantable (cubic volume) biomass (code 152)
+  !         BSAWBIO= Before thin cubic sawtimber biomass (code 153)
+  !         BFOLBIO= Before thin foliage biomass (code 154)
+  !         BABVCRB= Before thin above ground carbon (code 155)
+  !         BMERCRB= Before thin merchantable carbon (code 156)
+  !         BSAWCRB= Before thin cubic sawlog carbon (code 157)
+  !         BFOLCRB= Before thin foliage carbon (code 158)
+  !         AABVBIO= After thin above ground biomass (code 222)
+  !         RABVBIO= Removed above ground biomass (code 223)
+  !         AMERBIO= After thin merchantable biomass (code 224)
+  !         RMERBIO= Removed merchantable biomass (code 225)
+  !         ASAWBIO= After thin cubic sawlog biomass (code 226)
+  !         RSAWBIO= Removed cubic sawlog biomass (code 227)
+  !         AABVCRB= After thin above ground carbon (code 228)
+  !         RABVCRB= Removed above ground carbon (code 229)
+  !         AMERCRB= After thin merchantable carbon (code 230)
+  !         RMERCRB= Removed merchantable carbon (code 231)
+  !         ASAWCRB= After thin cubic sawlog carbon (code 232)
+  !         RSAWCRB= Removed cubic sawlog carbon (code 233)
+  !         AFOLBIO= After thin foliar biomass (code 234)
+  !         RFOLBIO= Removed foliar biomass (code 235)
+  !         AFOLCRB= After thin foliar carbon (code 236)
+  !         RFOLCRB= Removed foliar carbon (code 237)
+
+  !     CALLED FROM ALGEBRAIC COMPILER, MATCHES KEYWORD IN ISTRNG
+  !     WITH ONE OF THE KEYWORDS RECOGNIZED BY THE EVENT MONITOR
+  !     AND TABULATED IN THIS ROUTINE.
+
+  !     VARIABLES AND THEIR MEANINGS:
+
+  !     ISTRNG= ONE DIMENSIONAL ARRAY PASSED THAT CONTAINS THE KEYWORD
+  !     LEN   = THE LENGTH OF THE KEYWORD .
+  !     NUM   = THE ASSOCIATED NUMBER FOR THE KEYWORD THAT IS RETURNED IF
+  !             THE KEYWORD HAS BEEN FOUND.
+  !     IRC   = THE INTERNAL RETURN CODE FOR THE KEYWORD (O IF OK; 1 IF
+  !             NOT FOUND)
+  !     CTAB1 - 8 = THE TABLES THAT CONTAIN THE KEYWORDS.
+  !     IOPT1 - 8 = THE TABLES THAT CONTAIN THE OPCODES.
+
+  ! Variables
+  integer :: IRC,NUM,LEN,N1,I,N2,N3,N4,N5,N6,N7,N8
+  parameter (N1 = 1,N2 = 8,N3 = 26,N4 = 23,N5 = 22,N6 = 44,N7 = 56,N8 = 34)
+  character(len=20) :: CTOK
+  character(len=1) :: CTAB1(N1)
+  character(len=2) :: CTAB2(N2)
+  character(len=3) :: CTAB3(N3)
+  character(len=4) :: CTAB4(N4)
+  character(len=5) :: CTAB5(N5)
+  character(len=6) :: CTAB6(N6)
+  character(len=7) :: CTAB7(N7)
+  character(len=8) :: CTAB8(N8)
+  integer :: IOPT1(N1),IOPT2(N2),IOPT3(N3),IOPT4(N4),IOPT5(N5),IOPT6(N6),IOPT7(N7),IOPT8(N8)
+
+  ! DEFINITION OF CURRENTLY USED OPTION CODES
+
+  !   OPT
+  !  CODE  MEANING
+
+  !     0  blank
+  !     1  NOT
+  !     2  AND
+  !     3  OR
+  !     4  EQ
+  !     5  NE
+  !     6  GT
+  !     7  GE
+  !     8  LT
+  !     9  LE
+
+  !    22  SQRT
+  !    23  EXP
+  !    24  ALOG
+  !    25  ALOG10
+  !    26  FRAC
+  !    27  INT
+  !    28  SIN
+  !    29  COS
+  !    30  TAN
+  !    31  ARCSIN
+  !    32  ARCCOS
+  !    33  ARCTAN
+  !    34  ABS
+
+  ! GROUP 1 VARIABLES, SET IN PHASE 1 AND ALWAYS KNOWN.
+
+  !   101  YEAR
+  !   102  AGE
+  !   103  BTPA
+  !   104  BTCUFT
+  !   105  BMCUFT
+  !   106  BBDFT
+  !   107  BBA
+  !   108  BCCF
+  !   109  BTOPHT
+  !   110  BADBH
+  !   111  YES
+  !                    THIS WORKS SINCE BOTH THE VARIABLE
+  !   112  NO   <----- NO AND THE WORD ALL EQUATE TO A
+  !   112  ALL  <----- CONTANT EQUAL TO 0
+
+  !   113  CYCLE
+  !   114  NUMTREES
+  !   115  BSDIMAX
+  !   116  BSDI
+  !   117  BRDEN
+  !   118  BRDEN2
+  !   119  BHTWTBA
+
+  !   120 BSCUFT Before thin sawlog cubic foot volume
+
+  !   126  HABTYPE
+  !   127  SLOPE
+  !   128  ASPECT
+  !   129  ELEV
+  !   130  SAMPWT
+  !   131  INVYEAR
+  !   132  CENDYEAR
+  !   133  EVPHASE
+  !   134  SMR
+  !   135  SITE
+  !   136  CUT
+  !   137  LAT
+  !   138  LONG
+  !   139  STATE
+  !   140  COUNTY
+  !   141  FORTYP
+  !   142  SIZCLS
+  !   143  STKCLS
+  !   144  PROPSTK
+  !   145  MAI
+  !   146  AGECMP
+  !   147  BDBHWTBA
+  !   148  SILVAHFT
+  !   149  R5 FISHER HABITAT SUITABILITY INDEX
+  !   150  BSDI2
+
+  !     BIOMASS AND CARBON MEASURES ADDED SEPTEMBER 2024
+  !     151 BABVBIO   BEFORE THIN ABOVE GROUND BIOMASS
+  !     152 BMERBIO   BEFORE THIN MERCHANTABLE BIOMASS
+  !     153 BSAWBIO   BEFORE THIN CUBIC SAWLOG BIOMASS
+  !     154 BFOLBIO   BEFORE THIN FOLIAGE BIOMASS
+  !     155 BABVCRB   BEFORE THIN ABOVE GROUND CARBON
+  !     156 BMERCRB   BEFORE THIN MERCHANTABLE CARBON
+  !     157 BSAWCRB   BEFORE THIN CUBIC SAWLOG CARBON
+  !     158 BFOLCRB   BEFORE THIN FOLIAGE CARBON
+
+  !   159  BGMD BEFORE THIN GENERALIZED MEAN DIAMETER (REINEKE'S DIAMETER) -- FEB 2026
+
+  !     160 LOCCODE   LOCATION CODE -- APR 2026
+
+  ! GROUP 2 VARIABLES, SET IN PHASE 2, AFTER THINNING.
+
+  !   201  ATPA
+  !   202  ATCUFT
+  !   203  AMCUFT
+  !   204  ABDFT
+  !   205  ABA
+  !   206  ACCF
+  !   207  ATOPHT
+  !   208  AADBH
+  !   209  RTPA
+  !   210  RTCUFT
+  !   211  RMCUFT
+  !   212  RBDFT
+  !   213  ASDIMAX
+  !   214  ASDI
+  !   215  ARDEN
+  !   216  ADBHWTBA
+  !   217  ARDEN2
+  !   218  ASDI2
+  !   219  AHTWTBA
+
+  !   220  ASCUFT After thin sawlog cubic foot volume
+  !   221  RSCUFT Removed sawlog cubic foot volume
+
+  ! BIOMASS AND CARBON MEASURES ADDED SEPTEMBER 2024
+  !   222 AABVBIO   AFTER THIN ABOVE GROUND BIOMASS
+  !   223 RABVBIO   REMOVED ABOVE GROUND BIOMASS
+  !   224 AMERBIO   AFTER THIN MERCHANTABLE BIOMASS
+  !   225 RMERBIO   REMOVED MERCHANTABLE BIOMASS
+  !   226 ASAWBIO   AFTER THIN CUBIC SAWLOG BIOMASS
+  !   227 RSAWBIO   REMOVED CUBIC SAWLOG BIOMASS
+  !   228 AABVCRB   AFTER THIN ABOVE GROUND CARBON
+  !   229 RABVCRB   REMOVED ABOVE GROUND CARBON
+  !   230 AMERCRB   AFTER THIN MERCHANTABLE CARBON
+  !   231 RMERCRB   REMOVED MERCHANTABLE CARBON
+  !   232 ASAWCRB   AFTER THIN CUBIC SAWLOG CARBON
+  !   233 RSAWCRB   REMOVED CUBIC SAWLOG CARBON
+  !   234 AFOLBIO   AFTER THIN FOLIAR BIOMASS
+  !   235 RFOLBIO   REMOVED FOLIAR BIOMASS
+  !   236 AFOLCRB   AFTER THIN FOLIAR CARBON
+  !   237 RFOLCRB   REMOVED FOLIAR CARBON
+
+  !   238  AGMD AFTER THIN GENERALIZED MEAN DIAMTER (REINEKE'S DIAMETER) -- FEB 2026
+
+  ! GROUP 3 VARIABLES, THOSE KNOWN AFTER CYCLE 1.
+
+  !   301  ACC
+  !   302  MORT
+  !   303  PAI
+  !                vacant  spot
+  !   305  DTPA
+  !   306  DTPA%
+  !   307  DBA
+  !   308  DBA%
+  !   309  DCCF
+  !   310  DCCF%
+  !   311  ORG%CC
+  !   312  ORGAHT
+
+  ! GROUP 4 VARIABLES, THOSE KNOWN WHEN THE SETTING ROUTINE SAYS SO,
+  !         AND NOT KNOWN THE REST OF THE TIME.
+
+  !   401  TM%STND
+  !   402  TM%DF
+  !   403  TM%GF
+  !   404  MPBTPAK
+  !   405  BW%STND
+  !   406  MPBPROB
+  !   407  vacant
+  !   408  vacant
+  !   409  vacant
+  !   410  vacant
+  !   411  vacant
+  !   412  vacant
+  !   413  vacant
+  !   414  vacant
+  !   415  vacant
+  !   416  BSCLASS
+  !   417  ASCLASS
+  !   418  BSTRDBH
+  !   419  ASTRDBH
+  !   420  FIRE
+  !   421  MINSOIL
+  !   422  CROWNIDX
+  !   423  FIREYEAR
+  !   424  BCANCOV
+  !   425  ACANCOV
+  !   426  CRBASEHT
+  !   427  TORCHIDX
+  !   428  CRBULKDN
+  !                    vacant spot?
+  !   430  DISCCOST
+  !   431  DISCREVN
+  !   432  FORSTVAL
+  !   433  HARVCOST
+  !   434  HARVREVN
+  !   435  IRR
+  !   436  PCTCOST
+  !   437  PNV
+  !   438  RPRODVAL
+  !   439  SEV
+  !   440  BMAXHS
+  !   441  AMAXHS
+  !   442  BMINHS
+  !   443  AMINHS
+  !   444  BNUMSS
+  !   445  ANUMSS
+  !   446  DISCRATE
+  !   447  UNDISCST
+  !   448  UNDISRVN
+  !   449  ECCUFT
+  !   450  ECBDFT
+
+  !   900  RANN
+
+  !  7001  AVBTPA
+  !  7002  AVBTCUFT
+  !  7003  AVBMCUFT
+  !  7004  AVBBDFT
+  !  7005  AVBBA
+  !  7006  AVACC
+  !  7007  AVMORT
+  !  7008  TOTALWT
+  !  7009  OLDTARG
+  !  7010  MSPERIOD
+
+  ! 10100  MOD
+  ! 10200  DECADE
+  ! 10300  TIME
+  ! 10400  SUMSTAT
+  ! 10500  DBHDIST
+  ! 10600  SPMCDBH
+  ! 10700  PARMS
+  ! 10800  LININT
+  ! 10900  MIN
+  ! 11000  MAX
+  ! 11100  BOUND
+  ! 11200  BCCFSP
+  ! 11300  ACCFSP
+  ! 11400  MININDEX
+  ! 11500  MAXINDEX
+  ! 11600  NORMAL
+  ! 11700  FUELLOAD
+  ! 11800  SNAGS
+  ! 11900  POTFLEN
+  ! 12000  INDEX
+  ! 12100  POTFMORT
+  ! 12200  FUELMODS
+  ! 12300  SALVVOL
+  ! 12400  POINTID
+  ! 12500  STRSTAT
+  ! 12600  POTFTYPE
+  ! 12700  POTSRATE
+  ! 12800  POTREINT
+  ! 12900  TREEBIO
+  ! 13000  CARBSTAT
+  ! 13100  HTDIST
+  ! 13200  HERBSHRB
+  ! 13300  DWDVAL
+  ! 13400  ACORNS
+  ! 13500  CLSPVIAB
+
+  !     DEFINE THE TABLES OF KEYWORDS AND NUMS IN DATA STATEMENTS
+
+  !     NOTE: CURRENTLY, THERE ARE NO 1 CHAR TOKENS.
+
+  data CTAB1 /' '/ &
+       & IOPT1 /  0/
+
+  data CTAB2 /'GT','GE','LT','LE','EQ','NE','OR','NO'/, &
+       & IOPT2 /006,007,008,009,004,005,003,112/
+
+  data CTAB3 /'AGE','BBA','ABA','ACC','PAI','MAI', &
+       & 'DBA','AND','NOT','YES','EXP','INT', &
+       & 'SIN','COS','TAN','MOD','SMR','CUT', &
+       & 'MIN','MAX','ABS','ALL','LAT','IRR', &
+       & 'PNV','SEV'/ &
+       & IOPT3 /102,107,205,301,303,145,307,002,001,111,023,027, &
+       & 028,029,030,10100,134,136,10900,11000,034,112,137, &
+       & 435,437,439/
+
+  data CTAB4 /'YEAR','BTPA','BCCF','ATPA','RTPA', &
+       & 'MORT','DTPA','DBA%','DCCF','ACCF', &
+       & 'RANN','SQRT','ALOG','FRAC','TIME', &
+       & 'ELEV','SITE','BSDI','ASDI','FIRE', &
+       & 'LONG','BGMD','AGMD'/, &
+       & IOPT4 /   101,   103,   108,   201,   209, &
+       & 302,   305,   308,   309,   206, &
+       & 900,   022,   024,   026, 10300, &
+       & 129,   135,   116,   214,   420, &
+       & 138,   159,   238/
+
+  data CTAB5 /'BBDFT','BADBH','ABDFT','AADBH','RBDFT', &
+       & 'DTPA%','DCCF%','TM%DF','TM%GF','CYCLE', &
+       & 'SLOPE','AVACC','PARMS','BOUND','AVBBA', &
+       & 'SNAGS','STATE','INDEX','BRDEN','ARDEN', &
+       & 'ASDI2','BSDI2'/, &
+       & IOPT5 /    106,    110,    204,    208,     212, &
+       & 306,    310,    402,    403,     113, &
+       & 127,   7006,  10700,  11100,    7005, &
+       & 11800,    139,  12000,    117,     215, &
+       & 218,    150/
+
+  data CTAB6 /'BTCUFT','BMCUFT','BTOPHT','ATCUFT','AMCUFT','ATOPHT', &
+       & 'RTCUFT','RMCUFT','ALOG10','ARCSIN','ARCCOS','ARCTAN', &
+       & 'DECADE','ASPECT','SAMPWT','AVBTPA','AVMORT', &
+       & 'LININT','BCCFSP','ACCFSP','NORMAL','COUNTY','FORTYP', &
+       & 'SIZCLS','STKCLS','BMAXHS','AMAXHS','BMINHS','AMINHS', &
+       & 'BNUMSS','ANUMSS','AGECMP','BRDEN2','ARDEN2','HTDIST', &
+       & 'DWDVAL','ECCUFT','ECBDFT','ACORNS','ORG%CC','ORGAHT', &
+       & 'BSCUFT','ASCUFT','RSCUFT'/, &
+       & IOPT6 /104,105,109,202,203,207,210,211,25,31,32,33,10200, &
+       & 128,130,7001,7007,10800,11200,11300,11600,140, &
+       & 141,142,143,440,441,442,443,444,445,146,118,217, &
+       & 13100,13300,449,450,13400,311,312,120,220,221/
+
+  data CTAB7 /'TM%STND','MPBTPAK','BW%STND','SUMSTAT','HABTYPE', &
+       & 'INVYEAR','TOTALWT','AVBBDFT','DBHDIST', &
+       & 'SPMCDBH','EVPHASE','MPBPROB','OLDTARG', &
+       & 'BSDIMAX','ASDIMAX','BSCLASS','ASCLASS','BSTRDBH', &
+       & 'ASTRDBH','MINSOIL','BCANCOV','ACANCOV','POTFLEN', &
+       & 'PCTCOST','PROPSTK','SALVVOL','POINTID','STRSTAT', &
+       & 'TREEBIO','BHTWTBA','AHTWTBA', &
+       & 'BABVBIO','BMERBIO','BSAWBIO','BFOLBIO', &
+       & 'BABVCRB','BMERCRB','BSAWCRB','BFOLCRB', &
+       & 'AABVBIO','RABVBIO','AMERBIO','RMERBIO', &
+       & 'ASAWBIO','RSAWBIO','AABVCRB','RABVCRB', &
+       & 'AMERCRB','RMERCRB','ASAWCRB','RSAWCRB', &
+       & 'AFOLBIO','RFOLBIO','AFOLCRB','RFOLCRB', &
+       & 'LOCCODE'/, &
+       & IOPT7 /401,404,405,10400,126,131,7008,7004,10500, &
+       & 10600,133,406,7009,115,213,416,417,418, &
+       & 419,421,424,425,11900,436,144,12300,12400,12500, &
+       & 12900,119,219, &
+       & 151,152,153,154,155,156,157,158, &
+       & 222,223,224,225,226,227,228,229,230,231,232,233, &
+       & 234,235,236,237,160/
+
+  data CTAB8 /'NUMTREES', &
+       & 'AVBTCUFT','AVBMCUFT','MSPERIOD','CENDYEAR', &
+       & 'MININDEX','MAXINDEX','FUELLOAD','FIREYEAR', &
+       & 'CROWNIDX','CRBASEHT','TORCHIDX','CRBULKDN', &
+       & 'DISCCOST','DISCREVN','FORSTVAL','HARVCOST', &
+       & 'HARVREVN','RPRODVAL','POTFMORT','FUELMODS', &
+       & 'DISCRATE','UNDISCST','UNDISRVN','BDBHWTBA', &
+       & 'ADBHWTBA','POTFTYPE','POTSRATE','POTREINT', &
+       & 'CARBSTAT','SILVAHFT','FISHERIN','HERBSHRB', &
+       & 'CLSPVIAB'/, &
+       & IOPT8 /114,7002,7003,7010,132,11400,11500, &
+       & 11700,423,422,426,427,428,430,431,432,433,434, &
+       & 438,12100,12200,446,447,448,147,216,12600,12700,12800, &
+       & 13000,148,149,13200,13500/
+
+  NUM = 0
+
+  !     DECIDE WHICH TABLE TO LOOK IN FOR THE ISTRNG KEYWORD
+
+  if (LEN.ge.1.and.LEN.le.20) goto 5
+  IRC = 1
+  return
+  5 continue
+
+  go to (100,200,300,400,500,600,700,800,950),MIN(LEN,20)
+  100 continue
+
+  !     THE CTAB1 TABLE IS CHECKED.
+
+  do I = 1,N1
+     if (CTOK.ne.CTAB1(I)) goto 150
+     NUM = IOPT1(I)
+     goto 1000
+     150 continue
+  end do
+  goto 950
+  200 continue
+
+  !     THE CTAB2 TABLE IS CHECKED.
+
+  do I = 1,N2
+     if (CTOK.ne.CTAB2(I)) goto 250
+     NUM = IOPT2(I)
+     goto 1000
+     250 continue
+  end do
+  goto 950
+  300 continue
+
+  !     THE CTAB3 TABLE IS CHECKED.
+
+  do I = 1,N3
+     if (CTOK.ne.CTAB3(I)) goto 350
+     NUM = IOPT3(I)
+     goto 1000
+     350 continue
+  end do
+  goto 950
+  400 continue
+
+  !     THE CTAB4 TABLE IS CHECKED.
+
+  do I = 1,N4
+     if (CTOK.ne.CTAB4(I)) goto 450
+     NUM = IOPT4(I)
+     goto 1000
+     450 continue
+  end do
+  goto 950
+  500 continue
+
+  !     THE CTAB5 TABLE IS CHECKED.
+
+  do I = 1,N5
+     if (CTOK.ne.CTAB5(I)) goto 550
+     NUM = IOPT5(I)
+     goto 1000
+     550 continue
+  end do
+  goto 950
+  600 continue
+
+  !     THE CTAB6 TABLE IS CHECKED.
+
+  do I = 1,N6
+     if (CTOK.ne.CTAB6(I)) goto 650
+     NUM = IOPT6(I)
+     goto 1000
+     650 continue
+  end do
+  goto 950
+  700 continue
+
+  !     THE CTAB7 TABLE IS CHECKED.
+
+  do I = 1,N7
+     if (CTOK.ne.CTAB7(I)) goto 750
+     NUM = IOPT7(I)
+     goto 1000
+     750 continue
+  end do
+  goto 950
+  800 continue
+
+  !     THE CTAB8 TABLE IS CHECKED.
+
+  do I = 1,N8
+     if (CTOK.ne.CTAB8(I)) goto 850
+     NUM = IOPT8(I)
+     goto 1000
+     850 continue
+  end do
+  950 continue
+
+  !     CHECK SPECIES CODES.
+
+  call ALGSPP (CTOK,LEN,NUM,IRC)
+  if (IRC.eq.0) goto 1000
+
+  !     CHECK POINT GROUP NAMES
+
+  call ALGPTG (CTOK,LEN,NUM,IRC)
+  if (IRC.eq.0) goto 1000
+
+  !     CHECK USER DEFINED VARIABLE TABLES.
+
+  call EVKEY (CTOK(1:8),NUM,IRC)
+  if (IRC.eq.0) goto 1000
+  IRC = 1
+  return
+  1000 continue
+  IRC = 0
+  return
+end subroutine ALGKEY

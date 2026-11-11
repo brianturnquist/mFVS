@@ -1,0 +1,575 @@
+!==================================!
+!   Provide fire extension stubs   !
+!==================================!
+! BASE $Id$
+subroutine EXFIRE
+  implicit none
+
+  !  EXTRA EXTERNAL REFERENCES FOR THE FIRE MODEL.
+
+  ! Variables
+  logical :: LACTV,LDEB,LFM,LKECHO,L1,L2
+
+  character(len=4) :: NSP(1,*)
+  character(len=7) :: CH7
+  character(len=8) :: KEYWRD
+  character(len=8) :: NOFM
+  character(len=13) :: CFOTO
+
+  integer :: I,I1,I2,I3,I4,J,K,IYR
+  integer :: IVAC,IREC,ISPC,IC,ITFN,NCLAS,NR,NC,KEY
+
+  real    :: XMXVOL(*),CTCRWN(*),SSNG(*),DSNG(*),TKCRWN(*),FLNY(*)
+  real    :: D,H,P,X,WEIGHT,XXX(*),X1,X2,X3,X4,X5,X6
+  real    :: CRBSHT,CRBLKD,CANCOV,POKL,POVK
+  real    :: KFMS(*),FMWTS(*),FMLOADS(*),AX(*)
+  real    :: RDANUW
+  integer :: IDANUW
+  character(len=1) :: CDANUW
+  logical :: LDANUW
+
+  !  DATA STATEMENTS:
+
+  data NOFM/'*NO FIRE'/
+
+  !  ENTRY POINTS:
+
+  !  ENTRY FMIN
+
+  entry FMIN (I1,NSP,LKECHO)
+  call ERRGRO (.true.,11)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  IDANUW = I1
+  CDANUW = NSP(1,1)(1:1)
+  LDANUW = LKECHO
+  return
+
+  !  ENTRY FMINIT
+
+  entry FMINIT
+  return
+
+  !  ENTRY FMCMPR
+
+  entry FMCMPR (NCLAS)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  IDANUW = NCLAS
+  return
+
+  !  ENTRY FMTDEL
+
+  entry FMTDEL (IVAC,IREC)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  IDANUW = IVAC
+  IDANUW = IREC
+  return
+
+  !  ENTRY FMSDIT
+
+  entry FMSDIT
+  return
+
+  !  ENTRY FMMAIN
+
+  entry FMMAIN
+  return
+
+  !  ENTRY FMKILL
+
+  entry FMKILL(I)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  IDANUW = I
+  return
+
+  !  ENTRY FMSSEE
+
+  entry FMSSEE (I,ISPC,D,H,P,IC,LDEB,J)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  IDANUW = I
+  IDANUW = ISPC
+  RDANUW = D
+  RDANUW = H
+  RDANUW = P
+  IDANUW = IC
+  LDANUW = LDEB
+  IDANUW = J
+  return
+
+  !  ENTRY FMSCUT
+
+  entry FMSCUT(XMXVOL,NR,NC,SSNG,DSNG,CTCRWN,TKCRWN)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  RDANUW = XMXVOL(1)
+  IDANUW = NR
+  IDANUW = NC
+  RDANUW = SSNG(1)
+  RDANUW = DSNG(1)
+  RDANUW = CTCRWN(1)
+  RDANUW = TKCRWN(1)
+  return
+
+  !  ENTRY FMSALV
+
+  entry FMSALV(IYR,X1)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  IDANUW = IYR
+  RDANUW = X1
+  return
+
+  !  ENTRY FMSVTREE
+
+  entry FMSVTREE(I1,I2)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  IDANUW = I1
+  IDANUW = I2
+  return
+
+  !  ENTRY FMSVFL
+
+  entry FMSVFL(I)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  IDANUW = I
+  return
+
+  !  ENTRY FMGETFL
+
+  entry FMGETFL(I,FLNY)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  IDANUW = I
+  RDANUW = FLNY(1)
+  return
+
+  !  ENTRY FMKEY
+
+  entry FMKEY(KEY,KEYWRD)
+  KEYWRD = NOFM
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  IDANUW = KEY
+  return
+
+  !  ENTRY FMOUT
+
+  entry FMOUT
+  return
+
+  !  ENTRY FMTRIP
+
+  entry FMTRIP(ITFN,I,WEIGHT)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  IDANUW = ITFN
+  IDANUW = I
+  RDANUW = WEIGHT
+  return
+
+  !  ENTRY FMPRUN
+
+  entry FMPRUN(CTCRWN)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  RDANUW = CTCRWN(1)
+  return
+
+  !  ENTRY FMATV
+
+  entry FMATV(LACTV)
+  LACTV = .false.
+  return
+
+  !  ENTRY FMLNKD
+
+  entry FMLNKD(LACTV)
+  LACTV = .false.
+  return
+
+  !  ENTRY FMEVSNG
+
+  entry FMEVSNG(X, I, J, K, X1, X2, X3, X4, I4)
+  I4 = 1
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  RDANUW = X
+  IDANUW = I
+  IDANUW = J
+  IDANUW = K
+  RDANUW = X1
+  RDANUW = X2
+  RDANUW = X3
+  RDANUW = X4
+  return
+
+  !  ENTRY FMEVCWD
+
+  entry FMEVCWD(X, I, J, I4)
+  I4 = 1
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  RDANUW = X
+  IDANUW = I
+  IDANUW = J
+  return
+
+  !  ENTRY FMEVFLM
+
+  entry FMEVFLM(X, I, I4)
+  I4 = 1
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  RDANUW = X
+  IDANUW = I
+  return
+
+  !  ENTRY FMEVSAL
+
+  entry FMEVSAL(X,I,I1,I2,I4)
+  I4 = 1
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  RDANUW = X
+  IDANUW = I
+  IDANUW = I1
+  IDANUW = I2
+  return
+
+  !  ENTRY FMEVMRT
+
+  entry FMEVMRT(X,I,I4)
+  I4 = 1
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  RDANUW = X
+  IDANUW = I
+  return
+
+  !  ENTRY FMEVTYP
+
+  entry FMEVTYP(X,I,I4)
+  I4 = 1
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  RDANUW = X
+  IDANUW = I
+  return
+
+  !  ENTRY FMEVCARB
+
+  entry FMEVCARB(X,I,I4)
+  I4 = 1
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  RDANUW = X
+  IDANUW = I
+  return
+
+  !  ENTRY FMDWD
+
+  entry FMDWD(X,I,J,K,I2,I4)
+  I4 = 1
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  RDANUW = X
+  IDANUW = I
+  IDANUW = J
+  IDANUW = K
+  IDANUW = I2
+  return
+
+  !  ENTRY FMEVSRT
+
+  entry FMEVSRT(X,I,I4)
+  I4 = 1
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  RDANUW = X
+  IDANUW = I
+  return
+
+  !  ENTRY FMEVRIN
+
+  entry FMEVRIN(X,I,I4)
+  I4 = 1
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  RDANUW = X
+  IDANUW = I
+  return
+
+  !  ENTRY FMEVFMD
+
+  entry FMEVFMD(X,I,J,I4)
+  I4 = 1
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  RDANUW = X
+  IDANUW = I
+  IDANUW = J
+  return
+
+  !  ENTRY FMSADD
+
+  entry FMSADD (I,J)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  IDANUW = I
+  IDANUW = J
+  return
+
+  !  ENTRY FMSATV
+
+  entry FMSATV(LFM)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  LDANUW = LFM
+  return
+
+  !  ENTRY FMPHOTOCODE
+
+  entry FMPHOTOCODE(I,CFOTO,J,K)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  IDANUW = I
+  CDANUW = CFOTO(1:1)
+  IDANUW = J
+  IDANUW = K
+  return
+
+  !  ENTRY FMTREM
+
+  entry FMTREM(DSNG,SSNG,AX)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  RDANUW = DSNG(1)
+  RDANUW = SSNG(1)
+  RDANUW = AX(1)
+  return
+
+  !  ENTRY FMEVTBM
+
+  entry FMEVTBM(X1,I,I1,I2,I3,X2,X3,X4,X5,I4)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  RDANUW = X1
+  IDANUW = I
+  IDANUW = I1
+  IDANUW = I2
+  IDANUW = I3
+  RDANUW = X2
+  RDANUW = X3
+  RDANUW = X4
+  RDANUW = X5
+  IDANUW = I4
+  return
+
+  !  ENTRY FMEVMSN
+
+  entry FMEVMSN(X)
+  X = 0.
+  return
+
+  !  ENTRY FMEVLSF
+
+  entry FMEVLSF(X, I, I4)
+  X = 0.
+  I4 = 1
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  IDANUW = I
+  return
+
+  !     ENTRIES FOR THE PPE:
+
+  !  ENTRY FMPPHV
+
+  entry FMPPHV(IYR,CRBSHT,CRBLKD,CANCOV,KFMS,FMWTS, &
+       & POKL,POVK,FMLOADS)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  IDANUW = IYR
+  RDANUW = CRBSHT
+  RDANUW = CRBLKD
+  RDANUW = CANCOV
+  RDANUW = KFMS(1)
+  RDANUW = FMWTS(1)
+  RDANUW = POKL
+  RDANUW = POVK
+  RDANUW = FMLOADS(1)
+  return
+
+  !  ENTRY FMPPGET
+
+  entry FMPPGET (XXX,I1,I2)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  RDANUW = XXX(1)
+  IDANUW = I1
+  IDANUW = I2
+  return
+
+  !  ENTRY FMPPPUT
+
+  entry FMPPPUT (XXX,I1,I2)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  RDANUW = XXX(1)
+  IDANUW = I1
+  IDANUW = I2
+  return
+
+  !  ENTRY FMSVL2
+
+  entry FMSVL2(I1,X1,X2,X3,X4,L1,L2,I2)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  IDANUW = I1
+  RDANUW = X1
+  RDANUW = X2
+  RDANUW = X3
+  RDANUW = X4
+  LDANUW = L1
+  LDANUW = L2
+  IDANUW = I2
+  return
+
+  !  ENTRY FMSNGHT
+
+  entry FMSNGHT(CH7,I1,X1,X2,I2,X3)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  CDANUW = CH7(1:1)
+  IDANUW = I1
+  RDANUW = X1
+  RDANUW = X2
+  IDANUW = I2
+  RDANUW = X3
+  return
+
+  !  ENTRY FMSNGDK
+
+  entry FMSNGDK(CH7,I1,X1,X2)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  CDANUW = CH7(1:1)
+  IDANUW = I1
+  RDANUW = X1
+  RDANUW = X2
+  return
+
+  !  ENTRY FMSFALL
+
+  entry FMSFALL(I1,I2,X1,X2,X3,I3,X4,X5,X6)
+  X6 = 0.
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  IDANUW = I1
+  IDANUW = I2
+  RDANUW = X1
+  RDANUW = X2
+  RDANUW = X3
+  IDANUW = I3
+  RDANUW = X4
+  RDANUW = X5
+  RDANUW = X6
+  return
+
+  !  ENTRY SNGCOE
+
+  entry SNGCOE
+  return
+
+  !  ENTRY FMCBA
+
+  entry FMCBA (I1,I2)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  IDANUW = I1
+  IDANUW = I2
+  return
+
+end subroutine EXFIRE

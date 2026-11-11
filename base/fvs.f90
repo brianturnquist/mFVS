@@ -1,0 +1,458 @@
+!===========================!
+!   Run stand projections   !
+!===========================!
+! BASE $Id$
+subroutine FVS(IRTNCD)
+  implicit none
+
+  !     THE PROGNOSIS MODEL FOR STAND DEVELOPMENT
+
+  !     DEVELOPED UNDER THE LEADERSHIP OF:
+
+  !     DR. ALBERT R. STAGE
+  !     FORESTRY SCIENCES LABORATORY
+  !     INTERMOUNTAIN FOREST AND RANGE EXPERIMENT STATION
+  !     USDA  --  FOREST SERVICE
+  !     1221 SOUTH MAIN
+  !     MOSCOW, IDAHO   83843    --    USA.
+
+  !     PHONE (208) 882-3557
+
+  ! Common blocks
+  include 'PRGPRM.F77'
+  include 'ARRAYS.F77'
+  include 'PLOT.F77'
+  include 'CONTRL.F77'
+  include 'OUTCOM.F77'
+  include 'PDEN.F77'
+  include 'ECON.F77'
+  include 'WORKCM.F77'
+  include 'OPCOM.F77'
+
+!DEC$ ATTRIBUTES DLLEXPORT, C, DECORATE, ALIAS : "FVS" :: FVS
+!DEC$ ATTRIBUTES REFERENCE :: IRTNCD
+
+  ! Variables
+  integer :: I,IA,N,K
+  real    :: STAGEA,STAGEB
+  logical :: DEBUG,LCVGO
+  integer :: IBA
+  integer :: IRSTRTCD,ISTOPDONE,IRTNCD,ISTOPRES,lenCl
+
+  !     ******************     EXECUTION BEGINS     ******************
+
+  DEBUG = .false.
+
+  ! Check whether debugging is enabled
+  !  NEEDED FOR STOP/RESTART DEBUG OPTION TO CONTINUE.
+
+  call DBCHK (DEBUG,'MAIN',4,0)
+
+  !     Check the current return code, if -1 the cmdLine has never been processed.
+
+  call fvsGetRtnCode(IRTNCD)
+  if (IRTNCD == -1) then
+     lenCl = 0
+     call fvsSetCmdLine(' ',lenCl,IRTNCD)
+     if (IRTNCD.ne.0) return
+  end if
+
+  !     FIND THE RESTART, AND BRANCH AS REQUIRED
+
+  call fvsRestart (IRSTRTCD)
+  call fvsGetRtnCode(IRTNCD)
+
+  if (DEBUG) write(JOSTND,*) "In FVS, IRSTRTCD=",IRSTRTCD, &
+       & " IRTNCD=",IRTNCD
+  if (IRTNCD.ne.0) return
+  if (IRSTRTCD.lt.0) return
+  if (IRSTRTCD.eq.7) goto 19
+  if (IRSTRTCD.ge.1) goto 41
+
+  ICL1 = 0
+  LSTART = .true.
+  LFLAG = .true.
+  ICYC = 0
+
+  !     INITIATE THE PROGNOSIS
+
+  call INITRE
+  call fvsGetRtnCode(IRTNCD)
+  if (IRTNCD.ne.0) return
+
+  ! Check whether debugging is enabled
+  call DBCHK (DEBUG,'MAIN',4,0)
+
+  !     PROCESS ARRAY IY
+
+  if (NCYC.le.0)  NCYC = 1
+  if (NCYC.gt.MAXCYC) NCYC = MAXCYC
+  do I = 2, MAXCY1
+     if (IY(I).eq.-1) IY(I) = 10
+     IY(I) = IY(I-1) + IY(I)
+  end do
+
+  !     ADD IN CYCLES FOR REQUESTED YEARS...BUT DO NOT EXTEND THE END
+  !     OR CHANGE THE BEGINNING OF THE SIMULATION.
+
+  if (IWORK1(1).gt.0) then
+     do IA = 2,IWORK1(1)+1
+        if (IWORK1(IA).le.IY(1).or.IWORK1(IA).ge.IY(NCYC+1)) then
+           cycle
+        else
+           N = NCYC
+           do I = 1,N
+              if (IWORK1(IA).gt.IY(I).and.IWORK1(IA).lt.IY(I+1)) then
+                 NCYC = NCYC+1
+                 if (NCYC.gt.MAXCYC) NCYC = MAXCYC
+                 do K = NCYC+1,I+2,-1
+                    IY(K) = IY(K-1)
+                 end do
+                 IY(I+1) = IWORK1(IA)
+                 exit
+              end if
+           end do
+        end if
+     end do
+  end if
+
+  !     WRITE BUG MODEL HEADERS AND WRITE AND PROCESS OPTION LISTS
+  !     THE CALL TO TMOPTS MUST BE PLACED BEFORE CALL OPEXPN AS TMOPTS
+  !     CALLS SCHED WHICH CHANGES THE CONTENTS OF THE ARRAY IY.
+
+  call MPBOPS
+  call TMOPS
+  call DFBSCH
+
+  !     SET UP ECON COST & REVENUE INDEXES BY SPECIES
+  !     CALL ECSETP PRIOR TO PROCESSING ACTIVITY SCHEDULE TO ENSURE CORRECT ECON ACTIVITY SORTING
+
+  call ECSETP(IY)
+
+  !     PROCESS AND LIST THE ACTIVITY SCHEDULE.
+
+  call OPEXPN (JOSTND,NCYC,IY)
+  call OPCYCL (NCYC,IY)
+  if (ITABLE(4).eq.0)call OPLIST (.true.,NPLT,MGMID,ITITLE)
+
+  !     SET UP INDEX POINTERS TO SPECIES SORT.
+
+  call SETUP
+
+  !     CALCULATE TREES/ACRE ( = LOAD PROB )
+
+  call NOTRE
+
+  !     WESTERN ROOT DISEASE MODEL VER. 3.0 INITIALIZATION
+
+  call RDMN1 (1)
+
+  !     COMPUTE DEAD LPP/ACRE.
+
+  call MPSDLP
+
+  !     COMPUTE DEAD DFB/ACRE.
+
+  call DFBINV
+
+  ICYC = 1
+
+  !     SET THE OPTION POINTERS FOR THE INITIALIZATION PHASE TO
+  !     THE CYCLE-1 OPTIONS.
+
+  call OPCSET(ICYC)
+
+  !     REFRESH EVENT MONITOR TIME VARIABLES SO THEY ARE CURRENT AT STOP 7.
+  !     SAME AS EVTSTV; EVMON HAS NOT RUN YET.
+
+  TSTV1(1) = IY(ICYC)
+  TSTV1(2) = IAGE+IY(ICYC)-IY(1)
+  TSTV1(13) = ICYC
+
+  !     PROCESS STOPPOINT 7
+
+  call fvsStopPoint (7,ISTOPRES)
+  if (ISTOPRES.ne.0) return
+  call fvsGetRtnCode(IRTNCD)
+  if (IRTNCD.ne.0) return
+  !     BRANCH HERE IF RESTARTING FROM STOPCODE 7
+  19 continue
+
+  !     CALIBRATE GROWTH FUNCTIONS AND FILL GAPS
+  !     SDICLS IS CALLED HERE SO CROWNS WILL DUB CORRECTLY IN VARIANTS
+  !     USING THE WEIBULL DISTRIBUTION
+
+  call SDICLS(0,0.,999.,1,SDIAC,SDIAC2,STAGEA,STAGEB,0)
+  call CRATET
+
+  !     SET CALIBRATION AND FLAG BEST TREE RECORDS FOR ESTAB. MODEL.
+
+  call ESFLTR
+
+  ICYC = 0
+
+  !     COMPUTE INITIAL CROWN WIDTH VALUES.
+
+  call CWIDTH
+
+  !     COMPUTE INITIAL VOLUME STATISTICS
+
+  call VOLS
+
+  !     COMPUTE INITIAL PERCENTILE POINTS IN THE DISTRIBUTION OF
+  !     DIAMETERS FOR ALL VOLUME STANDARDS.  FIRST CONVERT VOLUMES TO A
+  !     PER ACRE REPRESENTATION (SKIP IF THERE ARE NO TREE RECORDS).
+
+  if (ITRN.le.0) goto 25
+  do I = 1,ITRN
+     CFV(I) = CFV(I)*PROB(I)
+     BFV(I) = BFV(I)*PROB(I)
+     MCFV(I) = MCFV(I)*PROB(I)
+     SCFV(I) = SCFV(I)*PROB(I)
+     ABVGRD_BIO(I) = ABVGRD_BIO(I)*PROB(I)
+     MERCH_BIO(I) = MERCH_BIO(I)*PROB(I)
+     CUBSAW_BIO(I) = CUBSAW_BIO(I)*PROB(I)
+     FOLI_BIO(I) = FOLI_BIO(I)*PROB(I)
+     ABVGRD_CARB(I) = ABVGRD_CARB(I)*PROB(I)
+     MERCH_CARB(I) = MERCH_CARB(I)*PROB(I)
+     CUBSAW_CARB(I) = CUBSAW_CARB(I)*PROB(I)
+     FOLI_CARB(I) = FOLI_CARB(I)*PROB(I)
+
+     20 continue
+  end do
+  25 continue
+  call PCTILE(ITRN,IND,CFV,WK3,OCVCUR(7))
+  call DIST(ITRN,OCVCUR,WK3)
+  call PCTILE(ITRN,IND,BFV,WK3,OBFCUR(7))
+  call DIST(ITRN,OBFCUR,WK3)
+  call PCTILE(ITRN,IND,MCFV,WK3,OMCCUR(7))
+  call DIST(ITRN,OMCCUR,WK3)
+  call PCTILE(ITRN,IND,SCFV,WK3,OSCCUR(7))
+  call DIST(ITRN,OSCCUR,WK3)
+  !     COMPUTE BIOMASS AND CARBON
+  call PCTILE(ITRN,IND,ABVGRD_BIO,WK3,OAGBIOCUR(7))
+  call DIST(ITRN,OAGBIOCUR,WK3)
+  call PCTILE(ITRN,IND,MERCH_BIO,WK3,OMERBIOCUR(7))
+  call DIST(ITRN,OMERBIOCUR,WK3)
+  call PCTILE(ITRN,IND,CUBSAW_BIO,WK3,OCSAWBIOCUR(7))
+  call DIST(ITRN,OCSAWBIOCUR,WK3)
+  call PCTILE(ITRN,IND,FOLI_BIO,WK3,OFOLIBIO(7))
+  call DIST(ITRN,OFOLIBIO,WK3)
+
+  call PCTILE(ITRN,IND,ABVGRD_CARB,WK3,OAGCARBCUR(7))
+  call DIST(ITRN,OAGCARBCUR,WK3)
+  call PCTILE(ITRN,IND,MERCH_CARB,WK3,OMERCARBCUR(7))
+  call DIST(ITRN,OMERCARBCUR,WK3)
+  call PCTILE(ITRN,IND,CUBSAW_CARB,WK3,OCSAWCARBCUR(7))
+  call DIST(ITRN,OCSAWCARBCUR,WK3)
+  call PCTILE(ITRN,IND,FOLI_CARB,WK3,OFOLICARB(7))
+  call DIST(ITRN,OFOLICARB,WK3)
+
+  !     IF THERE ARE TREE RECORDS, THEN: CONVERT CFV TO A PER TREE
+  !     REPRESENTATION.
+
+  if (ITRN.le.0) goto 35
+  do I = 1,ITRN
+     CFV(I) = CFV(I)/PROB(I)
+     BFV(I) = BFV(I)/PROB(I)
+     MCFV(I) = MCFV(I)/PROB(I)
+     SCFV(I) = SCFV(I)/PROB(I)
+     ABVGRD_BIO(I) = ABVGRD_BIO(I)/PROB(I)
+     MERCH_BIO(I) = MERCH_BIO(I)/PROB(I)
+     CUBSAW_BIO(I) = CUBSAW_BIO(I)/PROB(I)
+     FOLI_BIO(I) = FOLI_BIO(I)/PROB(I)
+     ABVGRD_CARB(I) = ABVGRD_CARB(I)/PROB(I)
+     MERCH_CARB(I) = MERCH_CARB(I)/PROB(I)
+     CUBSAW_CARB(I) = CUBSAW_CARB(I)/PROB(I)
+     FOLI_CARB(I) = FOLI_CARB(I)/PROB(I)
+     30 continue
+  end do
+  35 continue
+
+  !     ASSIGN THE EXAMPLE TREES TO THE OUTPUT ARRAYS.
+
+  call EXTREE
+
+  !     FIND OUT IF THE COVER MODEL WILL BE CALLED.
+
+  call CVGO (LCVGO)
+
+  !     CALL **CVBROW** TO COMPUTE SHRUB DENSITY AND WILDLIFE
+  !     BROWSE STATISTICS (MAKE THIS CALL REGARDLESS OF LCVGO).
+
+  if (DEBUG) write(JOSTND,9000) ICYC
+  9000 format(' CALLING CVBROW, CYCLE=',I2)
+  call CVBROW (.false.)
+
+  !     CALL **CVCNOP** TO COMPUTE CANOPY COVER STATISTICS.
+
+  if (DEBUG) write (JOSTND,8005) ICYC
+  8005 format (' CALLING CVCNOP, CYCLE =',I2)
+  call CVCNOP (.false.)
+
+  !     CALL **STATS** TO COMPUTE STATISTICAL DESCRIPTION OF INPUT DATA.
+
+  if (DEBUG) write(JOSTND,9005) ICYC
+  9005 format(' CALLING STATS, CYCLE = ',I2)
+  call STATS
+
+  !     OUTPUT SIMULATION REFERENCE DATA
+
+  call DBSREFERENCE
+
+  !     WRITE OUTPUT HEADING FOR STAND COMP TABLE IF NOT TO BE SUPPRESSED
+  !     USING DELOTAB KEYWORD.
+
+  if (ITABLE(1) .eq. 0) call GHEADS (NPLT,MGMID,JOSTND,0,ITITLE)
+
+  !     WRITE INITIAL STAND STATISTICS.  MAKE SURE THAT ICL6 IS POSITIVE
+
+  ICL6 = 1
+  call DISPLY
+  call fvsGetRtnCode(IRTNCD)
+  if (IRTNCD.ne.0) return
+
+  !     IF TREE LIST OUTPUT IS REQUESTED...CALL TREE LIST PRINTER.
+
+  call MISPRT
+  call PRTRLS (1)
+  call DBS_FIAVBC_TRLS
+
+  !     CREATE THE INITIAL STAND VISULIZATION.
+
+  call SVSTART
+
+  !     LOAD OLD VOLUME VARIABLES WITH CYCLE 0 VOLUMES
+
+  call FVSSTD (1)
+
+  !     DONE WITH DEAD TREES THAT WERE PRESENT IN THE INVENTORY. PURGE
+  !     THEM FROM THE LIST (VIA RESET POINTER)
+
+  IREC2 = MAXTP1
+
+  !     WESTERN ROOT DISEASE MODEL VER. 3.0 MODEL INITIALIZATION
+
+  call RDMN1 (2)
+  call RDPR
+
+  !     BLISTER RUST MODEL INITIALIZATION
+
+  call BRSETP
+  call BRPR
+
+  LFLAG = .false.
+  LSTART = .false.
+
+  !     INITIALIZE TYPE 1 EVENT MONTITOR VARIABLES
+
+  call EVTSTV(-1)
+
+  !     PROJECT THE TREE GROWTH AND PRINT STATISTICS
+
+  40 continue
+
+  !     ADVANCE TIME INCREMENT
+
+  ICYC = ICYC + 1
+
+  41 continue
+
+  !     SIMULATE HARVEST (THINNINGS), GROWTH, MORTALITY, AND
+  !     ESTABLISHMENT.
+
+  if (DEBUG) write (JOSTND,50) ICYC
+  50 format (/,' CALLING TREGRO, CYCLE = ',I4)
+  call TREGRO
+  call fvsGetRtnCode(IRTNCD)
+  if (IRTNCD.ne.0) return
+  call getAmStopping (ISTOPDONE)
+  if (ISTOPDONE.ne.0) return
+
+  !     ASSIGN THE EXAMPLE TREES TO THE OUTPUT ARRAYS.
+
+  call EXTREE
+
+  !     WRITE STAND STATISTICS
+
+  if (DEBUG) write (JOSTND,70) ICYC
+  70 format (/,' CALLING DISPLY, CYCLE = ',I4)
+  call DISPLY
+  call fvsGetRtnCode(IRTNCD)
+  if (IRTNCD.ne.0) return
+
+  !     CALL RESAGE TO RESET STAND AGE.
+
+  call RESAGE
+
+  !     DWARF MISTLETOE MODEL OUTPUT
+
+  call MISPRT
+
+  !     WESTERN ROOT DISEASE MODEL VER. 3.0 OUTPUT
+
+  call RDPR
+
+  !     BLISTER RUST MODEL OUTPUT
+
+  call BRPR
+
+  !     IF TREE LIST OUTPUT IS REQUESTED...CALL TREE LIST PRINTER.
+
+  call PRTRLS (1)
+  call DBS_FIAVBC_TRLS
+
+  !     IF RUNNING FVSSTAND POST-PROCESSOR, CALL FILE PRINTER.
+
+  call FVSSTD (1)
+
+  if ( ICYC .lt. NCYC ) then
+     call ClearRestartCode
+     goto 40
+  end if
+
+  !     signal that stopping for this stand can not continue.
+
+  call fvsStopPoint (-1,ISTOPDONE)
+
+  !     PROJECTION COMPLETED.  SET ICL6 NEGATIVE, SAVE DENSITIES
+  !     FOR PRINTING, AND CALL DISPLY.
+
+  ICYC = ICYC+1
+  ICL6 = -99
+  ONTREM(7) = 0.0
+  OLDTPA = TPROB
+  OLDBA = BA
+  OLDAVH = AVH
+  ORMSQD = RMSQD
+  ODR016 = DR016
+  RELDM1 = RELDEN
+  call SDICLS(0,0.,999.,1,SDIBC,SDIBC2,STAGEA,STAGEB,0)
+  SDIAC = SDIBC
+  SDIAC2 = SDIBC2
+
+  call DISPLY
+  call fvsGetRtnCode(IRTNCD)
+  if (IRTNCD.ne.0) return
+
+  IBA = 1
+  call SSTAGE(IBA,ICYC,.false.)
+
+  !     PRINT THE VISULIZATION FOR FINAL OUTPUT.
+
+  call SVOUT(IY(ICYC),3,'End of projection')
+  LFLAG = .true.
+  call ESOUT (LFLAG)
+  call CVOUT
+  call MPBOUT
+  call DFBOUT
+  call TMOUT
+  call BWEOUT
+  !      CALL RDROUT ! RD output now handled by GENPRT 12/5/14 LD
+  call BRROUT
+
+  call GENPRT
+
+  return
+
+end subroutine FVS

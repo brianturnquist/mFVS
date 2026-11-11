@@ -1,0 +1,341 @@
+!=============================================!
+!   Compute residual diameter class targets   !
+!=============================================!
+! BASE $Id$
+subroutine CUTQFA(VALMIN,VALMAX,ISPCUT,LZEIDE,ICFLAG, &
+     & CTPA,CBA,CSDI,QFATAR,QFAC,DIACW, &
+     & JOSTND1,DEBUG1,LDELQFA,LQFA)
+  implicit none
+
+  !  THIS SUBROUTINE IS CALLED FROM CUTS TO CALCULATE THE RESIDUAL
+  !  IN EACH DIAMATER CLASS FOR THE INDIVIDUAL TREE SELECTION MANAGEMENT
+  !  ACTION. THE ENTRY **CYCQFA** IS CALLED TO PASS THE DIAMETER CLASS
+  !  RESIDUALS TO CUTS DURING PROCESSING.
+
+  !  LQFA = LOGICAL RETURN VARIABLE FROM CUTQFA
+  !         .FALSE. LAST DIAMETER CLASS TO BE PROCESSED
+  !         .TRUE. MORE DIAMETER CLASSES TO BE PROCESSED
+  !  DINOM = VALUE OF DINOMINATOR IN Q-FACTOR EQUATION
+  !  ICFLAG= DEDRIVITIVE OF ACTIVITY NUMBER USED IN CUTS
+  !          17= BA TARGET
+  !          18= SDI TARGET
+  !  VALMIN= LOWER DIAMETER LIMIT FOR ENTIRE DIAMETER RANGE TO BE THINNED
+  !  VALMAX= UPPER DIAMETER LIMIT FOR ENTIRE DIAMETER RANGE TO BE THINNED
+  !  ISPCUT= INDEX FOR SPECIES PREFERENCE
+  !  CBA   = RESIDUAL BA TARGET
+  !  CSDI  = RESIDUAL SDI TARGET
+  !  QFAC  = Q FACTOR
+  !  DIACW = DIAMETER CLASS WIDTH
+  !  LZEIDE= LOGICAL VARIABLE SETTING SDI TO ZEIDE METHOD IF .TRUE.
+  ! LDELQFA= LOGICAL TO DELETE THINQFA ACTIVITY IF TARGET .GT. STOCKING
+  !          SET IN **CUTQFA** AND EXECUTED IN CUTS
+  !  QFATAR= SETS TARGET TYPE 1=BA, 2=TPA, 3=SDI
+
+  !  DCLS(30)             = MIDPOINT OF DIAMETER CLASS
+  !  TPACLS(30,4) = (..,1)= ACTUAL TPA IN EACH DIAMETER CLASS
+  !                 (..,2)= THEORETICAL TPA IN EACH DIAMETER CLASS
+  !                 (..,3)= EXCESS/DEFICIT TPA IN EACH DIAMETER CLASS
+  !                 (..,4)= TEMPORATY TPA IN DIAMETER CLASSES
+  !  CLSTAR(30,2) = (..,1)= ACTUAL AVERAGE TARGET PER TREE IN DIAMETER CLASS
+  !                 (..,2)= TARGET BA/SDI FOR DIAMETER CLASS
+
+  ! Variables
+  real    :: CLS,REMAIN,CLSTAR(30,2),CSTOCK,TPACLS(30,4),DCLS(30)
+  real    :: VALMIN,VALMAX,DIACW,QFAC,CBA,CSDI,SDIC,SDIC2,A,B
+  real    :: TPA1,DINOM,SUMTAR,CTAR,SUM,EXCESS1,CTPA,SUMINV,CSTOCKTPA
+  logical :: LQFA,LZEIDE,DEBUG1,LDELQFA
+  integer :: NDCLS,ICFLAG,ICOUNT,ISPCUT,I,J,JOSTND1,QFATAR
+  integer :: IDANUW
+
+  common /QFACOM/ICOUNT,CLSTAR,DCLS,NDCLS,TPACLS
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  IDANUW = ICFLAG
+
+  if (DEBUG1)write(JOSTND1,*)' ENTERING CUTQFA'
+  if (DEBUG1)write(JOSTND1,*)',VALMIN,VALMAX,ISPCUT,CTPA,CBA', &
+       & ',CSDI,QFATAR,QFAC,DIACW,LZEIDE= ',VALMIN,VALMAX,ISPCUT,CTPA,CBA, &
+       & CSDI,QFATAR,QFAC,DIACW,LZEIDE
+
+  !  INITIALIZE VARIABLES
+
+  do I = 1,30
+     DCLS(I) = 0.
+     do J = 1,4
+        TPACLS(I,J) = 0.
+     end do
+     do J = 1,2
+        CLSTAR(I,J) = 0.
+     end do
+  end do
+  LQFA = .true.
+  CSTOCKTPA = 0.
+
+  !  CALCULATE THE NUMBER OF DIAMETER CLASSES
+  !  IF THE NUMBER DOES NOT WORK OUT EVENLY,THEN
+  !  TRUNCATE THE SMALLEST CLASS AND WRITE A WARNING
+  !  MESSAGE
+
+  NDCLS = INT((VALMAX-VALMIN)/DIACW)
+
+  !  IF THE NUMBER OF DIAMETER CLASSES IS GREATER THAT THE MAX ALLOWABLE,
+  !  (>30) THEN CANCEL THE ACTIVITY
+
+  if (NDCLS.gt.30) then
+     LDELQFA = .true.
+     goto 500
+  end if
+  CLS = (VALMAX-VALMIN)/DIACW
+  REMAIN = MOD(CLS,FLOAT(NDCLS))
+  if (REMAIN.gt.0.01)write(JOSTND1,1000)
+  1000 format('******THINQFA KEYWORD DIAMETER ', &
+       & 'CLASSES NOT EQUAL, SMALLEST DIAMETER CLASS REMOVED')
+  if (DEBUG1)write(JOSTND1,*)' NDCLS= ',NDCLS
+
+  !  CALCULATE THE MIDPOINT OF EACH DIAMETER CLASS AND STORE IN
+  !  DCLS(I)
+
+  DCLS(NDCLS) = VALMAX-DIACW/2.
+  do I = NDCLS-1,1,-1
+     DCLS(I) = DCLS(I+1)-DIACW
+  end do
+  if (DEBUG1)write(JOSTND1,*)'NDCLS,DCLS(I)= ', &
+       & NDCLS,(DCLS(I),I = 1,NDCLS)
+
+  do I = 1,NDCLS
+
+     call CLSSTK (CSTOCK,1,ISPCUT,DCLS(I)-DIACW/2., &
+          & DCLS(I)+DIACW/2.,0,999.,0)
+     TPACLS(I,1) = CSTOCK
+     CSTOCKTPA = CSTOCK
+
+     !  BA
+
+     if (QFATAR.le.0) then
+        call CLSSTK (CSTOCK,2,ISPCUT,DCLS(I)-DIACW/2., &
+             & DCLS(I)+DIACW/2.,0,999.,0)
+        if (TPACLS(I,1).gt.0) then
+           CLSTAR(I,1) = CSTOCK/TPACLS(I,1)
+        else
+           CLSTAR(I,1) = 0.
+        end if
+
+        !  TPA
+
+     else if (QFATAR.le.1) then
+        if (TPACLS(I,1).gt.0.) then
+           CLSTAR(I,1) = CSTOCKTPA/TPACLS(I,1)
+        else
+           CLSTAR(I,1) = 0.
+        end if
+
+        !  SDI
+
+     else
+        call SDICLS (ISPCUT,DCLS(I)-DIACW/2.,DCLS(I)+DIACW/2., &
+             & 1,SDIC,SDIC2,A,B,0)
+        if (LZEIDE) then
+           if (TPACLS(I,1).gt.0) then
+              CLSTAR(I,1) = SDIC2/TPACLS(I,1)
+           else
+              CLSTAR(I,1) = 0.
+           end if
+        else
+           if (TPACLS(I,1).gt.0) then
+              CLSTAR(I,1) = SDIC/TPACLS(I,1)
+           else
+              CLSTAR(I,1) = 0.
+           end if
+        end if
+     end if
+
+  end do
+
+  if (DEBUG1)write(JOSTND1,*)'INITIAL TPA-TPACLS(J,1)= ', &
+       & (TPACLS(J,1),J = 1,NDCLS)
+  if (DEBUG1)write(JOSTND1,*)'INITIAL BA OR SDI/TREE-CLSTAR(J,1)= ', &
+       & (CLSTAR(J,1),J = 1,NDCLS)
+  if (DEBUG1)write(JOSTND1,*)'INITIAL DEN-CLSTAR(J,1)*TPACLS(J,1)= ', &
+       & (CLSTAR(J,1)*TPACLS(J,1),J = 1,NDCLS)
+
+  !  CALCULATE THEORETICAL TPA IN DIA CLASS 1
+  !  TPA1=TARGET/(R1 + R2/Q + R3/Q**2 + ... + NN/Q(NDCLS-1))
+
+  if (QFATAR.le.0) then
+     CTAR = CBA
+  else if (QFATAR.le.1) then
+     CTAR = CTPA
+  else
+     CTAR = CSDI
+  end if
+
+  !  CHECK TO SEE IF THERE IS ENOUGH INVENTORY TO SATISFY THE
+  !  TARGET. IF NOT, THEN CANCEL THE ACTIVITY.
+
+  SUMINV = 0.
+  do I = 1,NDCLS
+     SUMINV = SUMINV+CLSTAR(I,1)*TPACLS(I,1)
+  end do
+  if (DEBUG1)write(JOSTND1,*)' SUMINV,CTAR,LDELQFA= ', &
+       & SUMINV,CTAR,LDELQFA
+  if (SUMINV.lt.CTAR) then
+     LDELQFA = .true.
+     goto 500
+  end if
+
+  !  SUM DENOMINATOR TERMS AND SET TEMPORATY TPAs
+
+  DINOM = 0.
+  do I = 1,NDCLS
+     DINOM = DINOM+CLSTAR(I,1)/QFAC**(I-1)
+     TPACLS(I,4) = TPACLS(I,1)
+  end do
+
+  !  CALCULATE THE THEORETICAL NUMBER OF TREES IN DIAMETER CLASS 1
+
+  TPA1 = CTAR/DINOM
+
+  200 continue
+  if (DEBUG1)write(JOSTND1,*)' ****************AFTER STATEMENT 200'
+  if (DEBUG1)write(JOSTND1,*)' TPA1,DINOM,CTAR= ',TPA1,DINOM,CTAR
+
+  !  CALCULATE THE THEORETICAL NUMBER OF TREES IN ALL OTHER DIAMETER CLASSES
+  !  AND THE EXCESS OR DEFICITS IN EACH CLASS
+
+  do I = 1,NDCLS
+     TPACLS(I,2) = TPA1/QFAC**(I-1) ! THEORETICAL
+     TPACLS(I,3) = TPACLS(I,4)-TPACLS(I,2) ! NEG=DEFICIT, POS=EXCESS
+  end do
+
+  if (DEBUG1)write(JOSTND1,*)'THEORETICAL TPA TPA-TPACLS(J,2)= ', &
+       & (TPACLS(J,2),J = 1,NDCLS)
+  if (DEBUG1)write(JOSTND1,*)'THEORETICAL DENSITY-', &
+       & 'TPACLS(J,2)*CLSTAR(J,1)= ',(TPACLS(J,2)* &
+       & CLSTAR(J,1),J = 1,NDCLS)
+
+  !  SUM TARGET UNDER CURVE
+
+  SUMTAR = 0.
+  do I = 1,NDCLS
+     if (TPACLS(I,3).le.0.) then
+        SUMTAR = SUMTAR+TPACLS(I,4)*CLSTAR(I,1)
+     else
+        SUMTAR = SUMTAR+TPACLS(I,2)*CLSTAR(I,1)
+     end if
+  end do
+
+  if (DEBUG1)write(JOSTND1,*)'TPA1,SUMTAR,TPACLS(J,2)= ', &
+       & TPA1,SUMTAR,(TPACLS(J,2),J = 1,NDCLS)
+  if (DEBUG1)write(JOSTND1,*)'CURRENT EXESS/DEF-TPACLS(J,3)= ', &
+       & (TPACLS(J,3),J = 1,NDCLS)
+
+  !  CALCUALTE DATA FOR THEORETICAL CURVE BASED ON EXCESS THEN
+  !  SUM DINOMINATOR TERMS
+
+  DINOM = 0.
+  do I = 1,NDCLS
+     if (TPACLS(I,3).gt.0) then
+        DINOM = DINOM+CLSTAR(I,1)/QFAC**(I-1)
+
+        !  SET NEW EXISTING EXCESS TPA BASED ON NEW CURVE
+
+        TPACLS(I,4) = TPACLS(I,3)
+     else
+        TPACLS(I,4) = 0.
+     end if
+  end do
+
+  if (DEBUG1)write(JOSTND1,*)'DINOM,SUMTAR,TPACLS(I,3)= ', &
+       & DINOM,SUMTAR,(TPACLS(J,3),J = 1,NDCLS)
+
+  !  TRACK DENSITY IN EACH DIAMETER CLASS IN CLSTAR(I,2)
+
+  SUM = 0.
+  do I = 1,NDCLS
+     if (TPACLS(I,3).gt.0) then
+        CLSTAR(I,2) = CLSTAR(I,2)+TPACLS(I,2)*CLSTAR(I,1)
+     else
+        CLSTAR(I,2) = TPACLS(I,1)*CLSTAR(I,1)
+     end if
+     SUM = SUM+CLSTAR(I,2)
+  end do
+
+  if (DEBUG1)write(JOSTND1,*)'SUM,CLSTAR(I,2)= ',SUM, &
+       & (CLSTAR(J,2),J = 1,NDCLS)
+
+  if (QFATAR.le.0) then
+     if (ABS(CBA-SUM).lt.0.1)goto 500
+  else if (QFATAR.le.1) then
+     if (ABS(CTPA-SUM).lt.0.1)goto 500
+  else
+     if (ABS(CSDI-SUM).lt.0.1)goto 500
+  end if
+
+  if (DINOM.gt.0.)TPA1 = (CTAR-SUMTAR)/DINOM
+  CTAR = CTAR-SUMTAR
+
+  if (ABS(TPA1).le.0.1)goto 500
+  goto 200
+  500 continue
+  if (DEBUG1)write(JOSTND1,*)'***AFTER 500-TPA1=',TPA1
+
+  ICOUNT = 1
+  return
+
+  !     ENTRY POINT CYCQFA ***********************************************
+
+  entry CYCQFA(VALMIN,VALMAX,CTPA,CBA,CSDI,QFATAR,DIACW, &
+       & ICFLAG,JOSTND1,DEBUG1,LQFA)
+
+  !  CALLED FROM CUTS TO SET PARAMETERS FOR THINNING EVERY DIAMETER CLASS
+  !  LQFA = LOGICAL RETURN VARIABLE FROM CUTQFA
+  !         .TRUE. MORE DIAMETER CLASSES TO BE PROCESSED
+  !         .FALSE. LAST DIAMETER CLASS TO BE PROCESSED
+
+  if (DEBUG1)write(JOSTND1,*)'ENTERING CYCQFA-ICOUNT= ',ICOUNT
+
+  !  INITIALIZE VARIABLES
+
+  CBA = 0.
+  CTPA = 0.
+  CSDI = 0.
+
+  !  SET DIAMETER LIMITS AND TARGETS FOR EACH DIAMETER CLASS
+
+  600 continue
+  if ((TPACLS(ICOUNT,1)* &
+       & CLSTAR(ICOUNT,1)-CLSTAR(ICOUNT,2)).gt..00001) then
+     VALMIN = DCLS(ICOUNT)-DIACW/2.
+     VALMAX = DCLS(ICOUNT)+DIACW/2.
+     if (QFATAR.le.0) then
+        CBA = CLSTAR(ICOUNT,2)
+     else if (QFATAR.le.1) then
+        CTPA = CLSTAR(ICOUNT,2)
+     else
+        CSDI = CLSTAR(ICOUNT,2)
+     end if
+     ICOUNT = ICOUNT+1
+  else
+     ICOUNT = ICOUNT+1
+     if (ICOUNT.gt.NDCLS)goto 700
+     go to 600
+  end if
+  700 continue
+
+  !  THE FOLLOWING LOOP CHECKS FOR THE LAST DIA CLASS REQUIRING
+  !  CUTTING
+
+  LQFA = .false.
+  do I = ICOUNT,NDCLS
+     EXCESS1 = TPACLS(I,1)*CLSTAR(I,1)-CLSTAR(I,2)
+     if (DEBUG1)write(JOSTND1,*)' EXCESS1= ',EXCESS1
+     if (EXCESS1.gt..00001)LQFA = .true.
+  end do
+  if (ICOUNT.gt.NDCLS)LQFA = .false.
+  if (DEBUG1)write(JOSTND1,*)'LEAVING CYCQFA-ICOUNT= ',ICOUNT
+  if (DEBUG1)write(JOSTND1,*)'IN CYCQFA-VALMIN,VALMAX,CBA,', &
+       & 'CSDI,EXCESS1,LQFA= ',VALMIN,VALMAX,CBA,CSDI,EXCESS1,LQFA
+
+  return
+end subroutine CUTQFA

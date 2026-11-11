@@ -1,0 +1,115 @@
+!==========================!
+!   Merge activity lists   !
+!==========================!
+! BASE $Id$
+subroutine OPMERG (NMYA,MYACTS,NTODO)
+  implicit none
+
+  !     OPTION PROCESSING ROUTINE - NL CROOKSTON - JAN 1981 - MOSCOW
+
+  !     OPMERG TAKES A LIST OF POSSIBLE ACTIVITIES (MYACTS) AND
+  !     FORMS A LIST OF POINTERS TO ACTIVITIES TO DO (IPTODO) WHICH
+  !     ARE BOTH WITHIN THE CURRENT CYCLE AND WITHIN 'MYACTS'.
+
+  ! Variables
+  integer :: MYACTS(NMYA),NTODO,NMYA,IPA,IMYA,MY,I,IA
+
+  ! Common blocks
+  include 'PRGPRM.F77'
+  include 'OPCOM.F77'
+
+  !     SET THE NUMBER OF ACTIVITIES TO DO EQUAL TO ZERO.
+
+  NTODO = 0
+
+  !     IF 1. THERE ARE NO ACTIVITIES FOR THIS CYCLE, OR
+  !        2. YOU HAVE INDECATED YOU HAVE NO ACTIVITIES (NMYA=0), OR
+  !        3. THE LOWEST VALUE OF YOUR ACTIVITIES IS GREATER THAN THE
+  !           LARGEST ACTIVITY SCHEDULED FOR THIS CYCLE, OR
+  !        4. THE HIGHEST VALUE OF YOUR ACTIVITIES IS LESS THAN THE
+  !           LOWEST ACTIVITY SCHEDULED FOR THIS CYCLE.
+
+  !     THEN: RETURN
+
+  if (IMG1 .eq. 0) return
+  if (NMYA .eq. 0) return
+  IPA = IOPCYC(IMG2)
+  if (MYACTS(1) .gt. IACT(IPA,1)) return
+  IPA = IOPCYC(IMG1)
+  if (MYACTS(NMYA) .lt. IACT(IPA,1)) return
+
+  !     ELSE: PREFORM THE MERGE
+
+  !     LOAD THE FIRST "MY" ACTIVITY
+
+  IMYA = 1
+  MY = MYACTS(1)
+
+  !     DO FOR ALL ACTIVITIES IN THIS CYCLE IN ORDER OF ASSENDING
+  !     MAGNITUDE OF ACTIVITY CODES (PLACED IN ORDER BY OPCSET).
+
+  do I = IMG1,IMG2
+     IPA = IOPCYC(I)
+
+     !     IF THIS ACTIVITY IS MARKED ACCOMPLISHED OR DELETED;
+     !     THEN SKIP IT AND GO ON.
+
+     if (IACT(IPA,4) .ne. 0) goto 30
+     IA = IACT(IPA,1)
+
+     !     RETEST-MY-ACTIVITY:
+
+     10 continue
+
+     !     IF THE "MY" ACTIVITY IS GREATER THAN THE SCHEDULED ACTIVITY;
+     !     THEN: GO ON TO NEXT SCHEDULED ACTIVITY.
+
+     if (MY.gt.IA) goto 30
+
+     !     IF THE "MY" ACTIVITY IS LESS THAN THE SCHEDULED ACTIVITY;
+
+     if (MY .eq. IA) goto 20
+
+     !     THEN: INCREMENT IMYA
+
+     IMYA = IMYA+1
+
+     !     IF ALL "MY" ACTIVITIES HAVE BEEN SCANED;
+     !     THEN: SEARCH IS COMPETE
+
+     if (IMYA .gt. NMYA) goto 40
+
+     !     ELSE: RELOAD MY AND RETEST MY.
+
+     MY = MYACTS(IMYA)
+     goto 10
+     20 continue
+
+     !     ELSE: THE "MY" ACTIVITY IS EQUAL TO THE SCHEDULED ACTIVITY;
+     !     INCREMENT NTODO, SAVE THE POINTER (IPA) IN IPTODO(NTODO)
+     !     AND GO ON TO THE NEXT SCHEDULED ACTIVITY.
+
+     NTODO = NTODO+1
+     if (NTODO.gt.MXPTDO) then
+        call ERRGRO (.true.,10)
+        write (16,*) &
+             & 'ISSUED IN OPMERG ADDING ACTIVITY EXCEEDS LIMIT'
+        goto 40
+     end if
+     IPTODO(NTODO) = IPA
+     30 continue
+  end do
+
+  40 continue
+
+  !     MEARGE IS COMPLETE:
+  !     IF THERE WERE NO MATCHES (NTODO IS ZERO);
+  !     THEN: RETURN
+
+  if (NTODO .eq. 0) return
+
+  !     ELSE: SORT THE POINTERS TO THE MACTCHED LIST ON THE DATE ARRAY
+
+  call OPSORT (NTODO,IDATE,ISEQ,IPTODO,.false.)
+  return
+end subroutine OPMERG
