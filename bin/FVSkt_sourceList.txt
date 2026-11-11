@@ -78,7 +78,9 @@
 ../kt/sitset.f90
 ../kt/smhtrg.f90
 ../kt/varget.f90
+../pg/varchget.f90
 ../kt/varput.f90
+../pg/varchput.f90
 
 ../ie/cutstk.f90
 ../ie/dgbnd.f90

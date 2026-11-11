@@ -78,7 +78,9 @@
 ../em/smdgf.f90
 ../em/smhtgf.f90
 ../em/varget.f90
+../pg/varchget.f90
 ../em/varput.f90
+../pg/varchput.f90
 
 ../cr/badist.f90
 ../ie/cftopk.f90
@@ -613,6 +615,7 @@
 ../fire/em/fmcblk.f90
 ../fire/em/fmcfmd.f90
 ../fire/em/fmcrow.f90
+../fire/base/exhtdbh.f90
 ../fire/em/fmsfall.f90
 ../fire/em/fmvinit.f90
 ../fire/ie/fmcons.f90

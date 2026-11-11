@@ -75,7 +75,7 @@
 ../nc/logs.f90
 ../nc/morts.f90
 ../nc/nwcmrt.f90
-../nc/pvref5.f90
+../ca/pvref5.f90
 ../nc/pvref6.f90
 ../nc/regent.f90
 ../nc/sichg.f90
@@ -375,7 +375,9 @@
 ../pg/putstd.f90
 ../pg/stash.f90
 ../pg/varget.f90
+../pg/varchget.f90
 ../pg/varput.f90
+../pg/varchput.f90
 
 ../nc/essubh.f90
 
@@ -384,7 +386,7 @@
 ../strp/esaddt.f90
 ../strp/esblkd.f90
 ../strp/escprs.f90
-../strp/esetpr.f90
+../estb/esetpr.f90
 ../strp/esfltr.f90
 ../strp/esgent.f90
 ../strp/esin.f90
@@ -393,13 +395,13 @@
 ../strp/esnutr.f90
 ../strp/esout.f90
 ../strp/esplt1.f90
-../strp/esplt2.f90
+../estb/esplt2.f90
 ../strp/esprep.f90
 ../strp/esprin.f90
-../strp/esrann.f90
+../estb/esrann.f90
 ../strp/estab.f90
 ../strp/estime.f90
-../strp/estump.f90
+../estb/estump.f90
 ../strp/esuckr.f90
 
 ../volume/NVEL/beqinfo.inc
@@ -604,6 +606,8 @@
 ../fire/nc/fmcba.f90
 ../fire/nc/fmcblk.f90
 ../fire/nc/fmcfmd.f90
+../fire/base/findjss.f90
+../fire/base/findmod.f90
 ../fire/nc/fmcrow.f90
 ../fire/nc/fmvinit.f90
 ../fire/ie/fmcons.f90

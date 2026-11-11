@@ -45,28 +45,3 @@ subroutine VARPUT (WK3,IPNT,ILIMIT,REALS,LOGICS,INTS)
   !**   CALL BFWRIT (WK3, IPNT, ILIMIT, REALS, MXR, 2)
   return
 end
-
-subroutine VARCHPUT (CBUFF, IPNT, LNCBUF)
-  implicit none
-
-  !     Put variant-specific character data
-
-  ! Common blocks
-  include 'PRGPRM.f90'
-
-  ! Variables
-  integer :: LNCBUF
-  character(len=1) :: CBUFF(LNCBUF)
-  integer :: IPNT
-  integer :: IDANUW
-  character(len=1) :: CDANUW
-
-  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
-
-  CDANUW = CBUFF(1)
-  IDANUW = IPNT
-
-  ! Stub for variants which need to get/put character data
-  ! See /bc/varget.f and /bc/varput.f for examples of VARCHGET and VARCHPUT
-  return
-end

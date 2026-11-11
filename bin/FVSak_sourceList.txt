@@ -406,7 +406,9 @@
 ../pg/putstd.f90
 ../pg/stash.f90
 ../ak/varget.f90
+../pg/varchget.f90
 ../ak/varput.f90
+../pg/varchput.f90
 
 ../volume/NVEL/beqinfo.inc
 ../volume/NVEL/beqrefinfo.inc

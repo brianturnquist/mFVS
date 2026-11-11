@@ -75,7 +75,7 @@
 ../canada/bc/natcrz.f90
 ../canada/bc/r6crwd.f90
 ../canada/bc/regent.f90
-../canada/bc/revise.f90
+../vbase/revise.f90
 ../canada/bc/sitset.f90
 ../canada/bc/spctrn.f90
 ../canada/bc/vols.f90
@@ -348,7 +348,7 @@
 ../strp/esaddt.f90
 ../strp/esblkd.f90
 ../strp/escprs.f90
-../strp/esetpr.f90
+../estb/esetpr.f90
 ../strp/esfltr.f90
 ../strp/esgent.f90
 ../strp/esinit.f90
@@ -356,13 +356,13 @@
 ../strp/esnutr.f90
 ../strp/esout.f90
 ../strp/esplt1.f90
-../strp/esplt2.f90
+../estb/esplt2.f90
 ../strp/esprep.f90
 ../strp/esprin.f90
-../strp/esrann.f90
+../estb/esrann.f90
 ../strp/essubh.f90
 ../strp/estime.f90
-../strp/estump.f90
+../estb/estump.f90
 
 ../metric/strp/esin.f90
 ../metric/strp/estab.f90
@@ -404,6 +404,7 @@
 ../canada/fire/bc/fmcfim.f90
 ../canada/fire/bc/fmcons.f90
 ../canada/fire/bc/fmcrow.f90
+../fire/base/exhtdbh.f90
 ../canada/fire/bc/fmcroww.f90
 ../canada/fire/bc/fmsvol.f90
 ../canada/fire/bc/fmvinit.f90

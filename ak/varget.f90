@@ -62,28 +62,3 @@ subroutine VARGET (WK3,IPNT,ILIMIT,REALS,LOGICS,INTS)
 
   return
 end subroutine VARGET
-
-subroutine VARCHGET (CBUFF, IPNT, LNCBUF)
-  implicit none
-
-  !     Get variant-specific character data
-
-  ! Common blocks
-  include 'PRGPRM.f90'
-
-  ! Variables
-  integer :: LNCBUF
-  character(len=1) :: CBUFF(LNCBUF)
-  integer :: IPNT
-  integer :: IDANUW
-  character(len=1) :: CDANUW
-   ! Stub for variants which need to get/put character data
-   ! See /bc/varget.f and /bc/varput.f for examples of VARCHGET and VARCHPUT
-
-  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
-
-  IDANUW = IPNT
-  CDANUW = CBUFF(1)
-
-  return
-end subroutine VARCHGET

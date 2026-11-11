@@ -405,7 +405,9 @@
 ../pg/putstd.f90
 ../pg/stash.f90
 ../pg/varget.f90
+../pg/varchget.f90
 ../pg/varput.f90
+../pg/varchput.f90
 
 ../volume/NVEL/beqinfo.inc
 ../volume/NVEL/beqrefinfo.inc
@@ -611,6 +613,7 @@
 ../fire/ie/fmcfmd.f90
 ../fire/ie/fmcons.f90
 ../fire/ie/fmcrow.f90
+../fire/base/exhtdbh.f90
 ../fire/ie/fmmois.f90
 ../fire/ie/fmvinit.f90
 ../fire/ie/fmsfall.f90

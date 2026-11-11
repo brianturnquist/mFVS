@@ -75,7 +75,9 @@
 ../ci/sitset.f90
 ../ci/smhtgf.f90
 ../ci/varget.f90
+../pg/varchget.f90
 ../ci/varput.f90
+../pg/varchput.f90
 
 ../ie/cftopk.f90
 ../ie/cfvol.f90
@@ -611,6 +613,7 @@
 ../fire/ci/fmcblk.f90
 ../fire/ci/fmcfmd.f90
 ../fire/ci/fmcrow.f90
+../fire/base/exhtdbh.f90
 ../fire/ci/fmsfall.f90
 ../fire/ci/fmvinit.f90
 ../fire/ie/fmcons.f90
