@@ -84,7 +84,7 @@
 ../canada/on/volont.f
 ../canada/on/vols.f
 
-../ak/habtyp.f
+../ak/habtyp.f90
 ../canada/bc/keyopn.f
 ../canada/bc/natcrz.f
 ../ie/cftopk.f

@@ -67,7 +67,7 @@
 ../cs/sitset.f
 ../cs/varmrt.f
 
-../ak/habtyp.f
+../ak/habtyp.f90
 ../ie/cftopk.f
 ../ie/dgbnd.f
 ../ie/dunn.f

@@ -1,10 +1,10 @@
 ../fiavbc/nvbeqdef.f
 ../fiavbc/nvb_region_check.f
 
-../ak/common/CRCOEF.F77
-../ak/common/ESPARM.F77
-../ak/common/PRGPRM.F77
-../ak/common/ESCOMN.F77
+../ak/common/CRCOEF.f90
+../ak/common/ESPARM.f90
+../ak/common/PRGPRM.f90
+../ak/common/ESCOMN.f90
 
 ../common/ARRAYS.F77
 ../common/CALCOM.F77
@@ -50,28 +50,28 @@
 ../common/VOLSTD.F77
 ../common/WORKCM.F77
 
-../ak/blkdat.f
-../ak/bratio.f
-../ak/ccfcal.f
-../ak/cratet.f
-../ak/crown.f
-../ak/cubrds.f
-../ak/dgdriv.f
-../ak/dgf.f
-../ak/dubscr.f
-../ak/findag.f
-../ak/forkod.f
-../ak/grinit.f
-../ak/grohed.f
-../ak/habtyp.f
-../ak/htcalc.f
-../ak/htgf.f
-../ak/logs.f
-../ak/maical.f
-../ak/morts.f
-../ak/regent.f
-../ak/seamrt.f
-../ak/sitset.f
+../ak/blkdat.f90
+../ak/bratio.f90
+../ak/ccfcal.f90
+../ak/cratet.f90
+../ak/crown.f90
+../ak/cubrds.f90
+../ak/dgdriv.f90
+../ak/dgf.f90
+../ak/dubscr.f90
+../ak/findag.f90
+../ak/forkod.f90
+../ak/grinit.f90
+../ak/grohed.f90
+../ak/habtyp.f90
+../ak/htcalc.f90
+../ak/htgf.f90
+../ak/logs.f90
+../ak/maical.f90
+../ak/morts.f90
+../ak/regent.f90
+../ak/seamrt.f90
+../ak/sitset.f90
 
 ../cr/bfvol.f
 ../ie/cftopk.f
@@ -359,21 +359,21 @@
 ../dbsqlite/sqlite3.h
 ../dbsqlite/uuidgen.f
 
-../ak/esadvh.f
-../ak/esdlay.f
-../ak/esgent.f
-../ak/esnspe.f
-../ak/esnutr.f
-../ak/espadv.f
-../ak/esprep.f
-../ak/espsub.f
-../ak/espxcs.f
-../ak/essubh.f
-../ak/estab.f
-../ak/estime.f
-../ak/estock.f
-../ak/estpp.f
-../ak/esxcsh.f
+../ak/esadvh.f90
+../ak/esdlay.f90
+../ak/esgent.f90
+../ak/esnspe.f90
+../ak/esnutr.f90
+../ak/espadv.f90
+../ak/esprep.f90
+../ak/espsub.f90
+../ak/espxcs.f90
+../ak/essubh.f90
+../ak/estab.f90
+../ak/estime.f90
+../ak/estock.f90
+../ak/estpp.f90
+../ak/esxcsh.f90
 
 ../vestb/essprt.f
 
@@ -405,8 +405,8 @@
 ../pg/putgetsubs.f
 ../pg/putstd.f
 ../pg/stash.f
-../ak/varget.f
-../ak/varput.f
+../ak/varget.f90
+../ak/varput.f90
 
 ../volume/NVEL/beqinfo.inc
 ../volume/NVEL/beqrefinfo.inc

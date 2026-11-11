@@ -1,4 +1,4 @@
-../ak/habtyp.f
+../ak/habtyp.f90
 ../vbase/evpred.f
 ../vbase/evtstv.f
 ../vbase/fortyp.f
