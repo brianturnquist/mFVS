@@ -1,0 +1,21 @@
+!=========================!
+!   Compute bark ratios   !
+!=========================!
+! ACD $Id$
+function BRATIO(IS,D,H)
+  implicit none
+
+  ! FUNCTION TO COMPUTE BARK RATIOS. THIS ROUTINE IS VARIANT SPECIFIC
+  ! AND EACH VARIANT USES ONE OR MORE OF THE ARGUMENTS PASSED TO IT.
+
+  ! Common blocks
+  include 'PRGPRM.F77'
+  include 'COEFFS.F77'
+
+  ! Variables
+  integer :: IS
+  real    :: H,D,BRATIO
+
+  BRATIO = BKRAT(IS)
+  return
+end function BRATIO
