@@ -13,7 +13,7 @@ subroutine SITSET
   ! NUMBER 1: RESEARCH WORK UNIT FS-NE-4153.
 
   ! Common blocks
-  include 'PRGPRM.F77'
+  include 'PRGPRM.f90'
   include 'COEFFS.F77'
   include 'CONTRL.F77'
   include 'PLOT.F77'

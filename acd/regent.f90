@@ -17,7 +17,7 @@ subroutine REGENT(LESTB,ITRNIN)
   !  **RCON** TO LOAD MODEL PARAMETERS THAT NEED ONLY BE RESOLVED ONCE.
 
   ! Common blocks
-  include 'PRGPRM.F77'
+  include 'PRGPRM.f90'
   include 'ARRAYS.F77'
   include 'CALCOM.F77'
   include 'COEFFS.F77'

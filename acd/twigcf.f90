@@ -10,7 +10,7 @@ subroutine TWIGCF(ISPC,H,D,VN,VM,I)
   ! DEFECT ARE STILL CALCULATED IN VOLS.
 
   ! Common blocks
-  include 'PRGPRM.F77'
+  include 'PRGPRM.f90'
   include 'PLOT.F77'
   include 'ARRAYS.F77'
   include 'VOLSTD.F77'

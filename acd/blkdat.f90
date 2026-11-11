@@ -11,9 +11,9 @@ block data BLKDAT
   !     AND SITE DEPENDENT.
 
   ! Common blocks
-  include 'PRGPRM.F77'
+  include 'PRGPRM.f90'
   include 'COEFFS.F77'
-  include 'ESPARM.F77'
+  include 'ESPARM.f90'
   include 'ESCOMN.F77'
   include 'PDEN.F77'
   include 'ECON.F77'

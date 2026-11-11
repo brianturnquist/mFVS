@@ -23,7 +23,7 @@ subroutine CRATET
   !        VARIABLES.
 
   ! Common blocks
-  include 'PRGPRM.F77'
+  include 'PRGPRM.f90'
   include 'ARRAYS.F77'
   include 'PLOT.F77'
   include 'COEFFS.F77'

@@ -11,7 +11,7 @@ subroutine FINDAG(I,ISPC,D1,D2,H,SITAGE,SITHT,AGMAX,HTMAX1,HTMAX2, &
   !  CALLED FROM **CRATET
 
   ! Common blocks
-  include 'PRGPRM.F77'
+  include 'PRGPRM.f90'
   include 'CONTRL.F77'
   include 'ARRAYS.F77'
   include 'PLOT.F77'

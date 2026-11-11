@@ -9,7 +9,7 @@ subroutine CUTSTK
   !  LEVELS FOR VARIOUS THINNING OPTIONS.
 
   ! Common blocks
-  include 'PRGPRM.F77'
+  include 'PRGPRM.f90'
   include 'CONTRL.F77'
   include 'ARRAYS.F77'
   include 'PLOT.F77'

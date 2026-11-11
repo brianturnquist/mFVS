@@ -21,7 +21,7 @@ subroutine DGF(DIAM)
   !  UNITED STATES' TECK & HILT. RESEARCH PAPER NE-649
 
   ! Common blocks
-  include 'PRGPRM.F77'
+  include 'PRGPRM.f90'
   include 'CALCOM.F77'
   include 'ARRAYS.F77'
   include 'COEFFS.F77'

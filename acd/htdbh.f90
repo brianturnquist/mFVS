@@ -30,7 +30,7 @@ subroutine HTDBH (IFOR,ISPC,D,H,MODE)
   !             1 IF HEIGHT IS PROVIDED AND DIAMETER IS DESIRED
 
   ! Common blocks
-  include 'PRGPRM.F77'
+  include 'PRGPRM.f90'
   include 'COEFFS.F77'
   include 'CONTRL.F77'
 

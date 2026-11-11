@@ -8,7 +8,7 @@ subroutine GRINIT
   !  INITIALIZE PROGNOSIS MODEL VARIABLES
 
   ! Common blocks
-  include 'PRGPRM.F77'
+  include 'PRGPRM.f90'
   include 'ARRAYS.F77'
   include 'COEFFS.F77'
   include 'CONTRL.F77'

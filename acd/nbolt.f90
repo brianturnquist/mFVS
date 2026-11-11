@@ -11,7 +11,7 @@ subroutine NBOLT(ISPC,H,D,DBHMIN,BFMIND,SINDX,TOPDOB,BFTDOB, &
   ! DIAMETER.
 
   ! Common blocks
-  include 'PRGPRM.F77'
+  include 'PRGPRM.f90'
   include 'VARCOM.F77'
   include 'PLOT.F77'
 

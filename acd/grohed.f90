@@ -9,7 +9,7 @@ subroutine GROHED (IUNIT)
   !     WRITES HEADER FOR BASE MODEL PORTION OF PROGNOSIS SYSTEM
 
   ! Common blocks
-  include 'PRGPRM.F77'
+  include 'PRGPRM.f90'
   include 'CONTRL.F77'
 
   ! Variables

@@ -20,7 +20,7 @@ subroutine DGDRIV
   !  REPRESENTS CHANGE IN SQUARED DIAMETER.
 
   ! Common blocks
-  include 'PRGPRM.F77'
+  include 'PRGPRM.f90'
   include 'CALCOM.F77'
   include 'ARRAYS.F77'
   include 'COEFFS.F77'

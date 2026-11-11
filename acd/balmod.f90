@@ -13,7 +13,7 @@ subroutine BALMOD(ISPC,D,GMOD)
   !  RGNTHW.
 
   ! Common blocks
-  include 'PRGPRM.F77'
+  include 'PRGPRM.f90'
   include 'TWIGCOM.F77'
 
   ! Variables

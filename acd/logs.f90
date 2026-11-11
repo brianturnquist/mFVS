@@ -10,7 +10,7 @@ subroutine LOGS(DBH,HT,IBCD,BDMIN,ISP,STMP,BV)
   !  BY K.STUMPF, ADAPTED BY B.KRUMLAND, P.J.DAUGHERTY
 
   ! Common blocks
-  include 'PRGPRM.F77'
+  include 'PRGPRM.f90'
 
   ! Variables
   real    :: XPS(6),TPCF1(6),TPCF2(6),SF(4,2)

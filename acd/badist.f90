@@ -6,7 +6,7 @@ subroutine BADIST(DEBUG)
   implicit none
 
   ! Common blocks
-  include 'PRGPRM.F77'
+  include 'PRGPRM.f90'
   include 'ARRAYS.F77'
   include 'CONTRL.F77'
   include 'TWIGCOM.F77'

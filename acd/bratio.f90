@@ -9,7 +9,7 @@ function BRATIO(IS,D,H)
   ! AND EACH VARIANT USES ONE OR MORE OF THE ARGUMENTS PASSED TO IT.
 
   ! Common blocks
-  include 'PRGPRM.F77'
+  include 'PRGPRM.f90'
   include 'COEFFS.F77'
 
   ! Variables

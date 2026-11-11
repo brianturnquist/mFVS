@@ -6,7 +6,7 @@ subroutine TWIGBF(ISPC,H,D,VMAX,BBFV)
   implicit none
 
   ! Common blocks
-  include 'PRGPRM.F77'
+  include 'PRGPRM.f90'
   include 'PLOT.F77'
   include 'CONTRL.F77'
   include 'VOLSTD.F77'

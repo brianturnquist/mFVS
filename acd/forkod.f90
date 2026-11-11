@@ -9,7 +9,7 @@ subroutine FORKOD
   !     KODFOR IS ZERO, THE ROUTINE RETURNS THE DEFAULT CODE.
 
   ! Common blocks
-  include 'PRGPRM.F77'
+  include 'PRGPRM.f90'
   include 'PLOT.F77'
   include 'CONTRL.F77'
 

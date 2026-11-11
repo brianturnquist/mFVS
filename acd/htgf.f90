@@ -14,7 +14,7 @@ subroutine HTGF
   !  THAT NEED ONLY BE RESOLVED ONCE.
 
   ! Common blocks
-  include 'PRGPRM.F77'
+  include 'PRGPRM.f90'
   include 'ARRAYS.F77'
   include 'COEFFS.F77'
   include 'PLOT.F77'

@@ -9,7 +9,7 @@ subroutine VARMRT(TOKILL,DEBUG,SUMKIL)
   ! SPECIES TOLERANCE.
 
   ! Common blocks
-  include 'PRGPRM.F77'
+  include 'PRGPRM.f90'
   include 'ARRAYS.F77'
   include 'CONTRL.F77'
   include 'OUTCOM.F77'
