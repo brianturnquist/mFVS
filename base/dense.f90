@@ -21,12 +21,14 @@ subroutine DENSE
   include 'HTCAL.f90'
   include 'PDEN.f90'
   include 'VARCOM.f90'
+  include 'METRIC.f90'
 
   ! Variables
   integer :: I,IS,IP,ISPC,I1,I2,I3,II
   real    :: SSUMN,TEMP1,TEMP2,RAT,TOTAL,CCFT,CW,BATREE,DP,P,BAT,RELDT
   real    :: TSUMD2,R,BRATIO,D,G,SN,BAGR
   real    :: SUMDR0
+  real :: TARG
   logical :: LREDO
   logical :: DEBUG
 
@@ -124,8 +126,10 @@ subroutine DENSE
      BAAA(IP) = 0.0
      PCCF(IP) = 0.0
      PTPA(IP) = 0.0
-     PTPAA(IP) = 0.0
-     PRDA(IP) = 0.0
+     if (.not. LMETRICVAR) then
+        PTPAA(IP) = 0.0
+        PRDA(IP) = 0.0
+     end if
      do IS = 1,MAXSP
         OVER(IS,IP) = 0.0
         13 continue
@@ -169,7 +173,11 @@ subroutine DENSE
         TPROB = TPROB+P
         D = DBH(I)
         if (LBKDEN.and.LREDO)  D = WK3(I)
-        if (D.ge.DBHSDI)SUMDR0 = SUMDR0+P*(D)**1.605 ! ADD ZEIDE SUMS IF DIA. >=DBHSDI
+        if (LMETRICVAR) then
+           if ((D.ge.DBHSDI).and.LZEIDE)SUMDR0 = SUMDR0+P*(D)**1.605 ! ADD ZEIDE SUMS IF DIA. >=DBHSDI
+        else
+           if (D.ge.DBHSDI)SUMDR0 = SUMDR0+P*(D)**1.605 ! ADD ZEIDE SUMS IF DIA. >=DBHSDI
+        end if
         DP = D*P
         WK5(I) = D*DP
         TSUMD2 = TSUMD2+WK5(I)
@@ -199,9 +207,11 @@ subroutine DENSE
         if (D.lt.REGNBK) go to 10
         BAAA(IP) = BAAA(IP)+BATREE*PI/GROSPC
         OVER(ISPC,IP) = OVER(ISPC,IP)+BATREE*PI/GROSPC
-        PTPAA(IP) = PTPAA(IP)+P*PI/GROSPC
-        if (XMAXPT(IP) .gt. 0.0) then
-           PRDA(IP) = PRDA(IP)+(P*(D/10.)**1.605*PI/GROSPC)/XMAXPT(IP)
+        if (.not. LMETRICVAR) then
+           PTPAA(IP) = PTPAA(IP)+P*PI/GROSPC
+           if (XMAXPT(IP) .gt. 0.0) then
+              PRDA(IP) = PRDA(IP)+(P*(D/10.)**1.605*PI/GROSPC)/XMAXPT(IP)
+           end if
         end if
         10 continue
      end do
@@ -238,7 +248,11 @@ subroutine DENSE
   RMSQD = 0.
   if (ITRN.gt.0.and.TPROB.gt.0.0) then
      RMSQD = SQRT (TSUMD2 / TPROB)
-     DR016 = (SUMDR0/TPROB)**(1./1.605)
+     if (LMETRICVAR) then
+        if (LZEIDE)DR016 = (SUMDR0/TPROB)**(1./1.605)
+     else
+        DR016 = (SUMDR0/TPROB)**(1./1.605)
+     end if
   end if
   BA = BAT
 
@@ -275,13 +289,24 @@ subroutine DENSE
   AVH = 0.
   if (ITRN.le.0) goto 70
   SSUMN = 0.
+  if (LMETRICVAR) then
+     TARG = 100.0/HAtoACR ! METRIC VERSION = 40.47/AC
+  end if
   do I = 1,ITRN
      II = IND(I)
      P = PROB(II)
-     if (SSUMN+P.gt.40.0) P = 40.0-SSUMN
+     if (LMETRICVAR) then
+        if (SSUMN+P.gt.TARG) P = TARG-SSUMN
+     else
+        if (SSUMN+P.gt.40.0) P = 40.0-SSUMN
+     end if
      SSUMN = SSUMN+P
      AVH = AVH+HT(II)*P
-     if (SSUMN.ge.40.0) go to 65
+     if (LMETRICVAR) then
+        if (SSUMN.ge.TARG) go to 65
+     else
+        if (SSUMN.ge.40.0) go to 65
+     end if
      60 continue
   end do
   65 continue

@@ -1321,6 +1321,7 @@ subroutine CRNCLO(IND,CTMUL,VERSION,NTREES,TDATAI,TDATAR,&
 end
 
 subroutine GET_CCFL(DBH,CCFLL1,CCFL1,CCFL)
+  !     SHARED BY THE RUN (EXECUTE) AND EDIT (PREPARE/START2) CODE.
   implicit none
   ! Variables
   integer*4 :: K

@@ -8,6 +8,7 @@ subroutine DBSFUELS(IYEAR,NPLT,LITTER,DUFF,SDEADLT3,SDEADGT3,&
      &REMOVED,KODE)
 
   implicit none
+  include 'PRGPRM.f90'
 
   !     PURPOSE: TO POPULATE A DATABASE WITH THE FUELS REPORT INFORMATION
   !     AUTH: D. GAMMEL -- RMRS -- NOVEMBER 2002
@@ -54,32 +55,63 @@ subroutine DBSFUELS(IYEAR,NPLT,LITTER,DUFF,SDEADLT3,SDEADGT3,&
 
   call DBSCASE(1)
 
-  iRet = fsql3_tableexists(IoutDBref,&
-       &"FVS_Fuels"//CHAR(0))
+  if (LMETRICVAR) then
+     iRet = fsql3_tableexists(IoutDBref,&
+          &"FVS_Fuels_Metric"//CHAR(0))
+  else
+     iRet = fsql3_tableexists(IoutDBref,&
+          &"FVS_Fuels"//CHAR(0))
+  end if
   if (iRet.eq.0) then
-     SQLStmtStr = 'CREATE TABLE FVS_Fuels('//&
-          &'CaseID text not null,'//&
-          &'StandID text not null,'//&
-          &'Year Int null,'//&
-          &'Surface_Litter real null,'//&
-          &'Surface_Duff real null,'//&
-          &'Surface_lt3 real null,'//&
-          &'Surface_ge3 real null,'//&
-          &'Surface_3to6 real null,'//&
-          &'Surface_6to12 real null,'//&
-          &'Surface_ge12 real null,'//&
-          &'Surface_Herb real null,'//&
-          &'Surface_Shrub real null,'//&
-          &'Surface_Total real null,'//&
-          &'Standing_Snag_lt3 real null,'//&
-          &'Standing_Snag_ge3 real null,'//&
-          &'Standing_Foliage real null,'//&
-          &'Standing_Live_lt3 real null,'//&
-          &'Standing_Live_ge3 real null,'//&
-          &'Standing_Total real null,'//&
-          &'Total_Biomass Int null,'//&
-          &'Total_Consumed Int null,'//&
-          &'Biomass_Removed Int null);'//CHAR(0)
+     if (LMETRICVAR) then
+        SQLStmtStr = 'CREATE TABLE FVS_Fuels_Metric('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year Int null,'//&
+             &'Surface_Litter real null,'//&
+             &'Surface_Duff real null,'//&
+             &'Surface_lt76 real null,'//&
+             &'Surface_ge76 real null,'//&
+             &'Surface_76to152 real null,'//&
+             &'Surface_152to305 real null,'//&
+             &'Surface_ge305 real null,'//&
+             &'Surface_Herb real null,'//&
+             &'Surface_Shrub real null,'//&
+             &'Surface_Total real null,'//&
+             &'Standing_Snag_lt76 real null,'//&
+             &'Standing_Snag_ge76 real null,'//&
+             &'Standing_Foliage real null,'//&
+             &'Standing_Live_lt76 real null,'//&
+             &'Standing_Live_ge76 real null,'//&
+             &'Standing_Total real null,'//&
+             &'Total_Biomass Int null,'//&
+             &'Total_Consumed Int null,'//&
+             &'Biomass_Removed Int null);'//CHAR(0)
+     else
+        SQLStmtStr = 'CREATE TABLE FVS_Fuels('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year Int null,'//&
+             &'Surface_Litter real null,'//&
+             &'Surface_Duff real null,'//&
+             &'Surface_lt3 real null,'//&
+             &'Surface_ge3 real null,'//&
+             &'Surface_3to6 real null,'//&
+             &'Surface_6to12 real null,'//&
+             &'Surface_ge12 real null,'//&
+             &'Surface_Herb real null,'//&
+             &'Surface_Shrub real null,'//&
+             &'Surface_Total real null,'//&
+             &'Standing_Snag_lt3 real null,'//&
+             &'Standing_Snag_ge3 real null,'//&
+             &'Standing_Foliage real null,'//&
+             &'Standing_Live_lt3 real null,'//&
+             &'Standing_Live_ge3 real null,'//&
+             &'Standing_Total real null,'//&
+             &'Total_Biomass Int null,'//&
+             &'Total_Consumed Int null,'//&
+             &'Biomass_Removed Int null);'//CHAR(0)
+     end if
      iRet = fsql3_exec(IoutDBref,SQLStmtStr)
      if (iRet .ne.0) then
         IFUELS = 0
@@ -104,14 +136,25 @@ subroutine DBSFUELS(IYEAR,NPLT,LITTER,DUFF,SDEADLT3,SDEADGT3,&
   FOLIAGEB = FOLIAGE
   STANDLT3B = STANDLT3
 
-  write(SQLStmtStr,*)'INSERT INTO FVS_Fuels (CaseID,',&
-       &'StandID,Year,Surface_Litter,Surface_Duff,Surface_lt3,',&
-       &'Surface_ge3,Surface_3to6,Surface_6to12,Surface_ge12,',&
-       &'Surface_Herb,Surface_Shrub,Surface_Total,Standing_Snag_lt3,',&
-       &'Standing_Snag_ge3,Standing_Foliage,Standing_Live_lt3,',&
-       &'Standing_Live_ge3,Standing_Total,Total_Biomass,',&
-       &'Total_Consumed,Biomass_Removed) VALUES(''',CASEID,''',''',&
-       &TRIM(NPLT),''',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);'
+  if (LMETRICVAR) then
+     write(SQLStmtStr,*)'INSERT INTO FVS_Fuels_Metric (CaseID,',&
+          &'StandID,Year,Surface_Litter,Surface_Duff,Surface_lt76,',&
+          &'Surface_ge76,Surface_76to152,Surface_152to305,Surface_ge305,',&
+          &'Surface_Herb,Surface_Shrub,Surface_Total,Standing_Snag_lt76,',&
+          &'Standing_Snag_ge76,Standing_Foliage,Standing_Live_lt76,',&
+          &'Standing_Live_ge76,Standing_Total,Total_Biomass,',&
+          &'Total_Consumed,Biomass_Removed) VALUES(''',CASEID,''',''',&
+          &TRIM(NPLT),''',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);'
+  else
+     write(SQLStmtStr,*)'INSERT INTO FVS_Fuels (CaseID,',&
+          &'StandID,Year,Surface_Litter,Surface_Duff,Surface_lt3,',&
+          &'Surface_ge3,Surface_3to6,Surface_6to12,Surface_ge12,',&
+          &'Surface_Herb,Surface_Shrub,Surface_Total,Standing_Snag_lt3,',&
+          &'Standing_Snag_ge3,Standing_Foliage,Standing_Live_lt3,',&
+          &'Standing_Live_ge3,Standing_Total,Total_Biomass,',&
+          &'Total_Consumed,Biomass_Removed) VALUES(''',CASEID,''',''',&
+          &TRIM(NPLT),''',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);'
+  end if
   iRet = fsql3_prepare(IoutDBref, SQLStmtStr)
   if (iRet .ne.0) then
      IFUELS = 0

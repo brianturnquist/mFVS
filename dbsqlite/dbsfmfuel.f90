@@ -6,6 +6,7 @@ subroutine DBSFMFUEL(IYEAR,NPLT,MSE,LITTER,DUFF,CLT3,CGT3,&
      &C3TO6,C6TO12,CGT12,HERB,CROWN,CTOTAL,PERCDUFF,PERCGT3,&
      &PERTRCR,SM25,SM10,KODE)
   implicit none
+  include 'PRGPRM.f90'
 
   !     PURPOSE: TO POPULATE A DATABASE WITH THE FUELS CONSUMPTION REPORT
   !              INFORMATION
@@ -49,29 +50,57 @@ subroutine DBSFMFUEL(IYEAR,NPLT,MSE,LITTER,DUFF,CLT3,CGT3,&
 
   call DBSCASE(1)
 
-  iRet = fsql3_tableexists(IoutDBref,&
-       &"FVS_Consumption"//CHAR(0))
+  if (LMETRICVAR) then
+     iRet = fsql3_tableexists(IoutDBref,&
+          &"FVS_Consumption_Metric"//CHAR(0))
+  else
+     iRet = fsql3_tableexists(IoutDBref,&
+          &"FVS_Consumption"//CHAR(0))
+  end if
   if (iRet.eq.0) then
-     SQLStmtStr = 'CREATE TABLE FVS_Consumption('//&
-          &'CaseID text not null,'//&
-          &'StandID text not null,'//&
-          &'Year Int null,'//&
-          &'Min_Soil_Exp real null,'//&
-          &'Litter_Consumption real null,'//&
-          &'Duff_Consumption real null,'//&
-          &'Consumption_lt3 real null,'//&
-          &'Consumption_ge3 real null,'//&
-          &'Consumption_3to6 real null,'//&
-          &'Consumption_6to12 real null,'//&
-          &'Consumption_ge12 real null,'//&
-          &'Consumption_Herb_Shrub real null,'//&
-          &'Consumption_Crowns real null,'//&
-          &'Total_Consumption real null,'//&
-          &'Percent_Consumption_Duff real null,'//&
-          &'Percent_Consumption_ge3 real null,'//&
-          &'Percent_Trees_Crowning int null,'//&
-          &'Smoke_Production_25 real null,'//&
-          &'Smoke_Production_10 real null);'//CHAR(0)
+     if (LMETRICVAR) then
+        SQLStmtStr = 'CREATE TABLE FVS_Consumption_Metric('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year Int null,'//&
+             &'Min_Soil_Exp real null,'//&
+             &'Litter_Consumption real null,'//&
+             &'Duff_Consumption real null,'//&
+             &'Consumption_lt76 real null,'//&
+             &'Consumption_ge76 real null,'//&
+             &'Consumption_76to152 real null,'//&
+             &'Consumption_152to305 real null,'//&
+             &'Consumption_ge305 real null,'//&
+             &'Consumption_Herb_Shrub real null,'//&
+             &'Consumption_Crowns real null,'//&
+             &'Total_Consumption real null,'//&
+             &'Percent_Consumption_Duff real null,'//&
+             &'Percent_Consumption_ge76 real null,'//&
+             &'Percent_Trees_Crowning int null,'//&
+             &'Smoke_Production_25 real null,'//&
+             &'Smoke_Production_10 real null);'//CHAR(0)
+     else
+        SQLStmtStr = 'CREATE TABLE FVS_Consumption('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year Int null,'//&
+             &'Min_Soil_Exp real null,'//&
+             &'Litter_Consumption real null,'//&
+             &'Duff_Consumption real null,'//&
+             &'Consumption_lt3 real null,'//&
+             &'Consumption_ge3 real null,'//&
+             &'Consumption_3to6 real null,'//&
+             &'Consumption_6to12 real null,'//&
+             &'Consumption_ge12 real null,'//&
+             &'Consumption_Herb_Shrub real null,'//&
+             &'Consumption_Crowns real null,'//&
+             &'Total_Consumption real null,'//&
+             &'Percent_Consumption_Duff real null,'//&
+             &'Percent_Consumption_ge3 real null,'//&
+             &'Percent_Trees_Crowning int null,'//&
+             &'Smoke_Production_25 real null,'//&
+             &'Smoke_Production_10 real null);'//CHAR(0)
+     end if
      iRet = fsql3_exec(IoutDBref,SQLStmtStr)
      if (iRet .ne.0) then
         IFUELC = 0
@@ -83,8 +112,13 @@ subroutine DBSFMFUEL(IYEAR,NPLT,MSE,LITTER,DUFF,CLT3,CGT3,&
 
   MSEB = MSE
   LITTERB = LITTER
+  if (LMETRICVAR) then
+     CLT3B = CLT3
+  end if
   DUFFB = DUFF
-  CLT3B = CLT3
+  if (.not. LMETRICVAR) then
+     CLT3B = CLT3
+  end if
   CGT3B = CGT3
   C3TO6B = C3TO6
   C6TO12B = C6TO12
@@ -97,16 +131,30 @@ subroutine DBSFMFUEL(IYEAR,NPLT,MSE,LITTER,DUFF,CLT3,CGT3,&
   SM25B = SM25
   SM10B = SM10
 
-  write(SQLStmtStr,*)'INSERT INTO FVS_Consumption (CaseID,',&
-       &'StandID,Year,Min_Soil_Exp,Litter_Consumption,',&
-       &'Duff_Consumption,',&
-       &'Consumption_lt3,Consumption_ge3,Consumption_3to6,',&
-       &'Consumption_6to12,Consumption_ge12,Consumption_Herb_Shrub,',&
-       &'Consumption_Crowns,Total_Consumption,',&
-       &'Percent_Consumption_Duff,',&
-       &'Percent_Consumption_ge3,Percent_Trees_Crowning,',&
-       &'Smoke_Production_25,Smoke_Production_10) VALUES (''',CASEID,&
-       &''',''',TRIM(NPLT),''',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);'
+  if (LMETRICVAR) then
+     write(SQLStmtStr,*)'INSERT INTO FVS_Consumption_Metric (CaseID,',&
+          &'StandID,Year,Min_Soil_Exp,Litter_Consumption,',&
+          &'Duff_Consumption,',&
+          &'Consumption_lt76,Consumption_ge76,Consumption_76to152,',&
+          &'Consumption_152to305,Consumption_ge305,',&
+          &'Consumption_Herb_Shrub,',&
+          &'Consumption_Crowns,Total_Consumption,',&
+          &'Percent_Consumption_Duff,',&
+          &'Percent_Consumption_ge76,Percent_Trees_Crowning,',&
+          &'Smoke_Production_25,Smoke_Production_10) VALUES (''',CASEID,&
+          &''',''',TRIM(NPLT),''',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);'
+  else
+     write(SQLStmtStr,*)'INSERT INTO FVS_Consumption (CaseID,',&
+          &'StandID,Year,Min_Soil_Exp,Litter_Consumption,',&
+          &'Duff_Consumption,',&
+          &'Consumption_lt3,Consumption_ge3,Consumption_3to6,',&
+          &'Consumption_6to12,Consumption_ge12,Consumption_Herb_Shrub,',&
+          &'Consumption_Crowns,Total_Consumption,',&
+          &'Percent_Consumption_Duff,',&
+          &'Percent_Consumption_ge3,Percent_Trees_Crowning,',&
+          &'Smoke_Production_25,Smoke_Production_10) VALUES (''',CASEID,&
+          &''',''',TRIM(NPLT),''',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);'
+  end if
 
   iRet = fsql3_prepare(IoutDBref, trim(SQLStmtStr)//CHAR(0))
 

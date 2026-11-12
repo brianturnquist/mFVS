@@ -65,7 +65,7 @@
 ../canada/on/findag.f90
 ../canada/on/forkod.f90
 ../canada/on/grinit.f90
-../canada/on/grohed.f90
+../vbase/grohed.f90
 ../canada/on/htcalc.f90
 ../canada/on/htdbh.f90
 ../canada/on/htgf.f90
@@ -85,7 +85,7 @@
 ../canada/on/vols.f90
 
 ../ak/habtyp.f90
-../canada/bc/keyopn.f90
+../base/keyopn.f90
 ../canada/bc/natcrz.f90
 ../ie/cftopk.f90
 ../ie/rcon.f90
@@ -98,10 +98,10 @@
 
 ../metric/vbase/disply.f90
 ../metric/vbase/fvsstd.f90
-../metric/vbase/gheads.f90
+../vbase/gheads.f90
 ../metric/vbase/initre.f90
-../metric/vbase/prtrls.f90
-../metric/vbase/sumhed.f90
+../vbase/prtrls.f90
+../vbase/sumhed.f90
 ../metric/vbase/sumout.f90
 
 ../vbase/cuts.f90
@@ -115,21 +115,21 @@
 ../vbase/svout.f90
 ../vbase/svstart.f90
 
-../metric/base/cwidth.f90
-../metric/base/dense.f90
+../base/cwidth.f90
+../base/dense.f90
 ../metric/base/evldx.f90
-../metric/base/filopn.f90
+../base/filopn.f90
 ../metric/base/intree.f90
-../metric/base/ksstag.f90
-../metric/base/mcnvrt.f90
-../metric/base/opfind.f90
+../base/ksstag.f90
+../base/mcnvrt.f90
+../base/opfind.f90
 ../metric/base/oplist.f90
-../metric/base/oprdat.f90
-../metric/base/sdichk.f90
-../metric/base/sstage.f90
+../base/oprdat.f90
+../base/sdichk.f90
+../base/sstage.f90
 ../metric/base/stats.f90
 
-../metric/so/avht40.f90
+../so/avht40.f90
 
 ../base/algcmp.f90
 ../base/algevl.f90
@@ -313,30 +313,34 @@
 
 ../dbsqlite/DBSCOM.f90
 
-../metric/vdbsqlite/dbsfmpfc.f90
+../vdbsqlite/dbsfmpfc.f90
 ../metric/vdbsqlite/dbsfmpf.f90
 ../metric/vdbsqlite/dbsstandin.f90
 ../metric/vdbsqlite/dbssumry.f90
 
-../metric/dbsqlite/dbsatrtls.f90
-../metric/dbsqlite/dbscuts.f90
-../metric/dbsqlite/dbsecharv.f90
-../metric/dbsqlite/dbsecsum.f90
-../metric/dbsqlite/dbsfmburn.f90
-../metric/dbsqlite/dbsfmcrpt.f90
-../metric/dbsqlite/dbsfmdsnag.f90
-../metric/dbsqlite/dbsfmdwcov.f90
-../metric/dbsqlite/dbsfmdwvol.f90
-../metric/dbsqlite/dbsfmfuel.f90
-../metric/dbsqlite/dbsfmmort.f90
-../metric/dbsqlite/dbsfmssnag.f90
-../metric/dbsqlite/dbsfuels.f90
+../dbsqlite/dbsatrtls.f90
+../dbsqlite/dbscuts.f90
+../dbsqlite/dbsecharv.f90
+../dbsqlite/dbsecsum.f90
+../dbsqlite/dbsfmburn.f90
+../dbsqlite/dbsfmcrpt.f90
+../dbsqlite/dbsfmdsnag.f90
+../dbsqlite/dbsfmdwcov.f90
+../dbsqlite/dbsfmdwvol.f90
+../dbsqlite/dbsfmfuel.f90
+../dbsqlite/dbsfmmort.f90
+../dbsqlite/dbsfmssnag.f90
+../dbsqlite/dbsfuels.f90
 ../metric/dbsqlite/dbsin.f90
-../metric/dbsqlite/dbssprt.f90
+../dbsqlite/dbssprt.f90
 ../metric/dbsqlite/dbsstats.f90
-../metric/dbsqlite/dbstally.f90
-../metric/dbsqlite/dbsstrclass.f90
-../metric/dbsqlite/dbstrls.f90
+../dbsqlite/dbstally.f90
+../dbsqlite/dbsstrclass.f90
+../vdbsqlite/dbsreference.f90
+../dbsqlite/dbs_fiavbc_atrtls.f90
+../dbsqlite/dbs_fiavbc_cutlst.f90
+../dbsqlite/dbs_fiavbc_trls.f90
+../dbsqlite/dbstrls.f90
 
 ../dbsqlite/dbsblkd.f90
 ../dbsqlite/dbscalib.f90
@@ -365,24 +369,24 @@
 ../dbsqlite/sqlite3.h
 ../vstrp/essprt.f90
 
-../metric/strp/esin.f90
-../metric/strp/estab.f90
+../strp/esin.f90
+../strp/estab.f90
 ../metric/strp/esuckr.f90
 
 ../strp/esaddt.f90
 ../strp/esblkd.f90
-../strp/escprs.f90
+../estb/escprs.f90
 ../estb/esetpr.f90
-../strp/esfltr.f90
+../estb/esfltr.f90
 ../strp/esgent.f90
 ../strp/esinit.f90
 ../strp/esmsgs.f90
 ../strp/esnutr.f90
 ../strp/esout.f90
-../strp/esplt1.f90
+../estb/esplt1.f90
 ../estb/esplt2.f90
 ../strp/esprep.f90
-../strp/esprin.f90
+../estb/esprin.f90
 ../estb/esrann.f90
 ../strp/essubh.f90
 ../strp/estime.f90
@@ -409,12 +413,12 @@
 ../fire/base/common/FMSNGL.f90
 ../fire/base/common/FMSVCM.f90
 
-../canada/fire/bc/fmburn.f90
+../fire/vbase/fmburn.f90
 ../canada/fire/bc/fmcanc.f90
 ../canada/fire/bc/fmcfim.f90
 ../canada/fire/bc/fmcons.f90
 
-../canada/fire/on/fmbrkt.f90
+../fire/base/fmbrkt.f90
 ../canada/fire/on/fmcblk.f90
 ../canada/fire/on/fmcfmd.f90
 ../fire/base/findmod.f90
@@ -422,7 +426,7 @@
 
 ../fire/ls/fmcba.f90
 ../fire/ls/fmlsft.f90
-../fire/ls/fmmois.f90
+../fire/base/fmmois.f90
 ../fire/ls/fmsfall.f90
 ../fire/ls/fmvinit.f90
 
@@ -444,7 +448,7 @@
 ../metric/fire/base/fmdout.f90
 ../metric/fire/base/fmin.f90
 ../metric/fire/base/fmsout.f90
-../metric/fire/base/fmssum.f90
+../fire/base/fmssum.f90
 
 ../fire/base/fmcadd.f90
 ../fire/base/fmcbio.f90
@@ -654,7 +658,6 @@
 ../volume/NVEL/r6vol2.f90
 ../volume/NVEL/r6vol3.f90
 ../volume/NVEL/r8clkdib.f90
-../volume/NVEL/r8dib.f90
 ../volume/NVEL/r8init.f90
 ../volume/NVEL/r8vol.f90
 ../volume/NVEL/r8vol1.f90

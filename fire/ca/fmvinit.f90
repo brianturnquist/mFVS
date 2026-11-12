@@ -167,9 +167,14 @@ subroutine FMVINIT
         FALLX(I) = 1.235
         LSW(I) = .true.
 
-        !         white fir
+        !         white fir (CA); grand fir in OC (uses SO California
+        !         grand fir settings)
      case (4)
-        V2T(I) = 23.1
+        if (VARACD .eq. 'OC') then
+           V2T(I) = 21.8
+        else
+           V2T(I) = 23.1
+        end if
         LEAFLF(I) = 7.0
         TFALL(I,0) = 3.0
         TFALL(I,3) = 15.0

@@ -10,6 +10,7 @@ subroutine DBSECSUM(STDID,beginAnalYear, endTime, pretend,&
      &ft3Volume, bfVolume,discountRate, sevInput, sevInputUsed)
 
   implicit none
+  include 'PRGPRM.f90'
 
   ! Common blocks
   include 'DBSCOM.f90'
@@ -40,29 +41,58 @@ subroutine DBSECSUM(STDID,beginAnalYear, endTime, pretend,&
   call DBSCASE(1)
 
   !     Ensure that the FVS_EconSummary table exists in the DB.
-  iRet = fsql3_tableexists(IoutDBref,"FVS_EconSummary"//CHAR(0))
+  if (LMETRICVAR) then
+     iRet = fsql3_tableexists(IoutDBref,&
+          &"FVS_EconSummary_Metric"//CHAR(0))
+  else
+     iRet = fsql3_tableexists(IoutDBref,"FVS_EconSummary"//CHAR(0))
+  end if
   if (iRet.eq.0) then
-     SQLStmtStr = 'CREATE TABLE FVS_EconSummary ('&
-          &// 'CaseID text not null, '&
-          &// 'StandID text not null, '&
-          &// 'Year int null, '&
-          &// 'Period int null, '&
-          &// 'Pretend_Harvest text null, '&
-          &// 'Undiscounted_Cost real null, '&
-          &// 'Undiscounted_Revenue real null, '&
-          &// 'Discounted_Cost real null, '&
-          &// 'Discounted_Revenue real null, '&
-          &// 'PNV real null, '&
-          &// 'IRR real null, '&
-          &// 'BC_Ratio real null, '&
-          &// 'RRR real null, '&
-          &// 'SEV real null, '&
-          &// 'Value_of_Forest real null, '&
-          &// 'Value_of_Trees real null, '&
-          &// 'Mrch_Cubic_Volume int null, '&
-          &// 'Mrch_BoardFoot_Volume int null, '&
-          &// 'Discount_Rate real null, '&
-          &// 'Given_SEV real null);' // CHAR(0)
+     if (LMETRICVAR) then
+        SQLStmtStr = 'CREATE TABLE FVS_EconSummary_Metric ('&
+             &// 'CaseID text not null, '&
+             &// 'StandID text not null, '&
+             &// 'Year int null, '&
+             &// 'Period int null, '&
+             &// 'Pretend_Harvest text null, '&
+             &// 'Undiscounted_Cost real null, '&
+             &// 'Undiscounted_Revenue real null, '&
+             &// 'Discounted_Cost real null, '&
+             &// 'Discounted_Revenue real null, '&
+             &// 'PNV real null, '&
+             &// 'IRR real null, '&
+             &// 'BC_Ratio real null, '&
+             &// 'RRR real null, '&
+             &// 'SEV real null, '&
+             &// 'Value_of_Forest real null, '&
+             &// 'Value_of_Trees real null, '&
+             &// 'Mrch_Cubic_Volume int null, '&
+             &// 'Mrch_Board_Volume int null, '&
+             &// 'Discount_Rate real null, '&
+             &// 'Given_SEV real null);' // CHAR(0)
+     else
+        SQLStmtStr = 'CREATE TABLE FVS_EconSummary ('&
+             &// 'CaseID text not null, '&
+             &// 'StandID text not null, '&
+             &// 'Year int null, '&
+             &// 'Period int null, '&
+             &// 'Pretend_Harvest text null, '&
+             &// 'Undiscounted_Cost real null, '&
+             &// 'Undiscounted_Revenue real null, '&
+             &// 'Discounted_Cost real null, '&
+             &// 'Discounted_Revenue real null, '&
+             &// 'PNV real null, '&
+             &// 'IRR real null, '&
+             &// 'BC_Ratio real null, '&
+             &// 'RRR real null, '&
+             &// 'SEV real null, '&
+             &// 'Value_of_Forest real null, '&
+             &// 'Value_of_Trees real null, '&
+             &// 'Mrch_Cubic_Volume int null, '&
+             &// 'Mrch_BoardFoot_Volume int null, '&
+             &// 'Discount_Rate real null, '&
+             &// 'Given_SEV real null);' // CHAR(0)
+     end if
      iRet = fsql3_exec(IoutDBref,SQLStmtStr)
      if (iRet .ne.0) then
         IDBSECON = 0
@@ -70,14 +100,25 @@ subroutine DBSECSUM(STDID,beginAnalYear, endTime, pretend,&
      end if
   end if
 
-  write(SQLStmtStr, *) 'INSERT INTO ',&
-       &'FVS_EconSummary (CaseID, StandID, Year, Period,',&
-       &'Pretend_Harvest, Undiscounted_Cost, Undiscounted_Revenue,',&
-       &'Discounted_Cost, Discounted_Revenue, PNV, IRR, BC_Ratio,',&
-       &'RRR, SEV, Value_of_Forest, Value_of_Trees,',&
-       &'Mrch_Cubic_Volume, Mrch_BoardFoot_Volume, Discount_Rate,',&
-       &'Given_SEV)','VALUES (''',CASEID,''',''',TRIM(STDID),&
-       &''',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);' // CHAR(0)
+  if (LMETRICVAR) then
+     write(SQLStmtStr, *) 'INSERT INTO ',&
+          &'FVS_EconSummary_Metric (CaseID, StandID, Year, Period,',&
+          &'Pretend_Harvest, Undiscounted_Cost, Undiscounted_Revenue,',&
+          &'Discounted_Cost, Discounted_Revenue, PNV, IRR, BC_Ratio,',&
+          &'RRR, SEV, Value_of_Forest, Value_of_Trees,',&
+          &'Mrch_Cubic_Volume, Mrch_Board_Volume, Discount_Rate,',&
+          &'Given_SEV)','VALUES (''',CASEID,''',''',TRIM(STDID),&
+          &''',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);' // CHAR(0)
+  else
+     write(SQLStmtStr, *) 'INSERT INTO ',&
+          &'FVS_EconSummary (CaseID, StandID, Year, Period,',&
+          &'Pretend_Harvest, Undiscounted_Cost, Undiscounted_Revenue,',&
+          &'Discounted_Cost, Discounted_Revenue, PNV, IRR, BC_Ratio,',&
+          &'RRR, SEV, Value_of_Forest, Value_of_Trees,',&
+          &'Mrch_Cubic_Volume, Mrch_BoardFoot_Volume, Discount_Rate,',&
+          &'Given_SEV)','VALUES (''',CASEID,''',''',TRIM(STDID),&
+          &''',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);' // CHAR(0)
+  end if
   iRet = fsql3_prepare(IoutDBref,SQLStmtStr)
   if (iRet .ne.0) then
      iRet = fsql3_errmsg(SQLStmtStr, 200)

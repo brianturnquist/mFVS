@@ -14,6 +14,7 @@ subroutine FMSSUM (IYR)
   include 'FMPARM.f90'
   include 'FMCOM.f90'
   include 'PLOT.f90'
+  include 'METRIC.f90'
 
   ! Variables
   integer :: I,II,JOUT,K
@@ -47,6 +48,13 @@ subroutine FMSSUM (IYR)
         end if
      end do
   end do
+
+  if (LMETRICVAR) then
+     do I = 1,7
+        TSF(I) = TSF(I) / ACRtoHA
+        THD(I) = THD(I) / ACRtoHA
+     end do
+  end if
   THDSF = THD(7)+TSF(7)
 
   !     CALL THE DBS MODULE TO OUTPUT SUMMARY SNAG REPORT TO A DATABASE
@@ -61,18 +69,33 @@ subroutine FMSSUM (IYR)
 
   if (ISNGSM .eq.0) then
      call GETID (ISNGSM)
-     write (JOUT,10) ISNGSM,NPLT,MGMID,&
-          &((INT(SNPRCL(I)),I = 1,6),K = 1,2)
-     10 format (/I6,' $#*%'//,114('-')/&
-          &42X,'******  FIRE MODEL VERSION 1.0 ******',/&
-          &46('-'),' SNAG SUMMARY REPORT ',&
-          &'(BASED ON STOCKABLE AREA) ',21('-')/,&
-          &' STAND ID: ',A26,4X,'MGMT ID: ',A4/&
-          &7X,15('-'),' HARD SNAGS/ACRE ',16('-'),&
-          &2X,15('-'),' SOFT SNAGS/ACRE ',16('-'),'   GRAND'/&
-          &'YEAR  ',2(1X,6(' >=',I2.2,'" '),' TOTAL '),'  TOTAL'/&
-          &'---- ',2(1X,7(' ------')),'  ------'/&
-          &'$#*%')
+     if (LMETRICVAR) then
+        write (JOUT,9010) ISNGSM,NPLT,MGMID,&
+             &((INT(SNPRCL(I)*INtoCM),I = 1,6),K = 1,2)
+        9010 format (/I6,' $#*%'//,114('-')/&
+             &42X,'******  FIRE MODEL VERSION 1.0 ******',/&
+             &46('-'),' SNAG SUMMARY REPORT ',&
+             &'(BASED ON STOCKABLE AREA) ',21('-')/,&
+             &' STAND ID: ',A26,4X,'MGMT ID: ',A4/&
+             &7X,15('-'),' HARD SNAGS/HA   ',16('-'),&
+             &2X,15('-'),' SOFT SNAGS/HA   ',16('-'),'   GRAND'/&
+             &'YEAR ',2(1X,6(' >=',I2.2,'CM'),'  TOTAL'),'   TOTAL'/&
+             &'---- ',2(1X,7(' ------')),'  ------'/&
+             &'$#*%')
+     else
+        write (JOUT,10) ISNGSM,NPLT,MGMID,&
+             &((INT(SNPRCL(I)),I = 1,6),K = 1,2)
+        10 format (/I6,' $#*%'//,114('-')/&
+             &42X,'******  FIRE MODEL VERSION 1.0 ******',/&
+             &46('-'),' SNAG SUMMARY REPORT ',&
+             &'(BASED ON STOCKABLE AREA) ',21('-')/,&
+             &' STAND ID: ',A26,4X,'MGMT ID: ',A4/&
+             &7X,15('-'),' HARD SNAGS/ACRE ',16('-'),&
+             &2X,15('-'),' SOFT SNAGS/ACRE ',16('-'),'   GRAND'/&
+             &'YEAR  ',2(1X,6(' >=',I2.2,'" '),' TOTAL '),'  TOTAL'/&
+             &'---- ',2(1X,7(' ------')),'  ------'/&
+             &'$#*%')
+     end if
   end if
 
   write (JOUT,20) ISNGSM,IYR,(THD(I),I = 1,7),(TSF(I),I = 1,7),THDSF

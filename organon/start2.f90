@@ -104,7 +104,7 @@ subroutine HDCALIB(VERSION,IB,NSPN,NTREES,NPTS,TAGE,BHAGE,TDATAI,&
      case(4)
         if (PRA .ge.0.80) then
            call WHHLB_SI_UC_EDIT(SI_1,PDEN,SI_UC)
-           call WHHLB_H40_EDIT(SI_UC,20.0,AGE2,HT40)
+           call WHHLB_H40_RUN(SI_UC,20.0,AGE2,HT40)
         end if
      end select
   end if
@@ -137,9 +137,9 @@ subroutine HDCALIB(VERSION,IB,NSPN,NTREES,NPTS,TAGE,BHAGE,TDATAI,&
         end if
      case(3)
         if (PDF .ge.0.80.and. ISPGRP .eq.1) then
-           call HD40_SMC(1,HT40,D40,DBH,PTRHT(I))
+           call HD40_NWO(1,HT40,D40,DBH,PTRHT(I))
         else if (PWH .ge.0.80.and. ISPGRP .eq.3) then
-           call HD40_SMC(2,HT40,D40,DBH,PTRHT(I))
+           call HD40_NWO(2,HT40,D40,DBH,PTRHT(I))
         else
            call HD_SMC(ISPGRP,DBH,PTRHT(I))
         end if
@@ -208,9 +208,9 @@ subroutine PRDHT(VERSION,NTREES,TDATAI,ENT,TDATAR,D40,HT40,&
         end if
      case(3)
         if (PDF .ge.0.80.and. ISPGRP .eq.1) then
-           call HD40_SMC(1,HT40,D40,DBH,PTRHT(I))
+           call HD40_NWO(1,HT40,D40,DBH,PTRHT(I))
         else if (PWH .ge.0.80.and. ISPGRP .eq.3) then
-           call HD40_SMC(2,HT40,D40,DBH,PTRHT(I))
+           call HD40_NWO(2,HT40,D40,DBH,PTRHT(I))
         else
            call HD_SMC(ISPGRP,DBH,PTRHT(I))
         end if
@@ -349,7 +349,7 @@ subroutine CRCALIB(VERSION,IB,NSPN,NTREES,NPTS,TDATAI,&
      HT = TDATAR(I,2)
      XSI_1 = SI_1-4.5
      XSI_2 = SI_2-4.5
-     call GET_CCFL_EDIT(DBH,CCFLL,CCFL,SCCFL)
+     call GET_CCFL(DBH,CCFLL,CCFL,SCCFL)
      !         WRITE(44,2002) HT,DBH,SCCFL,SBA,SI_1
      ! 2002    FORMAT(F16.6,1X,F16.6,1X,F16.6,1X,F16.6,1X,F16.6)
      select case(VERSION)
@@ -423,7 +423,7 @@ subroutine PRDCR(VERSION,IB,NSPN,NTREES,NPTS,TDATAI,SI_1,&
      HT = TDATAR(I,2)
      XSI_1 = SI_1-4.5
      XSI_2 = SI_2-4.5
-     call GET_CCFL_EDIT(DBH,CCFLL,CCFL,SCCFL)
+     call GET_CCFL(DBH,CCFLL,CCFL,SCCFL)
      select case(VERSION)
      case(1)
         call A_HCB_SWO(ISPGRP,HT,DBH,SCCFL,SBA,XSI_1,XSI_2,OG,&
@@ -698,20 +698,6 @@ subroutine WHHLB_SI_UC_EDIT(SI_C,PDEN,SI_UC)
   return
 end
 
-subroutine WHHLB_H40_EDIT(H40M,TAGEM,TAGEP,PH40P)
-
-  !     WEISKITTEL, HANN, HIBBS, LAM, AND BLUHM DOMINANT HEIGHT GROWTH EQUATION FOR
-  !     RED ALDER
-
-  implicit none
-  ! Variables
-  real*4  :: H40M,TAGEM,TAGEP,PH40P
-  real*4  :: B1,B2
-  B1 = -4.481266
-  B2 = -0.658884
-  PH40P = H40M*EXP(B1*(TAGEP**B2-TAGEM**B2))
-  return
-end
 
 subroutine SITECV_F_EDIT(si,age,htop)
 
@@ -929,6 +915,7 @@ subroutine HD40_SWO(IEQ,HT40,D40,DBH,PTRHT)
 end
 
 subroutine HD40_NWO(IEQ,HT40,D40,DBH,PTRHT)
+  !     THE SMC VERSION USES THESE SAME EQUATIONS, SO IT ALSO CALLS THIS ROUTINE.
   implicit none
   ! Variables
   integer*4 :: IEQ
@@ -953,30 +940,6 @@ subroutine HD40_NWO(IEQ,HT40,D40,DBH,PTRHT)
   return
 end
 
-subroutine HD40_SMC(IEQ,HT40,D40,DBH,PTRHT)
-  implicit none
-  ! Variables
-  integer*4 :: IEQ
-  real*4  :: HT40,D40,DBH,PTRHT,B0,B1,B2,EXD,EXD40,HD40PAR(2,3)
-
-  !    HEIGHT/DIAMETER USING D40 (3PARameters - Douglas-fir and western hemlock)
-
-  !     DF Coefficients from Hanus, Marshall, and Hann (1999) FRL Research Contribution 25
-  !     WH Coefficients from Hanus, Marshall, and Hann (1999) FRL Research Contribution 25
-
-  data HD40PAR/&
-       &-2.857232223, -2.790360488,& !  DF,WH
-       &-0.393885195, -0.235470605,& !  DF,WH
-       &-0.000521583, -0.002374673/ !  DF,WH
-
-  B0 = HD40PAR(IEQ,1)
-  B1 = HD40PAR(IEQ,2)
-  B2 = HD40PAR(IEQ,3)
-  EXD = EXP(B0*DBH**(B1+B2*(HT40-4.5)))
-  EXD40 = EXP(B0*D40**(B1+B2*(HT40-4.5)))
-  PTRHT = 4.5+(HT40-4.5)*(EXD/EXD40)
-  return
-end
 
 subroutine HD40_RAP(IEQ,HT40,D40,DBH,PTRHT)
   implicit none
@@ -1005,22 +968,6 @@ subroutine HD40_RAP(IEQ,HT40,D40,DBH,PTRHT)
   return
 end
 
-subroutine GET_CCFL_EDIT(DBH,CCFLL1,CCFL1,CCFL)
-  implicit none
-  ! Variables
-  integer*4 :: K
-  real*4  :: DBH,CCFLL1(51),CCFL1(500),CCFL
-  if (DBH .gt.100.0) then
-     CCFL = 0.0
-  else if (DBH .gt.50.0) then
-     K = INT(DBH-49.0)
-     CCFL = CCFLL1(K)
-  else
-     K = INT(DBH*10.0+0.5)
-     CCFL = CCFL1(K)
-  end if
-  return
-end
 
 subroutine CALTST(YXS,XSS,YSS,N,BETA)
 

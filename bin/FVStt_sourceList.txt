@@ -51,22 +51,22 @@
 ../common/VOLSTD.f90
 ../common/WORKCM.f90
 
-../tt/bfvol.f90
+../ut/bfvol.f90
 ../tt/blkdat.f90
 ../tt/bratio.f90
 ../tt/ccfcal.f90
 ../tt/cratet.f90
 ../tt/crown.f90
 ../tt/cubrds.f90
-../tt/dgdriv.f90
+../bm/dgdriv.f90
 ../tt/dgf.f90
 ../tt/dubscr.f90
 ../tt/findag.f90
 ../tt/forkod.f90
 ../tt/grinit.f90
-../tt/grohed.f90
+../vbase/grohed.f90
 ../tt/htgf.f90
-../tt/maical.f90
+../bm/maical.f90
 ../tt/morts.f90
 ../tt/regent.f90
 ../tt/siterange.f90
@@ -243,6 +243,7 @@
 ../base/opnew.f90
 ../base/opnewc.f90
 ../base/oprdat.f90
+../base/mcnvrt.f90
 ../base/opsame.f90
 ../base/opsort.f90
 ../base/opstus.f90
@@ -386,19 +387,19 @@
 
 ../strp/esaddt.f90
 ../strp/esblkd.f90
-../strp/escprs.f90
+../estb/escprs.f90
 ../estb/esetpr.f90
-../strp/esfltr.f90
+../estb/esfltr.f90
 ../strp/esgent.f90
 ../strp/esin.f90
 ../strp/esinit.f90
 ../strp/esmsgs.f90
 ../strp/esnutr.f90
 ../strp/esout.f90
-../strp/esplt1.f90
+../estb/esplt1.f90
 ../estb/esplt2.f90
 ../strp/esprep.f90
-../strp/esprin.f90
+../estb/esprin.f90
 ../estb/esrann.f90
 ../strp/estab.f90
 ../strp/estime.f90
@@ -513,7 +514,6 @@
 ../volume/NVEL/r6vol2.f90
 ../volume/NVEL/r6vol3.f90
 ../volume/NVEL/r8clkdib.f90
-../volume/NVEL/r8dib.f90
 ../volume/NVEL/r8init.f90
 ../volume/NVEL/r8vol.f90
 ../volume/NVEL/r8vol1.f90
@@ -603,14 +603,14 @@
 ../fire/base/common/FMPROP.f90
 ../fire/base/common/FMSVCM.f90
 
-../fire/tt/fmbrkt.f90
+../fire/base/fmbrkt.f90
 ../fire/tt/fmcba.f90
 ../fire/tt/fmcblk.f90
 ../fire/tt/fmcrow.f90
 ../fire/base/exhtdbh.f90
 ../fire/tt/fmvinit.f90
 ../fire/ie/fmcons.f90
-../fire/ut/fmmois.f90
+../fire/base/fmmois.f90
 ../fire/vut/fmcfmd.f90
 ../fire/vut/fmsfall.f90
 

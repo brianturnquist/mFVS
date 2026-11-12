@@ -16,6 +16,7 @@ subroutine DBSSPRT(CSP,TPASUM,HTAVE,TPATOT,&
   include 'CONTRL.f90'
   include 'DBSCOM.f90'
   include 'PLOT.f90'
+  include 'METRIC.f90'
 
   ! Variables
   integer :: ColNumber,I,iret,TOT,IYEAR,TPASUM1,IYEAR1
@@ -38,20 +39,37 @@ subroutine DBSSPRT(CSP,TPASUM,HTAVE,TPATOT,&
 
   !     DEFINE TABLENAME
 
-  iRet = fsql3_tableexists(IoutDBref,'FVS_Regen_Sprouts'//CHAR(0))
+  if (LMETRICVAR) then
+     iRet = fsql3_tableexists(IoutDBref,'FVS_Regen_Sprouts_Metric'&
+          &//CHAR(0))
+  else
+     iRet = fsql3_tableexists(IoutDBref,'FVS_Regen_Sprouts'//CHAR(0))
+  end if
 
   !       REGENERATION FROM STUMP & ROOT SPROUTS
 
   if (iRet.eq.0) then
-     SQLStmtStr = 'CREATE TABLE FVS_Regen_Sprouts('//&
-          &'CaseID text not null,'//&
-          &'StandID text not null,'//&
-          &'Year int null,'//&
-          &'SpeciesFVS    text null,'//&
-          &'SpeciesPLANTS text null,'//&
-          &'SpeciesFIA    text null,'//&
-          &'SprtTpa int,'//&
-          &'SprtAveHt real);'//CHAR(0)
+     if (LMETRICVAR) then
+        SQLStmtStr = 'CREATE TABLE FVS_Regen_Sprouts_Metric('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year int null,'//&
+             &'SpeciesFVS    text null,'//&
+             &'SpeciesPLANTS text null,'//&
+             &'SpeciesFIA    text null,'//&
+             &'SprtTph int,'//&
+             &'SprtAveHt real);'//CHAR(0)
+     else
+        SQLStmtStr = 'CREATE TABLE FVS_Regen_Sprouts('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year int null,'//&
+             &'SpeciesFVS    text null,'//&
+             &'SpeciesPLANTS text null,'//&
+             &'SpeciesFIA    text null,'//&
+             &'SprtTpa int,'//&
+             &'SprtAveHt real);'//CHAR(0)
+     end if
 
      iRet = fsql3_exec(IoutDBref,SQLStmtStr)
      if (iRet .ne.0) then
@@ -75,10 +93,17 @@ subroutine DBSSPRT(CSP,TPASUM,HTAVE,TPATOT,&
      end do
   end if
 
-  write(SQLStmtStr,*)'INSERT INTO FVS_Regen_Sprouts',&
-       &' (CaseID,StandID,Year,',&
-       &'SpeciesFVS,SpeciesPLANTS,SpeciesFIA,SprtTpa,SprtAveHt)',&
-       &'VALUES(''',CASEID,''',''',TRIM(NPLT),''',?,?,?,?,?,?);'
+  if (LMETRICVAR) then
+     write(SQLStmtStr,*)'INSERT INTO FVS_Regen_Sprouts_Metric',&
+          &' (CaseID,StandID,Year,',&
+          &'SpeciesFVS,SpeciesPLANTS,SpeciesFIA,SprtTph,SprtAveHt)',&
+          &'VALUES(''',CASEID,''',''',TRIM(NPLT),''',?,?,?,?,?,?);'
+  else
+     write(SQLStmtStr,*)'INSERT INTO FVS_Regen_Sprouts',&
+          &' (CaseID,StandID,Year,',&
+          &'SpeciesFVS,SpeciesPLANTS,SpeciesFIA,SprtTpa,SprtAveHt)',&
+          &'VALUES(''',CASEID,''',''',TRIM(NPLT),''',?,?,?,?,?,?);'
+  end if
 
   iRet = fsql3_prepare(IoutDBref,trim(SQLStmtStr)//CHAR(0))
   if (iRet .ne.0) then

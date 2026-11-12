@@ -135,7 +135,7 @@ subroutine HTGRO1(K,M,ON,VERSION,CYCLG,IB,TDATAI,TDATAR,SI_1,SI_2,&
            call B_HG(SITE,TDATAR(K,2),GP,GEAGE,PHTGRO)
         end if
         IDXAGE = 120.0
-        call HG_SMC(ISPGRP,PHTGRO,CR,TCCH,HG)
+        call HG_NWO(ISPGRP,PHTGRO,CR,TCCH,HG)
      case(4)
         GP = 1.0
         if (TDATAI(K,2) .eq.1) then
@@ -263,6 +263,7 @@ subroutine HTGRO2(K,VERSION,IB,TDATAI,TDATAR,RASI,CALIB,&
 end
 
 subroutine HS_HG(ISP,SI,HT,GEAGE,PHTGRO)
+  !     SHARED BY THE RUN (EXECUTE) AND EDIT (PREPARE/START2) CODE.
   implicit none
   ! Variables
   integer*4 :: ISP
@@ -411,6 +412,7 @@ subroutine WHHLB_SI_UC_RUN(SI_C,PDEN,SI_UC)
 end
 
 subroutine WHHLB_GEA_RUN(H,SI_UC,GEA)
+  !     SHARED BY THE RUN (EXECUTE) AND EDIT (PREPARE/START2) CODE.
 
   !     RED ALDER GROWTH EFFECTIVE AGE EQUATION BASED ON H40 EQUATION FROM
   !         THE WEISKITTEL, HANN, HIBBS, LAM, AND BLUHM DOMINANT HEIGHT GROWTH
@@ -428,6 +430,7 @@ subroutine WHHLB_GEA_RUN(H,SI_UC,GEA)
 end
 
 subroutine WHHLB_H40_RUN(H40M,TAGEM,TAGEP,PH40P)
+  !     SHARED BY THE RUN (EXECUTE) AND EDIT (PREPARE/START2) CODE.
 
   !     WEISKITTEL, HANN, HIBBS, LAM, AND BLUHM DOMINANT HEIGHT GROWTH EQUATION FOR
   !     RED ALDER
@@ -496,6 +499,7 @@ subroutine HG_SWO(ISPGRP,PHTGRO,CR,TCCH,HG)
 end
 
 subroutine HG_NWO(ISPGRP,PHTGRO,CR,TCCH,HG)
+  !     THE SMC VERSION USES THESE SAME EQUATIONS, SO IT ALSO CALLS THIS ROUTINE.
   implicit none
   ! Variables
   real*4  :: PHTGRO,CR,TCCH,HG,HGPAR(3,8),P1,P2,P3,P4,P5,P6,P7,P8,FCR,B0,B1,MODIFER,CRADJ
@@ -546,79 +550,6 @@ subroutine HG_NWO(ISPGRP,PHTGRO,CR,TCCH,HG)
   return
 end
 
-subroutine HG_SMC(ISPGRP,PHTGRO,CR,TCCH,HG)
-  implicit none
-  ! Variables
-  real*4  :: PHTGRO,CR,TCCH,HG,HGPAR(3,8),P1,P2,P3,P4,P5,P6,P7,P8,FCR,B0,B1,MODIFER,CRADJ
-  integer*4 :: ISPGRP
-  !C
-  !C  HEIGHT GROWTH PARAMETERS (8 parameters - big 3 conifers only)
-  !C
-  !C     DF Coefficients from Hann, Marshall, and Hanus (2006) FRL Research Contribution ??
-  !C     GF Coefficients from Ritchie and Hann (1990) FRL Research Paper 54
-  !C     WH Coefficients from Hann, Marshall, and Hanus (2003) FRL Research Contribution 40
-  !C
-  !      DATA HGPAR/
-  !     1           0.655258886,  1.0      ,  1.0         ,               !  DF,GF,WH
-  !C
-  !     2          -0.006322913, -0.0328142, -0.0056949357,               !  DF,GF,WH
-  !C
-  !     3          -0.039409636, -0.0127851, -0.0018047267,               !  DF,GF,WH
-  !C
-  !     4           0.5        ,  1.0      ,  0.5         ,               !  DF,GF,WH
-  !C
-  !     5           0.597617316,  6.19784  ,  6.1978      ,               !  DF,GF,WH
-  !C
-  !     6           2.0        ,  2.0      ,  2.0         ,               !  DF,GF,WH
-  !C
-  !     7           0.631643636,  0.0      ,  0.0         ,               !  DF,GF,WH
-  !C
-  !     8           1.010018427,  1.01     ,  1.03        /               !  DF,GF,WH
-
-  !  HEIGHT GROWTH PARAMETERS (8 parameters - big 3 conifers only)
-
-  !     DF Coefficients from Hann, Marshall, and Hanus (2006) FRL Research Contribution ??
-  !     GF Coefficients from Ritchie and Hann (1990) FRL Research Paper 54
-  !     WH Coefficients from Johnson (2002) Willamette Industries Report
-
-  data HGPAR/&
-       &0.655258886 ,  1.0         ,  1.0         ,& !  DF,GF,WH
-
-       &-0.006322913 , -0.0328142   , -0.0384415   ,& !  DF,GF,WH
-
-       &-0.039409636 , -0.0127851   , -0.0144139   ,& !  DF,GF,WH
-
-       &0.5         ,  1.0         ,  0.5         ,& !  DF,GF,WH
-
-       &0.597617316 ,  6.19784     ,  1.04409     ,& !  DF,GF,WH
-
-       &2.0         ,  2.0         ,  2.0         ,& !  DF,GF,WH
-
-       &0.631643636 ,  0.0         ,  0.0         ,& !  DF,GF,WH
-
-       &1.010018427 ,  1.01        ,  1.03        / !  DF,GF,WH
-
-  P1 = HGPAR(ISPGRP,1)
-  P2 = HGPAR(ISPGRP,2)
-  P3 = HGPAR(ISPGRP,3)
-  P4 = HGPAR(ISPGRP,4)
-  P5 = HGPAR(ISPGRP,5)
-  P6 = HGPAR(ISPGRP,6)
-  P7 = HGPAR(ISPGRP,7)
-  P8 = HGPAR(ISPGRP,8)
-  FCR = (-P5*(1.0-CR)**P6)*EXP(P7*TCCH**0.5)
-  B0 = P1*EXP(P2*TCCH)
-  B1 = EXP(P3*TCCH**P4)
-  if (FCR .lt. -20.) then
-     MODIFER = P8*B0
-  else
-     MODIFER = P8*(B0+(B1-B0)*EXP(FCR))
-  end if
-  CRADJ = 1.0
-  if (CR.le.0.17) CRADJ = 1.0-EXP(-(25.0*CR)**2.0)
-  HG = PHTGRO*MODIFER*CRADJ
-  return
-end
 
 subroutine HG_RAP(ISPGRP,PHTGRO,CR,TCCH,HG)
   implicit none

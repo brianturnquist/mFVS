@@ -57,7 +57,7 @@
 ../oc/dgdriv.f90
 ../oc/dgf.f90
 ../oc/grinit.f90
-../oc/grohed.f90
+../vbase/grohed.f90
 ../oc/htgf.f90
 ../oc/morts.f90
 ../oc/orgspc.f90
@@ -239,6 +239,7 @@
 ../base/opnew.f90
 ../base/opnewc.f90
 ../base/oprdat.f90
+../base/mcnvrt.f90
 ../base/opsame.f90
 ../base/opsort.f90
 ../base/opstus.f90
@@ -411,19 +412,19 @@
 
 ../strp/esaddt.f90
 ../strp/esblkd.f90
-../strp/escprs.f90
+../estb/escprs.f90
 ../estb/esetpr.f90
-../strp/esfltr.f90
+../estb/esfltr.f90
 ../strp/esgent.f90
 ../strp/esin.f90
 ../strp/esinit.f90
 ../strp/esmsgs.f90
 ../strp/esnutr.f90
 ../strp/esout.f90
-../strp/esplt1.f90
+../estb/esplt1.f90
 ../estb/esplt2.f90
 ../strp/esprep.f90
-../strp/esprin.f90
+../estb/esprin.f90
 ../estb/esrann.f90
 ../strp/estab.f90
 ../strp/estime.f90
@@ -538,7 +539,6 @@
 ../volume/NVEL/r6vol2.f90
 ../volume/NVEL/r6vol3.f90
 ../volume/NVEL/r8clkdib.f90
-../volume/NVEL/r8dib.f90
 ../volume/NVEL/r8init.f90
 ../volume/NVEL/r8vol.f90
 ../volume/NVEL/r8vol1.f90
@@ -628,10 +628,10 @@
 ../fire/base/common/FMPROP.f90
 ../fire/base/common/FMSVCM.f90
 
-../fire/oc/fmbrkt.f90
+../fire/base/fmbrkt.f90
 ../fire/ca/fmcba.f90
 ../fire/ca/fmcrow.f90
-../fire/oc/fmvinit.f90
+../fire/ca/fmvinit.f90
 ../fire/ca/fmcblk.f90
 ../fire/ca/fmcfmd.f90
 ../fire/base/findjss.f90
@@ -639,7 +639,7 @@
 ../fire/ie/fmcons.f90
 ../fire/ie/fmsfall.f90
 ../fire/ws/cwhr.f90
-../fire/ws/fmmois.f90
+../fire/base/fmmois.f90
 ../fire/ws/fmshrub.f90
 
 ../fire/vbase/fmburn.f90
@@ -749,7 +749,7 @@
 ../fire/fofem/fof_util.h
 ../fire/fofem/win_ccwf.h
 
-../mistoe/misintoc.f90
+../mistoe/misintca.f90
 ../mistoe/misact.f90
 ../mistoe/miscnt.f90
 ../mistoe/miscpf.f90

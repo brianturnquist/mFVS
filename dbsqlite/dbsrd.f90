@@ -7,6 +7,7 @@ subroutine DBSRD1(IYEAR,CNPLT,IAGE,DTYPE,NCENT,DAREA,SRATE,&
      &MRCUFT,DABA,NEWIN,NEWEXP,NEWTOT)
 
   implicit none
+  include 'PRGPRM.f90'
 
   !     PURPOSE: TO POPULATE A DATABASE WITH THE 1ST ROOT DISEASE MODEL REPORT,
   !              SUMMARY STATISTICS FOR ROOT DISEASE AREAS (PER ACRE BASED ON
@@ -69,30 +70,59 @@ subroutine DBSRD1(IYEAR,CNPLT,IAGE,DTYPE,NCENT,DAREA,SRATE,&
   !     CALL DBSCASE TO MAKE SURE WE HAVE AN UP TO DATE CASEID
 
   call DBSCASE(1)
-  iRet = fsql3_tableexists(IoutDBref,&
-       &"FVS_RD_Sum"//CHAR(0))
+  if (LMETRICVAR) then
+     iRet = fsql3_tableexists(IoutDBref,&
+          &"FVS_RD_Sum_Metric"//CHAR(0))
+  else
+     iRet = fsql3_tableexists(IoutDBref,&
+          &"FVS_RD_Sum"//CHAR(0))
+  end if
   if (iRet.eq.0) then
-     SQLStmtStr = 'CREATE TABLE FVS_RD_Sum ('//&
-          &'CaseID text not null,'//&
-          &'StandID text not null,'//&
-          &'Year Int null,'//&
-          &'Age Int null,'//&
-          &'RD_Type char(1) null,'//&
-          &'Num_Centers Int null,'//&
-          &'RD_Area real null,'//&
-          &'Spread_Ft_per_Year real null,'//&
-          &'Stumps_per_Acre real null,'//&
-          &'Stumps_BA real null,'//&
-          &'Mort_TPA real null,'//&
-          &'Mort_CuFt real null,'//&
-          &'UnInf_TPA real null,'//&
-          &'Inf_TPA real null,'//&
-          &'Ave_Pct_Root_Inf real null,'//&
-          &'Live_Merch_CuFt real null,'//&
-          &'Live_BA real null,'//&
-          &'New_Inf_Prp_Ins real null,'//&
-          &'New_Inf_Prp_Exp real null,'//&
-          &'New_Inf_Prp_Tot real null);'//CHAR(0)
+     if (LMETRICVAR) then
+        SQLStmtStr = 'CREATE TABLE FVS_RD_Sum_Metric ('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year Int null,'//&
+             &'Age Int null,'//&
+             &'RD_Type char(1) null,'//&
+             &'Num_Centers Int null,'//&
+             &'RD_Area real null,'//&
+             &'Spread_M_per_Year real null,'//&
+             &'Stumps_per_Ha real null,'//&
+             &'Stumps_BA real null,'//&
+             &'Mort_TPH real null,'//&
+             &'Mort_CuM real null,'//&
+             &'UnInf_TPH real null,'//&
+             &'Inf_TPH real null,'//&
+             &'Ave_Pct_Root_Inf real null,'//&
+             &'Live_Merch_CuM real null,'//&
+             &'Live_BA real null,'//&
+             &'New_Inf_Prp_Ins real null,'//&
+             &'New_Inf_Prp_Exp real null,'//&
+             &'New_Inf_Prp_Tot real null);'//CHAR(0)
+     else
+        SQLStmtStr = 'CREATE TABLE FVS_RD_Sum ('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year Int null,'//&
+             &'Age Int null,'//&
+             &'RD_Type char(1) null,'//&
+             &'Num_Centers Int null,'//&
+             &'RD_Area real null,'//&
+             &'Spread_Ft_per_Year real null,'//&
+             &'Stumps_per_Acre real null,'//&
+             &'Stumps_BA real null,'//&
+             &'Mort_TPA real null,'//&
+             &'Mort_CuFt real null,'//&
+             &'UnInf_TPA real null,'//&
+             &'Inf_TPA real null,'//&
+             &'Ave_Pct_Root_Inf real null,'//&
+             &'Live_Merch_CuFt real null,'//&
+             &'Live_BA real null,'//&
+             &'New_Inf_Prp_Ins real null,'//&
+             &'New_Inf_Prp_Exp real null,'//&
+             &'New_Inf_Prp_Tot real null);'//CHAR(0)
+     end if
      iRet = fsql3_exec(IoutDBref,SQLStmtStr)
      if (iRet .ne.0) then
         IRD1 = 0
@@ -120,14 +150,25 @@ subroutine DBSRD1(IYEAR,CNPLT,IAGE,DTYPE,NCENT,DAREA,SRATE,&
 
   !     DEFINE DATABASE INSERT STATEMENT
 
-  write(SQLStmtStr,*) 'INSERT INTO FVS_RD_Sum',&
-       &' (CaseID,StandID,Year,Age,RD_Type,Num_Centers,RD_Area,',&
-       &'Spread_Ft_per_Year,Stumps_per_Acre,Stumps_BA,',&
-       &'Mort_TPA,Mort_CuFt,UnInf_TPA,Inf_TPA,Ave_Pct_Root_Inf,',&
-       &'Live_Merch_CuFt,Live_BA,',&
-       &'New_Inf_Prp_Ins,New_Inf_Prp_Exp,New_Inf_Prp_Tot) ',&
-       &  ' VALUES (''',CASEID,''',''',TRIM(CNPLT),''',                   &
-       &  ?,?,''',DTYPE,''',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
+  if (LMETRICVAR) then
+     write(SQLStmtStr,*) 'INSERT INTO FVS_RD_Sum_Metric',&
+          &' (CaseID,StandID,Year,Age,RD_Type,Num_Centers,RD_Area,',&
+          &'Spread_M_per_Year,Stumps_per_Ha,Stumps_BA,',&
+          &'Mort_TPH,Mort_CuM,UnInf_TPH,Inf_TPH,Ave_Pct_Root_Inf,',&
+          &'Live_Merch_CuM,Live_BA,',&
+          &'New_Inf_Prp_Ins,New_Inf_Prp_Exp,New_Inf_Prp_Tot) ',&
+          &  ' VALUES (''',CASEID,''',''',TRIM(CNPLT),''',                   &
+          &  ?,?,''',DTYPE,''',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
+  else
+     write(SQLStmtStr,*) 'INSERT INTO FVS_RD_Sum',&
+          &' (CaseID,StandID,Year,Age,RD_Type,Num_Centers,RD_Area,',&
+          &'Spread_Ft_per_Year,Stumps_per_Acre,Stumps_BA,',&
+          &'Mort_TPA,Mort_CuFt,UnInf_TPA,Inf_TPA,Ave_Pct_Root_Inf,',&
+          &'Live_Merch_CuFt,Live_BA,',&
+          &'New_Inf_Prp_Ins,New_Inf_Prp_Exp,New_Inf_Prp_Tot) ',&
+          &  ' VALUES (''',CASEID,''',''',TRIM(CNPLT),''',                   &
+          &  ?,?,''',DTYPE,''',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
+  end if
 
   iRet = fsql3_prepare(IoutDBref, TRIM(SQLStmtStr)//CHAR(0))
   if (iRet .ne.0) then
@@ -256,34 +297,67 @@ subroutine DBSRD2(IYEAR,CNPLT,DTYPE,DAREA,CSP,DDBHCL,&
   !     CALL DBSCASE TO MAKE SURE WE HAVE AN UP TO DATE CASEID
 
   call DBSCASE(1)
-  iRet = fsql3_tableexists(IoutDBref,&
-       &"FVS_RD_Det"//CHAR(0))
+  if (LMETRICVAR) then
+     iRet = fsql3_tableexists(IoutDBref,&
+          &"FVS_RD_Det_Metric"//CHAR(0))
+  else
+     iRet = fsql3_tableexists(IoutDBref,&
+          &"FVS_RD_Det"//CHAR(0))
+  end if
   if (iRet.eq.0) then
-     SQLStmtStr = 'CREATE TABLE FVS_RD_Det ('//&
-          &'CaseID text not null,'//&
-          &'StandID text not null,'//&
-          &'Year Int null,'//&
-          &'RD_Type char(1) not null,'//&
-          &'RD_Area real null,'//&
-          &'SpeciesFVS text not null,'//&
-          &'SpeciesPLANTS text not null,'//&
-          &'SpeciesFIA text not null,'//&
-          &'Mort_10Pctile_DBH real null,'//&
-          &'Mort_30Pctile_DBH real null,'//&
-          &'Mort_50Pctile_DBH real null,'//&
-          &'Mort_70Pctile_DBH real null,'//&
-          &'Mort_90Pctile_DBH real null,'//&
-          &'Mort_100Pctile_DBH real null,'//&
-          &'Mort_TPA_Total real null,'//&
-          &'Live_10Pctile_DBH real null,'//&
-          &'Live_30Pctile_DBH real null,'//&
-          &'Live_50Pctile_DBH real null,'//&
-          &'Live_70Pctile_DBH real null,'//&
-          &'Live_90Pctile_DBH real null,'//&
-          &'Live_100Pctile_DBH real null,'//&
-          &'UnInf_TPA_Total real null,'//&
-          &'Inf_TPA_Total real null,'//&
-          &'Pct_Roots_Inf real null);'//CHAR(0)
+     if (LMETRICVAR) then
+        SQLStmtStr = 'CREATE TABLE FVS_RD_Det_Metric ('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year Int null,'//&
+             &'RD_Type char(1) not null,'//&
+             &'RD_Area real null,'//&
+             &'SpeciesFVS text not null,'//&
+             &'SpeciesPLANTS text not null,'//&
+             &'SpeciesFIA text not null,'//&
+             &'Mort_10Pctile_DBH real null,'//&
+             &'Mort_30Pctile_DBH real null,'//&
+             &'Mort_50Pctile_DBH real null,'//&
+             &'Mort_70Pctile_DBH real null,'//&
+             &'Mort_90Pctile_DBH real null,'//&
+             &'Mort_100Pctile_DBH real null,'//&
+             &'Mort_TPH_Total real null,'//&
+             &'Live_10Pctile_DBH real null,'//&
+             &'Live_30Pctile_DBH real null,'//&
+             &'Live_50Pctile_DBH real null,'//&
+             &'Live_70Pctile_DBH real null,'//&
+             &'Live_90Pctile_DBH real null,'//&
+             &'Live_100Pctile_DBH real null,'//&
+             &'UnInf_TPH_Total real null,'//&
+             &'Inf_TPH_Total real null,'//&
+             &'Pct_Roots_Inf real null);'//CHAR(0)
+     else
+        SQLStmtStr = 'CREATE TABLE FVS_RD_Det ('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year Int null,'//&
+             &'RD_Type char(1) not null,'//&
+             &'RD_Area real null,'//&
+             &'SpeciesFVS text not null,'//&
+             &'SpeciesPLANTS text not null,'//&
+             &'SpeciesFIA text not null,'//&
+             &'Mort_10Pctile_DBH real null,'//&
+             &'Mort_30Pctile_DBH real null,'//&
+             &'Mort_50Pctile_DBH real null,'//&
+             &'Mort_70Pctile_DBH real null,'//&
+             &'Mort_90Pctile_DBH real null,'//&
+             &'Mort_100Pctile_DBH real null,'//&
+             &'Mort_TPA_Total real null,'//&
+             &'Live_10Pctile_DBH real null,'//&
+             &'Live_30Pctile_DBH real null,'//&
+             &'Live_50Pctile_DBH real null,'//&
+             &'Live_70Pctile_DBH real null,'//&
+             &'Live_90Pctile_DBH real null,'//&
+             &'Live_100Pctile_DBH real null,'//&
+             &'UnInf_TPA_Total real null,'//&
+             &'Inf_TPA_Total real null,'//&
+             &'Pct_Roots_Inf real null);'//CHAR(0)
+     end if
      iRet = fsql3_exec(IoutDBref,SQLStmtStr)
      if (iRet .ne.0) then
         IRD2 = 0
@@ -316,18 +390,33 @@ subroutine DBSRD2(IYEAR,CNPLT,DTYPE,DAREA,CSP,DDBHCL,&
 
   !     DEFINE DATABASE INSERT STATEMENT
 
-  write(SQLStmtStr,*) 'INSERT INTO FVS_RD_Det',&
-       &' (CaseID,StandID,Year,RD_Type,RD_Area,',&
-       &'SpeciesFVS,SpeciesPLANTS,SpeciesFIA,',&
-       &'Mort_10Pctile_DBH,Mort_30Pctile_DBH,Mort_50Pctile_DBH,',&
-       &'Mort_70Pctile_DBH,Mort_90Pctile_DBH,Mort_100Pctile_DBH,',&
-       &'Mort_TPA_Total,Live_10Pctile_DBH,Live_30Pctile_DBH,',&
-       &'Live_50Pctile_DBH,Live_70Pctile_DBH,Live_90Pctile_DBH,',&
-       &'Live_100Pctile_DBH,UnInf_TPA_Total,Inf_TPA_Total,',&
-       &'Pct_Roots_Inf) ',&
-       &" VALUES ('",CASEID,"','",TRIM(CNPLT),"',?,'",DTYPE,"'",&
-       &",?,'",TRIM(CSP1),"','",TRIM(CSP2),"','",TRIM(CSP3),"'",&
-       &",?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+  if (LMETRICVAR) then
+     write(SQLStmtStr,*) 'INSERT INTO FVS_RD_Det_Metric',&
+          &' (CaseID,StandID,Year,RD_Type,RD_Area,',&
+          &'SpeciesFVS,SpeciesPLANTS,SpeciesFIA,',&
+          &'Mort_10Pctile_DBH,Mort_30Pctile_DBH,Mort_50Pctile_DBH,',&
+          &'Mort_70Pctile_DBH,Mort_90Pctile_DBH,Mort_100Pctile_DBH,',&
+          &'Mort_TPH_Total,Live_10Pctile_DBH,Live_30Pctile_DBH,',&
+          &'Live_50Pctile_DBH,Live_70Pctile_DBH,Live_90Pctile_DBH,',&
+          &'Live_100Pctile_DBH,UnInf_TPH_Total,Inf_TPH_Total,',&
+          &'Pct_Roots_Inf) ',&
+          &" VALUES ('",CASEID,"','",TRIM(CNPLT),"',?,'",DTYPE,"'",&
+          &",?,'",TRIM(CSP1),"','",TRIM(CSP2),"','",TRIM(CSP3),"'",&
+          &",?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+  else
+     write(SQLStmtStr,*) 'INSERT INTO FVS_RD_Det',&
+          &' (CaseID,StandID,Year,RD_Type,RD_Area,',&
+          &'SpeciesFVS,SpeciesPLANTS,SpeciesFIA,',&
+          &'Mort_10Pctile_DBH,Mort_30Pctile_DBH,Mort_50Pctile_DBH,',&
+          &'Mort_70Pctile_DBH,Mort_90Pctile_DBH,Mort_100Pctile_DBH,',&
+          &'Mort_TPA_Total,Live_10Pctile_DBH,Live_30Pctile_DBH,',&
+          &'Live_50Pctile_DBH,Live_70Pctile_DBH,Live_90Pctile_DBH,',&
+          &'Live_100Pctile_DBH,UnInf_TPA_Total,Inf_TPA_Total,',&
+          &'Pct_Roots_Inf) ',&
+          &" VALUES ('",CASEID,"','",TRIM(CNPLT),"',?,'",DTYPE,"'",&
+          &",?,'",TRIM(CSP1),"','",TRIM(CSP2),"','",TRIM(CSP3),"'",&
+          &",?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+  end if
   iRet = fsql3_prepare(IoutDBref, TRIM(SQLStmtStr)//CHAR(0))
   if (iRet .ne.0) then
      IRD2 = 0
@@ -462,44 +551,87 @@ subroutine DBSRD3(IYEAR, CNPLT, CSP, MRTININ, ININTOT, ININLIV,&
 
   call DBSCASE(1)
 
-  iRet = fsql3_tableexists(IoutDBref,&
-       &"FVS_RD_Beetle"//CHAR(0))
+  if (LMETRICVAR) then
+     iRet = fsql3_tableexists(IoutDBref,&
+          &"FVS_RD_Beetle_Metric"//CHAR(0))
+  else
+     iRet = fsql3_tableexists(IoutDBref,&
+          &"FVS_RD_Beetle"//CHAR(0))
+  end if
   if (iRet.eq.0) then
-     SQLStmtStr = 'CREATE TABLE FVS_RD_Beetle ('//&
-          &'CaseID text not null,'//&
-          &'StandID text not null,'//&
-          &'Year Int null,'//&
-          &'SpeciesFVS       text not null,'//&
-          &'SpeciesPLANTS    text not null,'//&
-          &'SpeciesFIA       text not null,'//&
-          &'In_Inf_0_5_DBH       real null,'//&
-          &'In_Inf_5_10_DBH      real null,'//&
-          &'In_Inf_10_15_DBH     real null,'//&
-          &'In_Inf_15_20_DBH     real null,'//&
-          &'In_Inf_20_25_DBH     real null,'//&
-          &'In_Inf_25_30_DBH     real null,'//&
-          &'In_Inf_30_DBH        real null,'//&
-          &'In_Inf_Mort          real null,'//&
-          &'In_Inf_Live_before   real null,'//&
-          &'In_UnInf_0_5_DBH     real null,'//&
-          &'In_UnInf_5_10_DBH    real null,'//&
-          &'In_UnInf_10_15_DBH   real null,'//&
-          &'In_UnInf_15_20_DBH   real null,'//&
-          &'In_UnInf_20_25_DBH   real null,'//&
-          &'In_UnInf_25_30_DBH   real null,'//&
-          &'In_UnInf_30_DBH      real null,'//&
-          &'In_UnInf_Mort        real null,'//&
-          &'In_UnInf_Live_Before real null,'//&
-          &'Outside_0_5_DBH      real null,'//&
-          &'Outside_5_10_DBH     real null,'//&
-          &'Outside_10_15_DBH    real null,'//&
-          &'Outside_15_20_DBH    real null,'//&
-          &'Outside_20_25_DBH    real null,'//&
-          &'Outside_25_30_DBH    real null,'//&
-          &'Outside_30_DBH       real null,'//&
-          &'Outside_Mort         real null,'//&
-          &'Outside_Live_Before  real null,'//&
-          &'Stand_Mort_Total     real null);'//CHAR(0)
+     if (LMETRICVAR) then
+        SQLStmtStr = 'CREATE TABLE FVS_RD_Beetle_Metric ('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year Int null,'//&
+             &'SpeciesFVS         text not null,'//&
+             &'SpeciesPLANTS      text not null,'//&
+             &'SpeciesFIA         text not null,'//&
+             &'In_Inf_0_127_DBH       real null,'//&
+             &'In_Inf_127_254_DBH     real null,'//&
+             &'In_Inf_254_381_DBH     real null,'//&
+             &'In_Inf_381_508_DBH     real null,'//&
+             &'In_Inf_508_635_DBH     real null,'//&
+             &'In_Inf_635_762_DBH     real null,'//&
+             &'In_Inf_762_DBH         real null,'//&
+             &'In_Inf_Mort            real null,'//&
+             &'In_Inf_Live_before     real null,'//&
+             &'In_UnInf_0_127_DBH     real null,'//&
+             &'In_UnInf_127_254_DBH   real null,'//&
+             &'In_UnInf_254_381_DBH   real null,'//&
+             &'In_UnInf_381_508_DBH   real null,'//&
+             &'In_UnInf_508_635_DBH   real null,'//&
+             &'In_UnInf_635_762_DBH   real null,'//&
+             &'In_UnInf_762_DBH       real null,'//&
+             &'In_UnInf_Mort          real null,'//&
+             &'In_UnInf_Live_Before   real null,'//&
+             &'Outside_0_127_DBH      real null,'//&
+             &'Outside_127_254_DBH    real null,'//&
+             &'Outside_254_381_DBH    real null,'//&
+             &'Outside_381_508_DBH    real null,'//&
+             &'Outside_508_635_DBH    real null,'//&
+             &'Outside_635_762_DBH    real null,'//&
+             &'Outside_762_DBH        real null,'//&
+             &'Outside_Mort           real null,'//&
+             &'Outside_Live_Before    real null,'//&
+             &'Stand_Mort_Total       real null);'//CHAR(0)
+     else
+        SQLStmtStr = 'CREATE TABLE FVS_RD_Beetle ('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year Int null,'//&
+             &'SpeciesFVS       text not null,'//&
+             &'SpeciesPLANTS    text not null,'//&
+             &'SpeciesFIA       text not null,'//&
+             &'In_Inf_0_5_DBH       real null,'//&
+             &'In_Inf_5_10_DBH      real null,'//&
+             &'In_Inf_10_15_DBH     real null,'//&
+             &'In_Inf_15_20_DBH     real null,'//&
+             &'In_Inf_20_25_DBH     real null,'//&
+             &'In_Inf_25_30_DBH     real null,'//&
+             &'In_Inf_30_DBH        real null,'//&
+             &'In_Inf_Mort          real null,'//&
+             &'In_Inf_Live_before   real null,'//&
+             &'In_UnInf_0_5_DBH     real null,'//&
+             &'In_UnInf_5_10_DBH    real null,'//&
+             &'In_UnInf_10_15_DBH   real null,'//&
+             &'In_UnInf_15_20_DBH   real null,'//&
+             &'In_UnInf_20_25_DBH   real null,'//&
+             &'In_UnInf_25_30_DBH   real null,'//&
+             &'In_UnInf_30_DBH      real null,'//&
+             &'In_UnInf_Mort        real null,'//&
+             &'In_UnInf_Live_Before real null,'//&
+             &'Outside_0_5_DBH      real null,'//&
+             &'Outside_5_10_DBH     real null,'//&
+             &'Outside_10_15_DBH    real null,'//&
+             &'Outside_15_20_DBH    real null,'//&
+             &'Outside_20_25_DBH    real null,'//&
+             &'Outside_25_30_DBH    real null,'//&
+             &'Outside_30_DBH       real null,'//&
+             &'Outside_Mort         real null,'//&
+             &'Outside_Live_Before  real null,'//&
+             &'Stand_Mort_Total     real null);'//CHAR(0)
+     end if
      iRet = fsql3_exec(IoutDBref,SQLStmtStr)
      if (iRet .ne.0) then
         IRD3 = 0
@@ -536,21 +668,40 @@ subroutine DBSRD3(IYEAR, CNPLT, CSP, MRTININ, ININTOT, ININLIV,&
 
   !     DEFINE DATABASE INSERT STATEMENT
 
-  write(SQLStmtStr,*) 'INSERT INTO FVS_RD_Beetle',&
-       &' (CaseID,StandID,Year,SpeciesFVS,SpeciesPLANTS,SpeciesFIA,',&
-       &'In_Inf_0_5_DBH,In_Inf_5_10_DBH,In_Inf_10_15_DBH,',&
-       &'In_Inf_15_20_DBH,In_Inf_20_25_DBH,In_Inf_25_30_DBH,',&
-       &'In_Inf_30_DBH,In_Inf_Mort,In_Inf_Live_before,',&
-       &'In_UnInf_0_5_DBH,In_UnInf_5_10_DBH,In_UnInf_10_15_DBH,',&
-       &'In_UnInf_15_20_DBH,In_UnInf_20_25_DBH,In_UnInf_25_30_DBH,',&
-       &'In_UnInf_30_DBH,In_UnInf_Mort,In_UnInf_Live_Before,',&
-       &'Outside_0_5_DBH,Outside_5_10_DBH,Outside_10_15_DBH,',&
-       &'Outside_15_20_DBH,Outside_20_25_DBH,Outside_25_30_DBH,',&
-       &'Outside_30_DBH,Outside_Mort,Outside_Live_Before,',&
-       &'Stand_Mort_Total) ',&
-       &" VALUES (","'",CASEID,"','",TRIM(CNPLT),"',?",&
-       &",'",TRIM(CSP1),"','",TRIM(CSP2),"','",TRIM(CSP3),"',",&
-       &"?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+  if (LMETRICVAR) then
+     write(SQLStmtStr,*) 'INSERT INTO FVS_RD_Beetle_Metric',&
+          &' (CaseID,StandID,Year,SpeciesFVS,SpeciesPLANTS,SpeciesFIA,',&
+          &'In_Inf_0_127_DBH,In_Inf_127_254_DBH,In_Inf_254_381_DBH,',&
+          &'In_Inf_381_508_DBH,In_Inf_508_635_DBH,In_Inf_635_762_DBH,',&
+          &'In_Inf_762_DBH,In_Inf_Mort,In_Inf_Live_before,',&
+          &'In_UnInf_0_127_DBH,In_UnInf_127_254_DBH,In_UnInf_254_381_DBH,',&
+          &'In_UnInf_381_508_DBH,In_UnInf_508_635_DBH,',&
+          &'In_UnInf_635_762_DBH,',&
+          &'In_UnInf_762_DBH,In_UnInf_Mort,In_UnInf_Live_Before,',&
+          &'Outside_0_127_DBH,Outside_127_254_DBH,Outside_254_381_DBH,',&
+          &'Outside_381_508_DBH,Outside_508_635_DBH,Outside_635_762_DBH,',&
+          &'Outside_762_DBH,Outside_Mort,Outside_Live_Before,',&
+          &'Stand_Mort_Total) ',&
+          &" VALUES (","'",CASEID,"','",TRIM(CNPLT),"',?",&
+          &",'",TRIM(CSP1),"','",TRIM(CSP2),"','",TRIM(CSP3),"',",&
+          &"?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+  else
+     write(SQLStmtStr,*) 'INSERT INTO FVS_RD_Beetle',&
+          &' (CaseID,StandID,Year,SpeciesFVS,SpeciesPLANTS,SpeciesFIA,',&
+          &'In_Inf_0_5_DBH,In_Inf_5_10_DBH,In_Inf_10_15_DBH,',&
+          &'In_Inf_15_20_DBH,In_Inf_20_25_DBH,In_Inf_25_30_DBH,',&
+          &'In_Inf_30_DBH,In_Inf_Mort,In_Inf_Live_before,',&
+          &'In_UnInf_0_5_DBH,In_UnInf_5_10_DBH,In_UnInf_10_15_DBH,',&
+          &'In_UnInf_15_20_DBH,In_UnInf_20_25_DBH,In_UnInf_25_30_DBH,',&
+          &'In_UnInf_30_DBH,In_UnInf_Mort,In_UnInf_Live_Before,',&
+          &'Outside_0_5_DBH,Outside_5_10_DBH,Outside_10_15_DBH,',&
+          &'Outside_15_20_DBH,Outside_20_25_DBH,Outside_25_30_DBH,',&
+          &'Outside_30_DBH,Outside_Mort,Outside_Live_Before,',&
+          &'Stand_Mort_Total) ',&
+          &" VALUES (","'",CASEID,"','",TRIM(CNPLT),"',?",&
+          &",'",TRIM(CSP1),"','",TRIM(CSP2),"','",TRIM(CSP3),"',",&
+          &"?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+  end if
 
   iRet = fsql3_prepare(IoutDBref, TRIM(SQLStmtStr)//CHAR(0))
   if (iRet .ne.0) then

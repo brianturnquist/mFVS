@@ -17,6 +17,7 @@ subroutine PRTRLS (IWHO)
   include 'ESTREE.f90'
   include 'VARCOM.f90'
   include 'WORKCM.f90'
+  include 'METRIC.f90'
 
   ! Variables
   logical :: LFORMT,LHD,LOK,LRC,LTREE
@@ -238,39 +239,73 @@ subroutine PRTRLS (IWHO)
 
                  !  EASTERN VARIANTS
 
-              case ('CS','LS','NE','SN')
-                 write (KOLIST,10) CLAB1(ITPLAB),NPLT,MGMID,&
-                      &CLAB2(IWHO),ICYC,IFINT,JYR,IP
-                 10 format(/'COMPLETE ',A4,' LIST -- STAND: ',A26,T58,'MGMTID: ',&
-                      &A4,T72,A3,' CYCLE: ',I2,T87,'CYCLE LENGTH: ',I2,' YRS',&
-                      &T109,'YEAR: ',I4,T121,'PAGE: ',I2/&
-                      &'  TREE   TREE SP SP TR SS PNT  ',&
-                      &'TREES    MORTAL   CURR  DIB   CURR  HT',5X,'MAX',7X,'BA   ',&
-                      &'POINT TOT CU MCH CU SAW CU SAW BD PW SL TRC',/,&
-                      &' NUMBER  INDX CD NO CL CD NUM PER ACRE PER ACRE  ',&
-                      &'DIAM  INCR   HT  INCR CR  CW  MS ',&
-                      &'%-TILE  BAL CU FT VL FT VOL FT VL  DF DF  HT',/,&
-                      &'-------- ---- -- -- -- -- --- -------- -------- ----- ',&
-                      &'----- ----- ---- -- ---- -- ------ ----- ------ ',&
-                      &'------ ------- -- -- ---')
+              case ('CS','LS','NE','SN','ON')
+                 if (LMETRICVAR) then
+                    write (KOLIST,9010) CLAB1(ITPLAB),NPLT,MGMID,&
+                         &CLAB2(IWHO),ICYC,IFINT,JYR,IP
+                    9010 format(/'COMPLETE ',A4,' LIST -- STAND: ',A26,T58,'MGMTID: ',&
+                         &A4,T72,A3,' CYCLE: ',I2,T87,'CYCLE LENGTH: ',I2,' YRS',&
+                         &T109,'YEAR: ',I4,T121,'PAGE: ',I3/&
+                         &'  TREE   TREE SP SP TR SS PNT  ',&
+                         &'TREES    MORTAL   CURR  DIB   CURR  HT',5X,'MAX',7X,'BA   ',&
+                         &'POINT TOT MCH SAW CU SAW BD PW SL TRC',/,&
+                         &' NUMBER  INDX CD NO CL CD NUM PER HA   PER HA    ',&
+                         &'DIAM  INCR   HT  INCR CR  CW  MS ',&
+                         &'%-TILE  BAL CU M  VL M  VOL M  VL  DF DF  HT',/,&
+                         &'-------- ---- -- -- -- -- --- -------- -------- ----- ',&
+                         &'----- ----- ---- -- ---- -- ------ ----- ------ ',&
+                         &'------ ------- -- -- ---')
+                 else
+                    write (KOLIST,10) CLAB1(ITPLAB),NPLT,MGMID,&
+                         &CLAB2(IWHO),ICYC,IFINT,JYR,IP
+                    10 format(/'COMPLETE ',A4,' LIST -- STAND: ',A26,T58,'MGMTID: ',&
+                         &A4,T72,A3,' CYCLE: ',I2,T87,'CYCLE LENGTH: ',I2,' YRS',&
+                         &T109,'YEAR: ',I4,T121,'PAGE: ',I2/&
+                         &'  TREE   TREE SP SP TR SS PNT  ',&
+                         &'TREES    MORTAL   CURR  DIB   CURR  HT',5X,'MAX',7X,'BA   ',&
+                         &'POINT TOT CU MCH CU SAW CU SAW BD PW SL TRC',/,&
+                         &' NUMBER  INDX CD NO CL CD NUM PER ACRE PER ACRE  ',&
+                         &'DIAM  INCR   HT  INCR CR  CW  MS ',&
+                         &'%-TILE  BAL CU FT VL FT VOL FT VL  DF DF  HT',/,&
+                         &'-------- ---- -- -- -- -- --- -------- -------- ----- ',&
+                         &'----- ----- ---- -- ---- -- ------ ----- ------ ',&
+                         &'------ ------- -- -- ---')
+                 end if
 
                  !  WESTERN VARIANTS
 
               case default
-                 write (KOLIST,11) CLAB1(ITPLAB),NPLT,MGMID,&
-                      &CLAB2(IWHO),ICYC,IFINT,JYR,IP
-                 11 format(/'COMPLETE ',A4,' LIST -- STAND: ',A26,T58,'MGMTID: ',&
-                      &A4,T72,A3,' CYCLE: ',I2,T87,'CYCLE LENGTH: ',I2,' YRS',&
-                      &T109,'YEAR: ',I4,T121,'PAGE: ',I2/&
-                      &'  TREE   TREE SP SP TR SS PNT  ',&
-                      &'TREES    MORTAL   CURR  DIAM  CURR  HT',5X,'MAX',7X,'BA   ',&
-                      &'POINT TOT CU MCH CU SAW CU MCH BD MC BF TRC',/,&
-                      &' NUMBER  INDX CD NO CL CD NUM PER ACRE PER ACRE  ',&
-                      &'DIAM  INCR   HT  INCR CR  CW  MS ',&
-                      &'%-TILE  BAL  FT VOL FT VOL  FT VOL FT VOL DF DF  HT',/,&
-                      &'-------- ---- -- -- -- -- --- -------- -------- ----- ',&
-                      &'----- ----- ---- -- ---- -- ------ ----- ------ ',&
-                      &'------ ------- ------- -- -- ---')
+                 if (LMETRICVAR) then
+                    write (KOLIST,9011) CLAB1(ITPLAB),NPLT,MGMID,&
+                         &CLAB2(IWHO),ICYC,IFINT,JYR,IP
+                    9011 format(/'COMPLETE ',A4,' LIST -- STAND: ',A26,T58,'MGMTID: ',&
+                         &A4,T72,A3,' CYCLE: ',I2,T87,'CYCLE LENGTH: ',I2,' YRS',&
+                         &T109,'YEAR: ',I4,T121,'PAGE: ',I3/&
+                         &'    TREE TREE SP SP TR SS PNT  ',&
+                         &'  TREES   MORTAL  CURR  DIAM  CURR   HT',5X,'MAX',7X,' BA ',&
+                         &'POINT TOT CU MCH CU         MC BF TRC',/,&
+                         &'  NUMBER INDX CD NO CL CD NUM   PER HA   PER HA  ',&
+                         &'DIAM  INCR    HT INCR CR   CW MS ',&
+                         &'%-TILE    BA  M VOL  M VOL     N/A DF DF  HT',/,&
+                         &'-------- ---- -- -- -- -- --- -------- -------- ----- ',&
+                         &'----- ----- ---- -- ---- -- ------ ----- ------ ',&
+                         &'------ ------- -- -- ---')
+                 else
+                    write (KOLIST,11) CLAB1(ITPLAB),NPLT,MGMID,&
+                         &CLAB2(IWHO),ICYC,IFINT,JYR,IP
+                    11 format(/'COMPLETE ',A4,' LIST -- STAND: ',A26,T58,'MGMTID: ',&
+                         &A4,T72,A3,' CYCLE: ',I2,T87,'CYCLE LENGTH: ',I2,' YRS',&
+                         &T109,'YEAR: ',I4,T121,'PAGE: ',I2/&
+                         &'  TREE   TREE SP SP TR SS PNT  ',&
+                         &'TREES    MORTAL   CURR  DIAM  CURR  HT',5X,'MAX',7X,'BA   ',&
+                         &'POINT TOT CU MCH CU SAW CU MCH BD MC BF TRC',/,&
+                         &' NUMBER  INDX CD NO CL CD NUM PER ACRE PER ACRE  ',&
+                         &'DIAM  INCR   HT  INCR CR  CW  MS ',&
+                         &'%-TILE  BAL  FT VOL FT VOL  FT VOL FT VOL DF DF  HT',/,&
+                         &'-------- ---- -- -- -- -- --- -------- -------- ----- ',&
+                         &'----- ----- ---- -- ---- -- ------ ----- ------ ',&
+                         &'------ ------- ------- -- -- ---')
+                 end if
               end select
 
            end if
@@ -341,7 +376,11 @@ subroutine PRTRLS (IWHO)
 
            ICDF = (DEFECT(I)-((DEFECT(I)/10000)*10000))/100
            IBDF = DEFECT(I)-((DEFECT(I)/100)*100)
-           IPTBAL = NINT(PTBALT(I))
+           if (LMETRICVAR) then
+              IPTBAL = NINT(PTBALT(I)*FT2pACRtoM2pHA)
+           else
+              IPTBAL = NINT(PTBALT(I))
+           end if
 
            !  CYCLE 0, PRINT INPUT DG ONLY, UNLESS DIRECTED TO PRINT ESTIMATES.
 
@@ -352,33 +391,96 @@ subroutine PRTRLS (IWHO)
 
               !  EASTERN VARIANTS
 
-           case ('CS','LS','NE','SN')
+           case ('CS','LS','NE','SN','ON')
               if (LFORMT) then
                  if (P.lt.9999.9995.and. DP.lt.9999.9995) then
-                    write(KOLIST,21) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
-                         &ISPECL(I),IPVEC(ITRE(I)),P,DP,DBH(I),DGI  ,HT(I),HTG(I),&
-                         &ICR(I),CW,&
-                         &IDMR,PCT(I),IPTBAL,CFV(I),MCFV(I),SCFV(I),BFV(I),ICDF,IBDF,&
-                         &((ITRUNC(I)+5)/100)
-                    21 format(A8,1X,I4,1X,A2,I3,2(1X,I2),1X,I3,1X,F8.3,1X,F8.3,1X,&
-                         &F5.1,1X,F5.2,1X,F5.1,1X,F4.1,1X,I2,1X,F4.1,1X,I2,&
-                         &1X,F6.2,1X,I5,1X,F6.1,1X,F6.1,1X,F6.1,1X,F7.1,&
-                         &1X,I2,1X,I2,1X,I3)
+                    if (LMETRICVAR) then
+                       write(KOLIST,9021) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
+                            &ISPECL(I),IPVEC(ITRE(I)),&
+                            &P/ACRtoHA,&
+                            &DP/ACRtoHA,&
+                            &DBH(I)*INtoCM,&
+                            &DGI*INtoCM,&
+                            &HT(I)*FTtoM,&
+                            &HTG(I)*FTtoM,&
+                            &ICR(I),&
+                            &CW*FTtoM,&
+                            &IDMR,PCT(I),IPTBAL,&
+                            &CFV(I)*FT3toM3,&
+                            &WK1(I)*FT3toM3,&
+                            &BFV(I)*FT3toM3,&
+                            &ICDF, IBDF,&
+                            &NINT(real(ITRUNC(I)+5)*.01*FTtoM)
+                       9021 format(A8,1X,I4,1X,A2,I3,2(1X,I2),1X,I3,1X,F8.3,1X,F8.3,1X,&
+                            &F5.1,1X,F5.2,1X,F5.1,1X,F4.1,1X,I2,1X,F4.1,1X,I2,&
+                            &1X,F6.2,1X,I5,1X,F6.1,1X,F6.1,1X,F7.1,1X,I2,1X,I2,&
+                            &1X,I3)
+                    else
+                       write(KOLIST,21) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
+                            &ISPECL(I),IPVEC(ITRE(I)),P,DP,DBH(I),DGI  ,HT(I),HTG(I),&
+                            &ICR(I),CW,&
+                            &IDMR,PCT(I),IPTBAL,CFV(I),MCFV(I),SCFV(I),BFV(I),ICDF,IBDF,&
+                            &((ITRUNC(I)+5)/100)
+                       21 format(A8,1X,I4,1X,A2,I3,2(1X,I2),1X,I3,1X,F8.3,1X,F8.3,1X,&
+                            &F5.1,1X,F5.2,1X,F5.1,1X,F4.1,1X,I2,1X,F4.1,1X,I2,&
+                            &1X,F6.2,1X,I5,1X,F6.1,1X,F6.1,1X,F6.1,1X,F7.1,&
+                            &1X,I2,1X,I2,1X,I3)
+                    end if
                  else
-                    write(KOLIST,20) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
-                         &ISPECL(I),IPVEC(ITRE(I)),P,DP,DBH(I),DGI  ,HT(I),HTG(I),&
-                         &ICR(I),CW,&
-                         &IDMR,PCT(I),IPTBAL,CFV(I),MCFV(I),SCFV(I),BFV(I),ICDF,IBDF,&
-                         &((ITRUNC(I)+5)/100)
-                    20 format(A8,1X,2I4,I5,F9.3,F8.2,3F7.2,I3,I4,F9.3,I4,F9.2,&
-                         &F9.3,F9.2,F9.2,F9.2,I4,I7,I4)
+                    if (LMETRICVAR) then
+                       write(KOLIST,9021) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
+                            &ISPECL(I),IPVEC(ITRE(I)),&
+                            &P/ACRtoHA,&
+                            &DP/ACRtoHA,&
+                            &DBH(I)*INtoCM,&
+                            &DGI*INtoCM,&
+                            &HT(I)*FTtoM,&
+                            &HTG(I)*FTtoM,&
+                            &ICR(I),&
+                            &CW*FTtoM,&
+                            &IDMR,PCT(I),IPTBAL,&
+                            &CFV(I)*FT3toM3,&
+                            &WK1(I)*FT3toM3,&
+                            &BFV(I)*FT3toM3,&
+                            &ICDF, IBDF,&
+                            &NINT(real(ITRUNC(I)+5)*.01*FTtoM)
+                       9020 format(A8,1X,2I4,I5,F9.3,F8.2,3F7.2,I3,I4,F9.3,I4,F9.2,&
+                            &F9.3,F9.2,F9.2,I4,I7,I4)
+                    else
+                       write(KOLIST,20) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
+                            &ISPECL(I),IPVEC(ITRE(I)),P,DP,DBH(I),DGI  ,HT(I),HTG(I),&
+                            &ICR(I),CW,&
+                            &IDMR,PCT(I),IPTBAL,CFV(I),MCFV(I),SCFV(I),BFV(I),ICDF,IBDF,&
+                            &((ITRUNC(I)+5)/100)
+                       20 format(A8,1X,2I4,I5,F9.3,F8.2,3F7.2,I3,I4,F9.3,I4,F9.2,&
+                            &F9.3,F9.2,F9.2,F9.2,I4,I7,I4)
+                    end if
                  end if
               else
-                 write(KOLIST,*) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
-                      &ISPECL(I),IPVEC(ITRE(I)),P,DP,DBH(I),DGI,HT(I),HTG(I),&
-                      &ICR(I),CW,&
-                      &IDMR,PCT(I),IPTBAL,CFV(I),MCFV(I),SCFV(I),BFV(I),ICDF,IBDF,&
-                      &((ITRUNC(I)+5)/100)
+                 if (LMETRICVAR) then
+                    write(KOLIST,*) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
+                         &ISPECL(I),IPVEC(ITRE(I)),&
+                         &P/ACRtoHA,&
+                         &DP/ACRtoHA,&
+                         &DBH(I)*INtoCM,&
+                         &DGI*INtoCM,&
+                         &HT(I)*FTtoM,&
+                         &HTG(I)*FTtoM,&
+                         &ICR(I),&
+                         &CW*FTtoM,&
+                         &IDMR,PCT(I),IPTBAL,&
+                         &CFV(I)*FT3toM3,&
+                         &WK1(I)*FT3toM3,&
+                         &BFV(I)*FT3toM3,&
+                         &ICDF, IBDF,&
+                         &NINT(real(ITRUNC(I)+5)*.01*FTtoM)
+                 else
+                    write(KOLIST,*) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
+                         &ISPECL(I),IPVEC(ITRE(I)),P,DP,DBH(I),DGI,HT(I),HTG(I),&
+                         &ICR(I),CW,&
+                         &IDMR,PCT(I),IPTBAL,CFV(I),MCFV(I),SCFV(I),BFV(I),ICDF,IBDF,&
+                         &((ITRUNC(I)+5)/100)
+                 end if
               end if
 
               !  WESTERN VARIANTS
@@ -386,32 +488,97 @@ subroutine PRTRLS (IWHO)
            case default
               if (LFORMT) then
                  if (P.lt.9999.9995.and. DP.lt.9999.9995) then
-                    write(KOLIST,23) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
-                         &ISPECL(I),IPVEC(ITRE(I)),P,DP,DBH(I),DGI  ,HT(I),HTG(I),&
-                         &ICR(I),CW,&
-                         &IDMR,PCT(I),IPTBAL,CFV(I),MCFV(I),SCFV(I),BFV(I),ICDF,IBDF,&
-                         &((ITRUNC(I)+5)/100)
-                    23 format(A8,1X,I4,1X,A2,3(1X,I2),1X,I3,1X,F8.3,1X,F8.3,1X,&
-                         &F5.1,1X,F5.2,1X,F5.1,1X,F4.1,1X,I2,1X,F4.1,1X,I2,&
-                         &1X,F6.2,1X,I5,1X,F6.1,1X,F6.1,1X,F6.1,1X,F7.1,1X,I2,1X,I2,&
-                         &1X,I3)
+                    if (LMETRICVAR) then
+                       write(KOLIST,9023) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
+                            &ISPECL(I),IPVEC(ITRE(I)),&
+                            &P/ACRtoHA,&
+                            &DP/ACRtoHA,&
+                            &DBH(I)*INtoCM,&
+                            &DGI*INtoCM,&
+                            &HT(I)*FTtoM,&
+                            &HTG(I)*FTtoM,&
+                            &ICR(I),&
+                            &CW*FTtoM,&
+                            &IDMR,PCT(I),IPTBAL,&
+                            &CFV(I)*FT3toM3,&
+                            &WK1(I)*FT3toM3,&
+                            &BFV(I)*FT3toM3,&
+                            &ICDF, IBDF,&
+                            &NINT(real(ITRUNC(I)+5)*.01*FTtoM)
+                       9023 format(A8,1X,I4,1X,A2,3(1X,I2),1X,I3,1X,F8.3,1X,F8.3,1X,&
+                            &F5.1,1X,F5.2,1X,F5.1,1X,F4.1,1X,I2,1X,F4.1,1X,I2,&
+                            &1X,F6.2,1X,I5,1X,F6.1,1X,F6.1,1X,F7.1,1X,I2,1X,I2,&
+                            &1X,I3)
+                    else
+                       write(KOLIST,23) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
+                            &ISPECL(I),IPVEC(ITRE(I)),P,DP,DBH(I),DGI  ,HT(I),HTG(I),&
+                            &ICR(I),CW,&
+                            &IDMR,PCT(I),IPTBAL,CFV(I),MCFV(I),SCFV(I),BFV(I),ICDF,IBDF,&
+                            &((ITRUNC(I)+5)/100)
+                       23 format(A8,1X,I4,1X,A2,3(1X,I2),1X,I3,1X,F8.3,1X,F8.3,1X,&
+                            &F5.1,1X,F5.2,1X,F5.1,1X,F4.1,1X,I2,1X,F4.1,1X,I2,&
+                            &1X,F6.2,1X,I5,1X,F6.1,1X,F6.1,1X,F6.1,1X,F7.1,1X,I2,1X,I2,&
+                            &1X,I3)
+                    end if
                  else
-                    write(KOLIST,24) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
-                         &ISPECL(I),IPVEC(ITRE(I)),P,DP,DBH(I),DGI  ,HT(I),HTG(I),&
-                         &ICR(I),CW,&
-                         &IDMR,PCT(I),IPTBAL,CFV(I),MCFV(I),SCFV(I),BFV(I),ICDF,IBDF,&
-                         &((ITRUNC(I)+5)/100)
-                    24 format(A8,1X,I4,1X,A2,3(1X,I2),1X,I3,1X,F8.2,1X,F8.2,1X,&
-                         &F5.1,1X,F5.2,1X,F5.1,1X,F4.1,1X,I2,1X,F4.1,1X,I2,&
-                         &1X,F6.2,1X,I5,1X,F6.1,1X,F6.1,1X,F6.1,1X,F7.1,1X,I2,1X,I2,&
-                         &1X,I3)
+                    if (LMETRICVAR) then
+                       write(KOLIST,9024) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
+                            &ISPECL(I),IPVEC(ITRE(I)),&
+                            &P/ACRtoHA,&
+                            &DP/ACRtoHA,&
+                            &DBH(I)*INtoCM,&
+                            &DGI*INtoCM,&
+                            &HT(I)*FTtoM,&
+                            &HTG(I)*FTtoM,&
+                            &ICR(I),&
+                            &CW*FTtoM,&
+                            &IDMR,PCT(I),IPTBAL,&
+                            &CFV(I)*FT3toM3,&
+                            &WK1(I)*FT3toM3,&
+                            &BFV(I)*FT3toM3,&
+                            &ICDF, IBDF,&
+                            &NINT(real(ITRUNC(I)+5)*.01*FTtoM)
+                       9024 format(A8,1X,I4,1X,A2,3(1X,I2),1X,I3,1X,F8.2,1X,F8.2,1X,&
+                            &F5.1,1X,F5.2,1X,F5.1,1X,F4.1,1X,I2,1X,F4.1,1X,I2,&
+                            &1X,F6.2,1X,I5,1X,F6.1,1X,F6.1,1X,F7.1,1X,I2,1X,I2,&
+                            &1X,I3)
+                    else
+                       write(KOLIST,24) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
+                            &ISPECL(I),IPVEC(ITRE(I)),P,DP,DBH(I),DGI  ,HT(I),HTG(I),&
+                            &ICR(I),CW,&
+                            &IDMR,PCT(I),IPTBAL,CFV(I),MCFV(I),SCFV(I),BFV(I),ICDF,IBDF,&
+                            &((ITRUNC(I)+5)/100)
+                       24 format(A8,1X,I4,1X,A2,3(1X,I2),1X,I3,1X,F8.2,1X,F8.2,1X,&
+                            &F5.1,1X,F5.2,1X,F5.1,1X,F4.1,1X,I2,1X,F4.1,1X,I2,&
+                            &1X,F6.2,1X,I5,1X,F6.1,1X,F6.1,1X,F6.1,1X,F7.1,1X,I2,1X,I2,&
+                            &1X,I3)
+                    end if
                  end if
               else
-                 write(KOLIST,*) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
-                      &ISPECL(I),IPVEC(ITRE(I)),P,DP,DBH(I),DGI  ,HT(I),HTG(I),&
-                      &ICR(I),CW,&
-                      &IDMR,PCT(I),IPTBAL,CFV(I),MCFV(I),SCFV(I),BFV(I),ICDF,IBDF,&
-                      &((ITRUNC(I)+5)/100)
+                 if (LMETRICVAR) then
+                    write(KOLIST,*) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
+                         &ISPECL(I),IPVEC(ITRE(I)),&
+                         &P/ACRtoHA,&
+                         &DP/ACRtoHA,&
+                         &DBH(I)*INtoCM,&
+                         &DGI*INtoCM,&
+                         &HT(I)*FTtoM,&
+                         &HTG(I)*FTtoM,&
+                         &ICR(I),&
+                         &CW*FTtoM,&
+                         &IDMR,PCT(I),IPTBAL,&
+                         &CFV(I)*FT3toM3,&
+                         &WK1(I)*FT3toM3,&
+                         &BFV(I)*FT3toM3,&
+                         &ICDF, IBDF,&
+                         &NINT(real(ITRUNC(I)+5)*.01*FTtoM)
+                 else
+                    write(KOLIST,*) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
+                         &ISPECL(I),IPVEC(ITRE(I)),P,DP,DBH(I),DGI  ,HT(I),HTG(I),&
+                         &ICR(I),CW,&
+                         &IDMR,PCT(I),IPTBAL,CFV(I),MCFV(I),SCFV(I),BFV(I),ICDF,IBDF,&
+                         &((ITRUNC(I)+5)/100)
+                 end if
               end if
 
            end select
@@ -432,8 +599,13 @@ subroutine PRTRLS (IWHO)
 
         if ((.not.LTREE).and.LFORMT.and.LHD) then
            if (LFORMT) call GROHED (KOLIST)
-           write (KOLIST,11) CLAB1(ITPLAB),NPLT,MGMID,&
-                &CLAB2(IWHO),ICYC,IFINT,JYR,IP
+           if (LMETRICVAR) then
+              write (KOLIST,9011) CLAB1(ITPLAB),NPLT,MGMID,&
+                   &CLAB2(IWHO),ICYC,IFINT,JYR,IP
+           else
+              write (KOLIST,11) CLAB1(ITPLAB),NPLT,MGMID,&
+                   &CLAB2(IWHO),ICYC,IFINT,JYR,IP
+           end if
            LTREE = .true.
         end if
         P = (PROB(I) / GROSPC) / (FINT/FINTM)
@@ -453,7 +625,11 @@ subroutine PRTRLS (IWHO)
 
         ICDF = (DEFECT(I)-((DEFECT(I)/10000)*10000))/100
         IBDF = DEFECT(I)-((DEFECT(I)/100)*100)
-        IPTBAL = NINT(PTBALT(I))
+        if (LMETRICVAR) then
+           IPTBAL = NINT(PTBALT(I)*FT2pACRtoM2pHA)
+        else
+           IPTBAL = NINT(PTBALT(I))
+        end if
 
         !  CYCLE 0, PRINT INPUT DG ONLY, UNLESS DIRECTED TO PRINT ESTIMATES.
 
@@ -467,24 +643,81 @@ subroutine PRTRLS (IWHO)
 
         if (LFORMT) then
            if (P.lt.9999.9995.and. DP.lt.9999.9995) then
-              write(KOLIST,21) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
-                   &ISPECL(I),IPVEC(ITRE(I)),P,DP,DBH(I),DGI  ,HT(I),HTG(I),&
-                   &ICR(I),CW,&
-                   &IDMR,PCT(I),IPTBAL,CFV(I),MCFV(I),SCFV(I),BFV(I),ICDF,IBDF,&
-                   &((ITRUNC(I)+5)/100)
+              if (LMETRICVAR) then
+                 write(KOLIST,9021) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
+                      &ISPECL(I),IPVEC(ITRE(I)),&
+                      &P/ACRtoHA,&
+                      &DP/ACRtoHA,&
+                      &DBH(I)*INtoCM,&
+                      &DGI*INtoCM,&
+                      &HT(I)*FTtoM,&
+                      &HTG(I)*FTtoM,&
+                      &ICR(I),&
+                      &CW*FTtoM,&
+                      &IDMR,PCT(I),IPTBAL,&
+                      &CFV(I)*FT3toM3,&
+                      &WK1(I)*FT3toM3,&
+                      &BFV(I)*FT3toM3,&
+                      &ICDF, IBDF,&
+                      &NINT(FLOAT(ITRUNC(I)+5)*.01*FTtoM)
+              else
+                 write(KOLIST,21) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
+                      &ISPECL(I),IPVEC(ITRE(I)),P,DP,DBH(I),DGI  ,HT(I),HTG(I),&
+                      &ICR(I),CW,&
+                      &IDMR,PCT(I),IPTBAL,CFV(I),MCFV(I),SCFV(I),BFV(I),ICDF,IBDF,&
+                      &((ITRUNC(I)+5)/100)
+              end if
            else
-              write(KOLIST,20) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
+              if (LMETRICVAR) then
+                 write(KOLIST,9020) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
+                      &ISPECL(I),IPVEC(ITRE(I)),&
+                      &P/ACRtoHA,&
+                      &DP/ACRtoHA,&
+                      &DBH(I)*INtoCM,&
+                      &DGI*INtoCM,&
+                      &HT(I)*FTtoM,&
+                      &HTG(I)*FTtoM,&
+                      &ICR(I),&
+                      &CW*FTtoM,&
+                      &IDMR,PCT(I),IPTBAL,&
+                      &CFV(I)*FT3toM3,&
+                      &WK1(I)*FT3toM3,&
+                      &BFV(I)*FT3toM3,&
+                      &ICDF, IBDF,&
+                      &NINT(FLOAT(ITRUNC(I)+5)*.01*FTtoM)
+              else
+                 write(KOLIST,20) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
+                      &ISPECL(I),IPVEC(ITRE(I)),P,DP,DBH(I),DGI  ,HT(I),HTG(I),&
+                      &ICR(I),CW,&
+                      &IDMR,PCT(I),IPTBAL,CFV(I),MCFV(I),SCFV(I),BFV(I),ICDF,IBDF,&
+                      &((ITRUNC(I)+5)/100)
+              end if
+           end if
+        else
+           if (LMETRICVAR) then
+              write(KOLIST,*) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
+                   &ISPECL(I),IPVEC(ITRE(I)),&
+                   &P/ACRtoHA,&
+                   &DP/ACRtoHA,&
+                   &DBH(I)*INtoCM,&
+                   &DGI*INtoCM,&
+                   &HT(I)*FTtoM,&
+                   &HTG(I)*FTtoM,&
+                   &ICR(I),&
+                   &CW*FTtoM,&
+                   &IDMR,PCT(I),IPTBAL,&
+                   &CFV(I)*FT3toM3,&
+                   &WK1(I)*FT3toM3,&
+                   &BFV(I)*FT3toM3,&
+                   &ICDF, IBDF,&
+                   &NINT(FLOAT(ITRUNC(I)+5)*.01*FTtoM)
+           else
+              write(KOLIST,*) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
                    &ISPECL(I),IPVEC(ITRE(I)),P,DP,DBH(I),DGI  ,HT(I),HTG(I),&
                    &ICR(I),CW,&
                    &IDMR,PCT(I),IPTBAL,CFV(I),MCFV(I),SCFV(I),BFV(I),ICDF,IBDF,&
                    &((ITRUNC(I)+5)/100)
            end if
-        else
-           write(KOLIST,*) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
-                &ISPECL(I),IPVEC(ITRE(I)),P,DP,DBH(I),DGI  ,HT(I),HTG(I),&
-                &ICR(I),CW,&
-                &IDMR,PCT(I),IPTBAL,CFV(I),MCFV(I),SCFV(I),BFV(I),ICDF,IBDF,&
-                &((ITRUNC(I)+5)/100)
         end if
         150 continue
      end do

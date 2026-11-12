@@ -12,6 +12,7 @@ subroutine CLIN (DEBUG,LKECHO)
   include 'CONTRL.f90'
   include 'PLOT.f90'
   include 'CLIMATE.f90'
+  include 'METRIC.f90'
 
   ! Variables
   integer :: KWCNT
@@ -90,9 +91,15 @@ subroutine CLIN (DEBUG,LKECHO)
 
   if (LKECHO .and. LCLIMATE) write(JOSTND,105) KEYWRD
   105 format (/A8,'   CLIMATE EXTENSION ACTIVE, END OF OPTIONS.')
-  if (LKECHO .and..not. LCLIMATE) write(JOSTND,106) KEYWRD
-  106 format (/A8,'   CLIMATE EXTENSION MISSING REQUIRED DATA ',&
-       &'AND IS NOT ACTIVE. END OF OPTIONS.')
+  if (LMETRICVAR) then
+     if (LKECHO .and..not. LCLIMATE) write(JOSTND,9106) KEYWRD
+     9106 format (/A8,'   CLIMATE EXTENSION MISSING REQUIRED DATA '&
+          &'AND IS NOT ACTIVE. END OF OPTIONS.')
+  else
+     if (LKECHO .and..not. LCLIMATE) write(JOSTND,106) KEYWRD
+     106 format (/A8,'   CLIMATE EXTENSION MISSING REQUIRED DATA ',&
+          &'AND IS NOT ACTIVE. END OF OPTIONS.')
+  end if
   return
 
   200 continue
@@ -397,15 +404,27 @@ subroutine CLIN (DEBUG,LKECHO)
   if (LNOTBK(1)) IDT = IFIX(ARRAY(1))
   if (.not.LNOTBK(1)) then
      if (LNOTBK(2)) AESTOCK = ARRAY(2)
-     if (LNOTBK(3)) AESNTREES = ARRAY(3)
+     if (LMETRICVAR) then
+        if (LNOTBK(3)) AESNTREES = ARRAY(3)/ACRtoHA
+     else
+        if (LNOTBK(3)) AESNTREES = ARRAY(3)
+     end if
      if (LNOTBK(4)) NESPECIES = IFIX(ARRAY(4))
      if (NESPECIES.gt.MAXSP) NESPECIES = MAXSP
      LAESTB = .true.
-     if (LKECHO)write(JOSTND,410) KEYWRD,AESTOCK,AESNTREES,NESPECIES
-     410 format (/A8,'   TURN ON AUTOMATIC',&
-          &' ESTABLISHMENT IN THE CLIMATE MODEL. STOCKING THRESHOLD= ',&
-          &F6.2,' PERCENT; BASE NUMBER OF TREES/ACRE TO ADD ',F6.2/T12,&
-          &'MAXIMUM NUMBER OF SPECIES TO ADD =',I3)
+     if (LMETRICVAR) then
+        if (LKECHO)write(JOSTND,9410) KEYWRD,AESTOCK,AESNTREES,NESPECIES
+        9410 format (/A8,'   TURN ON AUTOMATIC',&
+             &' ESTABLISHMENT IN THE CLIMATE MODEL. STOCKING THRESHOLD= ',&
+             &F6.2,' PERCENT; BASE NUMBER OF TREES/HA TO ADD ',F6.2/T12,&
+             &'MAXIMUM NUMBER OF SPECIES TO ADD =',I3)
+     else
+        if (LKECHO)write(JOSTND,410) KEYWRD,AESTOCK,AESNTREES,NESPECIES
+        410 format (/A8,'   TURN ON AUTOMATIC',&
+             &' ESTABLISHMENT IN THE CLIMATE MODEL. STOCKING THRESHOLD= ',&
+             &F6.2,' PERCENT; BASE NUMBER OF TREES/ACRE TO ADD ',F6.2/T12,&
+             &'MAXIMUM NUMBER OF SPECIES TO ADD =',I3)
+     end if
   else
      if (IPRMPT.gt.0) then
         if (IPRMPT.ne.2) then
@@ -422,16 +441,29 @@ subroutine CLIN (DEBUG,LKECHO)
         PRMS(2) = AESNTREES
         PRMS(3) = NESPECIES
         if (LNOTBK(2)) PRMS(1) = ARRAY(2)
-        if (LNOTBK(3)) PRMS(2) = ARRAY(3)
+        if (LMETRICVAR) then
+           if (LNOTBK(3)) PRMS(2) = ARRAY(3)/ACRtoHA
+        else
+           if (LNOTBK(3)) PRMS(2) = ARRAY(3)
+        end if
         if (LNOTBK(4)) PRMS(3) = IFIX(ARRAY(4))
         call OPNEW (KODE,IDT,2802,3,PRMS)
         if (KODE .gt.0) goto 10
-        if (LKECHO)write(JOSTND,425) KEYWRD,IDT,PRMS(1),PRMS(2),&
-             &IFIX(PRMS(3))
-        425 format (/A8,'   DATE/CYCLE=',I5,' TURN ON AUTOMATIC',&
-             &' ESTABLISHMENT IN THE CLIMATE MODEL. STOCKING THRESHOLD= ',&
-             &F6.2,' PERCENT'/T12,'BASE NUMBER OF TREES/ACRE TO ADD ',&
-             &F6.2,'MAXIMUM NUMBER OF SPECIES TO ADD =',I3)
+        if (LMETRICVAR) then
+           if (LKECHO)write(JOSTND,9425) KEYWRD,IDT,PRMS(1),&
+                &PRMS(2)*ACRtoHA,IFIX(PRMS(3))
+           9425 format (/A8,'   DATE/CYCLE=',I5,' TURN ON AUTOMATIC',&
+                &' ESTABLISHMENT IN THE CLIMATE MODEL. STOCKING THRESHOLD= ',&
+                &F6.2,' PERCENT'/T12,'BASE NUMBER OF TREES/HA TO ADD ',F6.2&
+                &'MAXIMUM NUMBER OF SPECIES TO ADD =',I3)
+        else
+           if (LKECHO)write(JOSTND,425) KEYWRD,IDT,PRMS(1),PRMS(2),&
+                &IFIX(PRMS(3))
+           425 format (/A8,'   DATE/CYCLE=',I5,' TURN ON AUTOMATIC',&
+                &' ESTABLISHMENT IN THE CLIMATE MODEL. STOCKING THRESHOLD= ',&
+                &F6.2,' PERCENT'/T12,'BASE NUMBER OF TREES/ACRE TO ADD ',&
+                &F6.2,'MAXIMUM NUMBER OF SPECIES TO ADD =',I3)
+        end if
      end if
   end if
   call ESNOAU (KEYWRD,LKECHO)

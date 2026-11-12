@@ -64,10 +64,10 @@
 ../ci/findag.f90
 ../ci/forkod.f90
 ../ci/grinit.f90
-../ci/grohed.f90
+../vbase/grohed.f90
 ../ci/habtyp.f90
 ../ci/htgf.f90
-../ci/logs.f90
+../ie/logs.f90
 ../ci/morts.f90
 ../ci/pvref4.f90
 ../ci/regent.f90
@@ -237,6 +237,7 @@
 ../base/opnew.f90
 ../base/opnewc.f90
 ../base/oprdat.f90
+../base/mcnvrt.f90
 ../base/opsame.f90
 ../base/opsort.f90
 ../base/opstus.f90
@@ -518,7 +519,6 @@
 ../volume/NVEL/r6vol2.f90
 ../volume/NVEL/r6vol3.f90
 ../volume/NVEL/r8clkdib.f90
-../volume/NVEL/r8dib.f90
 ../volume/NVEL/r8init.f90
 ../volume/NVEL/r8vol.f90
 ../volume/NVEL/r8vol1.f90
@@ -608,7 +608,7 @@
 ../fire/base/common/FMPROP.f90
 ../fire/base/common/FMSVCM.f90
 
-../fire/ci/fmbrkt.f90
+../fire/base/fmbrkt.f90
 ../fire/ci/fmcba.f90
 ../fire/ci/fmcblk.f90
 ../fire/ci/fmcfmd.f90
@@ -617,7 +617,7 @@
 ../fire/ci/fmsfall.f90
 ../fire/ci/fmvinit.f90
 ../fire/ie/fmcons.f90
-../fire/ie/fmmois.f90
+../fire/base/fmmois.f90
 
 ../fire/vbase/fmburn.f90
 ../fire/vbase/fmcfmd2.f90

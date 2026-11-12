@@ -32,24 +32,48 @@ subroutine DBSCLSUM(CNPLT,IYR,SP,SPVIAB,&
 
   call DBSCASE(1)
 
-  IRCODE = fsql3_tableexists(IoutDBref,"FVS_Climate"//CHAR(0))
+  if (LMETRICVAR) then
+     IRCODE = fsql3_tableexists(IoutDBref,&
+          &"FVS_Climate_Metric"//CHAR(0))
+  else
+     IRCODE = fsql3_tableexists(IoutDBref,"FVS_Climate"//CHAR(0))
+  end if
   if (IRCODE.eq.0) then
-     SQLStmtStr = 'CREATE TABLE FVS_Climate('//&
-          &'CaseID text not null,'//&
-          &'StandID text not null,'//&
-          &'Year Int null,'//&
-          &'SpeciesFVS    text null,'//&
-          &'SpeciesPLANTS text null,'//&
-          &'SpeciesFIA    text null,'//&
-          &'Viability real null,'//&
-          &'BA real null,'//&
-          &'TPA real null,'//&
-          &'ViabMort real null,'//&
-          &'dClimMort real null,'//&
-          &'GrowthMult real null,'//&
-          &'SiteMult real null,'//&
-          &'MxDenMult real null,'//&
-          &'AutoEstbTPA real null)'//CHAR(0)
+     if (LMETRICVAR) then
+        SQLStmtStr = 'CREATE TABLE FVS_Climate_Metric('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year Int null,'//&
+             &'SpeciesFVS    text null,'//&
+             &'SpeciesPLANTS text null,'//&
+             &'SpeciesFIA    text null,'//&
+             &'Viability real null,'//&
+             &'BA real null,'//&
+             &'TPH real null,'//&
+             &'ViabMort real null,'//&
+             &'dClimMort real null,'//&
+             &'GrowthMult real null,'//&
+             &'SiteMult real null,'//&
+             &'MxDenMult real null,'//&
+             &'AutoEstbTPH real null)'//CHAR(0)
+     else
+        SQLStmtStr = 'CREATE TABLE FVS_Climate('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year Int null,'//&
+             &'SpeciesFVS    text null,'//&
+             &'SpeciesPLANTS text null,'//&
+             &'SpeciesFIA    text null,'//&
+             &'Viability real null,'//&
+             &'BA real null,'//&
+             &'TPA real null,'//&
+             &'ViabMort real null,'//&
+             &'dClimMort real null,'//&
+             &'GrowthMult real null,'//&
+             &'SiteMult real null,'//&
+             &'MxDenMult real null,'//&
+             &'AutoEstbTPA real null)'//CHAR(0)
+     end if
      IRCODE = fsql3_exec(IoutDBref,SQLStmtStr)
      if (IRCODE .ne.0) then
         ICLIM = 0
@@ -67,17 +91,31 @@ subroutine DBSCLSUM(CNPLT,IYR,SP,SPVIAB,&
      end if
   end do
 
-  write(SQLStmtStr,*)'INSERT INTO FVS_Climate (CaseID,'//&
-       &'StandID,Year,SpeciesFVS,SpeciesPLANTS,SpeciesFIA,'//&
-       &'Viability,BA,TPA,ViabMort,'//&
-       &'dClimMort,GrowthMult,SiteMult,MxDenMult,AutoEstbTPA) '//&
-       &'VALUES(''',CASEID,''',''',TRIM(CNPLT),''',',IYR,',',&
-       &'''',TRIM(CSP1),''',',&
-       &'''',TRIM(CSP2),''',',&
-       &'''',TRIM(CSP3),''',',&
-       &SPVIAB,',',SPBA,',',SPTPA,',',&
-       &SPMORT1,',',SPMORT2,',',SPGMULT,',',&
-       &SPSITGM,',',MXDENMLT,',',POTESTAB,')'
+  if (LMETRICVAR) then
+     write(SQLStmtStr,*)'INSERT INTO FVS_Climate (CaseID,'//&
+          &'StandID,Year,SpeciesFVS,SpeciesPLANTS,SpeciesFIA,'//&
+          &'Viability,BA,TPH,ViabMort,'//&
+          &'dClimMort,GrowthMult,SiteMult,MxDenMult '//&
+          &'VALUES(''',CASEID,''',''',TRIM(CNPLT),''',',IYR,',',&
+          &'''',TRIM(CSP1),''',',&
+          &'''',TRIM(CSP2),''',',&
+          &'''',TRIM(CSP3),''',',&
+          &SPVIAB,',',SPBA,',',SPTPA,',',&
+          &SPMORT1,',',SPMORT2,',',SPGMULT,',',&
+          &SPSITGM,',',MXDENMLT,',',POTESTAB,')'
+  else
+     write(SQLStmtStr,*)'INSERT INTO FVS_Climate (CaseID,'//&
+          &'StandID,Year,SpeciesFVS,SpeciesPLANTS,SpeciesFIA,'//&
+          &'Viability,BA,TPA,ViabMort,'//&
+          &'dClimMort,GrowthMult,SiteMult,MxDenMult,AutoEstbTPA) '//&
+          &'VALUES(''',CASEID,''',''',TRIM(CNPLT),''',',IYR,',',&
+          &'''',TRIM(CSP1),''',',&
+          &'''',TRIM(CSP2),''',',&
+          &'''',TRIM(CSP3),''',',&
+          &SPVIAB,',',SPBA,',',SPTPA,',',&
+          &SPMORT1,',',SPMORT2,',',SPGMULT,',',&
+          &SPSITGM,',',MXDENMLT,',',POTESTAB,')'
+  end if
 
   IRCODE = fsql3_exec(IoutDBref,trim(SQLStmtStr)//CHAR(0))
   if (IRCODE .ne.0) ICLIM = 0

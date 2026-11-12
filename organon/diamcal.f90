@@ -83,7 +83,7 @@ subroutine DGCALIB(VERSION,IB,NSPN,NPTS,NTREES,RADIN,TDATAI,&
         case(2)
            call DIB_NWO(ISPGRP,DBH2,DIB(J))
         case(3)
-           call DIB_SMC(ISPGRP,DBH2,DIB(J))
+           call DIB_NWO(ISPGRP,DBH2,DIB(J))
         case(4)
            call DIB_RAP(ISPGRP,DBH2,DIB(J))
         end select
@@ -96,7 +96,7 @@ subroutine DGCALIB(VERSION,IB,NSPN,NPTS,NTREES,RADIN,TDATAI,&
               case(2)
                  call DOB_NWO(ISPGRP,DIBCK,DBH1)
               case(3)
-                 call DOB_SMC(ISPGRP,DIBCK,DBH1)
+                 call DOB_NWO(ISPGRP,DIBCK,DBH1)
               case(4)
                  call DOB_RAP(ISPGRP,DIBCK,DBH1)
               end select
@@ -327,6 +327,7 @@ subroutine DIB_SWO(ISPGRP,DOB,DIB)
 end
 
 subroutine DIB_NWO(ISPGRP,DOB,DIB)
+  !     THE SMC VERSION USES THESE SAME EQUATIONS, SO IT ALSO CALLS THIS ROUTINE.
   implicit none
   ! Variables
   real*4  :: DOB,DIBPAR(11,2),B0,B1,DIB
@@ -349,28 +350,6 @@ subroutine DIB_NWO(ISPGRP,DOB,DIB)
   return
 end
 
-subroutine DIB_SMC(ISPGRP,DOB,DIB)
-  implicit none
-  ! Variables
-  real*4  :: DOB,DIBPAR(11,2),B0,B1,DIB
-  integer*4 :: ISPGRP
-
-  !  DIAMETER INSIDE BARK (2 parameters - all species)
-
-  data DIBPAR/&
-       &0.971330, 0.904973, 0.933707, 0.9497  , 0.97    ,& !  DF,GF,WH,RC,PY
-       &0.96317 , 0.97059 , 0.878457, 0.947   , 0.94448 ,& !  MD,BL,WO,RA,PD
-       &0.94448 ,& !  WI
-
-       &0.966365, 1.0     , 1.0     , 1.0     , 1.0     ,& !  DF,GF,WH,RC,PY
-       &1.0     , 0.993585, 1.02393 , 1.0     , 0.987517,& !  MD,BL,WO,RA,PD
-       &0.987517/ !  WI
-
-  B0 = DIBPAR(ISPGRP,1)
-  B1 = DIBPAR(ISPGRP,2)
-  DIB = B0*DOB**B1
-  return
-end
 
 subroutine DIB_RAP(ISPGRP,DOB,DIB)
   implicit none
@@ -419,6 +398,7 @@ subroutine DOB_SWO(ISPGRP,DIB,DOB)
 end
 
 subroutine DOB_NWO(ISPGRP,DIB,DOB)
+  !     THE SMC VERSION USES THESE SAME EQUATIONS, SO IT ALSO CALLS THIS ROUTINE.
   implicit none
   ! Variables
   real*4  :: DIB,DIBPAR(11,2),B0,B1,DOB
@@ -441,28 +421,6 @@ subroutine DOB_NWO(ISPGRP,DIB,DOB)
   return
 end
 
-subroutine DOB_SMC(ISPGRP,DIB,DOB)
-  implicit none
-  ! Variables
-  real*4  :: DIB,DIBPAR(11,2),B0,B1,DOB
-  integer*4 :: ISPGRP
-
-  !  DIAMETER INSIDE BARK (2 parameters - all species)
-
-  data DIBPAR/&
-       &0.971330, 0.904973, 0.933707, 0.9497  , 0.97    ,& !  DF,GF,WH,RC,PY
-       &0.96317 , 0.97059 , 0.878457, 0.947   , 0.94448 ,& !  MD,BL,WO,RA,PD
-       &0.94448 ,& !  WI
-
-       &0.966365, 1.0     , 1.0     , 1.0     , 1.0     ,& !  DF,GF,WH,RC,PY
-       &1.0     , 0.993585, 1.02393 , 1.0     , 0.987517,& !  MD,BL,WO,RA,PD
-       &0.987517/ !  WI
-
-  B0 = DIBPAR(ISPGRP,1)
-  B1 = DIBPAR(ISPGRP,2)
-  DOB = (DIB/B0)**(1.0/B1)
-  return
-end
 
 subroutine DOB_RAP(ISPGRP,DIB,DOB)
   implicit none
@@ -615,6 +573,7 @@ subroutine OLDGROWTH(NPTS,NTREES,IB,TDATAI,TDATAR,OG)
 end
 
 subroutine GET_BAL(DBH,BALL1,BAL1,BAL)
+  !     SHARED BY THE RUN (DIAGRO) AND DIAMCAL CODE.
   implicit none
   ! Variables
   integer*4 :: K

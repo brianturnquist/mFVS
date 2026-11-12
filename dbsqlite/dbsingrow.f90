@@ -14,6 +14,7 @@ subroutine DBSINGROW(IYEAR,INGROW,CSP,TPAIN)
   include 'CONTRL.f90'
   include 'DBSCOM.f90'
   include 'PLOT.f90'
+  include 'METRIC.f90'
 
   ! Variables
   integer :: ColNumber,I,iret,IYEAR,IYEAR1
@@ -36,20 +37,37 @@ subroutine DBSINGROW(IYEAR,INGROW,CSP,TPAIN)
 
   !     DEFINE TAABLENAME
 
-  iRet = fsql3_tableexists(IoutDBref,'FVS_Regen_Ingrow'//CHAR(0))
+  if (LMETRICVAR) then
+     iRet = fsql3_tableexists(IoutDBref,&
+          &'FVS_Regen_Ingrow_Metric'//CHAR(0))
+  else
+     iRet = fsql3_tableexists(IoutDBref,'FVS_Regen_Ingrow'//CHAR(0))
+  end if
 
   !     SITE PREP SUMMARY
 
   if (iRet.eq.0) then
-     SQLStmtStr = 'CREATE TABLE FVS_Regen_Ingrow('//&
-          &'CaseID           text not null,'//&
-          &'StandID          text not null,'//&
-          &'Year             int  null,'//&
-          &'IngrowthTotalTpa real null,'//&
-          &'SpeciesFVS       text null,'//&
-          &'SpeciesPLANTS    text null,'//&
-          &'SpeciesFIA       text null,'//&
-          &'IngrowthTpa      int  null);'//CHAR(0)
+     if (LMETRICVAR) then
+        SQLStmtStr = 'CREATE TABLE FVS_Regen_Ingrow_Metric('//&
+             &'CaseID           text not null,'//&
+             &'StandID          text not null,'//&
+             &'Year             int  null,'//&
+             &'IngrowthTotalTph real null,'//&
+             &'SpeciesFVS       text null,'//&
+             &'SpeciesPLANTS    text null,'//&
+             &'SpeciesFIA       text null,'//&
+             &'IngrowthTph      int  null);'//CHAR(0)
+     else
+        SQLStmtStr = 'CREATE TABLE FVS_Regen_Ingrow('//&
+             &'CaseID           text not null,'//&
+             &'StandID          text not null,'//&
+             &'Year             int  null,'//&
+             &'IngrowthTotalTpa real null,'//&
+             &'SpeciesFVS       text null,'//&
+             &'SpeciesPLANTS    text null,'//&
+             &'SpeciesFIA       text null,'//&
+             &'IngrowthTpa      int  null);'//CHAR(0)
+     end if
 
      iRet = fsql3_exec(IoutDBref,SQLStmtStr)
      if (iRet .ne.0) then
@@ -58,12 +76,18 @@ subroutine DBSINGROW(IYEAR,INGROW,CSP,TPAIN)
      end if
   end if
 
-  write(SQLStmtStr,*)'INSERT INTO FVS_Regen_Ingrow',&
-       &' (CaseID,StandID,Year,IngrowthTotalTpa,',&
-       &'SpeciesFVS,SpeciesPLANTS,SpeciesFIA,IngrowthTpa)',&
-       &' VALUES(''',CASEID,''',''',TRIM(NPLT),''',?,?,?,?,?,?);'
-
-  iRet = fsql3_prepare(IoutDBref,trim(SQLStmtStr)//CHAR(0))
+  if (LMETRICVAR) then
+     write(SQLStmtStr,*)'INSERT INTO FVS_Regen_Ingrow_Metric',&
+          &' (CaseID,StandID,Year,IngrowthTotalTph,',&
+          &' SpeciesFVS,SpeciesPLANTS,SpeciesFIA,IngrowthTph)',&
+          &' VALUES(''',CASEID,''',''',TRIM(NPLT),''',?,?,?,?,?,?);'
+  else
+     write(SQLStmtStr,*)'INSERT INTO FVS_Regen_Ingrow',&
+          &' (CaseID,StandID,Year,IngrowthTotalTpa,',&
+          &'SpeciesFVS,SpeciesPLANTS,SpeciesFIA,IngrowthTpa)',&
+          &' VALUES(''',CASEID,''',''',TRIM(NPLT),''',?,?,?,?,?,?);'
+     iRet = fsql3_prepare(IoutDBref,trim(SQLStmtStr)//CHAR(0))
+  end if
   if (iRet .ne.0) then
      IREG5 = 0
      return

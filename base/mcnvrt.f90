@@ -1,7 +1,7 @@
-!==========================!
-!   metric/base : mcnvrt   !
-!==========================!
-! METRIC-BASE $Id$
+!===================!
+!   base : mcnvrt   !
+!===================!
+! BASE $Id$
 subroutine MCNVRT(IKEY,JD,P,X)
   implicit none
 

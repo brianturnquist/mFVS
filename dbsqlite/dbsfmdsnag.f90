@@ -94,27 +94,53 @@ subroutine DBSFMDSNAG(IYEAR,SDBH,SHTH,SHTS,SVLH,SVLS,&
 
   iRet = fsql3_exec (IoutDBref,"Begin;"//Char(0))
 
-  iRet = fsql3_tableexists(IoutDBref,&
-       &"FVS_SnagDet"//CHAR(0))
+  if (LMETRICVAR) then
+     iRet = fsql3_tableexists(IoutDBref,&
+          &"FVS_SnagDet_Metric"//CHAR(0))
+  else
+     iRet = fsql3_tableexists(IoutDBref,&
+          &"FVS_SnagDet"//CHAR(0))
+  end if
   if (iRet.eq.0) then
-     SQLStmtStr = 'CREATE TABLE FVS_SnagDet ('//&
-          &'CaseID text not null,'//&
-          &'StandID text not null,'//&
-          &'Year Int null,'//&
-          &'SpeciesFVS    text null,'//&
-          &'SpeciesPLANTS text null,'//&
-          &'SpeciesFIA    text null,'//&
-          &'DBH_Class int null,'//&
-          &'Death_DBH real null,'//&
-          &'Current_Ht_Hard real null,'//&
-          &'Current_Ht_Soft real null,'//&
-          &'Current_Vol_Hard real null,'//&
-          &'Current_Vol_Soft real null,'//&
-          &'Total_Volume real null,'//&
-          &'Year_Died int null,'//&
-          &'Density_Hard real null,'//&
-          &'Density_Soft real null,'//&
-          &'Density_Total real null);'//CHAR(0)
+     if (LMETRICVAR) then
+        SQLStmtStr = 'CREATE TABLE FVS_SnagDet_Metric ('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year Int null,'//&
+             &'SpeciesFVS    text null,'//&
+             &'SpeciesPLANTS text null,'//&
+             &'SpeciesFIA    text null,'//&
+             &'DBH_Class int null,'//&
+             &'Death_DBH real null,'//&
+             &'Current_Ht_Hard real null,'//&
+             &'Current_Ht_Soft real null,'//&
+             &'Current_Vol_Hard real null,'//&
+             &'Current_Vol_Soft real null,'//&
+             &'Total_Volume real null,'//&
+             &'Year_Died int null,'//&
+             &'Density_Hard real null,'//&
+             &'Density_Soft real null,'//&
+             &'Density_Total real null);'//CHAR(0)
+     else
+        SQLStmtStr = 'CREATE TABLE FVS_SnagDet ('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year Int null,'//&
+             &'SpeciesFVS    text null,'//&
+             &'SpeciesPLANTS text null,'//&
+             &'SpeciesFIA    text null,'//&
+             &'DBH_Class int null,'//&
+             &'Death_DBH real null,'//&
+             &'Current_Ht_Hard real null,'//&
+             &'Current_Ht_Soft real null,'//&
+             &'Current_Vol_Hard real null,'//&
+             &'Current_Vol_Soft real null,'//&
+             &'Total_Volume real null,'//&
+             &'Year_Died int null,'//&
+             &'Density_Hard real null,'//&
+             &'Density_Soft real null,'//&
+             &'Density_Total real null);'//CHAR(0)
+     end if
 
      iRet = fsql3_exec(IoutDBref,SQLStmtStr)
      if (iRet .ne.0) then
@@ -123,14 +149,25 @@ subroutine DBSFMDSNAG(IYEAR,SDBH,SHTH,SHTS,SVLH,SVLS,&
      end if
   end if
 
-  write(SQLStmtStr,*)'INSERT INTO FVS_SnagDet ',&
-       &'(CaseID,StandID,Year,SpeciesFVS,SpeciesPLANTS,SpeciesFIA,',&
-       &'DBH_Class,Death_DBH,',&
-       &'Current_Ht_Hard,Current_Ht_Soft,Current_Vol_Hard,',&
-       &'Current_Vol_Soft,Total_Volume,Year_Died,Density_Hard,',&
-       &'Density_Soft,Density_Total) VALUES (''',&
-       &CASEID,''',''',TRIM(NPLT),&
-       &''',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);'//CHAR(0)
+  if (LMETRICVAR) then
+     write(SQLStmtStr,*)'INSERT INTO FVS_SnagDet_Metric ',&
+          &'(CaseID,StandID,Year,SpeciesFVS,SpeciesPLANTS,SpeciesFIA,',&
+          &'DBH_Class,Death_DBH,',&
+          &'Current_Ht_Hard,Current_Ht_Soft,Current_Vol_Hard,',&
+          &'Current_Vol_Soft,Total_Volume,Year_Died,Density_Hard,',&
+          &'Density_Soft,Density_Total) VALUES (''',&
+          &CASEID,''',''',TRIM(NPLT),&
+          &''',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);'//CHAR(0)
+  else
+     write(SQLStmtStr,*)'INSERT INTO FVS_SnagDet ',&
+          &'(CaseID,StandID,Year,SpeciesFVS,SpeciesPLANTS,SpeciesFIA,',&
+          &'DBH_Class,Death_DBH,',&
+          &'Current_Ht_Hard,Current_Ht_Soft,Current_Vol_Hard,',&
+          &'Current_Vol_Soft,Total_Volume,Year_Died,Density_Hard,',&
+          &'Density_Soft,Density_Total) VALUES (''',&
+          &CASEID,''',''',TRIM(NPLT),&
+          &''',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);'//CHAR(0)
+  end if
   iRet = fsql3_exec(IoutDBref,"Begin;"//CHAR(0))
   iRet = fsql3_prepare(IoutDBref,SQLStmtStr)
   if (iRet .ne.0) then

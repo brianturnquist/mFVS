@@ -39,7 +39,7 @@ subroutine DIAMGRO_RUN(VERSION,K,CYCLG,TDATAI,TDATAR,SI_1,SI_2,&
   CR = TDATAR(K,3)
   ISP = TDATAI(K,1)
   ISPGRP = TDATAI(K,2)
-  call GET_BAL_RUN(DBH,BALL1,BAL1,SBAL1)
+  call GET_BAL(DBH,BALL1,BAL1,SBAL1)
   select case(VERSION)
   case(1)
      SITE = SI_1
@@ -672,19 +672,3 @@ subroutine DG_FERT(ISP,VERSION,CYCLG,SI_1,PN,YF,FERTADJ)
   return
 end
 
-subroutine GET_BAL_RUN(DBH,BALL1,BAL1,BAL)
-  implicit none
-  ! Variables
-  integer*4 :: K
-  real*4  :: DBH,BALL1(51),BAL1(500),BAL
-  if (DBH .gt.100.0) then
-     BAL = 0.0
-  else if (DBH .gt.50.0) then
-     K = INT(DBH-49.0)
-     BAL = BALL1(K)
-  else
-     K = INT(DBH*10.0+0.5)
-     BAL = BAL1(K)
-  end if
-  return
-end

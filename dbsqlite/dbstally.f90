@@ -42,27 +42,51 @@ subroutine DBSTALLY(PRBSTK,NTALLY,CSP,SUMTPA,SUMPCT,BESTTPA,&
 
   !     DEFINE TABLENAME
 
-  iRet = fsql3_tableexists(IoutDBref,'FVS_Regen_Tally'//CHAR(0))
+  if (LMETRICVAR) then
+     iRet = fsql3_tableexists(IoutDBref,'FVS_Regen_Tally_Metric'&
+          &//CHAR(0))
+  else
+     iRet = fsql3_tableexists(IoutDBref,'FVS_Regen_Tally'//CHAR(0))
+  end if
 
   !       TALLY SUMMARY
 
   if (iRet.eq.0) then
-     SQLStmtStr = 'CREATE TABLE FVS_Regen_Tally('//&
-          &'CaseID          text not null,'//&
-          &'StandID         text not null,'//&
-          &'Year            int  null,'//&
-          &'ProbStock       real null,'//&
-          &'TallyNumber     int  null,'//&
-          &'SpeciesFVS      text null,'//&
-          &'SpeciesPLANTS   text null,'//&
-          &'SpeciesFIA      text null,'//&
-          &'TpaAll          int  null,'//&
-          &'PctOfTotalAll   int  null,'//&
-          &'TpaBest         int  null,'//&
-          &'PctOfTotalBest  int  null,'//&
-          &'AverageHt       real null,'//&
-          &'TpaSmall        int  null,'//&
-          &'PctOfTotalSmall int  null);'//CHAR(0)
+     if (LMETRICVAR) then
+        SQLStmtStr = 'CREATE TABLE FVS_Regen_Tally_Metric('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year int null,'//&
+             &'ProbStock real null,'//&
+             &'TallyNumber int null,'//&
+             &'SpeciesFVS text null,'//&
+             &'SpeciesPLANTS text null,'//&
+             &'SpeciesFIA text null,'//&
+             &'TphAll int null,'//&
+             &'PctOfTotalAll int null,'//&
+             &'TphBest int null,'//&
+             &'PctOfTotalBest int null,'//&
+             &'AverageHt real null,'//&
+             &'TphLt76cm int null,'//&
+             &'PctOfTotalLt76cm int null);'//CHAR(0)
+     else
+        SQLStmtStr = 'CREATE TABLE FVS_Regen_Tally('//&
+             &'CaseID          text not null,'//&
+             &'StandID         text not null,'//&
+             &'Year            int  null,'//&
+             &'ProbStock       real null,'//&
+             &'TallyNumber     int  null,'//&
+             &'SpeciesFVS      text null,'//&
+             &'SpeciesPLANTS   text null,'//&
+             &'SpeciesFIA      text null,'//&
+             &'TpaAll          int  null,'//&
+             &'PctOfTotalAll   int  null,'//&
+             &'TpaBest         int  null,'//&
+             &'PctOfTotalBest  int  null,'//&
+             &'AverageHt       real null,'//&
+             &'TpaSmall        int  null,'//&
+             &'PctOfTotalSmall int  null);'//CHAR(0)
+     end if
 
      iRet = fsql3_exec(IoutDBref,SQLStmtStr)
      if (iRet .ne.0) then
@@ -71,13 +95,23 @@ subroutine DBSTALLY(PRBSTK,NTALLY,CSP,SUMTPA,SUMPCT,BESTTPA,&
      end if
   end if
 
-  write(SQLStmtStr,*)'INSERT INTO FVS_Regen_Tally',&
-       &' (CaseID,StandID,Year,ProbStock,TallyNumber,',&
-       &'SpeciesFVS,SpeciesPLANTS,SpeciesFIA,',&
-       &'TpaAll,PctOfTotalAll,TpaBest,',&
-       &'PctOfTotalBest,AverageHt,TpaSmall,PctOfTotalSmall) ',&
-       &'VALUES (''',CASEID,''',''',TRIM(NPLT),''',?,?,?,?,',&
-       &'?,?,?,?,?,?,?,?,?);'
+  if (LMETRICVAR) then
+     write(SQLStmtStr,*)'INSERT INTO FVS_Regen_Tally_Metric',&
+          &' (CaseID,StandID,Year,ProbStock,TallyNumber,',&
+          &'SpeciesFVS,SpeciesPLANTS,SpeciesFIA,',&
+          &'TphAll,PctOfTotalAll,TphBest,',&
+          &'PctOfTotalBest,AverageHt,TphLt76cm,PctOfTotalLt76cm)',&
+          &'VALUES(''',CASEID,''',''',TRIM(NPLT),''',?,?,?,?,',&
+          &'?,?,?,?,?,?,?,?,?);'
+  else
+     write(SQLStmtStr,*)'INSERT INTO FVS_Regen_Tally',&
+          &' (CaseID,StandID,Year,ProbStock,TallyNumber,',&
+          &'SpeciesFVS,SpeciesPLANTS,SpeciesFIA,',&
+          &'TpaAll,PctOfTotalAll,TpaBest,',&
+          &'PctOfTotalBest,AverageHt,TpaSmall,PctOfTotalSmall) ',&
+          &'VALUES (''',CASEID,''',''',TRIM(NPLT),''',?,?,?,?,',&
+          &'?,?,?,?,?,?,?,?,?);'
+  end if
 
   iRet = fsql3_prepare(IoutDBref,trim(SQLStmtStr)//CHAR(0))
   if (iRet .ne.0) then
@@ -168,26 +202,49 @@ subroutine DBSTALLY(PRBSTK,NTALLY,CSP,SUMTPA,SUMPCT,BESTTPA,&
 
   !     DEFINE TABLENAME
 
-  iRet = fsql3_tableexists(IoutDBref,'FVS_Regen_Tally'//CHAR(0))
+  if (LMETRICVAR) then
+     iRet = fsql3_tableexists(IoutDBref,'FVS_Regen_Tally_Metric'&
+          &//CHAR(0))
+  else
+     iRet = fsql3_tableexists(IoutDBref,'FVS_Regen_Tally'//CHAR(0))
+  end if
 
   !      TALLY SUMMARY
 
   if (iRet.eq.0) then
-     SQLStmtStr = 'CREATE TABLE FVS_Regen_Tally('//&
-          &'CaseID          text not null,'//&
-          &'StandID         text not null,'//&
-          &'Year            int  null,'//&
-          &'TallyNumber     int  null,'//&
-          &'SpeciesFVS      text null,'//&
-          &'SpeciesPLANTS   text null,'//&
-          &'SpeciesFIA      text null,'//&
-          &'TpaAll          int  null,'//&
-          &'PctOfTotalAll   int  null,'//&
-          &'TpaBest         int  null,'//&
-          &'PctOfTotalBest  int  null,'//&
-          &'AverageHt       real null,'//&
-          &'TpaSmall        int  null,'//&
-          &'PctOfTotalSmall int  null);'//CHAR(0)
+     if (LMETRICVAR) then
+        SQLStmtStr = 'CREATE TABLE FVS_Regen_Tally_Metric('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year int null,'//&
+             &'TallyNumber int null,'//&
+             &'SpeciesFVS text null,'//&
+             &'SpeciesPLANTS text null,'//&
+             &'SpeciesFIA text null,'//&
+             &'TphAll int null,'//&
+             &'PctOfTotalAll int null,'//&
+             &'TphBest int null,'//&
+             &'PctOfTotalBest int null,'//&
+             &'AverageHt real null,'//&
+             &'TphLt76cm int null,'//&
+             &'PctOfTotalLt76cm int null);'//CHAR(0)
+     else
+        SQLStmtStr = 'CREATE TABLE FVS_Regen_Tally('//&
+             &'CaseID          text not null,'//&
+             &'StandID         text not null,'//&
+             &'Year            int  null,'//&
+             &'TallyNumber     int  null,'//&
+             &'SpeciesFVS      text null,'//&
+             &'SpeciesPLANTS   text null,'//&
+             &'SpeciesFIA      text null,'//&
+             &'TpaAll          int  null,'//&
+             &'PctOfTotalAll   int  null,'//&
+             &'TpaBest         int  null,'//&
+             &'PctOfTotalBest  int  null,'//&
+             &'AverageHt       real null,'//&
+             &'TpaSmall        int  null,'//&
+             &'PctOfTotalSmall int  null);'//CHAR(0)
+     end if
 
      iRet = fsql3_exec(IoutDBref,SQLStmtStr)
      if (iRet .ne.0) then
@@ -212,13 +269,23 @@ subroutine DBSTALLY(PRBSTK,NTALLY,CSP,SUMTPA,SUMPCT,BESTTPA,&
      end do
   end if
 
-  write(SQLStmtStr,*)'INSERT INTO FVS_Regen_Tally',&
-       &' (CaseID,StandID,Year,TallyNumber,',&
-       &'SpeciesFVS,SpeciesPLANTS,SpeciesFIA,',&
-       &'TpaAll,PctOfTotalAll,TpaBest,',&
-       &'PctOfTotalBest,AverageHt,TpaSmall,PctOfTotalSmall) ',&
-       &'VALUES (''',CASEID,''',''',TRIM(NPLT),''',?,?,?,',&
-       &'?,?,?,?,?,?,?,?,?);'
+  if (LMETRICVAR) then
+     write(SQLStmtStr,*)'INSERT INTO FVS_Regen_Tally_Metric',&
+          &' (CaseID,StandID,Year,TallyNumber,',&
+          &'SpeciesFVS,SpeciesPLANTS,SpeciesFIA,',&
+          &'TphAll,PctOfTotalAll,TphBest,',&
+          &'PctOfTotalBest,AverageHt,TphLt76cm,PctOfTotalLt76cm)',&
+          &'VALUES(''',CASEID,''',''',TRIM(NPLT),''',?,?,?,',&
+          &'?,?,?,?,?,?,?,?,?);'
+  else
+     write(SQLStmtStr,*)'INSERT INTO FVS_Regen_Tally',&
+          &' (CaseID,StandID,Year,TallyNumber,',&
+          &'SpeciesFVS,SpeciesPLANTS,SpeciesFIA,',&
+          &'TpaAll,PctOfTotalAll,TpaBest,',&
+          &'PctOfTotalBest,AverageHt,TpaSmall,PctOfTotalSmall) ',&
+          &'VALUES (''',CASEID,''',''',TRIM(NPLT),''',?,?,?,',&
+          &'?,?,?,?,?,?,?,?,?);'
+  end if
 
   iRet = fsql3_prepare(IoutDBref,trim(SQLStmtStr)//CHAR(0))
   if (iRet .ne.0) then

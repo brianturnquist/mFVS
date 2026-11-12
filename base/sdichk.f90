@@ -16,6 +16,7 @@ subroutine SDICHK
   include 'CONTRL.f90'
   include 'PLOT.f90'
   include 'VARCOM.f90'
+  include 'METRIC.f90'
 
   !  DEFINITIONS:
 
@@ -82,17 +83,36 @@ subroutine SDICHK
      194 continue
   end do
   UPLIM = TMD0*PMSDIU
-  write(JOSTND,195)TEMTPA,UPLIM,SDIMAX,PMSDIU*100.,TEM2
-  195 format(/,2('***************'/),'FVS41    INITIAL STAND ', &
-       & 'STOCKING OF ', &
-       & F8.1,' TREES/ACRE IS MORE THAN 5% ABOVE THE UPPER LIMIT OF ', &
-       & F8.1,' TREES/ACRE.'/,'WARNING: ', &
-       & 'UPPER LIMIT IS BASED ON A SDI MAXIMUM OF ',F10.1,' AND AN UPPER', &
-       & ' BOUND OF ',F5.1,' PERCENT OF MAXIMUM.',/, &
-       & 9X,'MAXIMUM SDI BEING RESET TO',F10.1,' FOR FURTHER PROCESSING.', &
-       & /2('***************'/),/)
+  if (LMETRICVAR) then
+     write(JOSTND,9195)&
+          &TEMTPA /ACRtoHA,&
+          &UPLIM  /ACRtoHA,&
+          &SDIMAX /ACRtoHA,&
+          &PMSDIU*100.,&
+          &TEM2   /ACRtoHA
+     9195 format(/,2(' ***************'/),' WARNING: INITIAL STAND ',&
+          &'STOCKING OF ',&
+          &F8.1,' TREES/HA IS MORE THAN 5% ABOVE THE UPPER LIMIT OF ',&
+          &F8.1,' TREES/HA.'/,9X,&
+          &'UPPER LIMIT IS BASED ON A SDI MAXIMUM OF ',F10.1,' AND AN UPPER',&
+          &' BOUND OF ',F5.1,' PERCENT OF MAXIMUM.',/,&
+          &9X,'MAXIMUM SDI BEING RESET TO',F10.1,' FOR FURTHER PROCESSING.',&
+          &/2(' ***************'/),/)
+  else
+     write(JOSTND,195)TEMTPA,UPLIM,SDIMAX,PMSDIU*100.,TEM2
+     195 format(/,2('***************'/),'FVS41    INITIAL STAND ', &
+          & 'STOCKING OF ', &
+          & F8.1,' TREES/ACRE IS MORE THAN 5% ABOVE THE UPPER LIMIT OF ', &
+          & F8.1,' TREES/ACRE.'/,'WARNING: ', &
+          & 'UPPER LIMIT IS BASED ON A SDI MAXIMUM OF ',F10.1,' AND AN UPPER', &
+          & ' BOUND OF ',F5.1,' PERCENT OF MAXIMUM.',/, &
+          & 9X,'MAXIMUM SDI BEING RESET TO',F10.1,' FOR FURTHER PROCESSING.', &
+          & /2('***************'/),/)
+  end if
   LFIXSD = .true.
-  call ERRGRO(.true.,41)
+  if (.not. LMETRICVAR) then
+     call ERRGRO(.true.,41)
+  end if
   200 continue
   return
 end subroutine SDICHK

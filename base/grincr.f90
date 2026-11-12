@@ -30,7 +30,9 @@ subroutine GRINCR (DEBUG,IPMODI,LTMGO,LMPBGO,LDFBGO, &
   real    :: STAGEA,STAGEB
   logical :: LTMGO,LMPBGO,LDFBGO,LBWEGO,LCVATV,DEBUG,LINCL
   integer :: IBA,ISTOPRES,IRTNCD
-  character(len=10) :: KARD
+  !     KARD IS 20 CHARACTERS BECAUSE THE BC HABTYP ARGUMENT IS 20 LONG;
+  !     OTHER VARIANTS' HABTYP ROUTINES USE THE FIRST 10 CHARACTERS.
+  character(len=20) :: KARD
 
   !     ACTIVITY CODES FOR OPTIONS: FIXDG, FIXHTG, SETSITE, PERMFRST
 
@@ -60,7 +62,11 @@ subroutine GRINCR (DEBUG,IPMODI,LTMGO,LMPBGO,LDFBGO, &
   call fvsGetRestartCode (ISTOPRES)
   if (DEBUG) write (JOSTND,5) ICYC,ISTOPRES,NPLT
   5 format (/' IN GRINCR, ICYC=',I3,'; ISTOPRES=',I3,'; NPLT=',A)
-  goto (1,16,17,71,72,1), ISTOPRES+1
+  if (VARACD .eq. 'BC') then
+     goto (1,16,17,71,72), ISTOPRES+1
+  else
+     goto (1,16,17,71,72,1), ISTOPRES+1
+  end if
 
   !     STOP HAS NOT OCCURED
 
@@ -165,10 +171,17 @@ subroutine GRINCR (DEBUG,IPMODI,LTMGO,LMPBGO,LDFBGO, &
               if (JJ.gt.MAXSP)JJ = MAXSP
               write(JOSTND,990)(NSP(K,1)(1:2),K = J,JJ)
               990 format(/'    SPECIES ',5X,10(A2,6X))
-              write(JOSTND,994)(NINT(SITEAR(K)),K = J,JJ )
-              994 format(' SITE INDEX ',   10I8.0)
-              write(JOSTND,991)(NINT(SDIDEF(K)),K = J,JJ )
-              991 format('    SDI MAX ',   10I8.0)
+              if (VARACD .eq. 'BC') then
+                 write(JOSTND,9994)(SITEAR(K),K = J,JJ )
+                 9994 format(' SITE INDEX ',   10F8.0)
+                 write(JOSTND,9991)(SDIDEF(K),K = J,JJ )
+                 9991 format('    SDI MAX ',   10F8.0)
+              else
+                 write(JOSTND,994)(NINT(SITEAR(K)),K = J,JJ )
+                 994 format(' SITE INDEX ',   10I8.0)
+                 write(JOSTND,991)(NINT(SDIDEF(K)),K = J,JJ )
+                 991 format('    SDI MAX ',   10I8.0)
+              end if
               if (JJ .eq. MAXSP)go to 993
               992 continue
            end do
@@ -276,7 +289,9 @@ subroutine GRINCR (DEBUG,IPMODI,LTMGO,LMPBGO,LDFBGO, &
   OLDBA = BA
   RELDM1 = RELDEN
   ORMSQD = RMSQD
-  ODR016 = DR016
+  if (VARACD .ne. 'BC') then
+     ODR016 = DR016
+  end if
 
   !     CALL **CUTS** TO INVOKE THINNING.
 
@@ -308,7 +323,9 @@ subroutine GRINCR (DEBUG,IPMODI,LTMGO,LMPBGO,LDFBGO, &
   !     SAVE POST-THIN DENSITY.
 
   ATAVD = RMSQD
-  ATDR016 = DR016
+  if (VARACD .ne. 'BC') then
+     ATDR016 = DR016
+  end if
   ATAVH = AVH
   ATBA = BA
   ATCCF = RELDEN
@@ -367,8 +384,12 @@ subroutine GRINCR (DEBUG,IPMODI,LTMGO,LMPBGO,LDFBGO, &
 
   do I = 1,ITRN
      PTOCFV(I) = CFV(I)
-     PMRCFV(I) = MCFV(I)
-     PSCFV(I) = SCFV(I)
+     if (VARACD .eq. 'BC') then
+        PMRCFV(I) = WK1(I)
+     else
+        PMRCFV(I) = MCFV(I)
+        PSCFV(I) = SCFV(I)
+     end if
      PMRBFV(I) = BFV(I)
      PDBH(I) = DBH(I)
      PHT(I) = HT(I)

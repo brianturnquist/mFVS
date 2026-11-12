@@ -342,6 +342,17 @@ subroutine FMCBA (IYR,ISWTCH)
   if (DEBUG) write(JOSTND,7) ICYC
   7 format(' ENTERING FMCBA CYCLE = ',I2)
 
+  !     OP SHARES THESE TABLES; ITS SPECIES 24 IS TANOAK (USE QA OTTMAR AND
+  !     OTHERS 2000B FOR LIVE FUELS, GC FOR INITIAL FUELS) INSTEAD OF PN
+  !     PAPER BIRCH (USE DF)
+
+  if (VARACD .eq. 'OP') then
+     FULIVE(:,24) = (/0.25, 0.25/)
+     FULIVI(:,24) = (/0.18, 2.00/)
+     FUINIE(:,24) = (/0.7, 0.7, 0.8, 1.2, 1.2, 0.5, 0.0,0.0,0.0,1.4, 0.0/)
+     FUINII(:,24) = (/0.1, 0.1, 0.1, 0.2, 0.2, 0.0, 0.0,0.0,0.0,0.5, 0.0/)
+  end if
+
   !     BEGIN ROUTINE. ZERO OUT THE CUMMULATIVE VARIABLES
 
   COVTYP = 0

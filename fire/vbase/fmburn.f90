@@ -54,7 +54,7 @@ subroutine FMBURN (IYR, FMD, LNMOUT)
   real    :: OLDFL
   real    :: FPRMS(4),CPRMS(6),MPRMS(7),DPRMS(1),PRMS(13)
   real    :: TMP2(3),TMP3(3)
-  real    :: SUMPS,XSUR(2,3),XFML(2,3),XDEP,XEXT
+  real    :: SUMPS,XSUR(2,3),XFML(2,3),XDEP,XEXT,ROS
   character(len=8) :: CFTMP
   integer :: MYACTS(5)
   logical :: DEBUG,LOK,LNMOUT,USRFL,LCFTMP
@@ -62,6 +62,8 @@ subroutine FMBURN (IYR, FMD, LNMOUT)
   integer :: IYR,ICOND,ITODO,IFT,NPRM,IACTK,JYR,IFTYPE,JTODO,IFC,KTODO,JDO,IFIRE,MKODE
   real    :: SWIND,FLAME,WMULT,ALGSLP,BYRAM,CRRATE,CRTCBH,PSMOKE,PMRT,PVOLKL,HPA,FINTEN,FLB,FLT,&
        &TMPINT,TMPFLAME,MAXINT,MININT,UCRBURN,PSBURN
+  integer :: CANBURN,FCLS
+  real    :: INTSTY
 
   !  CHECK FOR DEBUG.
 
@@ -85,7 +87,7 @@ subroutine FMBURN (IYR, FMD, LNMOUT)
   end if
   ! This is an inecessary call to have the fire reports printed for the PILEBURN keyword. M.S. 2/4/20
   !      IF ((ICOND .EQ. 0 .OR. COVTYP .LE. 0) .AND. (LFLBRN)) THEN
-  !        CALL FMFOUT(IYR,0.0,0, 0,'FUELBURN')
+  !      CALL FMFOUT(IYR,0.0,0, 0,'FUELBURN')
   !      ENDIF
 
   !  CHECK TO SEE IF THERE IS A DROUGHT STATE; THIS
@@ -382,7 +384,7 @@ subroutine FMBURN (IYR, FMD, LNMOUT)
 
   if (IFLOGIC .eq.0) then
      select case (VARACD)
-     case ('CR','CS','LS','SN','TT','UT')
+     case ('CR','CS','LS','ON','SN','TT','UT')
         call FMCFMD (IYR, FMD)
      case default
      end select
@@ -422,6 +424,15 @@ subroutine FMBURN (IYR, FMD, LNMOUT)
      call FMFINT(IYR, BYRAM, FLAME, 1, HPA, 1)
      call fvsGetRtnCode(IRTNCD)
      if (IRTNCD.ne.0) return
+
+     if (CFIM_ON) then
+        !         NOTE THAT FOR CFIM, WE NEED TO KNOW POTENTIAL CONSUMPTION BEFORE WE
+        !           CALCULATE INTENSITY
+        CANBURN = 0
+        call FMCONS(FMOIS, 0, 0.0, IYR, 1, PSMOKE,PSBURN)
+        call FMCFIM(IYR, FMD, SWIND, BYRAM, FLAME, CANBURN, ROS)
+     end if
+
      OLDFL = FLAME
 
      !  A FLAME LENGTH MULTIPLIER WAS ADDED, SO FLAME IS MODIFIED
@@ -435,6 +446,14 @@ subroutine FMBURN (IYR, FMD, LNMOUT)
      call FMFINT(IYR, BYRAM, OLDFL, 1, HPA, 1)
      call fvsGetRtnCode(IRTNCD)
      if (IRTNCD.ne.0) return
+
+     if (CFIM_ON) then
+        !         NOTE THAT FOR CFIM, WE NEED TO KNOW POTENTIAL CONSUMPTION BEFORE WE
+        !           CALCULATE INTENSITY
+        CANBURN = 0
+        call FMCONS(FMOIS, 0, 0.0, IYR, 1, PSMOKE,PSBURN)
+        call FMCFIM(IYR, FMD, SWIND, BYRAM, OLDFL, CANBURN, ROS)
+     end if
      OLDFL = 0.0
   end if
 
@@ -497,6 +516,7 @@ subroutine FMBURN (IYR, FMD, LNMOUT)
         call fvsGetRtnCode(IRTNCD)
         if (IRTNCD.ne.0) return
 
+        if (CFIM_ON) call FMCANC (IYR,1,CFTMP,CANBURN,ROS,INTSTY,FCLS)
         if (UCRBURN .ge.0) CRBURN = UCRBURN
         if (LCFTMP) CFTMP = 'USER_DEF'
 

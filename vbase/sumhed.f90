@@ -44,8 +44,13 @@ subroutine SUMHED
      1 format(/T19,'CR-',A2,' FVS VARIANT -- RV:',A10/)
 
   case default
-     write(JOSCRN,2) VARACD,REV
-     2 format(/T19,A2,' FVS VARIANT -- RV:',A10/)
+     if (LMETRICVAR) then
+        write(JOSCRN,3) VARACD,REV
+        3 format(/T19,A2,' FVS METRIC VARIANT -- RV:',A10/)
+     else
+        write(JOSCRN,2) VARACD,REV
+        2 format(/T19,A2,' FVS VARIANT -- RV:',A10/)
+     end if
 
   end select
 
@@ -76,6 +81,17 @@ subroutine SUMHED
 
      !  WESTERN AND SOUTHERN VARIANTS
 
+  case ('BC','ON')
+     write (JOSCRN,15)
+     15 format (/T16,'SUMMARY STATISTICS (BASED ON TOTAL STAND AREA)'&
+          &/,76('-')/&
+          &T7,'START OF SIMULATION PERIOD    REMOVALS/HA  ',3X,&
+          &'AFTER TREATMENT   GROWTH',/,T6,28('-'),1X,17('-'),1X,16('-'),&
+          &'    CU M',/, T6,'TREES',9X,'TOP',6X,'  GTV TREES   GTV   GMV',&
+          &9X,'TOP',6X,' PER YR',/,'YEAR   /HA  BA SDI  HT  QMD ',&
+          &' CU M   /HA  CU M  CU M  BA SDI  HT  QMD ACC MOR',/,&
+          &'---- ----- --- --- --- ---- ----- ----- ----- ----- ',&
+          &'--- --- --- ---- --- ---')
   case default
      write (JOSCRN,20)
      20 format (/T16,'SUMMARY STATISTICS (BASED ON TOTAL STAND AREA)'&

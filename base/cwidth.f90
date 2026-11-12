@@ -16,6 +16,7 @@ subroutine CWIDTH
   include 'ARRAYS.f90'
   include 'CONTRL.f90'
   include 'CWDCOM.f90'
+  include 'METRIC.f90'
 
   !  DEFINITIONS:
 
@@ -30,6 +31,7 @@ subroutine CWIDTH
   integer :: IG,IULIM,IGRP,ISPCC,IDATE,IACTK,NP,ITODO,NTODO,IWHO,IICR
   integer :: ISPC,I
   real    :: P,D,H,CR,CW
+  real    :: DM
 
   ! Data statements
   !  ACTIVITY 90 = FIXCW
@@ -52,25 +54,49 @@ subroutine CWIDTH
      ISPC = ISP(I)
      P = PROB(I)
      D = DBH(I)
+     if (LMETRICVAR) then
+        DM = DBH(I)*INtoCM
+     end if
      H = HT(I)
      CR = FLOAT(ICR(I))
      IICR = ICR(I)
      CRWDTH(I) = 0.0
      if (LSPCWE(ISPC)) then
         if (D .lt. CWTDBH(ISPC)) then
-           CW = CWDS0(ISPC)+CWDS1(ISPC)*DBH(I)+ &
-                & CWDS2(ISPC)*(DBH(I)**CWDS3(ISPC))
+           if (LMETRICVAR) then
+              CW = CWDS0(ISPC)+CWDS1(ISPC)*DM+&
+                   &CWDS2(ISPC)*(DM**CWDS3(ISPC))
+           else
+              CW = CWDS0(ISPC)+CWDS1(ISPC)*DBH(I)+ &
+                   & CWDS2(ISPC)*(DBH(I)**CWDS3(ISPC))
+           end if
         else
-           CW = CWDL0(ISPC)+CWDL1(ISPC)*DBH(I)+ &
-                & CWDL2(ISPC)*(DBH(I)**CWDL3(ISPC))
+           if (LMETRICVAR) then
+              CW = CWDL0(ISPC)+CWDL1(ISPC)*DM+&
+                   &CWDL2(ISPC)*(DM**CWDL3(ISPC))
+           else
+              CW = CWDL0(ISPC)+CWDL1(ISPC)*DBH(I)+ &
+                   & CWDL2(ISPC)*(DBH(I)**CWDL3(ISPC))
+           end if
+        end if
+        if (LMETRICVAR) then
+           CRWDTH(I) = CW*MtoFT
         end if
      else
         IWHO = 0
         call CWCALC(ISPC,P,D,H,CR,IICR,CW,IWHO,JOSTND)
+        if (LMETRICVAR) then
+           CRWDTH(I) = CW
+        end if
      end if
-     CRWDTH(I) = CW
-     if (DEBUG)write(JOSTND,*)' LIVE: I,ISPC,D,CR,CW= ', &
-          & I,ISPC,D,CR,CW
+     if (LMETRICVAR) then
+        if (DEBUG)write(JOSTND,*)' LIVE: I,ISPC,D,H,CW= ',&
+             &I,ISPC,D,CR,CW
+     else
+        CRWDTH(I) = CW
+        if (DEBUG)write(JOSTND,*)' LIVE: I,ISPC,D,CR,CW= ', &
+             & I,ISPC,D,CR,CW
+     end if
      50 continue
   end do
 
@@ -85,22 +111,44 @@ subroutine CWIDTH
      ISPC = ISP(I)
      P = PROB(I)
      D = DBH(I)
+     if (LMETRICVAR) then
+        DM = DBH(I)*INtoCM
+     end if
      H = HT(I)
      CR = FLOAT(ICR(I))
      CRWDTH(I) = 0.0
      if (LSPCWE(ISPC)) then
         if (D .lt. CWTDBH(ISPC)) then
-           CW = CWDS0(ISPC)+CWDS1(ISPC)*DBH(I)+ &
-                & CWDS2(ISPC)*(DBH(I)**CWDS3(ISPC))
+           if (LMETRICVAR) then
+              CW = CWDS0(ISPC)+CWDS1(ISPC)*DM+&
+                   &CWDS2(ISPC)*(DM**CWDS3(ISPC))
+              CRWDTH(I) = CW * MtoFT
+           else
+              CW = CWDS0(ISPC)+CWDS1(ISPC)*DBH(I)+ &
+                   & CWDS2(ISPC)*(DBH(I)**CWDS3(ISPC))
+           end if
         else
-           CW = CWDL0(ISPC)+CWDL1(ISPC)*DBH(I)+ &
-                & CWDL2(ISPC)*(DBH(I)**CWDL3(ISPC))
+           if (LMETRICVAR) then
+              CW = CWDL0(ISPC)+CWDL1(ISPC)*DM+&
+                   &CWDL2(ISPC)*(DM**CWDL3(ISPC))
+           else
+              CW = CWDL0(ISPC)+CWDL1(ISPC)*DBH(I)+ &
+                   & CWDL2(ISPC)*(DBH(I)**CWDL3(ISPC))
+           end if
+        end if
+        if (LMETRICVAR) then
+           CRWDTH(I) = CW*MtoFT
         end if
      else
         IWHO = 0
         call CWCALC(ISPC,P,D,H,CR,IICR,CW,IWHO,JOSTND)
+        if (LMETRICVAR) then
+           CRWDTH(I) = CW
+        end if
      end if
-     CRWDTH(I) = CW
+     if (.not. LMETRICVAR) then
+        CRWDTH(I) = CW
+     end if
      if (DEBUG)write(JOSTND,*)' DEAD: I,ISPC,D,H,CW= ', &
           & I,ISPC,D,H,CW
      150 continue

@@ -6,6 +6,7 @@ subroutine DBSFMSSNAG(IYEAR,NPLT,HCL1,HCL2,HCL3,HCL4,HCL5,HCL6,&
      &HCL7,SCL1,SCL2,SCL3,SCL4,SCL5,SCL6,SCL7,HDSF,KODE)
 
   implicit none
+  include 'PRGPRM.f90'
 
   !     PURPOSE: TO POPULATE A DATABASE WITH THE SUMMARY SNAG REPORT
   !              INFORMATION
@@ -95,28 +96,55 @@ subroutine DBSFMSSNAG(IYEAR,NPLT,HCL1,HCL2,HCL3,HCL4,HCL5,HCL6,&
 
   call DBSCASE(1)
 
-  iRet = fsql3_tableexists(IoutDBref,&
-       &"FVS_SnagSum"//CHAR(0))
+  if (LMETRICVAR) then
+     iRet = fsql3_tableexists(IoutDBref,&
+          &"FVS_SnagSum_Metric"//CHAR(0))
+  else
+     iRet = fsql3_tableexists(IoutDBref,&
+          &"FVS_SnagSum"//CHAR(0))
+  end if
   if (iRet.eq.0) then
-     SQLStmtStr = 'CREATE TABLE FVS_SnagSum('//&
-          &'CaseID text not null,'//&
-          &'StandID text not null,'//&
-          &'Year Int null,'//&
-          &'Hard_snags_class1 real null,'//&
-          &'Hard_snags_class2 real null,'//&
-          &'Hard_snags_class3 real null,'//&
-          &'Hard_snags_class4 real null,'//&
-          &'Hard_snags_class5 real null,'//&
-          &'Hard_snags_class6 real null,'//&
-          &'Hard_snags_total  real null,'//&
-          &'Soft_snags_class1 real null,'//&
-          &'Soft_snags_class2 real null,'//&
-          &'Soft_snags_class3 real null,'//&
-          &'Soft_snags_class4 real null,'//&
-          &'Soft_snags_class5 real null,'//&
-          &'Soft_snags_class6 real null,'//&
-          &'Soft_snags_total  real null,'//&
-          &'Hard_soft_snags_total real null);'//CHAR(0)
+     if (LMETRICVAR) then
+        SQLStmtStr = 'CREATE TABLE FVS_SnagSum_Metric ('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year Int null,'//&
+             &'Hard_snags_class1 real null,'//&
+             &'Hard_snags_class2 real null,'//&
+             &'Hard_snags_class3 real null,'//&
+             &'Hard_snags_class4 real null,'//&
+             &'Hard_snags_class5 real null,'//&
+             &'Hard_snags_class6 real null,'//&
+             &'Hard_snags_total  real null,'//&
+             &'Soft_snags_class1 real null,'//&
+             &'Soft_snags_class2 real null,'//&
+             &'Soft_snags_class3 real null,'//&
+             &'Soft_snags_class4 real null,'//&
+             &'Soft_snags_class5 real null,'//&
+             &'Soft_snags_class6 real null,'//&
+             &'Soft_snags_total  real null,'//&
+             &'Hard_soft_snags_total real null);'//CHAR(0)
+     else
+        SQLStmtStr = 'CREATE TABLE FVS_SnagSum('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year Int null,'//&
+             &'Hard_snags_class1 real null,'//&
+             &'Hard_snags_class2 real null,'//&
+             &'Hard_snags_class3 real null,'//&
+             &'Hard_snags_class4 real null,'//&
+             &'Hard_snags_class5 real null,'//&
+             &'Hard_snags_class6 real null,'//&
+             &'Hard_snags_total  real null,'//&
+             &'Soft_snags_class1 real null,'//&
+             &'Soft_snags_class2 real null,'//&
+             &'Soft_snags_class3 real null,'//&
+             &'Soft_snags_class4 real null,'//&
+             &'Soft_snags_class5 real null,'//&
+             &'Soft_snags_class6 real null,'//&
+             &'Soft_snags_total  real null,'//&
+             &'Hard_soft_snags_total real null);'//CHAR(0)
+     end if
      iRet = fsql3_exec(IoutDBref,SQLStmtStr)
      if (iRet .ne.0) then
         ISSUM = 0
@@ -142,14 +170,25 @@ subroutine DBSFMSSNAG(IYEAR,NPLT,HCL1,HCL2,HCL3,HCL4,HCL5,HCL6,&
   SCL7B = SCL7
   HDSFB = HDSF
 
-  write(SQLStmtStr,*)'INSERT INTO FVS_SnagSum (CaseID,',&
-       &'StandID,Year,Hard_snags_class1,Hard_snags_class2,',&
-       &'Hard_snags_class3,Hard_snags_class4,Hard_snags_class5,',&
-       &'Hard_snags_class6,Hard_snags_total,Soft_snags_class1,',&
-       &'Soft_snags_class2,Soft_snags_class3,Soft_snags_class4,',&
-       &'Soft_snags_class5,Soft_snags_class6,Soft_snags_total,',&
-       &'Hard_soft_snags_total) VALUES(''',CASEID,''',''',TRIM(NPLT),&
-       &''',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);'//CHAR(0)
+  if (LMETRICVAR) then
+     write(SQLStmtStr,*)'INSERT INTO FVS_SnagSum_Metric (CaseID,',&
+          &'StandID,Year,Hard_snags_class1,Hard_snags_class2,',&
+          &'Hard_snags_class3,Hard_snags_class4,Hard_snags_class5,',&
+          &'Hard_snags_class6,Hard_snags_total,Soft_snags_class1,',&
+          &'Soft_snags_class2,Soft_snags_class3,Soft_snags_class4,',&
+          &'Soft_snags_class5,Soft_snags_class6,Soft_snags_total,',&
+          &'Hard_soft_snags_total) VALUES(''',CASEID,''',''',TRIM(NPLT),&
+          &''',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);'//CHAR(0)
+  else
+     write(SQLStmtStr,*)'INSERT INTO FVS_SnagSum (CaseID,',&
+          &'StandID,Year,Hard_snags_class1,Hard_snags_class2,',&
+          &'Hard_snags_class3,Hard_snags_class4,Hard_snags_class5,',&
+          &'Hard_snags_class6,Hard_snags_total,Soft_snags_class1,',&
+          &'Soft_snags_class2,Soft_snags_class3,Soft_snags_class4,',&
+          &'Soft_snags_class5,Soft_snags_class6,Soft_snags_total,',&
+          &'Hard_soft_snags_total) VALUES(''',CASEID,''',''',TRIM(NPLT),&
+          &''',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);'//CHAR(0)
+  end if
 
   iRet = fsql3_prepare(IoutDBref, SQLStmtStr)
 

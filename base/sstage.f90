@@ -23,6 +23,7 @@ subroutine SSTAGE(INBA,INICYCLE,LSUPRT)
   include 'OUTCOM.f90'
   include 'PLOT.f90'
   include 'SSTGMC.f90'
+  include 'METRIC.f90'
 
   ! Variables
   integer :: IOUT,ICD,MSP1,MSP2,IS3OK,IS2OK,I2,IS1OK,IS3I2,IS3I1
@@ -681,11 +682,34 @@ subroutine SSTAGE(INBA,INICYCLE,LSUPRT)
   OSTRST(33,J) = FLOAT(ISTRCL) ! structure class
 
   DBSKODE = 1
-  call DBSSTRCLASS(IY(ICYCLE), NPLT, ICD, &
-       & DBHS1,IHTS1,IHTLS1,IHTSS1,ICRBS1,ICRCV1,SP11,SP21,IS1OK, &
-       & DBHS2,IHTS2,IHTLS2,IHTSS2,ICRBS2,ICRCV2,SP12,SP22,IS2OK, &
-       & DBHS3,IHTS3,IHTLS3,IHTSS3,ICRBS3,ICRCV3,SP13,SP23,IS3OK, &
-       & NSTR,ICOVR,SSCODES(ISTRCL+1), DBSKODE, NTREES)
+  if (LMETRICVAR) then
+     call DBSSTRCLASS(IY(ICYCLE), NPLT, ICD,&
+          &DBHS1*INtoCM,&
+          &INT(IHTS1*FTtoM),&
+          &INT(IHTLS1*FTtoM),&
+          &INT(IHTSS1*FTtoM),&
+          &INT(ICRBS1*FTtoM),&
+          &ICRCV1,SP11,SP21,IS1OK,&
+          &DBHS2*INtoCM,&
+          &INT(IHTS2*FTtoM),&
+          &INT(IHTLS2*FTtoM),&
+          &INT(IHTSS2*FTtoM),&
+          &INT(ICRBS2*FTtoM),&
+          &ICRCV2,SP12,SP22,IS2OK,&
+          &DBHS3*INtoCM,&
+          &INT(IHTS3*FTtoM),&
+          &INT(IHTLS3*FTtoM),&
+          &INT(IHTSS3*FTtoM),&
+          &INT(ICRBS3*FTtoM),&
+          &ICRCV3,SP13,SP23,IS3OK,&
+          &NSTR,ICOVR,SSCODES(ISTRCL+1), DBSKODE, NTREES)
+  else
+     call DBSSTRCLASS(IY(ICYCLE), NPLT, ICD, &
+          & DBHS1,IHTS1,IHTLS1,IHTSS1,ICRBS1,ICRCV1,SP11,SP21,IS1OK, &
+          & DBHS2,IHTS2,IHTLS2,IHTSS2,ICRBS2,ICRCV2,SP12,SP22,IS2OK, &
+          & DBHS3,IHTS3,IHTLS3,IHTSS3,ICRBS3,ICRCV3,SP13,SP23,IS3OK, &
+          & NSTR,ICOVR,SSCODES(ISTRCL+1), DBSKODE, NTREES)
+  end if
   if (DBSKODE.eq.0) return
 
   if (ICYCLE.eq.1) then
@@ -709,11 +733,34 @@ subroutine SSTAGE(INBA,INICYCLE,LSUPRT)
 
   if (IRREF.gt.0 .and. .not. LSUPRT .and. NTREES .gt. 0) then
      call GETLUN(IOUT)
-     write (IOUT,90) IRREF,IY(ICYCLE),ICD, &
-          & DBHS1,IHTS1,IHTLS1,IHTSS1,ICRBS1,ICRCV1,SP11,SP21,IS1OK, &
-          & DBHS2,IHTS2,IHTLS2,IHTSS2,ICRBS2,ICRCV2,SP12,SP22,IS2OK, &
-          & DBHS3,IHTS3,IHTLS3,IHTSS3,ICRBS3,ICRCV3,SP13,SP23,IS3OK, &
-          & NSTR,ICOVR,SSCODES(ISTRCL+1)
+     if (LMETRICVAR) then
+        write (IOUT,90) IRREF,IY(ICYCLE),ICD,&
+             &DBHS1*INtoCM,&
+             &INT(IHTS1*FTtoM),&
+             &INT(IHTLS1*FTtoM),&
+             &INT(IHTSS1*FTtoM),&
+             &INT(ICRBS1*FTtoM),&
+             &ICRCV1,SP11,SP21,IS1OK,&
+             &DBHS2*INtoCM,&
+             &INT(IHTS2*FTtoM),&
+             &INT(IHTLS2*FTtoM),&
+             &INT(IHTSS2*FTtoM),&
+             &INT(ICRBS2*FTtoM),&
+             &ICRCV2,SP12,SP22,IS2OK,&
+             &DBHS3*INtoCM,&
+             &INT(IHTS3*FTtoM),&
+             &INT(IHTLS3*FTtoM),&
+             &INT(IHTSS3*FTtoM),&
+             &INT(ICRBS3*FTtoM),&
+             &ICRCV3,SP13,SP23,IS3OK,&
+             &NSTR,ICOVR,SSCODES(ISTRCL+1)
+     else
+        write (IOUT,90) IRREF,IY(ICYCLE),ICD, &
+             & DBHS1,IHTS1,IHTLS1,IHTSS1,ICRBS1,ICRCV1,SP11,SP21,IS1OK, &
+             & DBHS2,IHTS2,IHTLS2,IHTSS2,ICRBS2,ICRCV2,SP12,SP22,IS2OK, &
+             & DBHS3,IHTS3,IHTLS3,IHTSS3,ICRBS3,ICRCV3,SP13,SP23,IS3OK, &
+             & NSTR,ICOVR,SSCODES(ISTRCL+1)
+     end if
      90 format (1X,I5,1X,I4,I3,3(1X,F5.1,1X,I3,1X,I3,1X, &
           & I3,1X,I3,1X,I3,1X,A3,1X,A3,1X,I1),1X,I1,1X,I3,2X,A4)
   end if

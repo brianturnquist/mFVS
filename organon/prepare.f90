@@ -246,7 +246,7 @@ subroutine EDIT(VERSION,NPTS,NTREES,STAGE,BHAGE,SPECIES,&
   !     EDIT TREE RECORDS FOR ERRORS
 
   do I = 1,NTREES
-     call CKSP_EDIT(VERSION,I,SPECIES,TERROR)
+     call CKSP_RUN(VERSION,I,SPECIES,TERROR)
      if (DBH(I) .le.0.09) then
         TERROR(I,2) = 1
      end if
@@ -301,7 +301,7 @@ subroutine EDIT(VERSION,NPTS,NTREES,STAGE,BHAGE,SPECIES,&
            MAXRA = HT(I)
         end if
      end select
-     call SPGROUP_EDIT(VERSION,I,SPECIES,SPGRP)
+     call SPGROUP_RUN(VERSION,I,SPECIES,SPGRP)
      IIB = IB
      if (VERSION .ge.4) IIB = 1
      if (SPGRP(I).le.IIB) then
@@ -427,7 +427,7 @@ subroutine EDIT(VERSION,NPTS,NTREES,STAGE,BHAGE,SPECIES,&
      end if
   case(4)
      if (MAXRA .gt.0.0) then
-        call WHHLB_H40_EDIT(SI_1,20.0,150.0,MAXHT)
+        call WHHLB_H40_RUN(SI_1,20.0,150.0,MAXHT)
         if (MAXRA .gt. MAXHT) SWARNING(3) = 1
      end if
   end select
@@ -484,93 +484,7 @@ subroutine EDIT(VERSION,NPTS,NTREES,STAGE,BHAGE,SPECIES,&
   return
 end
 
-subroutine SPGROUP_EDIT(VERSION,I,SPECIES,SPGRP)
-  !     DETERMINE SPECIES GROUP FOR EACH TREE IN TREE LIST
 
-  !     I = TREE INDICATOR
-
-  implicit none
-  ! Variables
-  integer*4 :: VERSION,I,SPECIES(2000),SPGRP(2000),ISX,J
-
-  integer*4 :: SCODE1(19) = (/            202,15,17,122,117,81,263,242,231,361,431,631,805,312,815,&
-       &818,351,492,920 /)
-
-  integer*4 :: SCODE2(11) = (/            202,17,263,242,231,361,312,815,351,492,920 /)
-
-  integer*4 :: SCODE3(7) = (/            351,202,263,242,312,492,920 /)
-  ISX = -9999
-  select case (VERSION)
-  case(1)
-     do J = 1, 19
-        if (SPECIES(I).eq. SCODE1(J)) then
-           ISX = J
-           if (ISX .gt.2) ISX = ISX-1
-           exit
-        end if
-     end do
-  case(2,3)
-     do J = 1, 11
-        if (SPECIES(I).eq. SCODE2(J)) then
-           ISX = J
-           exit
-        end if
-     end do
-  case(4)
-     do J = 1, 7
-        if (SPECIES(I).eq. SCODE3(J)) then
-           ISX = J
-           exit
-        end if
-     end do
-  end select
-  SPGRP(I) = ISX
-  return
-end
-
-subroutine CKSP_EDIT(VERSION,I,SPECIES,TERROR)
-  !     DETERMINE SPECIES GROUP FOR EACH TREE IN TREE LIST
-
-  !     I = TREE INDICATOR
-
-  implicit none
-  ! Variables
-  integer*4 :: VERSION,I,SPECIES(2000),J,TERROR(2000,6)
-  logical*2 :: BAD
-
-  integer*4 :: SCODE1(19) = (/            202,15,17,122,117,81,263,242,231,361,431,631,805,312,815,&
-       &818,351,492,920 /)
-
-  integer*4 :: SCODE2(11) = (/            202,17,263,242,231,361,312,815,351,492,920 /)
-
-  integer*4 :: SCODE3(7) = (/            351,202,263,242,312,492,920 /)
-  BAD = .true.
-  select case (VERSION)
-  case(1)
-     do J = 1, 19
-        if (SPECIES(I).eq. SCODE1(J)) then
-           BAD = .false.
-           exit
-        end if
-     end do
-  case(2,3)
-     do J = 1, 11
-        if (SPECIES(I).eq. SCODE2(J)) then
-           BAD = .false.
-        end if
-     end do
-  case(4)
-     do J = 1, 7
-        if (SPECIES(I).eq. SCODE3(J)) then
-           BAD = .false.
-        end if
-     end do
-  end select
-  if (BAD) then
-     TERROR(I,1) = 1
-  end if
-  return
-end
 
 subroutine CKAGE_EDIT(VERSION,NTREES,IB,SPGRP,SI_1,SI_2,&
      &PDEN,HT,OLD)
@@ -597,7 +511,7 @@ subroutine CKAGE_EDIT(VERSION,NTREES,IB,SPGRP,SI_1,SI_2,&
            if (SPGRP(K) .eq.5) SITE = SI_1*0.66-4.5
            ISISP = 1
         end if
-        call HS_HG_EDIT(ISISP,SITE,HT(K),GEAGE,PHTGRO)
+        call HS_HG(ISISP,SITE,HT(K),GEAGE,PHTGRO)
         IDXAGE = 500.0
      case(2)
         if (SPGRP(K) .eq.3) then
@@ -641,7 +555,7 @@ subroutine CKAGE_EDIT(VERSION,NTREES,IB,SPGRP,SI_1,SI_2,&
 
            SITE = SI_1
            call WHHLB_SI_UC_EDIT(SITE,PDEN,SI_UC)
-           call WHHLB_GEA_EDIT(HT(K),SI_UC,GEAGE)
+           call WHHLB_GEA_RUN(HT(K),SI_UC,GEAGE)
         end if
         IDXAGE = 30.0
      end select
@@ -652,34 +566,6 @@ subroutine CKAGE_EDIT(VERSION,NTREES,IB,SPGRP,SI_1,SI_2,&
   return
 end
 
-subroutine HS_HG_EDIT(ISP,SI,HT,GEAGE,PHTGRO)
-  implicit none
-  ! Variables
-  integer*4 :: ISP
-  real*4  :: SI,GEAGE,HT,PHTGRO,B0,B1,B2,BBC,X50,A1A,XAI,XAI5
-  if (ISP .eq.1) then
-     B0 = -6.21693
-     B1 = 0.281176
-     B2 = 1.14354
-  else
-     B0 = -6.54707
-     B1 = 0.288169
-     B2 = 1.21297
-  end if
-  BBC = B0+B1*LOG(SI)
-  X50 = 1.0-EXP((-1.)*EXP(BBC+B2*3.912023))
-  A1A = 1.0-(HT-4.5)*(X50/SI)
-  if (A1A .le.0.) then
-     GEAGE = 500.
-     PHTGRO = 0.
-  else
-     GEAGE = ((-1.0*LOG(A1A))/(EXP(B0)*SI**B1))**(1.0/B2)
-     XAI = 1.0-EXP(-1.0*EXP(BBC+B2*LOG(GEAGE)))
-     XAI5 = 1.0-EXP((-1.)*EXP(BBC+B2*LOG(GEAGE+5.)))
-     PHTGRO = (4.5+(HT-4.5)*(XAI5/XAI))-HT
-  end if
-  return
-end
 
 subroutine B_HG_EDIT(SI,HT,GEAGE,PHTGRO)
   implicit none
@@ -744,41 +630,6 @@ subroutine F_HG_EDIT(SI,HT,GEAGE,PHTGRO)
   return
 end
 
-  !      SUBROUTINE NCHG(SI,HT,GEAGE,PHTGRO)
-  !C
-  !C     NIGH AND COURTIN (1998) RED ALDER
-  !C
-  !      IMPLICIT NONE
-  !      REAL*4 SI,HT,GEAGE,PHTGRO,MSI,MHT,X1,X2,AGE,FMHT
-  !      MSI=SI/3.28
-  !      MHT=HT/3.28
-  !      X1=1.693*(MSI-1.3)/(MHT-1.3)
-  !      IF(X1 .LT. 1.0001) X1=1.0001
-  !      X2=(3.600-ALOG(X1-1.0))/1.240
-  !      GEAGE=EXP(X2)+0.5
-  !      IF(GEAGE .GT. 150.0) GEAGE=150.0
-  !      AGE=GEAGE+1.0
-  !      FMHT=1.3+((1.693*(MSI-1.3))/(1.0+EXP(3.600-1.240*ALOG(AGE-0.5))))
-  !      PHTGRO=3.28*(FMHT-MHT)
-  !      RETURN
-  !      END
-
-subroutine WHHLB_GEA_EDIT(H,SI_UC,GEA)
-
-  !     RED ALDER GROWTH EFFECTIVE AGE EQUATION BASED ON H40 EQUATION FROM
-  !         THE WEISKITTEL, HANN, HIBBS, LAM, AND BLUHM DOMINANT HEIGHT GROWTH
-  !         EQUATION
-
-  implicit none
-  ! Variables
-  real*4  :: H,SI_UC,GEA,B1,B2,X
-  B1 = -4.481266
-  B2 = -0.658884
-  X = (1.0/B1)*ALOG(H/SI_UC)+20.0**B2
-  if (X .lt.0.03) X = 0.03
-  GEA = X**(1.0/B2)
-  return
-end
 
 subroutine GET_ORGEDIT_EDITION(EDITION)
   implicit none

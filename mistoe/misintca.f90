@@ -307,5 +307,8 @@ subroutine MISINT
      200 continue
   end do
 
+  !     OC SHARES THIS TABLE; ITS SPECIES 4 IS GRAND FIR INSTEAD OF WHITE FIR
+  if (VARACD .eq. 'OC') CSPARR(4) = 'GF'
+
   return
 end

@@ -60,7 +60,7 @@
 ../ne/findag.f90
 ../ne/forkod.f90
 ../ne/grinit.f90
-../ne/grohed.f90
+../vbase/grohed.f90
 ../ne/htdbh.f90
 ../ne/htgf.f90
 ../ne/logs.f90
@@ -237,6 +237,7 @@
 ../base/opnew.f90
 ../base/opnewc.f90
 ../base/oprdat.f90
+../base/mcnvrt.f90
 ../base/opsame.f90
 ../base/opsort.f90
 ../base/opstus.f90
@@ -379,19 +380,19 @@
 
 ../strp/esaddt.f90
 ../strp/esblkd.f90
-../strp/escprs.f90
+../estb/escprs.f90
 ../estb/esetpr.f90
-../strp/esfltr.f90
+../estb/esfltr.f90
 ../strp/esgent.f90
 ../strp/esin.f90
 ../strp/esinit.f90
 ../strp/esmsgs.f90
 ../strp/esnutr.f90
 ../strp/esout.f90
-../strp/esplt1.f90
+../estb/esplt1.f90
 ../estb/esplt2.f90
 ../strp/esprep.f90
-../strp/esprin.f90
+../estb/esprin.f90
 ../estb/esrann.f90
 ../strp/estime.f90
 ../estb/estump.f90
@@ -505,7 +506,6 @@
 ../volume/NVEL/r6vol2.f90
 ../volume/NVEL/r6vol3.f90
 ../volume/NVEL/r8clkdib.f90
-../volume/NVEL/r8dib.f90
 ../volume/NVEL/r8init.f90
 ../volume/NVEL/r8vol.f90
 ../volume/NVEL/r8vol1.f90
@@ -571,12 +571,12 @@
 ../fire/base/common/FMPROP.f90
 ../fire/base/common/FMSVCM.f90
 
-../fire/ne/fmbrkt.f90
+../fire/base/fmbrkt.f90
 ../fire/ne/fmcba.f90
 ../fire/ne/fmcblk.f90
-../fire/ne/fmcfmd.f90
+../fire/ak/fmcfmd.f90
 ../fire/ne/fmcrow.f90
-../fire/ls/fmmois.f90
+../fire/base/fmmois.f90
 ../fire/ne/fmneft.f90
 ../fire/ne/fmsfall.f90
 ../fire/ne/fmvinit.f90

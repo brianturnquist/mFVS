@@ -6,6 +6,7 @@ subroutine DBSFMBURN(IYEAR,NPLT,ONEHR,TENHR,HUNDHR,THOUSHR,DUFF,&
      &LIVEW,LIVEH,MFWIND,SLOPE,FLAME,SCORCH,FTYPE,FM,WT,KODE)
 
   implicit none
+  include 'PRGPRM.f90'
 
   !     PURPOSE: TO POPULATE A DATABASE WITH THE BURN CONDITIONS REPORT
   !              INFORMATION
@@ -97,32 +98,64 @@ subroutine DBSFMBURN(IYEAR,NPLT,ONEHR,TENHR,HUNDHR,THOUSHR,DUFF,&
   if (IBURN.eq.2) KODE = 0
   call DBSCASE(1)
 
-  iRet = fsql3_tableexists(IoutDBref,"FVS_BurnReport"//CHAR(0))
+  if (LMETRICVAR) then
+     iRet = fsql3_tableexists(IoutDBref,"FVS_BurnReport_Metric"&
+          &//CHAR(0))
+  else
+     iRet = fsql3_tableexists(IoutDBref,"FVS_BurnReport"//CHAR(0))
+  end if
   if (iRet.eq.0) then
-     SQLStmtStr = 'CREATE TABLE FVS_BurnReport ('//&
-          &'CaseID text not null,'//&
-          &'StandID text not null,'//&
-          &'Year int null,'//&
-          &'One_Hr_Moisture real null,'//&
-          &'Ten_Hr_Moisture real null,'//&
-          &'Hundred_Hr_Moisture real null,'//&
-          &'Thousand_Hr_Moisture real null,'//&
-          &'Duff_Moisture real null,'//&
-          &'Live_Woody_Moisture real null,'//&
-          &'Live_Herb_Moisture real null,'//&
-          &'Midflame_Wind real null,'//&
-          &'Slope int null,'//&
-          &'Flame_length real null,'//&
-          &'Scorch_height real null,'//&
-          &'Fire_Type text null,'//&
-          &'FuelModl1 int null,'//&
-          &'Weight1 real null,'//&
-          &'FuelModl2 int null,'//&
-          &'Weight2 real null,'//&
-          &'FuelModl3 int null,'//&
-          &'Weight3 real null,'//&
-          &'FuelModl4 int null,'//&
-          &'Weight4 real null);'//CHAR(0)
+     if (LMETRICVAR) then
+        SQLStmtStr = 'CREATE TABLE FVS_BurnReport_Metric ('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year int null,'//&
+             &'One_Hr_Moisture real null,'//&
+             &'Ten_Hr_Moisture real null,'//&
+             &'Hundred_Hr_Moisture real null,'//&
+             &'Thousand_Hr_Moisture real null,'//&
+             &'Duff_Moisture real null,'//&
+             &'Live_Woody_Moisture real null,'//&
+             &'Live_Herb_Moisture real null,'//&
+             &'Midflame_Wind real null,'//&
+             &'Slope int null,'//&
+             &'Flame_length real null,'//&
+             &'Scorch_height real null,'//&
+             &'Fire_Type text null,'//&
+             &'FuelModl1 int null,'//&
+             &'Weight1 real null,'//&
+             &'FuelModl2 int null,'//&
+             &'Weight2 real null,'//&
+             &'FuelModl3 int null,'//&
+             &'Weight3 real null,'//&
+             &'FuelModl4 int null,'//&
+             &'Weight4 real null);'//CHAR(0)
+     else
+        SQLStmtStr = 'CREATE TABLE FVS_BurnReport ('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year int null,'//&
+             &'One_Hr_Moisture real null,'//&
+             &'Ten_Hr_Moisture real null,'//&
+             &'Hundred_Hr_Moisture real null,'//&
+             &'Thousand_Hr_Moisture real null,'//&
+             &'Duff_Moisture real null,'//&
+             &'Live_Woody_Moisture real null,'//&
+             &'Live_Herb_Moisture real null,'//&
+             &'Midflame_Wind real null,'//&
+             &'Slope int null,'//&
+             &'Flame_length real null,'//&
+             &'Scorch_height real null,'//&
+             &'Fire_Type text null,'//&
+             &'FuelModl1 int null,'//&
+             &'Weight1 real null,'//&
+             &'FuelModl2 int null,'//&
+             &'Weight2 real null,'//&
+             &'FuelModl3 int null,'//&
+             &'Weight3 real null,'//&
+             &'FuelModl4 int null,'//&
+             &'Weight4 real null);'//CHAR(0)
+     end if
      iRet = fsql3_exec(IoutDBref,trim(SQLStmtStr))
      if (iRet .ne.0) then
         IBURN = 0
@@ -147,15 +180,27 @@ subroutine DBSFMBURN(IYEAR,NPLT,ONEHR,TENHR,HUNDHR,THOUSHR,DUFF,&
   WTB(3) = INT((WT(3)*100.)+0.5)
   WTB(4) = INT((WT(4)*100.)+0.5)
 
-  write(SQLStmtStr,*)'INSERT INTO FVS_BurnReport (CaseID,',&
-       &'StandID,Year,One_Hr_Moisture,Ten_Hr_Moisture,',&
-       &'Hundred_Hr_Moisture,Thousand_Hr_Moisture,Duff_Moisture,',&
-       &'Live_Woody_Moisture,Live_Herb_Moisture,Midflame_Wind,Slope,',&
-       &'Flame_length,Scorch_height,Fire_Type,FuelModl1,',&
-       &'Weight1,FuelModl2,Weight2,FuelModl3,Weight3,',&
-       &'FuelModl4,Weight4) VALUES(''',CASEID,''',''',&
-       &TRIM(NPLT),''',?,?,?,?,?,?,?,?,?,?,?,?,''',&
-       &TRIM(FTYPE),''',?,?,?,?,?,?,?,?);'//CHAR(0)
+  if (LMETRICVAR) then
+     write(SQLStmtStr,*)'INSERT INTO FVS_BurnReport_Metric (CaseID,',&
+          &'StandID,Year,One_Hr_Moisture,Ten_Hr_Moisture,',&
+          &'Hundred_Hr_Moisture,Thousand_Hr_Moisture,Duff_Moisture,',&
+          &'Live_Woody_Moisture,Live_Herb_Moisture,Midflame_Wind,Slope,',&
+          &'Flame_length,Scorch_height,Fire_Type,FuelModl1,',&
+          &'Weight1,FuelModl2,Weight2,FuelModl3,Weight3,',&
+          &'FuelModl4,Weight4) VALUES(''',CASEID,''',''',&
+          &TRIM(NPLT),''',?,?,?,?,?,?,?,?,?,?,?,?,''',&
+          &TRIM(FTYPE),''',?,?,?,?,?,?,?,?);'//CHAR(0)
+  else
+     write(SQLStmtStr,*)'INSERT INTO FVS_BurnReport (CaseID,',&
+          &'StandID,Year,One_Hr_Moisture,Ten_Hr_Moisture,',&
+          &'Hundred_Hr_Moisture,Thousand_Hr_Moisture,Duff_Moisture,',&
+          &'Live_Woody_Moisture,Live_Herb_Moisture,Midflame_Wind,Slope,',&
+          &'Flame_length,Scorch_height,Fire_Type,FuelModl1,',&
+          &'Weight1,FuelModl2,Weight2,FuelModl3,Weight3,',&
+          &'FuelModl4,Weight4) VALUES(''',CASEID,''',''',&
+          &TRIM(NPLT),''',?,?,?,?,?,?,?,?,?,?,?,?,''',&
+          &TRIM(FTYPE),''',?,?,?,?,?,?,?,?);'//CHAR(0)
+  end if
 
   iRet = fsql3_prepare(IoutDBref, trim(SQLStmtStr))
 

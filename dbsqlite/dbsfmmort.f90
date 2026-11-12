@@ -90,47 +90,90 @@ subroutine DBSFMMORT(IYEAR,KILLED,TOTAL,BAKILL,&
 
   call DBSCASE(1)
   iRet = fsql3_exec (IoutDBref,"Begin;"//Char(0))
-  iRet = fsql3_tableexists(IoutDBref,&
-       &"FVS_Mortality"//CHAR(0))
+  if (LMETRICVAR) then
+     iRet = fsql3_tableexists(IoutDBref,&
+          &"FVS_Mortality_Metric"//CHAR(0))
+  else
+     iRet = fsql3_tableexists(IoutDBref,&
+          &"FVS_Mortality"//CHAR(0))
+  end if
   if (iRet.eq.0) then
-     SQLStmtStr = 'CREATE TABLE FVS_Mortality ('//&
-          &'CaseID text not null,'//&
-          &'StandID text not null,'//&
-          &'Year Int null,'//&
-          &'SpeciesFVS text null,'//&
-          &'SpeciesPLANTS text null,'//&
-          &'SpeciesFIA text null,'//&
-          &'Killed_class1 real null,'//&
-          &'Total_class1 real null,'//&
-          &'Killed_class2 real null,'//&
-          &'Total_class2 real null,'//&
-          &'Killed_class3 real null,'//&
-          &'Total_class3 real null,'//&
-          &'Killed_class4 real null,'//&
-          &'Total_class4 real null,'//&
-          &'Killed_class5 real null,'//&
-          &'Total_class5 real null,'//&
-          &'Killed_class6 real null,'//&
-          &'Total_class6 real null,'//&
-          &'Killed_class7 real null,'//&
-          &'Total_class7 real null,'//&
-          &'Bakill real null,'//&
-          &'Volkill real null);'//CHAR(0)
+     if (LMETRICVAR) then
+        SQLStmtStr = 'CREATE TABLE FVS_Mortality_Metric ('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year Int null,'//&
+             &'SpeciesFVS text null,'//&
+             &'SpeciesPLANTS text null,'//&
+             &'SpeciesFIA text null,'//&
+             &'Killed_class1 real null,'//&
+             &'Total_class1 real null,'//&
+             &'Killed_class2 real null,'//&
+             &'Total_class2 real null,'//&
+             &'Killed_class3 real null,'//&
+             &'Total_class3 real null,'//&
+             &'Killed_class4 real null,'//&
+             &'Total_class4 real null,'//&
+             &'Killed_class5 real null,'//&
+             &'Total_class5 real null,'//&
+             &'Killed_class6 real null,'//&
+             &'Total_class6 real null,'//&
+             &'Killed_class7 real null,'//&
+             &'Total_class7 real null,'//&
+             &'Bakill real null,'//&
+             &'Volkill real null);'//CHAR(0)
+     else
+        SQLStmtStr = 'CREATE TABLE FVS_Mortality ('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year Int null,'//&
+             &'SpeciesFVS text null,'//&
+             &'SpeciesPLANTS text null,'//&
+             &'SpeciesFIA text null,'//&
+             &'Killed_class1 real null,'//&
+             &'Total_class1 real null,'//&
+             &'Killed_class2 real null,'//&
+             &'Total_class2 real null,'//&
+             &'Killed_class3 real null,'//&
+             &'Total_class3 real null,'//&
+             &'Killed_class4 real null,'//&
+             &'Total_class4 real null,'//&
+             &'Killed_class5 real null,'//&
+             &'Total_class5 real null,'//&
+             &'Killed_class6 real null,'//&
+             &'Total_class6 real null,'//&
+             &'Killed_class7 real null,'//&
+             &'Total_class7 real null,'//&
+             &'Bakill real null,'//&
+             &'Volkill real null);'//CHAR(0)
+     end if
      iRet = fsql3_exec(IoutDBref,SQLStmtStr)
      if (iRet .ne.0) then
         IMORTF = 0
         return
      end if
   end if
-  SQLStmtStr = 'INSERT INTO FVS_Mortality (CaseID,'//&
-       &'StandID,Year,SpeciesFVS,SpeciesPLANTS,SpeciesFIA,'//&
-       &'Killed_class1,Total_class1,'//&
-       &'Killed_class2,'//&
-       &'Total_class2,Killed_class3,Total_class3,Killed_class4,'//&
-       &'Total_class4,Killed_class5,Total_class5,Killed_class6,'//&
-       &'Total_class6,Killed_class7,Total_class7,Bakill,Volkill)'//&
-       &" VALUES ('"//CASEID//"','"//TRIM(NPLT)//&
-       &"',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"//CHAR(0)
+  if (LMETRICVAR) then
+     SQLStmtStr = 'INSERT INTO FVS_Mortality_Metric (CaseID,'//&
+          &'StandID,Year,SpeciesFVS,SpeciesPLANTS,SpeciesFIA,'//&
+          &'Killed_class1,Total_class1,'//&
+          &'Killed_class2,'//&
+          &'Total_class2,Killed_class3,Total_class3,Killed_class4,'//&
+          &'Total_class4,Killed_class5,Total_class5,Killed_class6,'//&
+          &'Total_class6,Killed_class7,Total_class7,Bakill,Volkill)'//&
+          &" VALUES ('"//CASEID//"','"//TRIM(NPLT)//&
+          &"',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"//CHAR(0)
+  else
+     SQLStmtStr = 'INSERT INTO FVS_Mortality (CaseID,'//&
+          &'StandID,Year,SpeciesFVS,SpeciesPLANTS,SpeciesFIA,'//&
+          &'Killed_class1,Total_class1,'//&
+          &'Killed_class2,'//&
+          &'Total_class2,Killed_class3,Total_class3,Killed_class4,'//&
+          &'Total_class4,Killed_class5,Total_class5,Killed_class6,'//&
+          &'Total_class6,Killed_class7,Total_class7,Bakill,Volkill)'//&
+          &" VALUES ('"//CASEID//"','"//TRIM(NPLT)//&
+          &"',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);"//CHAR(0)
+  end if
 
   iRet = fsql3_prepare(IoutDBref, SQLStmtStr)
   if (iRet .ne.0) then

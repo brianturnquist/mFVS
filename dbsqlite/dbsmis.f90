@@ -59,23 +59,45 @@ subroutine DBSMIS1(IYEAR,CNPLT,CSP,&
 
   call DBSCASE(1)
 
-  iRet = fsql3_tableexists(IoutDBref,&
-       &"FVS_DM_Spp_Sum"//CHAR(0))
+  if (LMETRICVAR) then
+     iRet = fsql3_tableexists(IoutDBref,&
+          &"FVS_DM_Spp_Sum_Metric"//CHAR(0))
+  else
+     iRet = fsql3_tableexists(IoutDBref,&
+          &"FVS_DM_Spp_Sum"//CHAR(0))
+  end if
   if (iRet.eq.0) then
-     SQLStmtStr = 'CREATE TABLE FVS_DM_Spp_Sum ('//&
-          &'CaseID text not null,'//&
-          &'StandID text not null,'//&
-          &'Year Int null,'//&
-          &'SpeciesFVS text null,'//&
-          &'SpeciesPLANTS text null,'//&
-          &'SpeciesFIA text null,'//&
-          &'Mean_DMR real null,'//&
-          &'Mean_DMI real null,'//&
-          &'Inf_TPA int null,'//&
-          &'Mort_TPA int  null,'//&
-          &'Inf_TPA_Pct int null,'//&
-          &'Mort_TPA_Pct int null,'//&
-          &'Stnd_TPA_Pct int null);'//CHAR(0)
+     if (LMETRICVAR) then
+        SQLStmtStr = 'CREATE TABLE FVS_DM_Spp_Sum_Metric ('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year Int null,'//&
+             &'SpeciesFVS text null,'//&
+             &'SpeciesPLANTS text null,'//&
+             &'SpeciesFIA text null,'//&
+             &'Mean_DMR real null,'//&
+             &'Mean_DMI real null,'//&
+             &'Inf_TPH int null,'//&
+             &'Mort_TPH int  null,'//&
+             &'Inf_TPH_Pct int null,'//&
+             &'Mort_TPH_Pct int null,'//&
+             &'Stnd_TPH_Pct int null);'//CHAR(0)
+     else
+        SQLStmtStr = 'CREATE TABLE FVS_DM_Spp_Sum ('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year Int null,'//&
+             &'SpeciesFVS text null,'//&
+             &'SpeciesPLANTS text null,'//&
+             &'SpeciesFIA text null,'//&
+             &'Mean_DMR real null,'//&
+             &'Mean_DMI real null,'//&
+             &'Inf_TPA int null,'//&
+             &'Mort_TPA int  null,'//&
+             &'Inf_TPA_Pct int null,'//&
+             &'Mort_TPA_Pct int null,'//&
+             &'Stnd_TPA_Pct int null);'//CHAR(0)
+     end if
      iRet = fsql3_exec(IoutDBref,SQLStmtStr)
      if (iRet .ne.0) then
         IDM1 = 0
@@ -83,12 +105,21 @@ subroutine DBSMIS1(IYEAR,CNPLT,CSP,&
      end if
   end if
 
-  write(SQLStmtStr,*) 'INSERT INTO FVS_DM_Spp_Sum ',&
-       &' (CaseID,StandID,Year,SpeciesFVS,SpeciesPLANTS,SpeciesFIA,',&
-       &'Mean_DMR,Mean_DMI,Inf_TPA,',&
-       &'Mort_TPA,Inf_TPA_Pct,Mort_TPA_Pct,Stnd_TPA_Pct) ',&
-       &' VALUES (''',CASEID,''',''',TRIM(CNPLT),&
-       &''',?,?,?,?,?,?,?,?,?,?,?);'
+  if (LMETRICVAR) then
+     write(SQLStmtStr,*) 'INSERT INTO FVS_DM_Spp_Sum_Metric',&
+          &' (CaseID,StandID,Year,SpeciesFVS,SpeciesPLANTS,SpeciesFIA,',&
+          &'Mean_DMR,Mean_DMI,Inf_TPH,',&
+          &'Mort_TPH,Inf_TPH_Pct,Mort_TPH_Pct,Stnd_TPH_Pct) ',&
+          &' VALUES (''',CASEID,''',''',TRIM(CNPLT),&
+          &''',?,?,?,?,?,?,?,?,?,?,?);'
+  else
+     write(SQLStmtStr,*) 'INSERT INTO FVS_DM_Spp_Sum ',&
+          &' (CaseID,StandID,Year,SpeciesFVS,SpeciesPLANTS,SpeciesFIA,',&
+          &'Mean_DMR,Mean_DMI,Inf_TPA,',&
+          &'Mort_TPA,Inf_TPA_Pct,Mort_TPA_Pct,Stnd_TPA_Pct) ',&
+          &' VALUES (''',CASEID,''',''',TRIM(CNPLT),&
+          &''',?,?,?,?,?,?,?,?,?,?,?);'
+  end if
   iRet = fsql3_exec(IoutDBref,"Begin;"//CHAR(0))
   iRet = fsql3_prepare(IoutDBref, TRIM(SQLStmtStr)//CHAR(0))
   if (iRet .ne.0) then
@@ -169,8 +200,14 @@ subroutine DBSMIS1(IYEAR,CNPLT,CSP,&
      iRet = fsql3_reset(IoutDBref)
   end do
 
+  if (LMETRICVAR) then
+     iRet = fsql3_finalize(IoutDBref)
+  end if
+
   iRet = fsql3_exec(IoutDBref,"Commit;"//CHAR(0))
-  iRet = fsql3_finalize(IoutDBref)
+  if (.not. LMETRICVAR) then
+     iRet = fsql3_finalize(IoutDBref)
+  end if
   if (iRet.ne.0) then
      IDM1 = 0
      return
@@ -184,6 +221,7 @@ subroutine DBSMIS2(IYEAR,NPLT,NAGE,&
      &ISTVOLM,ISTPIT,ISTPIV,ISTPMT,ISTPMV,STDMR,STDMI,KODE)
 
   implicit none
+  include 'PRGPRM.f90'
 
   !     PURPOSE: TO POPULATE A DATABASE WITH THE 2ND MISTLETOE REPORT INFORMATION
   !     AUTH: D. ROBINSON, ESSA - BASED ON D. GAMMEL (DBSFUELS)
@@ -239,29 +277,57 @@ subroutine DBSMIS2(IYEAR,NPLT,NAGE,&
 
   call DBSCASE(1)
 
-  iRet = fsql3_tableexists(IoutDBref,&
-       &"FVS_DM_Stnd_Sum"//CHAR(0))
+  if (LMETRICVAR) then
+     iRet = fsql3_tableexists(IoutDBref,&
+          &"FVS_DM_Stnd_Sum_Metric"//CHAR(0))
+  else
+     iRet = fsql3_tableexists(IoutDBref,&
+          &"FVS_DM_Stnd_Sum"//CHAR(0))
+  end if
   if (iRet.eq.0) then
-     SQLStmtStr = 'CREATE TABLE FVS_DM_Stnd_Sum ('//&
-          &'CaseID text not null,'//&
-          &'StandID text not null,'//&
-          &'Year int null,'//&
-          &'Age int null,'//&
-          &'Stnd_TPA int null,'//&
-          &'Stnd_BA int null,'//&
-          &'Stnd_Vol int null,'//&
-          &'Inf_TPA int null,'//&
-          &'Inf_BA int null,'//&
-          &'Inf_Vol int null,'//&
-          &'Mort_TPA int null,'//&
-          &'Mort_BA int null,'//&
-          &'Mort_Vol int null,'//&
-          &'Inf_TPA_Pct int null,'//&
-          &'Inf_Vol_Pct int null,'//&
-          &'Mort_TPA_Pct int null,'//&
-          &'Mort_Vol_Pct int null,'//&
-          &'Mean_DMR real null,'//&
-          &'Mean_DMI real null);'//CHAR(0)
+     if (LMETRICVAR) then
+        SQLStmtStr = 'CREATE TABLE FVS_DM_Stnd_Sum_Metric ('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year int null,'//&
+             &'Age int null,'//&
+             &'Stnd_TPH int null,'//&
+             &'Stnd_BA int null,'//&
+             &'Stnd_Vol int null,'//&
+             &'Inf_TPH int null,'//&
+             &'Inf_BA int null,'//&
+             &'Inf_Vol int null,'//&
+             &'Mort_TPH int null,'//&
+             &'Mort_BA int null,'//&
+             &'Mort_Vol int null,'//&
+             &'Inf_TPH_Pct int null,'//&
+             &'Inf_Vol_Pct int null,'//&
+             &'Mort_TPH_Pct int null,'//&
+             &'Mort_Vol_Pct int null,'//&
+             &'Mean_DMR real null,'//&
+             &'Mean_DMI real null);'//CHAR(0)
+     else
+        SQLStmtStr = 'CREATE TABLE FVS_DM_Stnd_Sum ('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year int null,'//&
+             &'Age int null,'//&
+             &'Stnd_TPA int null,'//&
+             &'Stnd_BA int null,'//&
+             &'Stnd_Vol int null,'//&
+             &'Inf_TPA int null,'//&
+             &'Inf_BA int null,'//&
+             &'Inf_Vol int null,'//&
+             &'Mort_TPA int null,'//&
+             &'Mort_BA int null,'//&
+             &'Mort_Vol int null,'//&
+             &'Inf_TPA_Pct int null,'//&
+             &'Inf_Vol_Pct int null,'//&
+             &'Mort_TPA_Pct int null,'//&
+             &'Mort_Vol_Pct int null,'//&
+             &'Mean_DMR real null,'//&
+             &'Mean_DMI real null);'//CHAR(0)
+     end if
      iRet = fsql3_exec(IoutDBref,SQLStmtStr)
      if (iRet .ne.0) then
         IDM2 = 0
@@ -274,12 +340,21 @@ subroutine DBSMIS2(IYEAR,NPLT,NAGE,&
   STDMRB = STDMR
   STDMIB = STDMI
 
-  write(SQLStmtStr,*) 'INSERT INTO FVS_DM_Stnd_Sum (CaseID,',&
-       &'StandID,Year,Age,Stnd_TPA,Stnd_BA,Stnd_Vol,Inf_TPA,Inf_BA,',&
-       &'Inf_Vol,Mort_TPA,Mort_BA,Mort_Vol,Inf_TPA_Pct,Inf_Vol_Pct,',&
-       &'Mort_TPA_Pct,Mort_Vol_Pct,Mean_DMR,Mean_DMI)',&
-       &'VALUES (''',CASEID,''',''',TRIM(NPLT),&
-       &''',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);'
+  if (LMETRICVAR) then
+     write(SQLStmtStr,*)'INSERT INTO FVS_DM_Stnd_Sum_Metric(CaseID,',&
+          &'StandID,Year,Age,Stnd_TPH,Stnd_BA,Stnd_Vol,Inf_TPH,Inf_BA,',&
+          &'Inf_Vol,Mort_TPH,Mort_BA,Mort_Vol,Inf_TPH_Pct,Inf_Vol_Pct,',&
+          &'Mort_TPH_Pct,Mort_Vol_Pct,Mean_DMR,Mean_DMI)',&
+          &'VALUES (''',CASEID,''',''',TRIM(NPLT),&
+          &''',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);'
+  else
+     write(SQLStmtStr,*) 'INSERT INTO FVS_DM_Stnd_Sum (CaseID,',&
+          &'StandID,Year,Age,Stnd_TPA,Stnd_BA,Stnd_Vol,Inf_TPA,Inf_BA,',&
+          &'Inf_Vol,Mort_TPA,Mort_BA,Mort_Vol,Inf_TPA_Pct,Inf_Vol_Pct,',&
+          &'Mort_TPA_Pct,Mort_Vol_Pct,Mean_DMR,Mean_DMI)',&
+          &'VALUES (''',CASEID,''',''',TRIM(NPLT),&
+          &''',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);'
+  end if
 
   iRet = fsql3_prepare(IoutDBref, trim(SQLStmtStr)//CHAR(0))
   if (iRet .ne.0) then
@@ -342,10 +417,15 @@ subroutine DBSMIS2(IYEAR,NPLT,NAGE,&
 
   iRet = fsql3_step(IoutDBref)
   iRet = fsql3_finalize(IoutDBref)
+  if (LMETRICVAR) then
+     iRet = fsql3_exec(IoutDBref,"Commit;"//CHAR(0))
+  end if
   if (iRet.ne.0) then
      IDM2 = 0
   end if
-  return
+  if (.not. LMETRICVAR) then
+     return
+  end if
 
   return
 end
@@ -354,6 +434,7 @@ subroutine DBSMIS3(IYEAR,NPLT,NLABS,&
      &DCTPA,DCINF,DCMRT,DCDMR,DCDMI,KODE)
 
   implicit none
+  include 'PRGPRM.f90'
 
   !     PURPOSE: TO POPULATE A DATABASE WITH THE 3RD MISTLETOE REPORT INFORMATION
   !     AUTH: D. ROBINSON, ESSA - BASED ON D. GAMMEL (DBSFUELS)
@@ -408,24 +489,47 @@ subroutine DBSMIS3(IYEAR,NPLT,NLABS,&
 
   call DBSCASE(1)
 
-  iRet = fsql3_tableexists(IoutDBref,&
-       &"FVS_DM_Sz_Sum"//CHAR(0))
+  if (LMETRICVAR) then
+     iRet = fsql3_tableexists(IoutDBref,&
+          &"FVS_DM_Sz_Sum_Metric"//CHAR(0))
+  else
+     iRet = fsql3_tableexists(IoutDBref,&
+          &"FVS_DM_Sz_Sum"//CHAR(0))
+  end if
   if (iRet.eq.0) then
-     SQLStmtStr = 'CREATE TABLE FVS_DM_Sz_Sum ('//&
-          &'CaseID text not null,'//&
-          &'StandID text not null,'//&
-          &'Year int null,'//&
-          &'Type text not null,'//&
-          &char(39)//'0-3in'   //char(39)//' real null,'//&
-          &char(39)//'3-5in'  //char(39)//' real null,'//&
-          &char(39)//'5-7in' //char(39)//' real null,'//&
-          &char(39)//'7-9in' //char(39)//' real null,'//&
-          &char(39)//'9-11in' //char(39)//' real null,'//&
-          &char(39)//'11-13in' //char(39)//' real null,'//&
-          &char(39)//'13-15in' //char(39)//' real null,'//&
-          &char(39)//'15-17in' //char(39)//' real null,'//&
-          &char(39)//'17-19in' //char(39)//' real null,'//&
-          &char(39)//'gt19in'  //char(39)//' real null);'//CHAR(0)
+     if (LMETRICVAR) then
+        SQLStmtStr = 'CREATE TABLE FVS_DM_Sz_Sum_Metric ('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year int null,'//&
+             &'Type text null,'//&
+             &char(39)//'0-5cm'   //char(39)//' real null,'//&
+             &char(39)//'5-10cm'  //char(39)//' real null,'//&
+             &char(39)//'10-15cm' //char(39)//' real null,'//&
+             &char(39)//'15-20cm' //char(39)//' real null,'//&
+             &char(39)//'20-25cm' //char(39)//' real null,'//&
+             &char(39)//'25-30cm' //char(39)//' real null,'//&
+             &char(39)//'30-35cm' //char(39)//' real null,'//&
+             &char(39)//'35-40cm' //char(39)//' real null,'//&
+             &char(39)//'40-45cm' //char(39)//' real null,'//&
+             &char(39)//'gt45cm'  //char(39)//' real null);'//CHAR(0)
+     else
+        SQLStmtStr = 'CREATE TABLE FVS_DM_Sz_Sum ('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year int null,'//&
+             &'Type text not null,'//&
+             &char(39)//'0-3in'   //char(39)//' real null,'//&
+             &char(39)//'3-5in'  //char(39)//' real null,'//&
+             &char(39)//'5-7in' //char(39)//' real null,'//&
+             &char(39)//'7-9in' //char(39)//' real null,'//&
+             &char(39)//'9-11in' //char(39)//' real null,'//&
+             &char(39)//'11-13in' //char(39)//' real null,'//&
+             &char(39)//'13-15in' //char(39)//' real null,'//&
+             &char(39)//'15-17in' //char(39)//' real null,'//&
+             &char(39)//'17-19in' //char(39)//' real null,'//&
+             &char(39)//'gt19in'  //char(39)//' real null);'//CHAR(0)
+     end if
      iRet = fsql3_exec(IoutDBref,SQLStmtStr)
      if (iRet .ne.0) then
         IDM3 = 0
@@ -433,20 +537,37 @@ subroutine DBSMIS3(IYEAR,NPLT,NLABS,&
      end if
   end if
 
-  write(SQLStmtStr,*) 'INSERT INTO FVS_DM_Sz_Sum',&
-       &' (CaseID,StandID,Year,Type,',&
-       &char(39),'0-3in',  char(39),',',&
-       &char(39),'3-5in', char(39),',',&
-       &char(39),'5-7in',char(39),',',&
-       &char(39),'7-9in',char(39),',',&
-       &char(39),'9-11in',char(39),',',&
-       &char(39),'11-13in',char(39),',',&
-       &char(39),'13-15in',char(39),',',&
-       &char(39),'15-17in',char(39),',',&
-       &char(39),'17-19in',char(39),',',&
-       &char(39),'gt19in', char(39),') VALUES ',&
-       &'(''',CASEID,''',''',TRIM(NPLT),&
-       &''',?,?,?,?,?,?,?,?,?,?,?,?);'//CHAR(0)
+  if (LMETRICVAR) then
+     write(SQLStmtStr,*) 'INSERT INTO FVS_DM_Sz_Sum_Metric',&
+          &' (CaseID,StandID,Year,Type,',&
+          &char(39),'0-5cm',   char(39),',',&
+          &char(39),'5-10cm',  char(39),',',&
+          &char(39),'10-15cm', char(39),',',&
+          &char(39),'15-20cm', char(39),',',&
+          &char(39),'20-25cm', char(39),',',&
+          &char(39),'25-30cm', char(39),',',&
+          &char(39),'30-35cm', char(39),',',&
+          &char(39),'35-40cm', char(39),',',&
+          &char(39),'40-45cm', char(39),',',&
+          &char(39),'gt45cm',  char(39),') VALUES ',&
+          &'(''',CASEID,''',''',TRIM(NPLT),&
+          &''',?,?,?,?,?,?,?,?,?,?,?,?);'//CHAR(0)
+  else
+     write(SQLStmtStr,*) 'INSERT INTO FVS_DM_Sz_Sum',&
+          &' (CaseID,StandID,Year,Type,',&
+          &char(39),'0-3in',  char(39),',',&
+          &char(39),'3-5in', char(39),',',&
+          &char(39),'5-7in',char(39),',',&
+          &char(39),'7-9in',char(39),',',&
+          &char(39),'9-11in',char(39),',',&
+          &char(39),'11-13in',char(39),',',&
+          &char(39),'13-15in',char(39),',',&
+          &char(39),'15-17in',char(39),',',&
+          &char(39),'17-19in',char(39),',',&
+          &char(39),'gt19in', char(39),') VALUES ',&
+          &'(''',CASEID,''',''',TRIM(NPLT),&
+          &''',?,?,?,?,?,?,?,?,?,?,?,?);'//CHAR(0)
+  end if
   iRet = fsql3_exec(IoutDBref,"Begin;"//CHAR(0))
   iRet = fsql3_prepare(IoutDBref, TRIM(SQLStmtStr)//CHAR(0))
   if (iRet .ne.0) then
@@ -504,11 +625,19 @@ subroutine DBSMIS3(IYEAR,NPLT,NLABS,&
 
   end do
 
+  if (LMETRICVAR) then
+     iRet = fsql3_finalize(IoutDBref)
+  end if
+
   iRet = fsql3_exec(IoutDBref,"Commit;"//CHAR(0))
-  iRet = fsql3_finalize(IoutDBref)
+  if (.not. LMETRICVAR) then
+     iRet = fsql3_finalize(IoutDBref)
+  end if
   if (iRet.ne.0) then
      IDM3 = 0
-     return
+     if (.not. LMETRICVAR) then
+        return
+     end if
   end if
 
   return

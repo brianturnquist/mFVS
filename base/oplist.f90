@@ -20,6 +20,7 @@ subroutine OPLIST (LFIRST,NPLT,MGMID,ITITLE)
 
   ! Variables
   integer :: NTRSLT,I1,I,ICY,I2,II,IACTK,IDT,KEY,LOC,J1,J2,J,ID,K
+  integer :: IKEY,IKEY2
   character(len=26) :: NPLT
   character(len=4) :: MGMID
   character(len=72) :: ITITLE
@@ -336,5 +337,14 @@ subroutine OPLIST (LFIRST,NPLT,MGMID,ITITLE)
 
   write (JOSTND,180)
   180 format (130('-'))
+  return
+
+  !     OPKEY: TRANSLATE AN ACTIVITY CODE TO ITS KEYWORD INDEX (USED BY
+  !     MCNVRT, WHICH CONVERTS METRIC KEYWORD PARAMETERS).
+
+  entry OPKEY(IKEY)
+  call OPBISR (NTRSLT,ITRSL1,IKEY,IKEY2)
+  if (IKEY2.le.0) return
+  IKEY = ITRSL2(IKEY2)
   return
 end subroutine OPLIST

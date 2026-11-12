@@ -20,11 +20,23 @@ subroutine OPRDAT (JEXOPT,KODE)
   include 'CONTRL.f90'
   include 'OPCOM.f90'
   include 'PLOT.f90'
+  include 'METRIC.f90'
 
   ! Variables
   integer :: MXADDP,IPASS,NADD,I,NPRMS,IACTK,IDT,KODE,JEXOPT,NFAIL
-  parameter (MXADDP = 10)
+  integer :: MXREAD
+  parameter (MXADDP = N_METRIC_PRMS)
   real    :: PRMS(MXADDP)
+  real    :: CPRMS(MXADDP)
+
+  !     IMPERIAL VARIANTS READ AT MOST 10 PARAMETERS PER ACTIVITY; METRIC
+  !     VARIANTS READ UP TO N_METRIC_PRMS SO THEY CAN BE UNIT-CONVERTED.
+
+  if (LMETRICVAR) then
+     MXREAD = MXADDP
+  else
+     MXREAD = 10
+  end if
 
   KODE = -999
   if (JEXOPT.le.0) return
@@ -41,8 +53,14 @@ subroutine OPRDAT (JEXOPT,KODE)
      read (JEXOPT,'(A)',end = 30) WKSTR1
      if (WKSTR1(1:3).ne.'End') then
         read (WKSTR1,*) IACTK,IDT,NPRMS,(PRMS(I),I = 1, &
-             & MIN(NPRMS,MXADDP))
+             & MIN(NPRMS,MXREAD))
         if (IDT.ge.IY(ICYC)) then
+           if (LMETRICVAR) then
+              call MCNVRT(IACTK,1,PRMS,CPRMS)
+              do I = 1,NPRMS
+                 PRMS(I) = PRMS(I) * CPRMS(I)
+              end do
+           end if
            call OPADD (IDT,IACTK,0,NPRMS,PRMS,KODE)
            if (KODE .eq. 0) then
               NADD = NADD+1

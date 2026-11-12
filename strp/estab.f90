@@ -18,6 +18,7 @@ subroutine ESTAB (KDT)
   include 'ESCOMN.f90'
   include 'VARCOM.f90'
   include 'STDSTK.f90'
+  include 'METRIC.f90'
 
   !     REGENERATION ESTABLISHMENT MODEL   --   VERSION 2.0
   !     USDA FOREST SERVICE, INTERMOUNTAIN RESEARCH STATION
@@ -134,6 +135,14 @@ subroutine ESTAB (KDT)
            6 continue
         end do
      end if
+  end if
+
+  !     INITIALIZE PRMS ARRAY TO ZERO'S
+
+  if (LMETRICVAR) then
+     do I = 1,6
+        PRMS(I) = 0.0
+     end do
   end if
 
   !     IF NOT THE FIRST TALLY, THEN SKIP SITE PREPS.
@@ -601,21 +610,22 @@ subroutine ESTAB (KDT)
                  IMC(ITRN) = 1
                  ISP(ITRN) = I
                  CFV(ITRN) = 0.
-                 MCFV(ITRN) = 0.
-                 SCFV(ITRN) = 0.
-
-                 CULL(ITRN) = 0.
-                 DECAYCD(ITRN) = 0
-                 WDLDSTEM(ITRN) = 0
-                 ABVGRD_BIO(ITRN) = 0.
-                 ABVGRD_CARB(ITRN) = 0.
-                 MERCH_BIO(ITRN) = 0.
-                 MERCH_CARB(ITRN) = 0.
-                 CUBSAW_BIO(ITRN) = 0.
-                 CUBSAW_CARB(ITRN) = 0.
-                 FOLI_BIO(ITRN) = 0.
-                 FOLI_CARB(ITRN) = 0.
-                 CARB_FRAC(ITRN) = 0.
+                 if (.not. LMETRICVAR) then
+                    MCFV(ITRN) = 0.
+                    SCFV(ITRN) = 0.
+                    CULL(ITRN) = 0.
+                    DECAYCD(ITRN) = 0
+                    WDLDSTEM(ITRN) = 0
+                    ABVGRD_BIO(ITRN) = 0.
+                    ABVGRD_CARB(ITRN) = 0.
+                    MERCH_BIO(ITRN) = 0.
+                    MERCH_CARB(ITRN) = 0.
+                    CUBSAW_BIO(ITRN) = 0.
+                    CUBSAW_CARB(ITRN) = 0.
+                    FOLI_BIO(ITRN) = 0.
+                    FOLI_CARB(ITRN) = 0.
+                    CARB_FRAC(ITRN) = 0.
+                 end if
 
                  ITRUNC(ITRN) = 0
                  NORMHT(ITRN) = 0
@@ -632,7 +642,9 @@ subroutine ESTAB (KDT)
 
                  PTOCFV(ITRN) = 0.
                  PMRCFV(ITRN) = 0.
-                 PSCFV(ITRN) = 0.
+                 if (.not. LMETRICVAR) then
+                    PSCFV(ITRN) = 0.
+                 end if
                  PMRBFV(ITRN) = 0.
                  NCFDEF(ITRN) = 0
                  NBFDEF(ITRN) = 0
@@ -754,6 +766,9 @@ subroutine ESTAB (KDT)
           &/,'YEAR:',&
           &3(I4,1X),&
           &/,T2,'PCT:',I4,2I5)
+     if (LMETRICVAR) then
+        call DBSSITEPREP(J,K,L,N,NN,ITEMP)
+     end if
   end if
   ITEMP = KDT+1-J
   write(JOREGT,6021) NTALLY,ITEMP,KDT
@@ -771,35 +786,101 @@ subroutine ESTAB (KDT)
   if (MODE.eq.1) write(JOREGT,6015) (CLAST(I),I = 1,N)
   6015 format('TREES FROM PLANT AND NATURAL KEYWORDS: SPECIES= ',&
        &11A4)
-  write(JOREGT,6016) REGNBK
-  6016 format(/,T6,'SUMMARY OF ALL',T30,'SUMMARY OF BEST         ',&
-       &'TREES <',F4.1,' IN. DBH',/,T6,'TREES REGENERATING',T30,&
-       &'TREES REGENERATING      BEING PROJECTED BY',/,T6,&
-       &'DURING THIS TALLY.',T30,'DURING THIS TALLY.      THE ',&
-       &'PROGNOSIS MODEL',/,T6,19('-'),5X,19('-'),5X,19('-'),/,13X,&
-       &'TREES % OF      TREES % OF  AVERAGE     TREES % OF',/,5X,&
-       &'SPECIES /ACRE TOTAL     /ACRE TOTAL HEIGHT      /ACRE TOTAL ',&
-       &'SPECIES',/,5X,7('-'),1X,5('-'),1X,5('-'),5X,5('-'),1X,5('-'),&
-       &1X,7('-'),5X,5('-'),1X,5('-'),1X,7('-') )
+  if (LMETRICVAR) then
+     write(JOREGT,96016) REGNBK
+     96016 format(/,T6,'SUMMARY OF ALL',T30,'SUMMARY OF BEST         ',&
+          &'TREES <',F4.1,' CM DBH',/,T6,'TREES REGENERATING',T30,&
+          &'TREES REGENERATING      BEING PROJECTED BY',/,T6,&
+          &'DURING THIS TALLY.',T30,'DURING THIS TALLY.      THE ',&
+          &'PROGNOSIS MODEL',/,T6,19('-'),5X,19('-'),5X,19('-'),/,13X,&
+          &'TREES % OF      TREES % OF  AVERAGE     TREES % OF',/,5X,&
+          &'SPECIES /HA   TOTAL     /HA   TOTAL HEIGHT      /HA   TOTAL ',&
+          &'SPECIES',/,5X,7('-'),1X,5('-'),1X,5('-'),5X,5('-'),1X,5('-'),&
+          &1X,7('-'),5X,5('-'),1X,5('-'),1X,7('-') )
+  else
+     write(JOREGT,6016) REGNBK
+     6016 format(/,T6,'SUMMARY OF ALL',T30,'SUMMARY OF BEST         ',&
+          &'TREES <',F4.1,' IN. DBH',/,T6,'TREES REGENERATING',T30,&
+          &'TREES REGENERATING      BEING PROJECTED BY',/,T6,&
+          &'DURING THIS TALLY.',T30,'DURING THIS TALLY.      THE ',&
+          &'PROGNOSIS MODEL',/,T6,19('-'),5X,19('-'),5X,19('-'),/,13X,&
+          &'TREES % OF      TREES % OF  AVERAGE     TREES % OF',/,5X,&
+          &'SPECIES /ACRE TOTAL     /ACRE TOTAL HEIGHT      /ACRE TOTAL ',&
+          &'SPECIES',/,5X,7('-'),1X,5('-'),1X,5('-'),5X,5('-'),1X,5('-'),&
+          &1X,7('-'),5X,5('-'),1X,5('-'),1X,7('-') )
+  end if
   WTAVEHT = 0.0
-  SUMPRB = 1.1
+  if (.not. LMETRICVAR) then
+     SUMPRB = 1.1
+  end if
   do I = 1,NOFSPE
      if (TOTTPA(I).le.0..and. BESTPA(I).le.0..and. PASTPA(I).le.0.)&
           &go to 222
-     write(JOREGT,6014) NSP(I,1),TOTTPA(I),TOTPCT(I),BESTPA(I),&
-          &BESPCT(I),AVEHT(I),PASTPA(I),PASPCT(I),NSP(I,1)
+     if (LMETRICVAR) then
+        write(JOREGT,6014) NSP(I,1),&
+             &TOTTPA(I) / ACRtoHA,&
+             &TOTPCT(I),&
+             &BESTPA(I) / ACRtoHA,&
+             &BESPCT(I),&
+             &AVEHT(I)  * FTtoM,&
+             &PASTPA(I) / ACRtoHA,&
+             &PASPCT(I),NSP(I,1)
+     else
+        write(JOREGT,6014) NSP(I,1),TOTTPA(I),TOTPCT(I),BESTPA(I),&
+             &BESPCT(I),AVEHT(I),PASTPA(I),PASPCT(I),NSP(I,1)
+     end if
      6014 format(T9,A2,2X,2F6.0,4X,2F6.0,1X,F5.1,6X,2F6.0,3X,A2)
+     if (LMETRICVAR) then
+        SUMPRB = 1.1
+     end if
      WTAVEHT = AVEHT(I)*BESTPA(I)+WTAVEHT
-     call DBSTALLY(SUMPRB,NTALLY,NSP(I,1),TOTTPA(I),&
-          &TOTPCT(I),BESTPA(I),BESPCT(I),AVEHT(I),PASTPA(I),PASPCT(I),KDT,&
-          &WTAVEHT,1,TTOTTP,TCROP1,TCROP2)
+     if (LMETRICVAR) then
+        call DBSTALLY(SUMPRB,NTALLY,NSP(I,1),&
+             &TOTTPA(I)  / ACRtoHA,&
+             &TOTPCT(I),&
+             &BESTPA(I)  / ACRtoHA,&
+             &BESPCT(I),&
+             &AVEHT(I)   * FTtoM,&
+             &PASTPA(I)  / ACRtoHA,&
+             &PASPCT(I),&
+             &KDT,&
+             &WTAVEHT    * FTtoM,&
+             &1,&
+             &TTOTTP     / ACRtoHA,&
+             &TCROP1     / ACRtoHA,&
+             &TCROP2     / ACRtoHA)
+     else
+        call DBSTALLY(SUMPRB,NTALLY,NSP(I,1),TOTTPA(I),&
+             &TOTPCT(I),BESTPA(I),BESPCT(I),AVEHT(I),PASTPA(I),PASPCT(I),KDT,&
+             &WTAVEHT,1,TTOTTP,TCROP1,TCROP2)
+     end if
      222 continue
   end do
   if (TCROP1.gt.0.0) WTAVEHT = WTAVEHT/TCROP1
-  call DBSTALLY(SUMPRB,NTALLY,FINAL,TOTTPA(I),&
-       &TOTPCT(I),BESTPA(I),BESPCT(I),AVEHT(I),PASTPA(I),PASPCT(I),KDT,&
-       &WTAVEHT,2,TTOTTP,TCROP1,TCROP2)
-  write(JOREGT,6026) TTOTTP,TCROP1,TCROP2
+  if (LMETRICVAR) then
+     call DBSTALLY(SUMPRB,NTALLY,FINAL,&
+          &TOTTPA(1)  / ACRtoHA,&
+          &TOTPCT(1),&
+          &BESTPA(1)  / ACRtoHA,&
+          &BESPCT(1),&
+          &AVEHT(1)   * FTtoM,&
+          &PASTPA(1)  / ACRtoHA,&
+          &PASPCT(1),&
+          &KDT,&
+          &WTAVEHT    * FTtoM,&
+          &2,&
+          &TTOTTP     / ACRtoHA,&
+          &TCROP1     / ACRtoHA,&
+          &TCROP2     / ACRtoHA)
+     write(JOREGT,6026) TTOTTP / ACRtoHA,&
+          &TCROP1 / ACRtoHA,&
+          &TCROP2 / ACRtoHA
+  else
+     call DBSTALLY(SUMPRB,NTALLY,FINAL,TOTTPA(I),&
+          &TOTPCT(I),BESTPA(I),BESPCT(I),AVEHT(I),PASTPA(I),PASPCT(I),KDT,&
+          &WTAVEHT,2,TTOTTP,TCROP1,TCROP2)
+     write(JOREGT,6026) TTOTTP,TCROP1,TCROP2
+  end if
   6026 format(T14,5('-'),T30,5('-'),T54,5('-'),/,T12,F7.0,T28,F7.0,&
        &T52,F7.0,/)
   260 continue
@@ -808,11 +889,19 @@ subroutine ESTAB (KDT)
 
   call DBCHK (DEBUG,'ESPSUM',6,ICYC)
   if (DEBUG) then
-     write(JOREGT,6018) (NSP(I,1),I = 1,NOFSPE)
-     6018 format('IN ESTAB (ESPSUM PLOT SUMMARY): '/&
-          &'     SLOPE ASPECT HAB. TOPO SITE       ',&
-          &' <------PLOT OVERSTORY DENSITY (SQ.FT./ACRE)----->',/,&
-          &'PLOT %/100 (DEG.) GRP. POS. PREP  P(S)  TOTAL ',11(A2,2X))
+     if (LMETRICVAR) then
+        write(JOREGT,96018) (NSP(I,1),I = 1,NOFSPE)
+        96018 format(' IN ESTAB (ESPSUM PLOT SUMMARY): '/&
+             &'      SLOPE ASPECT HAB. TOPO SITE       ',&
+             &' <------PLOT OVERSTORY DENSITY (M2/HA  )----->',/,&
+             &' PLOT %/100 (DEG.) GRP. POS. PREP  P(S)  TOTAL ',11(A2,2X))
+     else
+        write(JOREGT,6018) (NSP(I,1),I = 1,NOFSPE)
+        6018 format('IN ESTAB (ESPSUM PLOT SUMMARY): '/&
+             &'     SLOPE ASPECT HAB. TOPO SITE       ',&
+             &' <------PLOT OVERSTORY DENSITY (SQ.FT./ACRE)----->',/,&
+             &'PLOT %/100 (DEG.) GRP. POS. PREP  P(S)  TOTAL ',11(A2,2X))
+     end if
      do I = 1,NPTIDS
         NNID = IPTIDS(I)
         N = INT((PASP(NNID)*57.2958) + 0.5)

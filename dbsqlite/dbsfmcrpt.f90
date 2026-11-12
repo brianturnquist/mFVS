@@ -4,6 +4,7 @@
 ! DBSQLITE $Id$
 subroutine DBSFMCRPT(IYEAR,NPLT,VAR,VARDIM,KODE)
   implicit none
+  include 'PRGPRM.f90'
 
   !     PURPOSE: TO POPULATE A DATABASE WITH THE MAIN CARBON REPORT
   !              INFORMATION
@@ -99,24 +100,47 @@ subroutine DBSFMCRPT(IYEAR,NPLT,VAR,VARDIM,KODE)
 
   !     INSURE MAIN CARBON TABLE EXISTS IN DATBASE
 
-  iRet = fsql3_tableexists(IoutDBref,&
-       &"FVS_Carbon"//CHAR(0))
+  if (LMETRICVAR) then
+     iRet = fsql3_tableexists(IoutDBref,&
+          &"FVS_Carbon_Metric"//CHAR(0))
+  else
+     iRet = fsql3_tableexists(IoutDBref,&
+          &"FVS_Carbon"//CHAR(0))
+  end if
   if (iRet.eq.0) then
-     SQLStmtStr = 'CREATE TABLE FVS_Carbon('//&
-          &'CaseID text not null,'//&
-          &'StandID text not null,'//&
-          &'Year Int null,'//&
-          &'Aboveground_Total_Live real null,'//&
-          &'Aboveground_Merch_Live real null,'//&
-          &'Belowground_Live real null,'//&
-          &'Belowground_Dead real null,'//&
-          &'Standing_Dead real null,'//&
-          &'Forest_Down_Dead_Wood real null,'//&
-          &'Forest_Floor real null,'//&
-          &'Forest_Shrub_Herb real null,'//&
-          &'Total_Stand_Carbon real null,'//&
-          &'Total_Removed_Carbon real null,'//&
-          &'Carbon_Released_From_Fire real null);'//CHAR(0)
+     if (LMETRICVAR) then
+        SQLStmtStr = 'CREATE TABLE FVS_Carbon_Metric('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year Int null,'//&
+             &'Aboveground_Total_Live real null,'//&
+             &'Aboveground_Merch_Live real null,'//&
+             &'Belowground_Live real null,'//&
+             &'Belowground_Dead real null,'//&
+             &'Standing_Dead real null,'//&
+             &'Forest_Down_Dead_Wood real null,'//&
+             &'Forest_Floor real null,'//&
+             &'Forest_Shrub_Herb real null,'//&
+             &'Total_Stand_Carbon real null,'//&
+             &'Total_Removed_Carbon real null,'//&
+             &'Carbon_Released_From_Fire real null);'//CHAR(0)
+     else
+        SQLStmtStr = 'CREATE TABLE FVS_Carbon('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year Int null,'//&
+             &'Aboveground_Total_Live real null,'//&
+             &'Aboveground_Merch_Live real null,'//&
+             &'Belowground_Live real null,'//&
+             &'Belowground_Dead real null,'//&
+             &'Standing_Dead real null,'//&
+             &'Forest_Down_Dead_Wood real null,'//&
+             &'Forest_Floor real null,'//&
+             &'Forest_Shrub_Herb real null,'//&
+             &'Total_Stand_Carbon real null,'//&
+             &'Total_Removed_Carbon real null,'//&
+             &'Carbon_Released_From_Fire real null);'//CHAR(0)
+     end if
      iRet = fsql3_exec(IoutDBref,SQLStmtStr)
      if (iRet .ne.0) then
         ICMRPT = 0
@@ -128,14 +152,25 @@ subroutine DBSFMCRPT(IYEAR,NPLT,VAR,VARDIM,KODE)
 
   VARD = VAR
 
-  write(SQLStmtStr,*)'INSERT INTO FVS_Carbon (CaseID,',&
-       &'StandID,Year,Aboveground_Total_Live,Aboveground_Merch_Live,',&
-       &'Belowground_Live,Belowground_Dead,Standing_Dead,',&
-       &'Forest_Down_Dead_Wood,Forest_Floor,Forest_Shrub_Herb,',&
-       &'Total_Stand_Carbon,Total_Removed_Carbon,',&
-       &'Carbon_Released_From_Fire) VALUES (''',&
-       &CASEID,''',''',TRIM(NPLT),&
-       &''',?,?,?,?,?,?,?,?,?,?,?,?);'//CHAR(0)
+  if (LMETRICVAR) then
+     write(SQLStmtStr,*)'INSERT INTO FVS_Carbon_Metric(CaseID,',&
+          &'StandID,Year,Aboveground_Total_Live,Aboveground_Merch_Live,',&
+          &'Belowground_Live,Belowground_Dead,Standing_Dead,',&
+          &'Forest_Down_Dead_Wood,Forest_Floor,Forest_Shrub_Herb,',&
+          &'Total_Stand_Carbon,Total_Removed_Carbon,',&
+          &'Carbon_Released_From_Fire) VALUES (''',&
+          &CASEID,''',''',TRIM(NPLT),&
+          &''',?,?,?,?,?,?,?,?,?,?,?,?);'//CHAR(0)
+  else
+     write(SQLStmtStr,*)'INSERT INTO FVS_Carbon (CaseID,',&
+          &'StandID,Year,Aboveground_Total_Live,Aboveground_Merch_Live,',&
+          &'Belowground_Live,Belowground_Dead,Standing_Dead,',&
+          &'Forest_Down_Dead_Wood,Forest_Floor,Forest_Shrub_Herb,',&
+          &'Total_Stand_Carbon,Total_Removed_Carbon,',&
+          &'Carbon_Released_From_Fire) VALUES (''',&
+          &CASEID,''',''',TRIM(NPLT),&
+          &''',?,?,?,?,?,?,?,?,?,?,?,?);'//CHAR(0)
+  end if
 
   !     PREPARE THE SQL QUERY
 

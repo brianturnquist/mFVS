@@ -66,7 +66,7 @@
 ../kt/findag.f90
 ../kt/forkod.f90
 ../kt/grinit.f90
-../kt/grohed.f90
+../vbase/grohed.f90
 ../kt/habtyp.f90
 ../kt/htgf.f90
 ../kt/ktfctr.f90
@@ -235,6 +235,7 @@
 ../base/opnew.f90
 ../base/opnewc.f90
 ../base/oprdat.f90
+../base/mcnvrt.f90
 ../base/opsame.f90
 ../base/opsort.f90
 ../base/opstus.f90
@@ -515,7 +516,6 @@
 ../volume/NVEL/r6vol2.f90
 ../volume/NVEL/r6vol3.f90
 ../volume/NVEL/r8clkdib.f90
-../volume/NVEL/r8dib.f90
 ../volume/NVEL/r8init.f90
 ../volume/NVEL/r8vol.f90
 ../volume/NVEL/r8vol1.f90
@@ -605,13 +605,13 @@
 ../fire/base/common/FMPROP.f90
 ../fire/base/common/FMSVCM.f90
 
-../fire/kt/fmbrkt.f90
+../fire/base/fmbrkt.f90
 ../fire/kt/fmcba.f90
 ../fire/kt/fmcblk.f90
 ../fire/kt/fmcrow.f90
 ../fire/kt/fmvinit.f90
 ../fire/ie/fmcons.f90
-../fire/ie/fmmois.f90
+../fire/base/fmmois.f90
 ../fire/ie/fmsfall.f90
 ../fire/ie/fmcfmd.f90
 

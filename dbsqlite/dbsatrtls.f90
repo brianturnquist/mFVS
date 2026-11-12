@@ -24,6 +24,7 @@ subroutine DBSATRTLS(IWHO,KODE,TEM)
   include 'WORKCM.f90'
   include 'DBSCOM.f90'
   include 'wdbkwtdata.inc'
+  include 'METRIC.f90'
 
   ! Variables
   character(len=8) :: TID
@@ -61,13 +62,32 @@ subroutine DBSATRTLS(IWHO,KODE,TEM)
 
   !     UPDATED TO CONSOLIDATE TABLES.  DISTINCT EAST/WEST TABLES NO LONGER NEEDED (2024 DW)
 
-  TBLNAME = 'FVS_ATRTList'
-  NTCUFT = 'TCuFt'
-  NMCUFT = 'MCuFt'
-  NSCUFT = 'SCuFt'
-  NBDFT = 'BdFt'
-  NAMDCF = 'Ht2TDCF '
-  NAMDBF = 'Ht2TDBF '
+  if (LMETRICVAR) then
+     if (VARACD.eq.'CS' .or. VARACD.eq.'LS' .or. VARACD.eq.'SN' .or.&
+          &VARACD.eq.'NE' .or. VARACD.eq.'ON') then
+        TBLNAME = 'FVS_ATRTList_East_Metric'
+        NTCUFT = 'TCuM'
+        NMCUFT = 'MCuM'
+        NBDFT = 'CCuM'
+        NAMDCF = 'Ht2TDMCM'
+        NAMDBF = 'Ht2TDSBM'
+     else
+        TBLNAME = 'FVS_ATRTList_Metric'
+        NTCUFT = 'TCuM'
+        NMCUFT = 'MCuM'
+        NBDFT = 'CCuM'
+        NAMDCF = 'Ht2TDCM '
+        NAMDBF = 'Ht2TDBM '
+     end if
+  else
+     TBLNAME = 'FVS_ATRTList'
+     NTCUFT = 'TCuFt'
+     NMCUFT = 'MCuFt'
+     NSCUFT = 'SCuFt'
+     NBDFT = 'BdFt'
+     NAMDCF = 'Ht2TDCF '
+     NAMDBF = 'Ht2TDBF '
+  end if
 
   IRCODE = fsql3_exec (IoutDBref,"Begin;"//Char(0))
 
@@ -76,42 +96,80 @@ subroutine DBSATRTLS(IWHO,KODE,TEM)
 
   IRCODE = fsql3_tableexists(IoutDBref,TRIM(TBLNAME)//CHAR(0))
   if (IRCODE.eq.0) then
-     SQLStmtStr = 'CREATE TABLE ' // TRIM(TBLNAME) //&
-          &' (CaseID text not null,'//&
-          &'StandID text not null,'//&
-          &'Year int null,'//&
-          &'PrdLen int null,'//&
-          &'TreeId text null,'//&
-          &'TreeIndex int null,'//&
-          &'SpeciesFVS text null,'//&
-          &'SpeciesPLANTS text null,'//&
-          &'SpeciesFIA text null,'//&
-          &'TreeVal int null,'//&
-          &'SSCD int null,'//&
-          &'PtIndex int null,'//&
-          &'TPA real null,'//&
-          &'MortPA real null,'//&
-          &'DBH real null,'//&
-          &'DG real null,'//&
-          &'Ht real null,'//&
-          &'HtG real null,'//&
-          &'PctCr int null,'//&
-          &'CrWidth real null,'//&
-          &'MistCD int null,'//&
-          &'BAPctile real null,'//&
-          &'PtBAL real null,'//&
-          &NTCUFT // ' real null,'//&
-          &NMCUFT // ' real null,'//&
-          &NSCUFT // ' real null,'//&
-          &NBDFT  // ' real null,'//&
-          &'MDefect int null,'//&
-          &'BDefect int null,'//&
-          &'TruncHt int null,'//&
-          &'EstHt real null,'//&
-          &'ActPt int null,'//&
-          &NAMDCF // ' real null,'//&
-          &NAMDBF // ' real null,'//&
-          &'TreeAge real null);' // CHAR(0)
+     if (LMETRICVAR) then
+        SQLStmtStr = 'CREATE TABLE ' // TRIM(TBLNAME) //&
+             &' (CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year int null,'//&
+             &'PrdLen int null,'//&
+             &'TreeId text null,'//&
+             &'TreeIndex int null,'//&
+             &'SpeciesFVS text null,'//&
+             &'SpeciesPLANTS text null,'//&
+             &'SpeciesFIA text null,'//&
+             &'TreeVal int null,'//&
+             &'SSCD int null,'//&
+             &'PtIndex int null,'//&
+             &'TPH real null,'//&
+             &'MortPH real null,'//&
+             &'DBH real null,'//&
+             &'DG real null,'//&
+             &'Ht real null,'//&
+             &'HtG real null,'//&
+             &'PctCr int null,'//&
+             &'CrWidth real null,'//&
+             &'MistCD int null,'//&
+             &'BAPctile real null,'//&
+             &'PtBAL real null,'//&
+             &NTCUFT // ' real null,'//&
+             &NMCUFT // ' real null,'//&
+             &NBDFT  // ' real null,'//&
+             &'MDefect int null,'//&
+             &'BDefect int null,'//&
+             &'TruncHt int null,'//&
+             &'EstHt real null,'//&
+             &'ActPt int null,'//&
+             &NAMDCF // ' real null,'//&
+             &NAMDBF // ' real null,'//&
+             &'TreeAge real null);' // CHAR(0)
+     else
+        SQLStmtStr = 'CREATE TABLE ' // TRIM(TBLNAME) //&
+             &' (CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year int null,'//&
+             &'PrdLen int null,'//&
+             &'TreeId text null,'//&
+             &'TreeIndex int null,'//&
+             &'SpeciesFVS text null,'//&
+             &'SpeciesPLANTS text null,'//&
+             &'SpeciesFIA text null,'//&
+             &'TreeVal int null,'//&
+             &'SSCD int null,'//&
+             &'PtIndex int null,'//&
+             &'TPA real null,'//&
+             &'MortPA real null,'//&
+             &'DBH real null,'//&
+             &'DG real null,'//&
+             &'Ht real null,'//&
+             &'HtG real null,'//&
+             &'PctCr int null,'//&
+             &'CrWidth real null,'//&
+             &'MistCD int null,'//&
+             &'BAPctile real null,'//&
+             &'PtBAL real null,'//&
+             &NTCUFT // ' real null,'//&
+             &NMCUFT // ' real null,'//&
+             &NSCUFT // ' real null,'//&
+             &NBDFT  // ' real null,'//&
+             &'MDefect int null,'//&
+             &'BDefect int null,'//&
+             &'TruncHt int null,'//&
+             &'EstHt real null,'//&
+             &'ActPt int null,'//&
+             &NAMDCF // ' real null,'//&
+             &NAMDBF // ' real null,'//&
+             &'TreeAge real null);' // CHAR(0)
+     end if
      IRCODE = fsql3_exec(IoutDBref,SQLStmtStr)
      if (IRCODE .ne.0) then
         IRCODE = fsql3_exec (IoutDBref,"Commit;"//Char(0))
@@ -124,8 +182,10 @@ subroutine DBSATRTLS(IWHO,KODE,TEM)
   !     `SCuFt`,
   !     TO ACCOUNT FOR ADDING TO DATABASE CREATED PROIR TO UPGRADE
 
-  iRet = fsql3_addcolifabsent(IoutDBref,TRIM(TBLNAME)//CHAR(0),&
-       &"SCuFt"//CHAR(0),"real"//CHAR(0))
+  if (.not. LMETRICVAR) then
+     iRet = fsql3_addcolifabsent(IoutDBref,TRIM(TBLNAME)//CHAR(0),&
+          &"SCuFt"//CHAR(0),"real"//CHAR(0))
+  end if
 
   !     SET THE TREELIST TYPE FLAG (LET IP BE THE RECORD OUTPUT COUNT).
   !     AND THE OUTPUT REPORTING YEAR.
@@ -203,28 +263,53 @@ subroutine DBSATRTLS(IWHO,KODE,TEM)
            CSPECIE2 = PLNJSP(ISP(I))
            CSPECIE3 = FIAJSP(ISP(I))
 
-           write(SQLStmtStr,*)'INSERT INTO ',TBLNAME,&
-                &' (CaseID,StandID,Year,PrdLen,TreeId,',&
-                &'TreeIndex,SpeciesFVS,SpeciesPLANTS,SpeciesFIA,TreeVal,',&
-                &'SSCD,PtIndex,TPA,MortPA,DBH,',&
-                &'DG,HT,HTG,PctCr,CrWidth,',&
-                &'MistCD,BAPctile,PtBAL,',NTCUFT,',',NMCUFT,',',&
-                &NSCUFT,',',NBDFT,',',&
-                &'MDefect,BDefect,TruncHt,EstHt,ActPt,',&
-                &NAMDCF,',',NAMDBF,',','TreeAge)',&
-                &' VALUES (''',&
-                &CASEID,''',''',TRIM(NPLT),''',',&
-                &JYR,',',IFINT,",'",TRIM(ADJUSTL(TID)),"',",I,&
-                &",'",TRIM(CSPECIE1),"'",&
-                &",'",TRIM(CSPECIE2),"'",&
-                &",'",TRIM(CSPECIE3),"',",&
-                &IMC(I),',',ISPECL(I),',',ITRE(I),&
-                &',',P,',',DP,',',DBH(I),',',DGI,',',HT(I),',',HTG(I),&
-                &',',ICR(I),',',CW,',',IDMR,',',PCT(I),',',IPTBAL,',',&
-                &CFV(I),',',MCFV(I),',',SCFV(I),',',BFV(I),',',&
-                &ICDF,',',IBDF,',',&
-                &((ITRUNC(I)+5)/100),',',ESTHT,',',IPVEC(ITRE(I)),&
-                &',',HT2TD(I,2),',',HT2TD(I,1),',',TREAGE,');'
+           if (LMETRICVAR) then
+              write(SQLStmtStr,*)'INSERT INTO ',TBLNAME,&
+                   &' (CaseID,StandID,Year,PrdLen,',&
+                   &'TreeId,TreeIndex,SpeciesFVS,SpeciesPLANTS,SpeciesFIA,',&
+                   &'TreeVal,SSCD,PtIndex,TPH,',&
+                   &'MortPH,DBH,DG,HT,HTG,PctCr,',&
+                   &'CrWidth,MistCD,BAPctile,PtBAL,',NTCUFT,',',&
+                   &NMCUFT,',',NBDFT,',MDefect,BDefect,TruncHt,',&
+                   &'EstHt,ActPt,',NAMDCF,',',NAMDBF,',','TreeAge) VALUES (''',&
+                   &CASEID,''',''',TRIM(NPLT),''',',&
+                   &JYR,',',IFINT,",'",TRIM(ADJUSTL(TID)),"',",I,&
+                   &",'",TRIM(CSPECIE1),"'",&
+                   &",'",TRIM(CSPECIE2),"'",&
+                   &",'",TRIM(CSPECIE3),"',",&
+                   &IMC(I),',',ISPECL(I),',',ITRE(I),&
+                   &',',P/ACRtoHA,',',DP/ACRtoHA,',',DBH(I)*INtoCM,&
+                   &',',DGI*INtoCM,',',HT(I)*FTtoM,',',HTG(I)*FTtoM,&
+                   &',',ICR(I),',',CW*FTtoM,',',IDMR,',',PCT(I),',',IPTBAL,&
+                   &',',CFV(I)*FT3toM3,',',WK1(I)*FT3toM3,&
+                   &',',BFV(I)*FT3toM3,',',ICDF,',',IBDF,&
+                   &',',NINT(FLOAT(ITRUNC(I)+5)*.01*FTtoM),',',ESTHT*FTtoM,&
+                   &',',IPVEC(ITRE(I)),',',HT2TD(I,2)*FTtoM,&
+                   &',',HT2TD(I,1)*FTtoM,',',TREAGE,');'
+           else
+              write(SQLStmtStr,*)'INSERT INTO ',TBLNAME,&
+                   &' (CaseID,StandID,Year,PrdLen,TreeId,',&
+                   &'TreeIndex,SpeciesFVS,SpeciesPLANTS,SpeciesFIA,TreeVal,',&
+                   &'SSCD,PtIndex,TPA,MortPA,DBH,',&
+                   &'DG,HT,HTG,PctCr,CrWidth,',&
+                   &'MistCD,BAPctile,PtBAL,',NTCUFT,',',NMCUFT,',',&
+                   &NSCUFT,',',NBDFT,',',&
+                   &'MDefect,BDefect,TruncHt,EstHt,ActPt,',&
+                   &NAMDCF,',',NAMDBF,',','TreeAge)',&
+                   &' VALUES (''',&
+                   &CASEID,''',''',TRIM(NPLT),''',',&
+                   &JYR,',',IFINT,",'",TRIM(ADJUSTL(TID)),"',",I,&
+                   &",'",TRIM(CSPECIE1),"'",&
+                   &",'",TRIM(CSPECIE2),"'",&
+                   &",'",TRIM(CSPECIE3),"',",&
+                   &IMC(I),',',ISPECL(I),',',ITRE(I),&
+                   &',',P,',',DP,',',DBH(I),',',DGI,',',HT(I),',',HTG(I),&
+                   &',',ICR(I),',',CW,',',IDMR,',',PCT(I),',',IPTBAL,',',&
+                   &CFV(I),',',MCFV(I),',',SCFV(I),',',BFV(I),',',&
+                   &ICDF,',',IBDF,',',&
+                   &((ITRUNC(I)+5)/100),',',ESTHT,',',IPVEC(ITRE(I)),&
+                   &',',HT2TD(I,2),',',HT2TD(I,1),',',TREAGE,');'
+           end if
 
            IRCODE = fsql3_exec(IoutDBref,trim(SQLStmtStr)//CHAR(0))
            if (IRCODE .ne.0) then

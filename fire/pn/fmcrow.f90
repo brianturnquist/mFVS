@@ -64,7 +64,8 @@ subroutine FMCROW
   !     4 = SUBALPINE FIR            -                 1
   !     5 = CALIFORNIA RED FIR/      grand fir         4
   !         SHASTA RED FIR
-  !     6 = SITKA SPRUCE             Engelmann spruce 18
+  !     6 = SITKA SPRUCE (PN ONLY)   Engelmann spruce 18
+  !         (WC: unused; Sitka spruce is part of 10)
   !     7 = NOBLE FIR                grand fir         4
   !     8 = ALASKA CEDAR/W LARCH     w larch           8
   !     9 = INCENSE-CEDAR            -                20
@@ -140,6 +141,8 @@ subroutine FMCROW
 
      SPIW = ISP(I)
      SPIE = ISPMAP(SPIW)
+     !       WC HAS NO SPECIES 6 (SITKA SPRUCE IS PART OF SPECIES 10)
+     if (VARACD .eq. 'WC' .and. SPIW .eq. 6) SPIE = 0
 
      D = DBH(I)
      H = HT(I)

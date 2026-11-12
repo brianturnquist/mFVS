@@ -110,8 +110,13 @@ subroutine FILOPN
      !  (DEFAULT)) AT THIS POINT BECAUSE KEYWORDS HAVE NOT BEEN READ.
 
      call REVISE (VARACD,REV)
-     write(*,2) VARACD,REV
-     2 format(/T20,A2,' FVS VARIANT -- RV:',A10/)
+     if (LMETRICVAR) then
+        write(*,9002) VARACD,REV
+        9002 format(/T20,A2,' FVS METRIC VARIANT -- RV:',A10/)
+     else
+        write(*,2) VARACD,REV
+        2 format(/T20,A2,' FVS VARIANT -- RV:',A10/)
+     end if
 
      WRITE (*,'('' ENTER KEYWORD FILE NAME ('',I2.2,                   &
           &        ''): '')') IREAD

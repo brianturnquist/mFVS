@@ -13,6 +13,7 @@ subroutine CLAUESTB
   include 'ARRAYS.f90'
   include 'PLOT.f90'
   include 'CLIMATE.f90'
+  include 'METRIC.f90'
 
   ! Variables
   real    :: ALGSLP,TMAXTRS,XX,XMAX,PRMS(6),THISYR,PTREES,TTOADD,SPBA(MAXSP),SPTPA(MAXSP),SPIMP(MAXSP)
@@ -159,14 +160,25 @@ subroutine CLAUESTB
      if (JCLREF.eq.0) then
         call GETID (JCLREF)
         write (JOUT,'(1X,I5," $#*%")') JCLREF
-        write (JOUT,43)
-        43 format(/T8,'CLIMATE-FVS VERSION 2.0 VIABILITY',&
-             &' AND EFFECTS REPORT'/,69('-')/T11,'SP VIA-',&
-             &14X,'VIAB. dCLIM GROWTH SITE MXDEN AUTOESTB'/&
-             &'YEAR SPEC BILITY  BA/A    TPA   MORT ',&
-             &' MORT MULT   MULT  MULT   TPA'/&
-             &'---- ---- ------ ------ ------ ----- ',&
-             &'----- ----- ----- ----- --------'/'$#*%')
+        if (LMETRICVAR) then
+           write (JOUT,9043)
+           9043 format(/T8,'CLIMATE-FVS VERSION 2.0 VIABILITY',&
+                &' AND EFFECTS REPORT'/,69('-')/T11,'SP VIA-',&
+                &14X,'VIAB. dCLIM GROWTH SITE MXDEN AUTOESTB'/&
+                &'YEAR SPEC BILITY  BA/HA   TPH   MORT ',&
+                &' MORT MULT   MULT  MULT   TPH'/&
+                &'---- ---- ------ ------ ------ ----- ',&
+                &'----- ----- ----- ----- --------'/'$#*%')
+        else
+           write (JOUT,43)
+           43 format(/T8,'CLIMATE-FVS VERSION 2.0 VIABILITY',&
+                &' AND EFFECTS REPORT'/,69('-')/T11,'SP VIA-',&
+                &14X,'VIAB. dCLIM GROWTH SITE MXDEN AUTOESTB'/&
+                &'YEAR SPEC BILITY  BA/A    TPA   MORT ',&
+                &' MORT MULT   MULT  MULT   TPA'/&
+                &'---- ---- ------ ------ ------ ----- ',&
+                &'----- ----- ----- ----- --------'/'$#*%')
+        end if
      else
         write (JOUT,44) JCLREF
         44 format (I5,' ')
@@ -193,14 +205,30 @@ subroutine CLAUESTB
           &INDXSPECIES(I).gt.0) then
         I2 = 1
         if (JOUT.gt.0) then
-           write (JOUT,45) JCLREF,IY(ICYC),JSP(I),SPVIAB(I),&
-                &SPBA(I),SPTPA(I),SPMORT1(I),SPMORT2(I),SPGMULT(I),&
-                &SPSITGM(I),MXDENMLT,POTESTAB(I)
+           if (LMETRICVAR) then
+              write (JOUT,45) JCLREF,IY(ICYC),JSP(I),SPVIAB(I),&
+                   &SPBA(I)*FT2pACRtoM2pHA,&
+                   &SPTPA(I)/ACRtoHA,&
+                   &SPMORT1(I),SPMORT2(I),SPGMULT(I),&
+                   &SPSITGM(I),MXDENMLT,POTESTAB(I)
+           else
+              write (JOUT,45) JCLREF,IY(ICYC),JSP(I),SPVIAB(I),&
+                   &SPBA(I),SPTPA(I),SPMORT1(I),SPMORT2(I),SPGMULT(I),&
+                   &SPSITGM(I),MXDENMLT,POTESTAB(I)
+           end if
            45 format (1X,I5,1X,I4,3X,A2,F7.3,F7.2,F7.1,5F6.3,F9.1)
         end if
-        call DBSCLSUM(NPLT,IY(ICYC),JSP(I),SPVIAB(I),&
-             &SPBA(I),SPTPA(I),SPMORT1(I),SPMORT2(I),SPGMULT(I),&
-             &SPSITGM(I),MXDENMLT,POTESTAB(I))
+        if (LMETRICVAR) then
+           call DBSCLSUM(NPLT,IY(ICYC),JSP(I),SPVIAB(I),&
+                &SPBA(I)*FT2pACRtoM2pHA,&
+                &SPTPA(I)/ACRtoHA,&
+                &SPMORT1(I),SPMORT2(I),SPGMULT(I),&
+                &SPSITGM(I),MXDENMLT,POTESTAB(I))
+        else
+           call DBSCLSUM(NPLT,IY(ICYC),JSP(I),SPVIAB(I),&
+                &SPBA(I),SPTPA(I),SPMORT1(I),SPMORT2(I),SPGMULT(I),&
+                &SPSITGM(I),MXDENMLT,POTESTAB(I))
+        end if
      end if
   end do
   if (I2.eq.0) then

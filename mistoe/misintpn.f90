@@ -246,5 +246,12 @@ subroutine MISINT
      200 continue
   end do
 
+  !     OP SHARES THIS TABLE; ITS SPECIES 23 AND 24 ARE PACIFIC MADRONE AND
+  !     TANOAK INSTEAD OF WHITE ALDER AND PAPER BIRCH
+  if (VARACD .eq. 'OP') then
+     CSPARR(23) = 'MA'
+     CSPARR(24) = 'TO'
+  end if
+
   return
 end

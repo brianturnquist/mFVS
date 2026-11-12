@@ -43,26 +43,52 @@ subroutine DBSFMPFC(NPLT,WINDSP,TEMP,MOIST1,MOIST2,MOIST3,MOIST4,&
      FCOND = "Moderate"
   end if
 
-  iRet = fsql3_tableexists(IoutDBref,&
-       &"FVS_PotFire_Cond"//CHAR(0))
+  if (LMETRICVAR) then
+     iRet = fsql3_tableexists(IoutDBref,&
+          &"FVS_PotFire_Cond_Metric"//CHAR(0))
+  else
+     iRet = fsql3_tableexists(IoutDBref,&
+          &"FVS_PotFire_Cond"//CHAR(0))
+  end if
   if (iRet.eq.0) then
-     SQLStmtStr = 'CREATE TABLE FVS_PotFire_Cond ('//&
-          &'CaseID text not null,'//&
-          &'StandID text not null,'//&
-          &'Fire_Condition text null,'//&
-          &'Wind_Speed real null,'//&
-          &'Temperature int null,'//&
-          &'One_Hr_Moisture real null,'//&
-          &'Ten_Hr_Moisture real null,'//&
-          &'Hundred_Hr_Moisture real null,'//&
-          &'Thousand_Hr_Moisture real null,'//&
-          &'Duff_Moisture real null,'//&
-          &'Live_Woody_Moisture real null,'//&
-          &'Live_Herb_Moisture real null);'//CHAR(0)
+     if (LMETRICVAR) then
+        SQLStmtStr = 'CREATE TABLE FVS_PotFire_Cond_Metric ('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Fire_Condition text null,'//&
+             &'Wind_Speed real null,'//&
+             &'Temperature int null,'//&
+             &'One_Hr_Moisture real null,'//&
+             &'Ten_Hr_Moisture real null,'//&
+             &'Hundred_Hr_Moisture real null,'//&
+             &'Thousand_Hr_Moisture real null,'//&
+             &'Duff_Moisture real null,'//&
+             &'Live_Woody_Moisture real null,'//&
+             &'Live_Herb_Moisture real null);'//CHAR(0)
+     else
+        SQLStmtStr = 'CREATE TABLE FVS_PotFire_Cond ('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Fire_Condition text null,'//&
+             &'Wind_Speed real null,'//&
+             &'Temperature int null,'//&
+             &'One_Hr_Moisture real null,'//&
+             &'Ten_Hr_Moisture real null,'//&
+             &'Hundred_Hr_Moisture real null,'//&
+             &'Thousand_Hr_Moisture real null,'//&
+             &'Duff_Moisture real null,'//&
+             &'Live_Woody_Moisture real null,'//&
+             &'Live_Herb_Moisture real null);'//CHAR(0)
+     end if
      iRet = fsql3_exec(IoutDBref,SQLStmtStr)
      if (iRet.ne.0) then
         iRet = fsql3_errmsg(IinDBref, Msg, MxMsg)
-        print *,"FVS_PotFire_Cond exec direct error:",Msg(:iRet)
+        if (LMETRICVAR) then
+           print *,"FVS_PotFire_Cond_Metric exec direct error:",&
+                &Msg(:iRet)
+        else
+           print *,"FVS_PotFire_Cond exec direct error:",Msg(:iRet)
+        end if
         IPOTFIREC = 0
         return
      end if
@@ -77,19 +103,33 @@ subroutine DBSFMPFC(NPLT,WINDSP,TEMP,MOIST1,MOIST2,MOIST3,MOIST4,&
   DMOIST6 = MOIST6
   DMOIST7 = MOIST7
 
-  write(SQLStmtStr,*)'INSERT INTO FVS_PotFire_Cond (CaseID,',&
-       &'StandID,Fire_Condition,Wind_Speed,Temperature,',&
-       &'One_Hr_Moisture,Ten_Hr_Moisture,',&
-       &'Hundred_Hr_Moisture,Thousand_Hr_Moisture,Duff_Moisture,',&
-       &'Live_Woody_Moisture,Live_Herb_Moisture) VALUES (''',&
-       &CASEID,''',''',TRIM(NPLT),''',''',TRIM(FCOND),&
-       &''',?,?,?,?,?,?,?,?,?);'
+  if (LMETRICVAR) then
+     write(SQLStmtStr,*)'INSERT INTO FVS_PotFire_Cond_Metric ',&
+          &'(CaseID,StandID,Fire_Condition,Wind_Speed,Temperature,',&
+          &'One_Hr_Moisture,Ten_Hr_Moisture,',&
+          &'Hundred_Hr_Moisture,Thousand_Hr_Moisture,Duff_Moisture,',&
+          &'Live_Woody_Moisture,Live_Herb_Moisture) VALUES (''',&
+          &CASEID,''',''',TRIM(NPLT),''',''',TRIM(FCOND),&
+          &''',?,?,?,?,?,?,?,?,?);'
+  else
+     write(SQLStmtStr,*)'INSERT INTO FVS_PotFire_Cond (CaseID,',&
+          &'StandID,Fire_Condition,Wind_Speed,Temperature,',&
+          &'One_Hr_Moisture,Ten_Hr_Moisture,',&
+          &'Hundred_Hr_Moisture,Thousand_Hr_Moisture,Duff_Moisture,',&
+          &'Live_Woody_Moisture,Live_Herb_Moisture) VALUES (''',&
+          &CASEID,''',''',TRIM(NPLT),''',''',TRIM(FCOND),&
+          &''',?,?,?,?,?,?,?,?,?);'
+  end if
 
   iRet = fsql3_prepare(IoutDBref, TRIM(SQLStmtStr)//CHAR(0))
 
   if (iRet.ne.0) then
      iRet = fsql3_errmsg(IinDBref, Msg, MxMsg)
-     print *,"FVS_PotFire_Cond prepare error:",Msg(:iRet)
+     if (LMETRICVAR) then
+        print *,"FVS_PotFire_Cond_Metric prepare error:",Msg(:iRet)
+     else
+        print *,"FVS_PotFire_Cond prepare error:",Msg(:iRet)
+     end if
      IPOTFIREC = 0
      return
   end if
@@ -127,13 +167,21 @@ subroutine DBSFMPFC(NPLT,WINDSP,TEMP,MOIST1,MOIST2,MOIST3,MOIST4,&
   iRet = fsql3_step(IoutDBref)
   if (iRet.ne.0) then
      iRet = fsql3_errmsg(IinDBref, Msg, MxMsg)
-     print *,"FVS_PotFire_Cond step error:",Msg(:iRet)
+     if (LMETRICVAR) then
+        print *,"FVS_PotFire_Cond_Metric step error:",Msg(:iRet)
+     else
+        print *,"FVS_PotFire_Cond step error:",Msg(:iRet)
+     end if
      IPOTFIREC = 0
   end if
   iRet = fsql3_finalize(IoutDBref)
   if (iRet.ne.0) then
      iRet = fsql3_errmsg(IinDBref, Msg, MxMsg)
-     print *,"FVS_PotFire_Cond finalize error:",Msg(:iRet)
+     if (LMETRICVAR) then
+        print *,"FVS_PotFire_Cond_Metric finalize error:",Msg(:iRet)
+     else
+        print *,"FVS_PotFire_Cond finalize error:",Msg(:iRet)
+     end if
      IPOTFIREC = 0
   end if
   return

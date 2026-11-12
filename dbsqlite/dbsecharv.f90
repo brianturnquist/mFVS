@@ -22,27 +22,53 @@ subroutine DBSECHARV_open()
   !     Make sure we have an up-to-date case ID.
   call DBSCASE(1)
 
-  iRet = fsql3_tableexists(IoutDBref,"FVS_EconHarvestValue"&
-       &//CHAR(0))
+  if (LMETRICVAR) then
+     iRet = fsql3_tableexists(IoutDBref,&
+          &"FVS_EconHarvestValue_Metric"//CHAR(0))
+  else
+     iRet = fsql3_tableexists(IoutDBref,"FVS_EconHarvestValue"&
+          &//CHAR(0))
+  end if
   if (iRet.eq.0) then
-     SQLStmtStr = 'CREATE TABLE FVS_EconHarvestValue ('&
-          &// 'CaseID text not null,'&
-          &// 'Year int not null,'&
-          &// 'SpeciesFVS    text not null,'&
-          &// 'SpeciesPLANTS text not null,'&
-          &// 'SpeciesFIA    text not null,'&
-          &// 'Min_DIB real null,'&
-          &// 'Max_DIB real null,'&
-          &// 'Min_DBH real null,'&
-          &// 'Max_DBH real null,'&
-          &// 'TPA_Removed int null,'&
-          &// 'TPA_Value int null,'&
-          &// 'Tons_Per_Acre int null,'&
-          &// 'Ft3_Removed int null,'&
-          &// 'Ft3_Value int null,'&
-          &// 'Board_Ft_Removed int null,'&
-          &// 'Board_Ft_Value int null,'&
-          &// 'Total_Value int null);'
+     if (LMETRICVAR) then
+        SQLStmtStr = 'CREATE TABLE FVS_EconHarvestValue_Metric ('&
+             &// 'CaseID text not null,'&
+             &// 'Year int not null,'&
+             &// 'SpeciesFVS    text null,'&
+             &// 'SpeciesPLANTS text null,'&
+             &// 'SpeciesFIA    text null,'&
+             &// 'Min_DIB real null,'&
+             &// 'Max_DIB real null,'&
+             &// 'Min_DBH real null,'&
+             &// 'Max_DBH real null,'&
+             &// 'TPH_Removed int null,'&
+             &// 'TPH_Value int null,'&
+             &// 'Tonne_Per_Ha int null,'&
+             &// 'CuM_Removed int null,'&
+             &// 'CuM_Value int null,'&
+             &// 'Board_Removed int null,'&
+             &// 'Board_Value int null,'&
+             &// 'Total_Value int null);'
+     else
+        SQLStmtStr = 'CREATE TABLE FVS_EconHarvestValue ('&
+             &// 'CaseID text not null,'&
+             &// 'Year int not null,'&
+             &// 'SpeciesFVS    text not null,'&
+             &// 'SpeciesPLANTS text not null,'&
+             &// 'SpeciesFIA    text not null,'&
+             &// 'Min_DIB real null,'&
+             &// 'Max_DIB real null,'&
+             &// 'Min_DBH real null,'&
+             &// 'Max_DBH real null,'&
+             &// 'TPA_Removed int null,'&
+             &// 'TPA_Value int null,'&
+             &// 'Tons_Per_Acre int null,'&
+             &// 'Ft3_Removed int null,'&
+             &// 'Ft3_Value int null,'&
+             &// 'Board_Ft_Removed int null,'&
+             &// 'Board_Ft_Value int null,'&
+             &// 'Total_Value int null);'
+     end if
      iRet = fsql3_exec(IoutDBref,SQLStmtStr//CHAR(0))
      if (iRet .ne.0) then
         IDBSECON = 0
@@ -50,12 +76,21 @@ subroutine DBSECHARV_open()
      end if
   end if
 
-  SQLStmtStr = 'INSERT INTO FVS_EconHarvestValue ' //&
-       &'(CaseID,Year,SpeciesFVS,SpeciesPLANTS,SpeciesFIA,' //&
-       &'Min_DIB,Max_DIB,Min_DBH,Max_DBH,TPA_Removed,TPA_Value,' //&
-       &'Tons_Per_Acre,Ft3_Removed,Ft3_Value,Board_Ft_Removed,' //&
-       &'Board_Ft_Value,Total_Value) VALUES (''' // CASEID //&
-       &''',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);' // CHAR(0)
+  if (LMETRICVAR) then
+     SQLStmtStr = 'INSERT INTO FVS_EconHarvestValue_Metric ' //&
+          &'(CaseID,Year,SpeciesFVS,SpeciesPLANTS,SpeciesFIA,' //&
+          &'Min_DIB,Max_DIB,Min_DBH,Max_DBH,TPH_Removed,TPH_Value,' //&
+          &'Tonne_Per_Ha,CuM_Removed,CuM_Value,Board_Removed,' //&
+          &'Board_Value,Total_Value) VALUES (''' // CASEID //&
+          &''',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);' // CHAR(0)
+  else
+     SQLStmtStr = 'INSERT INTO FVS_EconHarvestValue ' //&
+          &'(CaseID,Year,SpeciesFVS,SpeciesPLANTS,SpeciesFIA,' //&
+          &'Min_DIB,Max_DIB,Min_DBH,Max_DBH,TPA_Removed,TPA_Value,' //&
+          &'Tons_Per_Acre,Ft3_Removed,Ft3_Value,Board_Ft_Removed,' //&
+          &'Board_Ft_Value,Total_Value) VALUES (''' // CASEID //&
+          &''',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);' // CHAR(0)
+  end if
   iRet = fsql3_exec(IoutDBref,"Begin;"//CHAR(0))
   iRet = fsql3_prepare(IoutDBref,SQLStmtStr)
   if (iRet .ne.0) then
@@ -130,12 +165,17 @@ subroutine DBSECHARV_insert(beginAnalYear, speciesId, minDia,&
   iRet = fsql3_reset(IoutDBref)
   if (iRet>0) then
      iRet = fsql3_errmsg(IoutDBref, msg, 100)
-     print *,"FVS_EconHarvestValue step error: ",trim(msg)
+     if (LMETRICVAR) then
+        print *,"FVS_EconHarvestValue_Metric step error: ",trim(msg)
+     else
+        print *,"FVS_EconHarvestValue step error: ",trim(msg)
+     end if
   end if
   end subroutine DBSECHARV_insert
 
 subroutine DBSECHARV_close()
   implicit none
+  include 'PRGPRM.f90'
 
   ! Common blocks
   include 'DBSCOM.f90'
@@ -148,12 +188,20 @@ subroutine DBSECHARV_close()
   iRet = fsql3_exec(IoutDBref,"Commit;"//CHAR(0))
   if (iRet>0) then
      iRet = fsql3_errmsg(IoutDBref, msg, 100)
-     print *,"FVS_EconHarvestValue commit error: ",trim(msg)
+     if (LMETRICVAR) then
+        print *,"FVS_EconHarvestValue_Metric commit error: ",trim(msg)
+     else
+        print *,"FVS_EconHarvestValue commit error: ",trim(msg)
+     end if
   end if
   iRet = fsql3_finalize (IoutDBref)
   if (iRet>0) then
      iRet = fsql3_errmsg(IoutDBref, msg, 100)
-     print *,"FVS_EconHarvestValue finalize error: ",trim(msg)
+     if (LMETRICVAR) then
+        print *,"FVS_EconHarvestValue_Metric finalize error: ",trim(msg)
+     else
+        print *,"FVS_EconHarvestValue finalize error: ",trim(msg)
+     end if
   end if
 
   end subroutine DBSECHARV_close

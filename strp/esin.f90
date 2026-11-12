@@ -15,6 +15,7 @@ subroutine ESIN (PASKEY,ARRAY,LNOTBK,KARD,LKECHO)
   include 'CONTRL.f90'
   include 'PLOT.f90'
   include 'ESWSBW.f90'
+  include 'METRIC.f90'
 
   !     INTERNAL STORAGE
 
@@ -186,6 +187,13 @@ subroutine ESIN (PASKEY,ARRAY,LNOTBK,KARD,LKECHO)
 
   !     OPTION NUMBER 2 -- PLANT                                   PLANT
 
+  if (LMETRICVAR) then
+     ARRAY(3) = ARRAY(3) / HAtoACR
+     ARRAY(6) = ARRAY(6) * MtoFT
+  end if
+
+  !     OPTION NUMBER 2 -- PLANT                                   PLANT
+
   IACTK = 430
   1205 continue
   IDT = 1
@@ -215,16 +223,35 @@ subroutine ESIN (PASKEY,ARRAY,LNOTBK,KARD,LKECHO)
   if (KODE.gt.0) goto 10
   ILEN = 3
   if (IS.lt.0)ILEN = ISPGRP(-IS,92)
-  if (LKECHO)write(JOSTND,1220) KEYWRD,IDT,KARD(2)(1:ILEN),IS,&
-       &(ARRAY(I),I = 3,7)
-  1220 format(/A8,'   DATE/CYCLE=',I5,'; SPECIES= ',A,' (CODE= ',I3,&
-       &'); TREES/ACRE=',F6.0,'; % SURVIVAL=',F6.2,/,T12,&
-       &'AGE=',F5.1,'; AVE. HEIGHT=',F5.1,'; SHADE CODE=',F5.1)
+  if (LMETRICVAR) then
+     if (LKECHO)write(JOSTND,91220) KEYWRD,IDT,KARD(2)(1:ILEN),IS,&
+          &ARRAY(3) /ACRtoHA,&
+          &ARRAY(4),&
+          &ARRAY(5),&
+          &ARRAY(6) *FTtoM,&
+          &ARRAY(7)
+     91220 format(/A8,'   DATE/CYCLE=',I5,'; SPECIES= ',A,' (CODE= ',I3,&
+          &'); TREES/HA=',F6.0,'; % SURVIVAL=',F6.2,/,T12,&
+          &'AGE=',F5.1,'; AVE. HEIGHT=',F5.1,'; SHADE CODE=',F5.1)
+  else
+     if (LKECHO)write(JOSTND,1220) KEYWRD,IDT,KARD(2)(1:ILEN),IS,&
+          &(ARRAY(I),I = 3,7)
+     1220 format(/A8,'   DATE/CYCLE=',I5,'; SPECIES= ',A,' (CODE= ',I3,&
+          &'); TREES/ACRE=',F6.0,'; % SURVIVAL=',F6.2,/,T12,&
+          &'AGE=',F5.1,'; AVE. HEIGHT=',F5.1,'; SHADE CODE=',F5.1)
+  end if
   !*    IF(IACTK.EQ.431) IF(LKECHO)WRITE(JOSTND,1230)
   !1230 FORMAT(11X,'NATURAL IMPLIES: STOCKADJ = 0.0, NOAUTALY, ',
   !*   >           'AND NOINGROW.')
   goto 10
   1300 continue
+
+  !     OPTION NUMBER 3 -- NATURAL                               NATURAL
+
+  if (LMETRICVAR) then
+     ARRAY(3) = ARRAY(3) / HAtoACR
+     ARRAY(6) = ARRAY(6) * MtoFT
+  end if
 
   !     OPTION NUMBER 3 -- NATURAL                               NATURAL
 
@@ -479,6 +506,9 @@ subroutine ESIN (PASKEY,ARRAY,LNOTBK,KARD,LKECHO)
      call ERRGRO (.true.,4)
      goto 10
   end if
+  if (LMETRICVAR) then
+     ARRAY(3) = ARRAY(3) * MtoFT
+  end if
 
   !     SPECIES CODE PROCESSING.
 
@@ -489,8 +519,13 @@ subroutine ESIN (PASKEY,ARRAY,LNOTBK,KARD,LKECHO)
   if (KODE.gt.0) goto 10
   ILEN = 3
   if (IS.lt.0)ILEN = ISPGRP(-IS,92)
-  if (LKECHO)write(JOSTND,2530) KEYWRD,IDT,KARD(2)(1:ILEN),IS,&
-       &ARRAY(3)
+  if (LMETRICVAR) then
+     if (LKECHO)write(JOSTND,2530) KEYWRD,IDT,KARD(2)(1:ILEN),IS,&
+          &ARRAY(3) * FTtoM
+  else
+     if (LKECHO)write(JOSTND,2530) KEYWRD,IDT,KARD(2)(1:ILEN),IS,&
+          &ARRAY(3)
+  end if
   2530 format(/A8,'   DATE/CYCLE=',I5,'; SPECIES= ',A,' (CODE= ',&
        &I3,'); ADJUSTMENT VALUE=',F10.4)
   goto 10
@@ -588,6 +623,10 @@ subroutine ESIN (PASKEY,ARRAY,LNOTBK,KARD,LKECHO)
   IACTK = 450
   IDT = 1
   if (LNOTBK(1)) IDT = IFIX(ARRAY(1))
+  if (LMETRICVAR) then
+     ARRAY(5) = ARRAY(5) * CMtoIN
+     ARRAY(6) = ARRAY(6) * CMtoIN
+  end if
 
   !     IF THE PARMS FEATURE IS BEING USED PROCESS OPTION USING
   !     OPNEWC, OTHERWISE, PROCESS "NORMALLY".
@@ -649,14 +688,26 @@ subroutine ESIN (PASKEY,ARRAY,LNOTBK,KARD,LKECHO)
   if (.not.LNOTBK(3))ARRAY(3) = 1.
   if (.not.LNOTBK(4))ARRAY(4) = 1.
   if (.not.LNOTBK(5))ARRAY(5) = 0.
-  if (.not.LNOTBK(6))ARRAY(6) = 999.
+  if (LMETRICVAR) then
+     if (.not.LNOTBK(6))ARRAY(6) = 999. * CMtoIN
+  else
+     if (.not.LNOTBK(6))ARRAY(6) = 999.
+  end if
 
   call OPNEW(KODE,IDT,IACTK,5,ARRAY(2))
   if (KODE.gt.0) goto 10
   ILEN = 3
   if (IS.lt.0)ILEN = ISPGRP(-IS,92)
-  if (LKECHO)write(JOSTND,3606) KEYWRD,IDT,KARD(2)(1:ILEN),IS,&
-       &(ARRAY(I),I = 3,6)
+  if (LMETRICVAR) then
+     if (LKECHO)write(JOSTND,3606) KEYWRD,IDT,KARD(2)(1:ILEN),IS,&
+          &ARRAY(3),&
+          &ARRAY(4),&
+          &ARRAY(5) * INtoCM,&
+          &ARRAY(6) * INtoCM
+  else
+     if (LKECHO)write(JOSTND,3606) KEYWRD,IDT,KARD(2)(1:ILEN),IS,&
+          &(ARRAY(I),I = 3,6)
+  end if
   3606 format(/A8,'   DATE/CYCLE=',I5,'; SPROUTING WILL BE SIMULATED.'&
        &,'ADJUSTMENTS FOR SPECIES= ',A,' (CODE= ',I3,') ARE;',/T13,&
        &'SPROUT NUMBER MULTIPLIER VALUE= ',F10.4,';  HEIGHT MULTIPLIER',&

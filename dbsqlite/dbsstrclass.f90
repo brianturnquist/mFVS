@@ -139,56 +139,111 @@ subroutine DBSSTRCLASS(IYEAR,CNPLT,RCODE,S1DBH,S1NHT,S1LHT,S1SHT,&
   if (NTREES .eq.0) return
 
   call DBSCASE(1)
-  iRet = fsql3_tableexists(IoutDBref,&
-       &"FVS_StrClass"//CHAR(0))
+  if (LMETRICVAR) then
+     iRet = fsql3_tableexists(IoutDBref,&
+          &"FVS_StrClass_Metric"//CHAR(0))
+  else
+     iRet = fsql3_tableexists(IoutDBref,&
+          &"FVS_StrClass"//CHAR(0))
+  end if
   if (iRet.eq.0) then
-     SQLStmtStr = 'CREATE TABLE FVS_StrClass ('//&
-          &'CaseID text not null,'//&
-          &'StandID text not null,'//&
-          &'Year int null,'//&
-          &'Removal_Code int null,'//&
-          &'Stratum_1_DBH real null,'//&
-          &'Stratum_1_Nom_Ht int null,'//&
-          &'Stratum_1_Lg_Ht int null,'//&
-          &'Stratum_1_Sm_Ht int null,'//&
-          &'Stratum_1_Crown_Base int null,'//&
-          &'Stratum_1_Crown_Cover int null,'//&
-          &'Stratum_1_SpeciesFVS_1    text null,'//&
-          &'Stratum_1_SpeciesFVS_2    text null,'//&
-          &'Stratum_1_SpeciesPLANTS_1 text null,'//&
-          &'Stratum_1_SpeciesPLANTS_2 text null,'//&
-          &'Stratum_1_SpeciesFIA_1    text null,'//&
-          &'Stratum_1_SpeciesFIA_2    text null,'//&
-          &'Stratum_1_Status_Code int null,'//&
-          &'Stratum_2_DBH real null,'//&
-          &'Stratum_2_Nom_Ht int null,'//&
-          &'Stratum_2_Lg_Ht int null,'//&
-          &'Stratum_2_Sm_Ht int null,'//&
-          &'Stratum_2_Crown_Base int null,'//&
-          &'Stratum_2_Crown_Cover int null,'//&
-          &'Stratum_2_SpeciesFVS_1    text null,'//&
-          &'Stratum_2_SpeciesFVS_2    text null,'//&
-          &'Stratum_2_SpeciesPLANTS_1 text null,'//&
-          &'Stratum_2_SpeciesPLANTS_2 text null,'//&
-          &'Stratum_2_SpeciesFIA_1    text null,'//&
-          &'Stratum_2_SpeciesFIA_2    text null,'//&
-          &'Stratum_2_Status_Code int null,'//&
-          &'Stratum_3_DBH real null,'//&
-          &'Stratum_3_Nom_Ht int null,'//&
-          &'Stratum_3_Lg_Ht int null,'//&
-          &'Stratum_3_Sm_Ht int null,'//&
-          &'Stratum_3_Crown_Base int null,'//&
-          &'Stratum_3_Crown_Cover int null,'//&
-          &'Stratum_3_SpeciesFVS_1    text null,'//&
-          &'Stratum_3_SpeciesFVS_2    text null,'//&
-          &'Stratum_3_SpeciesPLANTS_1 text null,'//&
-          &'Stratum_3_SpeciesPLANTS_2 text null,'//&
-          &'Stratum_3_SpeciesFIA_1    text null,'//&
-          &'Stratum_3_SpeciesFIA_2    text null,'//&
-          &'Stratum_3_Status_Code int null,'//&
-          &'Number_of_Strata int null,'//&
-          &'Total_Cover int null,'//&
-          &'Structure_Class text null);'//CHAR(0)
+     if (LMETRICVAR) then
+        SQLStmtStr = 'CREATE TABLE FVS_StrClass_Metric ('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year int null,'//&
+             &'Removal_Code int null,'//&
+             &'Stratum_1_DBH real null,'//&
+             &'Stratum_1_Nom_Ht int null,'//&
+             &'Stratum_1_Lg_Ht int null,'//&
+             &'Stratum_1_Sm_Ht int null,'//&
+             &'Stratum_1_Crown_Base int null,'//&
+             &'Stratum_1_Crown_Cover int null,'//&
+             &'Stratum_1_SpeciesFVS_1    text null,'//&
+             &'Stratum_1_SpeciesFVS_2    text null,'//&
+             &'Stratum_1_SpeciesPLANTS_1 text null,'//&
+             &'Stratum_1_SpeciesPLANTS_2 text null,'//&
+             &'Stratum_1_SpeciesFIA_1    text null,'//&
+             &'Stratum_1_SpeciesFIA_2    text null,'//&
+             &'Stratum_1_Status_Code int null,'//&
+             &'Stratum_2_DBH real null,'//&
+             &'Stratum_2_Nom_Ht int null,'//&
+             &'Stratum_2_Lg_Ht int null,'//&
+             &'Stratum_2_Sm_Ht int null,'//&
+             &'Stratum_2_Crown_Base int null,'//&
+             &'Stratum_2_Crown_Cover int null,'//&
+             &'Stratum_2_SpeciesFVS_1    text null,'//&
+             &'Stratum_2_SpeciesFVS_2    text null,'//&
+             &'Stratum_2_SpeciesPLANTS_1 text null,'//&
+             &'Stratum_2_SpeciesPLANTS_2 text null,'//&
+             &'Stratum_2_SpeciesFIA_1    text null,'//&
+             &'Stratum_2_SpeciesFIA_2    text null,'//&
+             &'Stratum_2_Status_Code int null,'//&
+             &'Stratum_3_DBH real null,'//&
+             &'Stratum_3_Nom_Ht int null,'//&
+             &'Stratum_3_Lg_Ht int null,'//&
+             &'Stratum_3_Sm_Ht int null,'//&
+             &'Stratum_3_Crown_Base int null,'//&
+             &'Stratum_3_Crown_Cover int null,'//&
+             &'Stratum_3_SpeciesFVS_1    text null,'//&
+             &'Stratum_3_SpeciesFVS_2    text null,'//&
+             &'Stratum_3_SpeciesPLANTS_1 text null,'//&
+             &'Stratum_3_SpeciesPLANTS_2 text null,'//&
+             &'Stratum_3_SpeciesFIA_1    text null,'//&
+             &'Stratum_3_SpeciesFIA_2    text null,'//&
+             &'Stratum_3_Status_Code int null,'//&
+             &'Number_of_Strata int null,'//&
+             &'Total_Cover int null,'//&
+             &'Structure_Class text null);'//CHAR(0)
+     else
+        SQLStmtStr = 'CREATE TABLE FVS_StrClass ('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year int null,'//&
+             &'Removal_Code int null,'//&
+             &'Stratum_1_DBH real null,'//&
+             &'Stratum_1_Nom_Ht int null,'//&
+             &'Stratum_1_Lg_Ht int null,'//&
+             &'Stratum_1_Sm_Ht int null,'//&
+             &'Stratum_1_Crown_Base int null,'//&
+             &'Stratum_1_Crown_Cover int null,'//&
+             &'Stratum_1_SpeciesFVS_1    text null,'//&
+             &'Stratum_1_SpeciesFVS_2    text null,'//&
+             &'Stratum_1_SpeciesPLANTS_1 text null,'//&
+             &'Stratum_1_SpeciesPLANTS_2 text null,'//&
+             &'Stratum_1_SpeciesFIA_1    text null,'//&
+             &'Stratum_1_SpeciesFIA_2    text null,'//&
+             &'Stratum_1_Status_Code int null,'//&
+             &'Stratum_2_DBH real null,'//&
+             &'Stratum_2_Nom_Ht int null,'//&
+             &'Stratum_2_Lg_Ht int null,'//&
+             &'Stratum_2_Sm_Ht int null,'//&
+             &'Stratum_2_Crown_Base int null,'//&
+             &'Stratum_2_Crown_Cover int null,'//&
+             &'Stratum_2_SpeciesFVS_1    text null,'//&
+             &'Stratum_2_SpeciesFVS_2    text null,'//&
+             &'Stratum_2_SpeciesPLANTS_1 text null,'//&
+             &'Stratum_2_SpeciesPLANTS_2 text null,'//&
+             &'Stratum_2_SpeciesFIA_1    text null,'//&
+             &'Stratum_2_SpeciesFIA_2    text null,'//&
+             &'Stratum_2_Status_Code int null,'//&
+             &'Stratum_3_DBH real null,'//&
+             &'Stratum_3_Nom_Ht int null,'//&
+             &'Stratum_3_Lg_Ht int null,'//&
+             &'Stratum_3_Sm_Ht int null,'//&
+             &'Stratum_3_Crown_Base int null,'//&
+             &'Stratum_3_Crown_Cover int null,'//&
+             &'Stratum_3_SpeciesFVS_1    text null,'//&
+             &'Stratum_3_SpeciesFVS_2    text null,'//&
+             &'Stratum_3_SpeciesPLANTS_1 text null,'//&
+             &'Stratum_3_SpeciesPLANTS_2 text null,'//&
+             &'Stratum_3_SpeciesFIA_1    text null,'//&
+             &'Stratum_3_SpeciesFIA_2    text null,'//&
+             &'Stratum_3_Status_Code int null,'//&
+             &'Number_of_Strata int null,'//&
+             &'Total_Cover int null,'//&
+             &'Structure_Class text null);'//CHAR(0)
+     end if
 
      iRet = fsql3_exec(IoutDBref,SQLStmtStr)
      if (iRet .ne.0) then
@@ -258,40 +313,77 @@ subroutine DBSSTRCLASS(IYEAR,CNPLT,RCODE,S1DBH,S1NHT,S1LHT,S1SHT,&
   BS2DBH = S2DBH
   BS3DBH = S3DBH
 
-  write(SQLStmtStr,*)'INSERT INTO FVS_StrClass (CaseID,',&
-       &'StandID,Year,Removal_Code,Stratum_1_DBH,Stratum_1_Nom_Ht,',&
-       &'Stratum_1_Lg_Ht,Stratum_1_Sm_Ht,Stratum_1_Crown_Base,',&
-       &'Stratum_1_Crown_Cover,',&
-       &'Stratum_1_SpeciesFVS_1,Stratum_1_SpeciesFVS_2,',&
-       &'Stratum_1_SpeciesPLANTS_1,Stratum_1_SpeciesPLANTS_2,',&
-       &'Stratum_1_SpeciesFIA_1,Stratum_1_SpeciesFIA_2,',&
-       &'Stratum_1_Status_Code,Stratum_2_DBH,',&
-       &'Stratum_2_Nom_Ht,Stratum_2_Lg_Ht,Stratum_2_Sm_Ht,',&
-       &'Stratum_2_Crown_Base,Stratum_2_Crown_Cover,',&
-       &'Stratum_2_SpeciesFVS_1,Stratum_2_SpeciesFVS_2,',&
-       &'Stratum_2_SpeciesPLANTS_1,Stratum_2_SpeciesPLANTS_2,',&
-       &'Stratum_2_SpeciesFIA_1,Stratum_2_SpeciesFIA_2,',&
-       &'Stratum_2_Status_Code,Stratum_3_DBH,Stratum_3_Nom_Ht,',&
-       &'Stratum_3_Lg_Ht,Stratum_3_Sm_Ht,Stratum_3_Crown_Base,',&
-       &'Stratum_3_Crown_Cover,',&
-       &'Stratum_3_SpeciesFVS_1,Stratum_3_SpeciesFVS_2,',&
-       &'Stratum_3_SpeciesPLANTS_1,Stratum_3_SpeciesPLANTS_2,',&
-       &'Stratum_3_SpeciesFIA_1,Stratum_3_SpeciesFIA_2,',&
-       &'Stratum_3_Status_Code,Number_of_Strata,',&
-       &"Total_Cover,Structure_Class) VALUES('",CASEID,"',",&
-       &"'",TRIM(CNPLT),"',?,?,?,?,?,?,?,?,",&
-       &"'",TRIM(S1CSP11),"','",TRIM(S1CSP21),"',",&
-       &"'",TRIM(S1CSP12),"','",TRIM(S1CSP22),"',",&
-       &"'",TRIM(S1CSP13),"','",TRIM(S1CSP23),"',",&
-       &"?,?,?,?,?,?,?,",&
-       &"'",TRIM(S2CSP11),"','",TRIM(S2CSP21),"',",&
-       &"'",TRIM(S2CSP12),"','",TRIM(S2CSP22),"',",&
-       &"'",TRIM(S2CSP13),"','",TRIM(S2CSP23),"',",&
-       &"?,?,?,?,?,?,?,",&
-       &"'",TRIM(S3CSP11),"','",TRIM(S3CSP21),"',",&
-       &"'",TRIM(S3CSP12),"','",TRIM(S3CSP22),"',",&
-       &"'",TRIM(S3CSP13),"','",TRIM(S3CSP23),"',",&
-       &"?,?,?,'",TRIM(SCLASS),"');"
+  if (LMETRICVAR) then
+     write(SQLStmtStr,*)'INSERT INTO FVS_StrClass_Metric (CaseID,',&
+          &'StandID,Year,Removal_Code,Stratum_1_DBH,Stratum_1_Nom_Ht,',&
+          &'Stratum_1_Lg_Ht,Stratum_1_Sm_Ht,Stratum_1_Crown_Base,',&
+          &'Stratum_1_Crown_Cover,',&
+          &'Stratum_1_SpeciesFVS_1,Stratum_1_SpeciesFVS_2,',&
+          &'Stratum_1_SpeciesPLANTS_1,Stratum_1_SpeciesPLANTS_2,',&
+          &'Stratum_1_SpeciesFIA_1,Stratum_1_SpeciesFIA_2,',&
+          &'Stratum_1_Status_Code,Stratum_2_DBH,',&
+          &'Stratum_2_Nom_Ht,Stratum_2_Lg_Ht,Stratum_2_Sm_Ht,',&
+          &'Stratum_2_Crown_Base,Stratum_2_Crown_Cover,',&
+          &'Stratum_2_SpeciesFVS_1,Stratum_2_SpeciesFVS_2,',&
+          &'Stratum_2_SpeciesPLANTS_1,Stratum_2_SpeciesPLANTS_2,',&
+          &'Stratum_2_SpeciesFIA_1,Stratum_2_SpeciesFIA_2,',&
+          &'Stratum_2_Status_Code,Stratum_3_DBH,Stratum_3_Nom_Ht,',&
+          &'Stratum_3_Lg_Ht,Stratum_3_Sm_Ht,Stratum_3_Crown_Base,',&
+          &'Stratum_3_Crown_Cover,',&
+          &'Stratum_3_SpeciesFVS_1,Stratum_3_SpeciesFVS_2,',&
+          &'Stratum_3_SpeciesPLANTS_1,Stratum_3_SpeciesPLANTS_2,',&
+          &'Stratum_3_SpeciesFIA_1,Stratum_3_SpeciesFIA_2,',&
+          &'Stratum_3_Status_Code,Number_of_Strata,',&
+          &"Total_Cover,Structure_Class) VALUES('",CASEID,"',",&
+          &"'",TRIM(CNPLT),"',?,?,?,?,?,?,?,?,",&
+          &"'",TRIM(S1CSP11),"','",TRIM(S1CSP21),"',",&
+          &"'",TRIM(S1CSP12),"','",TRIM(S1CSP22),"',",&
+          &"'",TRIM(S1CSP13),"','",TRIM(S1CSP23),"',",&
+          &"?,?,?,?,?,?,?,",&
+          &"'",TRIM(S2CSP11),"','",TRIM(S2CSP21),"',",&
+          &"'",TRIM(S2CSP12),"','",TRIM(S2CSP22),"',",&
+          &"'",TRIM(S2CSP13),"','",TRIM(S2CSP23),"',",&
+          &"?,?,?,?,?,?,?,",&
+          &"'",TRIM(S3CSP11),"','",TRIM(S3CSP21),"',",&
+          &"'",TRIM(S3CSP12),"','",TRIM(S3CSP22),"',",&
+          &"'",TRIM(S3CSP13),"','",TRIM(S3CSP23),"',",&
+          &"?,?,?,'",TRIM(SCLASS),"');"
+  else
+     write(SQLStmtStr,*)'INSERT INTO FVS_StrClass (CaseID,',&
+          &'StandID,Year,Removal_Code,Stratum_1_DBH,Stratum_1_Nom_Ht,',&
+          &'Stratum_1_Lg_Ht,Stratum_1_Sm_Ht,Stratum_1_Crown_Base,',&
+          &'Stratum_1_Crown_Cover,',&
+          &'Stratum_1_SpeciesFVS_1,Stratum_1_SpeciesFVS_2,',&
+          &'Stratum_1_SpeciesPLANTS_1,Stratum_1_SpeciesPLANTS_2,',&
+          &'Stratum_1_SpeciesFIA_1,Stratum_1_SpeciesFIA_2,',&
+          &'Stratum_1_Status_Code,Stratum_2_DBH,',&
+          &'Stratum_2_Nom_Ht,Stratum_2_Lg_Ht,Stratum_2_Sm_Ht,',&
+          &'Stratum_2_Crown_Base,Stratum_2_Crown_Cover,',&
+          &'Stratum_2_SpeciesFVS_1,Stratum_2_SpeciesFVS_2,',&
+          &'Stratum_2_SpeciesPLANTS_1,Stratum_2_SpeciesPLANTS_2,',&
+          &'Stratum_2_SpeciesFIA_1,Stratum_2_SpeciesFIA_2,',&
+          &'Stratum_2_Status_Code,Stratum_3_DBH,Stratum_3_Nom_Ht,',&
+          &'Stratum_3_Lg_Ht,Stratum_3_Sm_Ht,Stratum_3_Crown_Base,',&
+          &'Stratum_3_Crown_Cover,',&
+          &'Stratum_3_SpeciesFVS_1,Stratum_3_SpeciesFVS_2,',&
+          &'Stratum_3_SpeciesPLANTS_1,Stratum_3_SpeciesPLANTS_2,',&
+          &'Stratum_3_SpeciesFIA_1,Stratum_3_SpeciesFIA_2,',&
+          &'Stratum_3_Status_Code,Number_of_Strata,',&
+          &"Total_Cover,Structure_Class) VALUES('",CASEID,"',",&
+          &"'",TRIM(CNPLT),"',?,?,?,?,?,?,?,?,",&
+          &"'",TRIM(S1CSP11),"','",TRIM(S1CSP21),"',",&
+          &"'",TRIM(S1CSP12),"','",TRIM(S1CSP22),"',",&
+          &"'",TRIM(S1CSP13),"','",TRIM(S1CSP23),"',",&
+          &"?,?,?,?,?,?,?,",&
+          &"'",TRIM(S2CSP11),"','",TRIM(S2CSP21),"',",&
+          &"'",TRIM(S2CSP12),"','",TRIM(S2CSP22),"',",&
+          &"'",TRIM(S2CSP13),"','",TRIM(S2CSP23),"',",&
+          &"?,?,?,?,?,?,?,",&
+          &"'",TRIM(S3CSP11),"','",TRIM(S3CSP21),"',",&
+          &"'",TRIM(S3CSP12),"','",TRIM(S3CSP22),"',",&
+          &"'",TRIM(S3CSP13),"','",TRIM(S3CSP23),"',",&
+          &"?,?,?,'",TRIM(SCLASS),"');"
+  end if
   iRet = fsql3_prepare(IoutDBref,trim(SQLStmtStr)//CHAR(0))
   if (iRet .ne.0) then
      ISTRCLAS = 0

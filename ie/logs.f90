@@ -15,6 +15,8 @@ subroutine LOGS(DBH,HT,IBCD,BDMIN,ISP,STMP,BV)
   ! Variables
   real    :: XPS(6),TPCF1(6),TPCF2(6)
   integer :: IMAP(MAXSP)
+  !  SPECIES 12 THROUGH MAXSP ALL USE TAPER MODEL 3 (SHARED BY CI AND IE)
+  integer, parameter :: NREST = MAXSP - 11
   real    :: SF(4,2)
   real    :: BV,STMP,BDMIN,HT,DBH,TRIM,SLN,X,D,B2,B1
   real    :: DIBAHI,BVL,DTOP,Z1,HTM,S1,AH,HI,DU,FRAC,TBV,QTLN
@@ -26,7 +28,7 @@ subroutine LOGS(DBH,HT,IBCD,BDMIN,ISP,STMP,BV)
        &0.33567, 0.41563, 0.47216, 0.33401, 0.36530, 0.35378/
   data XPS/&
        &0.95204, 0.92368, 0.89659, 0.95411, 0.94976, 0.95222/
-  data IMAP  / 1, 2, 4, 5, 1, 3, 1, 1, 6, 1, 3, 12*3/
+  data IMAP  / 1, 2, 4, 5, 1, 3, 1, 1, 6, 1, 3, NREST*3/
 
   !  DEFINE NOMINAL SCALING STANDARDS: SLN=STANDARD LOG LENGTH;
   !  TRIM=KERF.
