@@ -64,9 +64,12 @@ subject to their own terms. Known components include:
   * SQLite (dbsqlite/sqlite3.c, dbsqlite/sqlite3.h): in the public domain, as
     stated in its source files.
 
-  * National Volume Estimator Library (volume/NVEL, a git submodule): a work of
-    the U.S. Government, in the public domain in the United States and
-    dedicated to the public domain worldwide under CC0 1.0 (see
+  * National Volume Estimator Library (volume/NVEL, a git submodule): the
+    mFVS fork of the USDA Forest Service library, with its Fortran source
+    converted to free-form .f90. The original library is a work of the U.S.
+    Government, in the public domain in the United States and dedicated to
+    the public domain worldwide under CC0 1.0. The fork's changes are
+    dedicated to the public domain under CC0 1.0 in the same way (see
     volume/NVEL/LICENSE.md). Some individual NVEL routines carry their own
     copyright notices, for example volume/NVEL/f_west.f90 and
     volume/NVEL/sf_zero.f90.
