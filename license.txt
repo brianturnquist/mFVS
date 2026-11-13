@@ -1,20 +1,81 @@
-May 20, 2022
+mFVS License
+============
 
-Materials produced by employees of the United States Federal Government as part
-of their official duties  are not entitled to domestic copyright protection
-under United States law and are therefore in the U.S. public domain. The Forest
-Vegetation Simulator is free and open-source software. It is released without
-any conditions upon its use, and is available to everyone without restriction.
+mFVS is a modernization of the Forest Vegetation Simulator (FVS), which was
+developed by the USDA Forest Service. mFVS is an independent project and is not
+affiliated with, maintained by, or endorsed by the USDA Forest Service.
 
-The software is provided "as is" without warranty of any kind, either expressed
-or implied, including, but not limited to, the implied warranties of
+
+1. The Forest Vegetation Simulator
+
+The FVS source code on which mFVS is based is distributed under the following
+notice, reproduced unchanged from the upstream FVS repository:
+
+    May 20, 2022
+
+    Materials produced by employees of the United States Federal Government as part
+    of their official duties  are not entitled to domestic copyright protection
+    under United States law and are therefore in the U.S. public domain. The Forest
+    Vegetation Simulator is free and open-source software. It is released without
+    any conditions upon its use, and is available to everyone without restriction.
+
+    The software is provided "as is" without warranty of any kind, either expressed
+    or implied, including, but not limited to, the implied warranties of
+    merchantability and fitness for a particular purpose. In no event shall the
+    author be held liable for any damages arising from the use of this software.
+
+    The software package may include certain open source components that are subject
+    to open source licenses, in which case, the embedded open source software is
+    owned by a third party. The open source software is not subject to the terms and
+    conditions of this license. Instead, each item of open source software is
+    licensed under its applicable license terms. Nothing in this license limits your
+    rights under, nor grants you rights that supersede, the terms and conditions of
+    any applicable license terms for the open source software.
+
+
+2. mFVS modifications
+
+To the extent possible under law, the contributors to mFVS have waived all
+copyright and related or neighboring rights to their modifications of and
+additions to FVS, dedicating them to the public domain worldwide under the
+Creative Commons CC0 1.0 Universal Public Domain Dedication:
+
+    https://creativecommons.org/publicdomain/zero/1.0/legalcode
+
+mFVS, like FVS, can therefore be used, modified and redistributed by anyone for
+any purpose, without restriction, apart from the third-party components
+described in section 4.
+
+
+3. No warranty
+
+mFVS is provided "as is", without warranty of any kind, either expressed or
+implied, including, but not limited to, the implied warranties of
 merchantability and fitness for a particular purpose. In no event shall the
-author be held liable for any damages arising from the use of this software.
+authors or contributors be liable for any damages arising from the use of this
+software.
 
-The software package may include certain open source components that are subject
-to open source licenses, in which case, the embedded open source software is
-owned by a third party. The open source software is not subject to the terms and
-conditions of this license. Instead, each item of open source software is
-licensed under its applicable license terms. Nothing in this license limits your
-rights under, nor grants you rights that supersede, the terms and conditions of
-any applicable license terms for the open source software.
+
+4. Third-party components
+
+mFVS includes components that were written outside the FVS project and are
+subject to their own terms. Known components include:
+
+  * SQLite (dbsqlite/sqlite3.c, dbsqlite/sqlite3.h): in the public domain, as
+    stated in its source files.
+
+  * National Volume Estimator Library (volume/NVEL, a git submodule): a work of
+    the U.S. Government, in the public domain in the United States and
+    dedicated to the public domain worldwide under CC0 1.0 (see
+    volume/NVEL/LICENSE.md). Some individual NVEL routines carry their own
+    copyright notices, for example volume/NVEL/f_west.f90 and
+    volume/NVEL/sf_zero.f90.
+
+  * Crown fire initiation model (fire/cfim, compiled into the BC and ON
+    variants): contains routines adapted from "Numerical Recipes in C".
+    Numerical Recipes code is copyrighted and distributed under its own
+    license terms, which are not open source. Anyone redistributing builds of
+    the BC or ON variants should review those terms.
+
+This list may be incomplete. Where a source file carries its own copyright or
+license notice, that notice governs that file.

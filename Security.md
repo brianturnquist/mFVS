@@ -1,22 +1,35 @@
 # Security Policy
 
-The Forest Vegetation Simulator (FVS) has a quarterly releases schedule and release are titled with their respective release date in the format (YYYYMMDD).  Versions are tagged with in the format 'FSYYYY.Q', with 'YYYY' being the Fiscal Year, and 'Q' being the quarter of release.  
+mFVS is a modernization of the USDA Forest Service's Forest Vegetation Simulator (FVS). It is maintained independently of the Forest Service, and this policy covers mFVS only. For official FVS releases, follow the [upstream security policy](https://github.com/USDAForestService/ForestVegetationSimulator/blob/main/Security.md).
 
-In the event a mid quarter patch is required, the patch will be released with the tag 'FSYYYY.Q.P', where 'P' represents the sequential patch number.
+## Supported versions
 
-## Reporting a Vulnerability or Issue
+mFVS has not yet made a formal release. Only the latest commit on the `main` branch is supported, and fixes are made there. Tags such as `FS2026.3` and `2027.1.0` in this repository's history are upstream FVS releases from before modernization began; they are not maintained by mFVS.
 
-Please report suspected vulnerabilities or other issues to our [Help Desk](mailto:sm.fs.fvs-support@usda.gov).  Hen emailing the Help Desk, please include:
+Builds report their version from git. A version ending in `-dirty` was built from a working tree with uncommitted changes, and should not be used for production work or deliverables.
 
-* Release Title (YYYYDDMM format)
-* Provide a brief description of the problem
-* If issue is reproducible, please list the steps required to cause the issue, or described the circumstances in which the issue occured.
-* Note whether the problem causes any error messages to appear, and if so, the exact text displayed.
-* Please include:
-  * Name
-  * Organization
-  * Email address or contact number
+## What to treat as trusted input
 
-The FVS Help Desk is monitored by FVS staff during normal business hours, Monday - Friday.  Users can generally expect a response within a few hours.  
+FVS is a command-line simulation program, not a network service. It reads keyword files, tree data files and SQLite databases, and writes reports and databases. Keyword files are closer to scripts than to data files:
 
-Verified minor issues or bugs will generally be remediated for the next scheduled quarterly release.  Major issues will be remediated and a patch version will be released as soon as possible.
+- **External commands.** The ADDTREES keyword can run an external establishment model. The command it runs is taken from the keyword file and executed by the operating system.
+- **SQL.** Database keywords such as `StandSQL`, `TreeSQL`, `SQLIn` and `SQLOut` contain SQL statements that FVS executes against the input and output databases.
+- **Fixed-size arrays.** FVS stores data in fixed-size arrays. Unexpected input can cause out-of-bounds memory access; [FOUND_BUGS.md](FOUND_BUGS.md) records an example triggered by ordinary keyword input in the BC and ON variants.
+
+Run keyword files and databases only if they come from a source you trust, and review them as you would a script.
+
+## Reporting a vulnerability
+
+Please report suspected security vulnerabilities **privately**, using the repository's Security tab: **Report a vulnerability**. Do not open a public issue for them. Bugs that are not security-sensitive can be reported as ordinary GitHub issues.
+
+A useful report includes:
+
+- the mFVS commit or version string, from the output header or `git rev-parse --short HEAD`;
+- the variant, operating system and compiler used;
+- a description of the problem and its possible impact;
+- the steps, keyword file and input data needed to reproduce it, if it is reproducible;
+- the exact text of any error messages.
+
+mFVS is maintained on a best-effort basis, so response times cannot be guaranteed. Reports will be acknowledged as soon as possible, and confirmed vulnerabilities will be fixed on `main` and noted in the commit history.
+
+If the problem also affects official FVS, please report it to the FVS Staff as well, as described in the upstream security policy.
