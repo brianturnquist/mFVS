@@ -1,6 +1,5 @@
 ../canada/bc/BCPLOT.f90
-../canada/bc/ESHAP.f90
-../canada/bc/ESPARM.f90
+../common/ESHAP.f90
 ../canada/bc/PRGPRM.f90
 ../common/ARRAYS.f90
 ../common/CALCOM.f90
@@ -174,7 +173,6 @@
 ../base/exfert.f90
 ../base/exmpb.f90
 ../base/exorganon.f90
-../base/exppe.f90
 ../base/extree.f90
 ../base/fndkey.f90
 ../base/fvs.f90
@@ -385,7 +383,7 @@
 ../pg/putgetsubs.f90
 ../pg/putstd.f90
 ../pg/stash.f90
-../volume/voleqdef.f90
+../volume/NVEL/voleqdef.f90
 ../clim/base/clin.f90
 ../clim/base/clauestb.f90
 ../clim/bc/clcwd.f90

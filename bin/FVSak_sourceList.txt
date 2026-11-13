@@ -2,9 +2,8 @@
 ../fiavbc/nvb_region_check.f90
 
 ../ak/common/CRCOEF.f90
-../ak/common/ESPARM.f90
 ../ak/common/PRGPRM.f90
-../ak/common/ESCOMN.f90
+../common/ESCOMN.f90
 
 ../common/ARRAYS.f90
 ../common/CALCOM.f90

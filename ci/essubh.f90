@@ -11,7 +11,6 @@ subroutine ESSUBH (I,HHT,EMSQR,DILATE,DELAY,ELEV,IHTSER,&
 
   ! Common blocks
   include 'PRGPRM.f90'
-  include 'ESPARM.f90'
   include 'ESCOMN.f90'
   include 'ESCOM2.f90'
 
@@ -209,59 +208,19 @@ subroutine ESSUBH (I,HHT,EMSQR,DILATE,DELAY,ELEV,IHTSER,&
           &+UPRE(IPREP,10) -0.01155*ELEV
      HHT = EXP(PN +EMSQR*DILATE*BNORM*0.49076)
 
-     !  HT OF TALLEST SUBS. WHITEBARK PINE
+     !  HT OF TALLEST SUBS. WHITEBARK PINE, PACIFIC YEW, QUAKING ASPEN,
+     !  WESTERN JUNIPER, CURLLEAF MOUNTAIN-MAHOGANY, LIMBER PINE, BLACK
+     !  COTTONWOOD AND OTHER HARDWOODS: FIXED VALUES SHARED WITH ESADVH
+     !  (SEE ESFIXH).
 
-  case(11)
-     PN = 0.0
-     HHT = 0.5
-
-     !  HT OF TALLEST SUBS. PACIFIC YEW
-
-  case(12)
-     PN = 0.0
-     HHT = 0.5
-
-     !  HT OF TALLEST SUBS. QUAKING ASPEN
-
-  case(13)
-     PN = 0.0
-     HHT = 5.0
-
-     !  HT OF TALLEST SUBS. WESTERN JUNIPER
-
-  case(14)
-     PN = 0.0
-     HHT = 0.5
-
-     !  HT OF TALLEST SUBS. CURLLEAF MOUNTAIN-MAHOGANY
-
-  case(15)
-     PN = 0.0
-     HHT = 0.5
-
-     !  HT OF TALLEST SUBS. LIMBER PINE
-
-  case(16)
-     PN = 0.0
-     HHT = 0.5
-
-     !  HT OF TALLEST SUBS. BLACK COTTONWOOD
-
-  case(17)
-     PN = 0.0
-     HHT = 5.0
+  case(11:17,19)
+     call ESFIXH (I,PN,HHT)
 
      !  HT OF TALLEST SUBS. OTHER SOFTWOODS (USES WH EQUATION).
 
   case(18)
      PN = -2.42379 +1.52366*AGELN -0.003256*BAA
      HHT = EXP(PN +EMSQR*DILATE*BNORM*0.54116)
-
-     !  HT OF TALLEST SUBS. OTHER HARDWOODS
-
-  case(19)
-     PN = 0.0
-     HHT = 5.0
 
   end select
 

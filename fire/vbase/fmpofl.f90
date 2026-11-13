@@ -36,6 +36,7 @@ subroutine FMPOFL (IYR, FMD, LNMOUT)
   include 'CONTRL.f90'
   include 'FMCOM.f90'
   include 'FMFCOM.f90'
+  include 'METRIC.f90'
 
   !  VARIABLE DECLARATIONS.
 
@@ -56,6 +57,15 @@ subroutine FMPOFL (IYR, FMD, LNMOUT)
   real    :: WMULT,ALGSLP,BYRAM,CRTFLM,FINTEN,FLB,FLT
   real    :: SFWT(MXFMOD)
   integer :: SFMOD(MXFMOD),SNFMODS
+
+  !     USED ONLY BY THE METRIC VARIANTS (BC, ON), INCLUDING THE CFIM MODEL
+
+  real    :: INTSTY,UWIND
+  real    :: ROS,CONV
+  real    :: PBYRAM(3),PINSTY(3),PROS(3)
+  integer :: CANBURN,PFCLS(3),FCLS
+  real    :: BUI,DMC
+  integer :: IDPT
 
   !     ROUTINE BEGINS
   !     CHECK FOR DEBUG
@@ -115,6 +125,25 @@ subroutine FMPOFL (IYR, FMD, LNMOUT)
 
      BURNSEAS = POTSEAS(IDPL)
 
+     if (LMETRICVAR) then
+
+        !       THE FORMER METRIC COPY REPEATED THESE STATEMENTS; KEPT DELIBERATELY.
+
+        if (PRESVL(IDPL,1) .eq.1) then
+           MOIS(1,1) = PRESVL(IDPL,2)
+           MOIS(1,2) = PRESVL(IDPL,3)
+           MOIS(1,3) = PRESVL(IDPL,4)
+           MOIS(1,4) = PRESVL(IDPL,5)
+           MOIS(1,5) = PRESVL(IDPL,6)
+           MOIS(2,1) = PRESVL(IDPL,7)
+           MOIS(2,2) = PRESVL(IDPL,8)
+        end if
+
+        FWIND = SWIND(FMOIS) * WMULT
+
+        BURNSEAS = POTSEAS(IDPL)
+     end if
+
      !  CALL FIRE MODEL CALCULATIONS AGAIN FOR UT, CR, LS, CS AND SN VARIANTS
      !  TT ADDED 06/03/10 SINCE THE EXPANDED VERSION NOW MODELS JUNIPER
 
@@ -137,6 +166,22 @@ subroutine FMPOFL (IYR, FMD, LNMOUT)
      call FMFINT(IYR, BYRAM, FLAME, FMOIS, HPA, 1)
      call fvsGetRtnCode(IRTNCD)
      if (IRTNCD.ne.0) return
+
+     if (LMETRICVAR) then
+        if (CFIM_ON) then
+           UWIND = FLOAT(SWIND(FMOIS))
+           IK = 1
+           CANBURN = 0
+           if (FMOIS.eq.3) IK = 2
+           call FMCONS(FMOIS,0,0.,IYR,1,PSMOKE(IK),POTPAB(IK))
+           call FMCFIM(IYR,FMD,UWIND,BYRAM,FLAME,CANBURN,ROS)
+           PROS(FMOIS) = ROS * FTtoM
+           PBYRAM(FMOIS) = BYRAM / FTtoM
+           POTCONS(FMOIS,1) = POTCONS(2,1)
+           POTCONS(FMOIS,2) = POTCONS(2,2)
+           POTCONS(FMOIS,3) = POTCONS(2,3)
+        end if
+     end if
 
      !       SAVE THE FLAME LENGTH...IT IMAY BE MODIFIED BELOW TO ACCOUNT
      !       FOR CROWN FIRE BEHAVIOR.
@@ -165,6 +210,15 @@ subroutine FMPOFL (IYR, FMD, LNMOUT)
         call fvsGetRtnCode(IRTNCD)
         if (IRTNCD.ne.0) return
 
+        if (LMETRICVAR) then
+           if (CFIM_ON) then
+              call FMCANC(IYR,FMOIS,CFTYPE(FMOIS),CANBURN,ROS,INTSTY,FCLS)
+              PINSTY(FMOIS) = INTSTY
+              PFCLS(FMOIS) = FCLS
+              OINIT1(FMOIS) = -1
+              OACT1(FMOIS) = -1
+           end if
+        end if
         CRB(FMOIS) = CRBURN
      end if
 
@@ -239,8 +293,16 @@ subroutine FMPOFL (IYR, FMD, LNMOUT)
   call EVSET4(27, OINIT1(1))
   call EVSET4(28, CBD)
 
-  if (IYR .eq.0.and. IYR .eq. IPFLME) goto 10 ! weird line - dr
-  if (IYR .lt. IPFLMB .or. IYR .gt. IPFLME) return
+  if (LMETRICVAR) then
+
+     !     RETURN IF REPORT IS NOT REQUESTED BY KEYWORD
+     !     (THE METRIC VARIANTS TEST THE REPORT WINDOW THIS WAY; KEPT DELIBERATELY)
+
+     if (IPFLMB .gt.0) return
+  else
+     if (IYR .eq.0.and. IYR .eq. IPFLME) goto 10 ! weird line - dr
+     if (IYR .lt. IPFLMB .or. IYR .gt. IPFLME) return
+  end if
 
   10 continue
 
@@ -266,12 +328,25 @@ subroutine FMPOFL (IYR, FMD, LNMOUT)
   if (.not.LNMOUT) return
 
   !     DBS CALL FOR DUMPING DATA TO THE DATABASE
+
+  if (LMETRICVAR) then
+     CONV = TItoTM / ACRtoHA
+  end if
   if (ICYC.eq.1) then
      do IDPM = 1,2
         M = IDPM
         if (IDPM .eq.2) M = 3
         call FMMOIS(M, MOIS)
-        if (PRESVL(IDPM,1) .eq.1) then
+
+        !       THE METRIC VARIANTS TEST PRESVL(IDPL,1) HERE, WHERE IDPL IS LEFT
+        !       OVER FROM THE LOOP ABOVE, INSTEAD OF PRESVL(IDPM,1); KEPT DELIBERATELY.
+
+        if (LMETRICVAR) then
+           IDPT = IDPL
+        else
+           IDPT = IDPM
+        end if
+        if (PRESVL(IDPT,1) .eq.1) then
            MOIS(1,1) = PRESVL(IDPM,2)
            MOIS(1,2) = PRESVL(IDPM,3)
            MOIS(1,3) = PRESVL(IDPM,4)
@@ -280,18 +355,39 @@ subroutine FMPOFL (IYR, FMD, LNMOUT)
            MOIS(2,1) = PRESVL(IDPM,7)
            MOIS(2,2) = PRESVL(IDPM,8)
         end if
-        call DBSFMPFC(NPLT,PREWND(IDPM),INT(POTEMP(IDPM)),&
-             &(100.0*MOIS(1,1)),(100.0*MOIS(1,2)),(100.0*MOIS(1,3)),&
-             &(100.0*MOIS(1,4)),(100.0*MOIS(1,5)),(100.0*MOIS(2,1)),&
-             &(100.0*MOIS(2,2)),IDPM)
+        if (LMETRICVAR) then
+           call DBSFMPFC(NPLT,PREWND(IDPM)*MItoKM,&
+                &INT(POTEMP(IDPM)*FtoC1+FtoC2),&
+                &(100.0*MOIS(1,1)),(100.0*MOIS(1,2)),(100.0*MOIS(1,3)),&
+                &(100.0*MOIS(1,4)),(100.0*MOIS(1,5)),(100.0*MOIS(2,1)),&
+                &(100.0*MOIS(2,2)),IDPM)
+        else
+           call DBSFMPFC(NPLT,PREWND(IDPM),INT(POTEMP(IDPM)),&
+                &(100.0*MOIS(1,1)),(100.0*MOIS(1,2)),(100.0*MOIS(1,3)),&
+                &(100.0*MOIS(1,4)),(100.0*MOIS(1,5)),(100.0*MOIS(2,1)),&
+                &(100.0*MOIS(2,2)),IDPM)
+        end if
      end do
   end if
   DBSKODE = 1
-  call DBSFMPF(IYR, NPLT, PFLAM(2), PFLAM(4), PFLAM(1), PFLAM(3),&
-       &CFTYPE(1), CFTYPE(3),PTORCH(1),PTORCH(2),OINIT1(1),OACT1(1),&
-       &ACTCBH, CBD, INT(POKILL(1)*100.),INT(POKILL(3)*100.),&
-       &INT(POVOLK(1)),INT(POVOLK(2)),PSMOKE(1)*P2T,PSMOKE(2)*P2T,&
-       &SFMOD,SFWT,FMOD,FWT,DBSKODE)
+  if (LMETRICVAR) then
+     call DBSFMPF(IYR, NPLT, PFLAM(2)*FTtoM, PFLAM(4)*FTtoM,&
+          &PFLAM(1)*FTtoM, PFLAM(3)*FTtoM,&
+          &CFTYPE(1), CFTYPE(3), PTORCH(1), PTORCH(2),&
+          &OINIT1(1)*MItoKM, OACT1(1)*MItoKM,&
+          &INT(ACTCBH*FTtoM), CBD, INT(POKILL(1)*100.),&
+          &INT(POKILL(3)*100.),&
+          &INT(POVOLK(1)*FT3pACRtoM3pHA),&
+          &INT(POVOLK(2)*FT3pACRtoM3pHA),&
+          &PSMOKE(1)*P2T*CONV,PSMOKE(2)*P2T*CONV,&
+          &SFMOD,SFWT,FMOD,FWT,DBSKODE)
+  else
+     call DBSFMPF(IYR, NPLT, PFLAM(2), PFLAM(4), PFLAM(1), PFLAM(3),&
+          &CFTYPE(1), CFTYPE(3),PTORCH(1),PTORCH(2),OINIT1(1),OACT1(1),&
+          &ACTCBH, CBD, INT(POKILL(1)*100.),INT(POKILL(3)*100.),&
+          &INT(POVOLK(1)),INT(POVOLK(2)),PSMOKE(1)*P2T,PSMOKE(2)*P2T,&
+          &SFMOD,SFWT,FMOD,FWT,DBSKODE)
+  end if
   if (DBSKODE.eq.0) return
 
   !     PRINT THE OUTPUT FILE.  NOTE THAT PFLAM IS IN FEET and CBD IS IN KG/M3
@@ -302,14 +398,23 @@ subroutine FMPOFL (IYR, FMD, LNMOUT)
      write (JPOTFL,130) IDPFLM, IDPFLM
      write (JPOTFL,143) IDPFLM
      write (JPOTFL,131) IDPFLM
-     write (JPOTFL,132) IDPFLM
+     if (LMETRICVAR) then
+        write (JPOTFL,9132) IDPFLM
+     else
+        write (JPOTFL,132) IDPFLM
+     end if
      write (JPOTFL,44) IDPFLM,NPLT,MGMID
      write (JPOTFL,143) IDPFLM
 
      !       WRITE NEW HEADER INFORMATION GIVING THE SEVERE AND MODERATE CONDITIONS
 
-     write (JPOTFL,144) IDPFLM
-     write (JPOTFL,145) IDPFLM
+     if (LMETRICVAR) then
+        write (JPOTFL,9144) IDPFLM
+        write (JPOTFL,9145) IDPFLM
+     else
+        write (JPOTFL,144) IDPFLM
+        write (JPOTFL,145) IDPFLM
+     end if
      do IDPL = 1,2
         J = IDPL
         if (IDPL .eq.2) J = 3
@@ -324,25 +429,78 @@ subroutine FMPOFL (IYR, FMD, LNMOUT)
            MOIS(2,2) = PRESVL(IDPL,8)
         end if
 
-        if (IDPL .eq.1) then
-           write (JPOTFL,146) IDPFLM,PREWND(IDPL),INT(POTEMP(IDPL)),&
-                &((100.0*MOIS(1,I)),I = 1,5),&
-                &(100.0*MOIS(2,1)),(100.0*MOIS(2,2))
+        if (LMETRICVAR) then
+
+           !         THESE ARE THE CFIM CALCULATIONS FROM FMCONS.
+           !         THEY ARE REPRODUCED HERE FOR PRINTING PURPOSES
+
+           if (MOIS(1,5) .gt..20) then
+              DMC = 244.7 - 43.4*LOG(100*MOIS(1,5)-20)
+           else
+              DMC = 244.7 - 43.4*LOG(.5)
+           end if
+           if (DMC .le.0) DMC = 0
+
+           if (DMC .le.0.4*CFIM_DC) then
+              BUI = 0.8*DMC*CFIM_DC / (DMC + 0.4*CFIM_DC)
+           else
+              BUI = DMC - ((1 - (0.8*CFIM_DC) / (DMC + 0.4*CFIM_DC)) *&
+                   &(0.92 + (0.0114*DMC)**1.7))
+           end if
+
+           if (IDPL .eq.1) then
+              write (JPOTFL,9146) IDPFLM,PREWND(IDPL)*MItoKM,&
+                   &INT(POTEMP(IDPL)*FtoC1+FtoC2),&
+                   &((100.0*MOIS(1,I)),I = 1,5),&
+                   &(100.0*MOIS(2,1)),(100.0*MOIS(2,2)),&
+                   &BUI, DMC, CFIM_DC
+           else
+              write (JPOTFL,9147) IDPFLM,PREWND(IDPL)*MItoKM,&
+                   &INT(POTEMP(IDPL)*FtoC1+FtoC2),&
+                   &((100.0*MOIS(1,I)),I = 1,5),&
+                   &(100.0*MOIS(2,1)),(100.0*MOIS(2,2)),&
+                   &BUI, DMC, CFIM_DC
+           end if
         else
-           write (JPOTFL,147) IDPFLM,PREWND(IDPL),INT(POTEMP(IDPL)),&
-                &((100.0*MOIS(1,I)),I = 1,5),&
-                &(100.0*MOIS(2,1)),(100.0*MOIS(2,2))
+           if (IDPL .eq.1) then
+              write (JPOTFL,146) IDPFLM,PREWND(IDPL),INT(POTEMP(IDPL)),&
+                   &((100.0*MOIS(1,I)),I = 1,5),&
+                   &(100.0*MOIS(2,1)),(100.0*MOIS(2,2))
+           else
+              write (JPOTFL,147) IDPFLM,PREWND(IDPL),INT(POTEMP(IDPL)),&
+                   &((100.0*MOIS(1,I)),I = 1,5),&
+                   &(100.0*MOIS(2,1)),(100.0*MOIS(2,2))
+           end if
         end if
      end do
      write (JPOTFL,143) IDPFLM
 
      !       FORMAT THE HEADERS SLIGHTLY DIFFERENTLY FOR SN-FFE
+     !       AND PRINT SLIGHT DIFFERENT INFORMATION IF USING THE CFIM FIRE MODEL
+     !       (METRIC VARIANTS ONLY)
 
      if ((VARACD .eq. 'SN') .or. (VARACD .eq. 'CS')) then
         write (JPOTFL,233) IDPFLM
         write (JPOTFL,235) IDPFLM
-        write (JPOTFL,237) IDPFLM
-        write (JPOTFL,240) IDPFLM
+        if (LMETRICVAR) then
+           write (JPOTFL,9237) IDPFLM
+           write (JPOTFL,9240) IDPFLM
+        else
+           write (JPOTFL,237) IDPFLM
+           write (JPOTFL,240) IDPFLM
+        end if
+     else if (LMETRICVAR) then
+        if (CFIM_ON) then
+           write (JPOTFL,333) IDPFLM
+           write (JPOTFL,335) IDPFLM
+           write (JPOTFL,337) IDPFLM
+           write (JPOTFL,340) IDPFLM
+        else
+           write (JPOTFL,9133) IDPFLM
+           write (JPOTFL,9135) IDPFLM
+           write (JPOTFL,9137) IDPFLM
+           write (JPOTFL,9140) IDPFLM
+        end if
      else
         write (JPOTFL,133) IDPFLM
         write (JPOTFL,135) IDPFLM
@@ -381,6 +539,63 @@ subroutine FMPOFL (IYR, FMD, LNMOUT)
           &'   %BA  %BA (MER CU VOL)  (T/A <2.5) ',1X,&
           &4(' MOD %WT'),2X,4(' MOD %WT'))
 
+     !       METRIC (BC, ON) HEADER FORMATS. THE MISSING COMMA IN 9132 (WHICH
+     !       PRINTS AN APOSTROPHE BEFORE "(BASED") IS KEPT DELIBERATELY.
+
+     9132 format (1X,I5,1X,40X,'POTENTIAL FIRE REPORT '&
+          &'(BASED ON STOCKABLE AREA)')
+     9133 format (1X,I5,7X,' FLAME LENGTH  (M)',2X,&
+          &'FIRE  PROB OF  TORCH  CROWN ',&
+          &'CNPY CANPY    POTENTIAL MORTALITY  POTEN. SMOKE')
+     9135 format (1X,I5,7X,' SURFACE     TOTAL  TYPE TORCHING',&
+          &2('  INDEX'),' BASE BULK   ',22('-'),1X,12('-'),&
+          &11X,'FUEL MODELS')
+     9137 format (1X,I5,7X,10('-'),1X,7('-'),1X,4('-'),1X,9('-'),&
+          &' SEVERE SEVERE   HT DENSTY ',&
+          &'SEV. MOD.  SEV.  MOD.  SEV. MOD.   ',31('-'))
+     9140 format (1X,I5,1X,'YEAR   SEV   MOD SEV MOD S  M  SEV  MOD ',&
+          &1X,'KM/HR',2X,'KM/HR    M ',&
+          &'KG/M3  %BA  %BA (TOT CU VOL) (T/H <2.5)  ',&
+          &4(' MOD %WT'))
+     9237 format (1X,I5,7X,'SEVERE MODER  HT  DENSTY ',2X,&
+          &'SEV. MOD. SEV.  ','MOD.   SEV. MOD.   ',&
+          &31('-'),3X,31('-'))
+     9240 format (1X,I5,1X,'YEAR    M      M    M  KG/M3',&
+          &'   %BA  %BA (MER CU VOL)  (T/H <2.5) ',1X,&
+          &4(' MOD %WT'),2X,4(' MOD %WT'))
+
+     !       FORMAT STATEMENTS FOR CFIM FIRE MODEL (METRIC VARIANTS ONLY)
+     !       TEMPORARY DEBUGGING FORMAT STATEMENTS
+     333 format (1X,I5,6X,'FL(M)',1X,&
+          &'FIRE SURFACE  TOTAL    BYRAM    INTSY ',&
+          &'CNPY CNPY  POTENTIAL MORTALITY POTEN. SMOKE',&
+          &16X,'%CROWN    POT. CONS (SEV)')
+     335 format (1X,I5,6X,'TOTAL TYPE   ROS (M/MIN)    ',&
+          &'INTENSTY  CLASS BASE BULK  ',19('-'),1X,12('-'),&
+          &3X,'FUEL MODELS',4X,'BURN',6X,'  PROP.')
+     337 format (1X,I5,6X,5('-'),1X,4('-'),2(1X,7('-')),&
+          &2X,8('-'),2X,5('-'),'  HT DNSTY ',&
+          &' SEV  MOD   SEV  MOD   SEV  MOD   ',15('-'),&
+          &1X,7('-'),1X,15('-'))
+     340 format (1X,I5,1X,'YEAR  S  M S  M  S   M   S   M ',&
+          &4X,'S   M   S  M   M  ',&
+          &'KG/M3  %BA  %BA  TOT CU VL  (T/H <2.5) ',&
+          &2(' MOD %WT'),2X,'S   M   SML  LRG  DUF+LIT')
+     !: ACTUAL FORMAT STATEMENTS FOR CFIM MODEL
+     !  333   FORMAT (1X,I5,7X,' FLAME LENGTH (M)',2X,
+     !     &         'FIRE   ROS    FIRE    INTSY ',
+     !     &         'CNPY CNPY  POTENTIAL MORTALITY POTEN. SMOKE')
+     !  335   FORMAT (1X,I5,7X,' SURFACE    TOTAL  TYPE M/MIN  ',
+     !     &         'INTENSTY  CLASS BASE BULK  ',19('-'),1X,12('-'),
+     !     &         11X,'FUEL MODELS')
+     !  337   FORMAT (1X,I5,7X,10('-'),1X,7('-'),1X,4('-'),1X,6('-'),
+     !     &         1X,8('-'),2X,5('-'),'  HT DNSTY ',
+     !     &         ' SEV  MOD   SEV  MOD   SEV  MOD   ',31('-'))
+     !  340   FORMAT (1X,I5,1X,'YEAR   SEV   MOD SEV MOD S  M  S  M',
+     !     &         4X,'S   M   S  M   M  ',
+     !     &         'KG/M3  %BA  %BA  TOT CU VL  (T/H <2.5) ',
+     !     &         4(' MOD %WT'))
+
      !       FORMAT STATEMENTS FOR THE NEW HEADERS:
 
      144 format (1X,I5,1X,'FIRE        WIND   TEMP ------------- FUEL ',&
@@ -392,6 +607,17 @@ subroutine FMPOFL (IYR, FMD, LNMOUT)
           &2(4X,F5.0,3X))
      147 format(1X,I5,1X,'MODERATE',3X,F5.1,3X,I3,2X,F5.0,5X,4(F5.0,3X),&
           &2(4X,F5.0,3X))
+
+     9144 format (1X,I5,1X,'FIRE        WIND  TEMP ----- FUEL MOISTURE',&
+          &' CONDITIONS (PERCENT) ------')
+     9145 format (1X,I5,1X,'CONDITION (KM/H)   (C)   <0.6    .6-2.5 ',&
+          &'2.5-7.6    >7.6    DUFF  LIVE WOODY   LIVE HERB',&
+          &'    BUI   DMC    DC')
+
+     9146 format(1X,I5,1X,'SEVERE  ',3X,F5.1,3X,I3,2X,F5.0,5X,4(F5.0,3X),&
+          &2(4X,F5.0,3X),3(F4.0,2X))
+     9147 format(1X,I5,1X,'MODERATE',3X,F5.1,3X,I3,2X,F5.0,5X,4(F5.0,3X),&
+          &2(4X,F5.0,3X),3(F4.0,2X))
 
      IPFPAS = IPFPAS + 1
 
@@ -406,12 +632,59 @@ subroutine FMPOFL (IYR, FMD, LNMOUT)
           &(SFMOD(I),INT((SFWT(I)*100.)+0.5),I = 1,SNFMODS)
      write (SNFMM,'(8I4)')&
           &(FMOD(I),INT((FWT(I)*100.)+0.5),I = 1,NFMODS)
-     write (JPOTFL,51) IDPFLM, IYR, PFLAM(2), PFLAM(4),&
-          &ACTCBH, CBD,INT(POKILL(1)*100.),INT(POKILL(3)*100.),&
-          &INT(POVOLK(1)),INT(POVOLK(2)),PSMOKE(1)*P2T,PSMOKE(2)*P2T,&
-          &SNFMS,TRIM(SNFMM)
+     if (LMETRICVAR) then
+        write (JPOTFL,51) IDPFLM, IYR, PFLAM(2)*FTtoM, PFLAM(4)*FTtoM,&
+             &INT(ACTCBH*FTtoM), CBD,INT(POKILL(1)*100.),&
+             &INT(POKILL(3)*100.),&
+             &INT(POVOLK(1)*FT3pACRtoM3pHA),INT(POVOLK(2)*FT3pACRtoM3pHA),&
+             &PSMOKE(1)*P2T*CONV,PSMOKE(2)*P2T*CONV,&
+             &SNFMS,TRIM(SNFMM)
+     else
+        write (JPOTFL,51) IDPFLM, IYR, PFLAM(2), PFLAM(4),&
+             &ACTCBH, CBD,INT(POKILL(1)*100.),INT(POKILL(3)*100.),&
+             &INT(POVOLK(1)),INT(POVOLK(2)),PSMOKE(1)*P2T,PSMOKE(2)*P2T,&
+             &SNFMS,TRIM(SNFMM)
+     end if
      51 format (1X,I5,1X,I4,2(1X,F5.1),2X,I3,1X,F6.3,1X,2(2X,I3),1X,I5,&
           &1X,I6,2X,F4.2,1X,F5.2,2X,A,2X,A)
+
+  else if (LMETRICVAR) then
+
+     !     METRIC VARIANTS (BC, ON): CFIM FIRE MODEL ALSO WRITTEN DIFFERENTLY
+
+     if (CFIM_ON) then
+
+        write (JPOTFL,69) IDPFLM, IYR, PFLAM(2)*FTtoM, PFLAM(4)*FTtoM,&
+             &INT((PFLAM(1)*FTtoM)+.5), INT((PFLAM(3)*FTtoM)+.5),&
+             &CFTYPE(1)(1:1),CFTYPE(3)(1:1),&
+             &PROS(1), PROS(3), INT(PBYRAM(1)), INT(PBYRAM(3)),&
+             &PFCLS(1), PFCLS(3),&
+             &INT(ACTCBH*FTtoM), CBD,&
+             &INT(POKILL(1)*100.),INT(POKILL(3)*100.),&
+             &INT(POVOLK(1)*FT3pACRtoM3pHA),INT(POVOLK(2)*FT3pACRtoM3pHA),&
+             &PSMOKE(1)*P2T*CONV,PSMOKE(2)*P2T*CONV,&
+             &(FMOD(I),INT((FWT(I)*100.)+0.5),I = 1,NFMODS)
+        69 format (1X,I5,1X,I4,2(1X,F5.1),2(1X,I3),&
+             &1X,A1,2X,A1,2(1X,F3.1),2(1X,I4),2(1X,I1),1X,I3,2X,F5.3,&
+             &2(2X,I3),2X,I4,1X,I4,2X,F4.2,1X,F4.2,2X,8(1X,I3))
+
+     else
+
+        write (JPOTFL,9049) IDPFLM, IYR, PFLAM(2)*FTtoM, PFLAM(4)*FTtoM,&
+             &INT((PFLAM(1)*FTtoM)+.5), INT((PFLAM(3)*FTtoM)+.5),&
+             &CFTYPE(1)(1:1),&
+             &CFTYPE(3)(1:1),PTORCH(1), PTORCH(2),&
+             &OINIT1(1)*MItoKM, OACT1(1)*MItoKM,&
+             &INT(ACTCBH*FTtoM), CBD,&
+             &INT(POKILL(1)*100.),INT(POKILL(3)*100.),&
+             &INT(POVOLK(1)*FT3pACRtoM3pHA),INT(POVOLK(2)*FT3pACRtoM3pHA),&
+             &PSMOKE(1)*P2T*CONV,PSMOKE(2)*P2T*CONV,&
+             &(FMOD(I),INT((FWT(I)*100.)+0.5),I = 1,NFMODS)
+        9049 format (1X,I5,1X,I4,2(1X,F5.1),2(1X,I3),&
+             &1X,A1,2X,A1,2(1X,F4.2),2(1X,F6.1),1X,I4,1X,F5.3,&
+             &2(2X,I3),1X,I5,1X,I6,2X,F4.2,1X,F4.2,2X,8(1X,I3))
+     end if
+
   else ! write like usual
      write (JPOTFL,49) IDPFLM, IYR, PFLAM(2), PFLAM(4),&
           &INT(PFLAM(1)+.5), INT(PFLAM(3)+.5), CFTYPE(1)(1:1),&
@@ -500,13 +773,26 @@ subroutine FMPOFL_FMPTRH(IYR,MXI,PRB,FLM1,FLM2,PTR1,PTR2)
 
   AVHT = 0.
   SSUM = 0.
-  do I = 1,MXI
-     P = PRB(I)
-     if (SSUM+P.gt.40.0) P = 40.0-SSUM
-     SSUM = SSUM+P
-     AVHT = AVHT+HT(I)*P
-     if (SSUM.ge.40.0) exit
-  end do
+  if (LMETRICVAR) then
+
+     !        THE METRIC VARIANTS (BC, ON) USE 40.47 AND 40.57 HERE; KEPT DELIBERATELY.
+
+     do I = 1,MXI
+        P = PRB(I)
+        if (SSUM+P.gt.40.47) P = 40.57-SSUM
+        SSUM = SSUM+P
+        AVHT = AVHT+HT(I)*P
+        if (SSUM.ge.40.47) exit
+     end do
+  else
+     do I = 1,MXI
+        P = PRB(I)
+        if (SSUM+P.gt.40.0) P = 40.0-SSUM
+        SSUM = SSUM+P
+        AVHT = AVHT+HT(I)*P
+        if (SSUM.ge.40.0) exit
+     end do
+  end if
   if (SSUM.gt.0.) AVHT = AVHT/SSUM
   CRIT = MAX(5.,MIN(.5*AVHT,50.))
 
@@ -522,10 +808,19 @@ subroutine FMPOFL_FMPTRH(IYR,MXI,PRB,FLM1,FLM2,PTR1,PTR2)
         I = INDX(II)
         call RANN(RAN)
         CHKFLG = .false.
-        if (PRB(I).gt.1000.) then
-           CHKFLG = .true.
-        else if (RAN .gt. EXP(-PRB(I)*PSIZE)) then
-           CHKFLG = .true.
+        if (LMETRICVAR) then
+
+           !           THE METRIC VARIANTS (BC, ON) TEST BOTH CONDITIONS IN ONE
+           !           EXPRESSION, SO EXP MAY BE EVALUATED EVEN WHEN PRB(I) > 1000;
+           !           KEPT DELIBERATELY.
+
+           if (PRB(I).gt.1000..or. RAN .gt. EXP(-PRB(I)*PSIZE)) CHKFLG = .true.
+        else
+           if (PRB(I).gt.1000.) then
+              CHKFLG = .true.
+           else if (RAN .gt. EXP(-PRB(I)*PSIZE)) then
+              CHKFLG = .true.
+           end if
         end if
 
         if (CHKFLG) then

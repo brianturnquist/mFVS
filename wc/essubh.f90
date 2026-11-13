@@ -20,7 +20,6 @@ subroutine ESSUBH (I,HHT,EMSQR,DILATE,DELAY,ELEVDUM,IHTSER,GENTIM,&
   ! Common blocks
   include 'PRGPRM.f90'
   include 'CONTRL.f90'
-  include 'ESPARM.f90'
   include 'ESCOMN.f90'
   include 'PLOT.f90'
 

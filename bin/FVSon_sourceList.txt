@@ -1,4 +1,3 @@
-../canada/on/ESPARM.f90
 ../canada/on/PRGPRM.f90
 ../canada/bc/BCPLOT.f90
 
@@ -193,7 +192,6 @@
 ../base/exmist.f90
 ../base/exmpb.f90
 ../base/exorganon.f90
-../base/exppe.f90
 ../base/exrd.f90
 ../base/extree.f90
 ../base/fndkey.f90

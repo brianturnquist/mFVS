@@ -5,6 +5,31 @@
 subroutine DBS_FIAVBC_ATRTLS
 
   !     PURPOSE: TO OUTPUT THE ATRTLIST DATA TO THE DATABASE
+  !              (TABLE FVS_FIAVBC_ATRTList). THE TABLE IS WRITTEN BY
+  !              DBS_FIAVBC_ATCUT, BELOW, WHICH ALSO WRITES THE FIAVBC
+  !              CUTS LIST FOR DBS_FIAVBC_CUTLST.
+
+  implicit none
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
+
+  call DBS_FIAVBC_ATCUT(.false.,PROB)
+  return
+end
+
+subroutine DBS_FIAVBC_ATCUT(LCUT,TREEP)
+
+  !     PURPOSE: TO OUTPUT THE FIAVBC AFTER TREATMENT TREE LIST OR THE
+  !              FIAVBC CUTS LIST TO THE DATABASE.
+
+  !     INPUT: LCUT  - .FALSE. FOR THE AFTER TREATMENT LIST (TABLE
+  !                     FVS_FIAVBC_ATRTList, SWITCH IVBCATRLST),
+  !                    .TRUE. FOR THE CUTS LIST (TABLE FVS_FIAVBC_CutList,
+  !                     SWITCH IVBCCUTLST).
+  !            TREEP - TREES PER ACRE OF EACH RECORD: PROB FOR THE AFTER
+  !                     TREATMENT LIST, WK3 FOR THE CUTS LIST.
 
   implicit none
 
@@ -19,6 +44,8 @@ subroutine DBS_FIAVBC_ATRTLS
   include 'DBSCOM.f90'
 
   ! Variables
+  logical :: LCUT
+  real    :: TREEP(*)
   character(len=8) :: TID
   character(len=8) :: CSPECIE1
   character(len=8) :: CSPECIE2
@@ -37,10 +64,14 @@ subroutine DBS_FIAVBC_ATRTLS
   integer :: fsql3_tableexists,fsql3_exec,fsql3_bind_int,fsql3_step,fsql3_prepare,fsql3_bind_double,&
        &fsql3_bind_text,fsql3_reset
 
-  !     IF VBC AFTER TREATMENT LIST IS NOT TURNED ON OR FIAVBC NOT ACTIVE
+  !     IF THE REQUESTED LIST IS NOT TURNED ON OR FIAVBC NOT ACTIVE
   !     THEN JUST RETURN
 
-  if (IVBCATRLST.eq.0) return
+  if (LCUT) then
+     if (IVBCCUTLST.eq.0) return
+  else
+     if (IVBCATRLST.eq.0) return
+  end if
   if (.not.LFIANVB) then
      call ERRGRO(.true.,52)
      return
@@ -52,9 +83,22 @@ subroutine DBS_FIAVBC_ATRTLS
 
   !     UPDATED TO CONSOLIDATE TABLES.  DISTINCT EAST/WEST TABLES NO LONGER NEEDED (2024 DW)
 
-  TBLNAME = 'FVS_FIAVBC_ATRTList'
+  if (LCUT) then
+     TBLNAME = 'FVS_FIAVBC_CutList'
+  else
+     TBLNAME = 'FVS_FIAVBC_ATRTList'
+  end if
+
+  !     ONLY THE CUTS LIST TURNS ITSELF OFF WHEN "BEGIN" FAILS; THE AFTER
+  !     TREATMENT LIST CARRIES ON. THIS DIFFERENCE IS PRESERVED DELIBERATELY.
 
   iRet = fsql3_exec (IoutDBref,"Begin;"//Char(0))
+  if (LCUT) then
+     if (iRet .ne.0) then
+        IVBCCUTLST = 0
+        return
+     end if
+  end if
 
   !     CHECK TO SEE IF THE TREELIST TABLE EXISTS IN DATBASE
   !     IF IT DOESNT THEN WE NEED TO CREATE IT
@@ -97,12 +141,16 @@ subroutine DBS_FIAVBC_ATRTLS
      iRet = fsql3_exec(IoutDBref,SQLStmtStr)
      if (iRet .ne.0) then
         iRet = fsql3_exec (IoutDBref,"Commit;"//Char(0))
-        IVBCATRLST = 0
+        if (LCUT) then
+           IVBCCUTLST = 0
+        else
+           IVBCATRLST = 0
+        end if
         return
      end if
   end if
 
-  write(SQLStmtStr,*)'INSERT INTO ',TBLNAME,&
+  write(SQLStmtStr,*)'INSERT INTO ',TRIM(TBLNAME),&
        &' (CaseID,StandID,PtIndex,ActPt,Year,TreeId,TreeIndex,',& !1
        &'SpeciesFVS,SpeciesPLANTS,SpeciesFIA,',& !2
        &'TPA,MortTPA,DBH,Ht,EstHt,TruncHt,PctCr,',& !3
@@ -121,7 +169,11 @@ subroutine DBS_FIAVBC_ATRTLS
 
   iRet = fsql3_prepare(IoutDBref,trim(SQLStmtStr)//CHAR(0))
   if (iRet .ne.0) then
-     IVBCATRLST = 0
+     if (LCUT) then
+        IVBCCUTLST = 0
+     else
+        IVBCATRLST = 0
+     end if
      iRet = fsql3_exec (IoutDBref,"Commit;"//Char(0))
      return
   end if
@@ -135,10 +187,10 @@ subroutine DBS_FIAVBC_ATRTLS
         do I3 = I1,I2
            IP = 0
            do I = 1,ITRN
-              if (PROB(I).gt.0) IP = IP+1
+              if (TREEP(I).gt.0) IP = IP+1
            end do
            I = IND1(I3)
-           P = PROB(I)/GROSPC
+           P = TREEP(I)/GROSPC
            DP = 0.0
            !           SKIP OUTPUT IF P <= 0
            if (P.le.0.0) cycle
@@ -221,7 +273,7 @@ subroutine DBS_FIAVBC_ATRTLS
               ESTHT = 0
            end if
            ColNumber = ColNumber+1
-           iRet = fsql3_bind_double(IoutDBref,ColNumber,ESTHT) !Ht
+           iRet = fsql3_bind_double(IoutDBref,ColNumber,ESTHT) !EstHt
 
            ColNumber = ColNumber+1
            iRet = fsql3_bind_int(IoutDBref,ColNumber,ITRNK) !TruncHt

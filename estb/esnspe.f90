@@ -9,7 +9,6 @@ subroutine ESNSPE (PSPE,TPPLN,ISER,ITPP,TPP)
 
   ! Common blocks
   include 'PRGPRM.f90'
-  include 'ESPARM.f90'
   include 'ESCOMN.f90'
   include 'ESCOM2.f90'
   include 'PLOT.f90'

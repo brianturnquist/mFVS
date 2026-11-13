@@ -2,8 +2,11 @@
 !   fire/cs : fmcsft   !
 !======================!
 ! FIRE-CS $Id$
-subroutine FMCSFT(IFFEFT)
+subroutine FMSNFT(IFFEFT)
   implicit none
+
+  !  OBSOLETE: REPLACED BY fire/base/fmsnft.f90. RENAMED FROM FMCSFT ONLY SO
+  !  THE CS BUILD LINKS UNTIL ITS SOURCE LIST IS SWITCHED; THEN DELETE.
 
   !  SINGLE-STAND VERSION
   !  CALLED FROM: FMCBA, FMCFMD

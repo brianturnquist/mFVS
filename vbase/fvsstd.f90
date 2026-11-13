@@ -9,6 +9,9 @@ subroutine FVSSTD (IWHO)
 
   !     IWHO=1 IF CALLED FROM MAIN, IWHO=2 IF CALLED FROM CUTS
 
+  !     THE METRIC VARIANTS (BC, ON) WRITE THE SAME RECORDS CONVERTED TO
+  !     METRIC UNITS (LMETRICVAR BRANCHES).
+
   ! Common blocks
   include 'PRGPRM.f90'
   include 'ARRAYS.f90'
@@ -24,6 +27,7 @@ subroutine FVSSTD (IWHO)
   include 'ECON.f90'
   include 'OPCOM.f90'
   include 'FVSSTDCM.f90'
+  include 'METRIC.f90'
 
   ! Variables
   integer :: IWHO,MYACT(1),KSDI,IOPEN,I,NTODO,ITODO,NPRMS,IACTK,IDT
@@ -45,15 +49,25 @@ subroutine FVSSTD (IWHO)
 
   !  COMPUTE CURRENT SDI FOR PRINTING
 
-  do I = 1,6
-     TEM(I) = 0.0
-  end do
+  !  THE METRIC TWIN NEVER CLEARED TEM, SO IN BC AND ON TEM(6) IS READ
+  !  UNINITIALIZED FOR THE DEAD-TREE RECORDS BELOW (OPGET RETURNS AT
+  !  MOST 2 VALUES). PRESERVED DELIBERATELY.
+
+  if (.not. LMETRICVAR) then
+     do I = 1,6
+        TEM(I) = 0.0
+     end do
+  end if
 
   !  COMPUTE CURRENT SDI FOR PRINTING
 
   TEMSDI = 0.
   call SDICLS(0,0.,999.,1,TEMSDI,DUMSDI,STAGEA,STAGEB,0)
-  KSDI = INT(TEMSDI/GROSPC + 0.5)
+  if (LMETRICVAR) then
+     KSDI = INT((TEMSDI/ACRtoHA)/GROSPC + 0.5)
+  else
+     KSDI = INT(TEMSDI/GROSPC + 0.5)
+  end if
 
   !  SET OLD VOLUME VARIABLES TO ZERO IF THIS IS CYCLE 0
 
@@ -62,7 +76,7 @@ subroutine FVSSTD (IWHO)
      do I = 1,ITRN
         PTOCFV(I) = 0.
         PMRCFV(I) = 0.
-        PSCFV(I) = 0.
+        if (.not. LMETRICVAR) PSCFV(I) = 0.
         PMRBFV(I) = 0.
         NCFDEF(I) = 0
         NBFDEF(I) = 0
@@ -94,7 +108,11 @@ subroutine FVSSTD (IWHO)
         call MYOPEN(KOLIST,KWDFIL(1:ISTLNB(KWDFIL))//'.fst',&
              &5,170,0,1,1,0,KODE)
         if (KODE .gt.0) then
-           write(JOSTND,*)'FVSSTAND FILE DID NOT OPEN'
+           if (LMETRICVAR) then
+              write(JOSTND,*) ' FVSSTAND FILE DID NOT OPEN'
+           else
+              write(JOSTND,*)'FVSSTAND FILE DID NOT OPEN'
+           end if
            call RCDSET (2,.true.)
            go to 200
         end if
@@ -145,17 +163,29 @@ subroutine FVSSTD (IWHO)
      case default
         ITMFOR = KODFOR
      end select
-     IBA = NINT(BA/GROSPC)
+     if (LMETRICVAR) then
+        IBA = NINT((BA*FT2pACRtoM2pHA)/GROSPC)
+     else
+        IBA = NINT(BA/GROSPC)
+     end if
      if (IWHO.ne.1) then
         TEMBA = 0.
         do I = 1,ITRN
            TEMBA = TEMBA+0.0054542*DBH(I)*DBH(I)*PROB(I)
            40 continue
         end do
-        IBA = NINT(TEMBA/GROSPC)
+        if (LMETRICVAR) then
+           IBA = NINT((TEMBA*FT2pACRtoM2pHA)/GROSPC)
+        else
+           IBA = NINT(TEMBA/GROSPC)
+        end if
      end if
      IKNT = ICYC+1
-     ISITE = IFIX(SITEAR(ISISP))
+     if (LMETRICVAR) then
+        ISITE = IFIX(SITEAR(ISISP)*FTtoM)
+     else
+        ISITE = IFIX(SITEAR(ISISP))
+     end if
      if (LSTART) then
         KAGE = IAGE
      else
@@ -221,7 +251,11 @@ subroutine FVSSTD (IWHO)
            IBDF = DEFECT(I)-((DEFECT(I)/100)*100)
            NCFDEF(I) = ICDF
            NBFDEF(I) = IBDF
-           IPTBAL = NINT(PTBALT(I))
+           if (LMETRICVAR) then
+              IPTBAL = NINT(PTBALT(I)*FT2pACRtoM2pHA)
+           else
+              IPTBAL = NINT(PTBALT(I))
+           end if
 
            !  CYCLE 0, PRINT INPUT DG ONLY
 
@@ -250,48 +284,75 @@ subroutine FVSSTD (IWHO)
               PHTI = PHT(I)
            end if
            PHT(I) = 0.
-           !     USING REPORTED TOTAL AND MERCHANTABLE CUBIC FOOT VOLUMES TO MAINTAIN
-           !     HISTORIC DIFFERENCE BETWEEN EASTERN AND WESTERN VARIANT VOLUME REPORTING
-           if (VARACD.eq.'CS' .or. VARACD.eq.'LS' .or.&
-                &VARACD.eq.'NE' .or. VARACD.eq.'SN') then
-              RTCUFV = MCFV(I)
-              RMCUFV = SCFV(I)
-              RPTOCFV = PMRCFV(I)
-              RMRCFV = PSCFV(I)
-           else
-              RTCUFV = CFV(I)
-              RMCUFV = MCFV(I)
-              RPTOCFV = PTOCFV(I)
-              RMRCFV = PMRCFV(I)
-           end if
 
-           if (P.lt.9999.9995.and. DP.lt.9999.9995) then
-              write(KOLIST,21) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
-                   &ISPECL(I),ITRE(I),P,DP,DBH(I),DGI     ,HT(I),HTG(I),ICR(I),CW,&
-                   &IDMR,PCT(I),IPTBAL,RTCUFV,RMCUFV,BFV(I),ICDF,IBDF,&
-                   &((ITRUNC(I)+5)/100),PDBHI,PHTI,&
-                   &RPTOCFV,RMRCFV,PMRBFV(I),NCFDEF(I),NBFDEF(I),&
-                   &YRDLOS(I),((NORMHT(I)+5)/100),ABIRTH(I),IPVEC(ITRE(I))
-              21 format(1X,A8,1X,I4,1X,A2,I3,2(1X,I2),1X,I3,1X,F8.3,1X,F8.3,&
-                   &1X,F5.1,1X,F5.2,1X,F5.1,1X,F4.1,1X,I2,1X,F4.1,1X,I2,&
-                   &1X,F6.2,1X,I5,1X,F6.1,1X,F6.1,1X,F7.1,1X,I2,1X,I2,&
-                   &1X,I3,&
-                   &1X,F5.1,1X,F5.1,1X,F6.1,1X,F6.1,1X,F7.1,1X,I2,1X,I2,&
-                   &1X,F7.5,1X,I5,1X,F6.0,1X,I8)
+           if (LMETRICVAR) then
+              if (P.lt.9999.9995.and. DP.lt.9999.9995) then
+                 write(KOLIST,21) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
+                      &ISPECL(I),ITRE(I),P/ACRtoHA,DP/ACRtoHA,DBH(I)*INtoCM,&
+                      &DGI*INtoCM,HT(I)*FTtoM,HTG(I)*FTtoM,ICR(I),CW*FTtoM,&
+                      &IDMR,PCT(I),IPTBAL,CFV(I)*FT3toM3,WK1(I)*FT3toM3,&
+                      &BFV(I)*FT3toM3,ICDF,IBDF,&
+                      &NINT(FLOAT(ITRUNC(I)+5)*.01*FTtoM),PDBHI*INtoCM,&
+                      &PHTI*FTtoM,PTOCFV(I)*FT3toM3,PMRCFV(I)*FT3toM3,&
+                      &PMRBFV(I)*FT3toM3,NCFDEF(I),NBFDEF(I),YRDLOS(I),&
+                      &NINT(FLOAT(NORMHT(I)+5)*.01*FTtoM),ABIRTH(I),&
+                      &IPVEC(ITRE(I))
+              else
+                 write(KOLIST,20) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
+                      &ISPECL(I),ITRE(I),P/ACRtoHA,DP/ACRtoHA,DBH(I)*INtoCM,&
+                      &DGI*INtoCM,HT(I)*FTtoM,HTG(I)*FTtoM,ICR(I),CW*FTtoM,&
+                      &IDMR,PCT(I),IPTBAL,CFV(I)*FT3toM3,WK1(I)*FT3toM3,&
+                      &BFV(I)*FT3toM3,ICDF,IBDF,&
+                      &NINT(FLOAT(ITRUNC(I)+5)*.01*FTtoM),PDBHI*INtoCM,&
+                      &PHTI*FTtoM,PTOCFV(I)*FT3toM3,PMRCFV(I)*FT3toM3,&
+                      &PMRBFV(I)*FT3toM3,NCFDEF(I),NBFDEF(I),YRDLOS(I),&
+                      &NINT(FLOAT(NORMHT(I)+5)*.01*FTtoM),ABIRTH(I),&
+                      &IPVEC(ITRE(I))
+              end if
            else
-              write(KOLIST,20) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
-                   &ISPECL(I),ITRE(I),P,DP,DBH(I),DGI     ,HT(I),HTG(I),ICR(I),CW,&
-                   &IDMR,PCT(I),IPTBAL,CFV(I),MCFV(I),SCFV(I),BFV(I),ICDF,IBDF,&
-                   &((ITRUNC(I)+5)/100),PDBHI,PHTI,&
-                   &RPTOCFV,RMRCFV,PMRBFV(I),NCFDEF(I),NBFDEF(I),&
-                   &YRDLOS(I),((NORMHT(I)+5)/100),ABIRTH(I),IPVEC(ITRE(I))
-              20 format(1X,A8,1X,I4,1X,A2,I3,2(1X,I2),1X,I3,1X,F8.2,1X,F8.2,&
-                   &1X,F5.1,1X,F5.2,1X,F5.1,1X,F4.1,1X,I2,1X,F4.1,1X,I2,&
-                   &1X,F6.2,1X,I5,1X,F6.1,1X,F6.1,1X,F7.1,1X,I2,1X,I2,&
-                   &1X,I3,&
-                   &1X,F5.1,1X,F5.1,1X,F6.1,1X,F6.1,1X,F7.1,1X,I2,1X,I2,&
-                   &1X,F7.5,1X,I5,1X,F6.0,1X,I8)
+              !     USING REPORTED TOTAL AND MERCHANTABLE CUBIC FOOT VOLUMES TO MAINTAIN
+              !     HISTORIC DIFFERENCE BETWEEN EASTERN AND WESTERN VARIANT VOLUME REPORTING
+              if (VARACD.eq.'CS' .or. VARACD.eq.'LS' .or.&
+                   &VARACD.eq.'NE' .or. VARACD.eq.'SN') then
+                 RTCUFV = MCFV(I)
+                 RMCUFV = SCFV(I)
+                 RPTOCFV = PMRCFV(I)
+                 RMRCFV = PSCFV(I)
+              else
+                 RTCUFV = CFV(I)
+                 RMCUFV = MCFV(I)
+                 RPTOCFV = PTOCFV(I)
+                 RMRCFV = PMRCFV(I)
+              end if
+
+              if (P.lt.9999.9995.and. DP.lt.9999.9995) then
+                 write(KOLIST,21) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
+                      &ISPECL(I),ITRE(I),P,DP,DBH(I),DGI     ,HT(I),HTG(I),ICR(I),CW,&
+                      &IDMR,PCT(I),IPTBAL,RTCUFV,RMCUFV,BFV(I),ICDF,IBDF,&
+                      &((ITRUNC(I)+5)/100),PDBHI,PHTI,&
+                      &RPTOCFV,RMRCFV,PMRBFV(I),NCFDEF(I),NBFDEF(I),&
+                      &YRDLOS(I),((NORMHT(I)+5)/100),ABIRTH(I),IPVEC(ITRE(I))
+              else
+                 write(KOLIST,20) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
+                      &ISPECL(I),ITRE(I),P,DP,DBH(I),DGI     ,HT(I),HTG(I),ICR(I),CW,&
+                      &IDMR,PCT(I),IPTBAL,CFV(I),MCFV(I),SCFV(I),BFV(I),ICDF,IBDF,&
+                      &((ITRUNC(I)+5)/100),PDBHI,PHTI,&
+                      &RPTOCFV,RMRCFV,PMRBFV(I),NCFDEF(I),NBFDEF(I),&
+                      &YRDLOS(I),((NORMHT(I)+5)/100),ABIRTH(I),IPVEC(ITRE(I))
+              end if
            end if
+           21 format(1X,A8,1X,I4,1X,A2,I3,2(1X,I2),1X,I3,1X,F8.3,1X,F8.3,&
+                &1X,F5.1,1X,F5.2,1X,F5.1,1X,F4.1,1X,I2,1X,F4.1,1X,I2,&
+                &1X,F6.2,1X,I5,1X,F6.1,1X,F6.1,1X,F7.1,1X,I2,1X,I2,&
+                &1X,I3,&
+                &1X,F5.1,1X,F5.1,1X,F6.1,1X,F6.1,1X,F7.1,1X,I2,1X,I2,&
+                &1X,F7.5,1X,I5,1X,F6.0,1X,I8)
+           20 format(1X,A8,1X,I4,1X,A2,I3,2(1X,I2),1X,I3,1X,F8.2,1X,F8.2,&
+                &1X,F5.1,1X,F5.2,1X,F5.1,1X,F4.1,1X,I2,1X,F4.1,1X,I2,&
+                &1X,F6.2,1X,I5,1X,F6.1,1X,F6.1,1X,F7.1,1X,I2,1X,I2,&
+                &1X,I3,&
+                &1X,F5.1,1X,F5.1,1X,F6.1,1X,F6.1,1X,F7.1,1X,I2,1X,I2,&
+                &1X,F7.5,1X,I5,1X,F6.0,1X,I8)
            50 continue
         end do
         60 continue
@@ -321,7 +382,11 @@ subroutine FVSSTD (IWHO)
         IBDF = DEFECT(I)-((DEFECT(I)/100)*100)
         NCFDEF(I) = ICDF
         NBFDEF(I) = IBDF
-        IPTBAL = NINT(PTBALT(I))
+        if (LMETRICVAR) then
+           IPTBAL = NINT(PTBALT(I)*FT2pACRtoM2pHA)
+        else
+           IPTBAL = NINT(PTBALT(I))
+        end if
 
         !  CYCLE 0, PRINT INPUT DG ONLY, UNLESS DIRECTED TO PRINT ESTIMATES.
 
@@ -335,35 +400,62 @@ subroutine FVSSTD (IWHO)
         DP = P
         P = 0.
 
-        !     USING REPORTED TOTAL AND MERCHANTABLE CUBIC FOOT VOLUMES TO MAINTAIN
-        !     HISTORIC DIFFERENCE BETWEEN EASTERN AND WESTERN VARIANT VOLUME REPORTING
-        if (VARACD.eq.'CS' .or. VARACD.eq.'LS' .or.&
-             &VARACD.eq.'NE' .or. VARACD.eq.'SN') then
-           RTCUFV = MCFV(I)
-           RMCUFV = SCFV(I)
-           RPTOCFV = PMRCFV(I)
-           RMRCFV = PSCFV(I)
+        if (LMETRICVAR) then
+           if (P.lt.9999.9995.and. DP.lt.9999.9995) then
+              write(KOLIST,21) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
+                   &ISPECL(I),ITRE(I),P/ACRtoHA,DP/ACRtoHA,DBH(I)*INtoCM,&
+                   &DGI*INtoCM,HT(I)*FTtoM,HTG(I)*FTtoM,ICR(I),CW*FTtoM,&
+                   &IDMR,PCT(I),IPTBAL,CFV(I)*FT3toM3,WK1(I)*FT3toM3,&
+                   &BFV(I)*FT3toM3,ICDF,IBDF,&
+                   &NINT(FLOAT(ITRUNC(I)+5)*.01*FTtoM),PDBHI*INtoCM,&
+                   &PHTI*FTtoM,PTOCFV(I)*FT3toM3,PMRCFV(I)*FT3toM3,&
+                   &PMRBFV(I)*FT3toM3,NCFDEF(I),NBFDEF(I),YRDLOS(I),&
+                   &NINT(FLOAT(NORMHT(I)+5)*.01*FTtoM),ABIRTH(I),&
+                   &IPVEC(ITRE(I))
+           else
+              write(KOLIST,20) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
+                   &ISPECL(I),ITRE(I),P/ACRtoHA,DP/ACRtoHA,DBH(I)*INtoCM,&
+                   &DGI*INtoCM,HT(I)*FTtoM,HTG(I)*FTtoM,ICR(I),CW*FTtoM,&
+                   &IDMR,PCT(I),IPTBAL,CFV(I)*FT3toM3,WK1(I)*FT3toM3,&
+                   &BFV(I)*FT3toM3,ICDF,IBDF,&
+                   &NINT(FLOAT(ITRUNC(I)+5)*.01*FTtoM),PDBHI*INtoCM,&
+                   &PHTI*FTtoM,PTOCFV(I)*FT3toM3,PMRCFV(I)*FT3toM3,&
+                   &PMRBFV(I)*FT3toM3,NCFDEF(I),NBFDEF(I),YRDLOS(I),&
+                   &NINT(FLOAT(NORMHT(I)+5)*.01*FTtoM),ABIRTH(I),&
+                   &IPVEC(ITRE(I))
+           end if
         else
-           RTCUFV = CFV(I)
-           RMCUFV = MCFV(I)
-           RPTOCFV = PTOCFV(I)
-           RMRCFV = PMRCFV(I)
-        end if
 
-        if (P.lt.9999.9995.and. DP.lt.9999.9995) then
-           write(KOLIST,21) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
-                &ISPECL(I),ITRE(I),P,DP,DBH(I),DGI     ,HT(I),HTG(I),ICR(I),CW,&
-                &IDMR,PCT(I),IPTBAL,RTCUFV,RMCUFV,BFV(I),ICDF,IBDF,&
-                &((ITRUNC(I)+5)/100),PDBHI,PHTI,&
-                &RPTOCFV,RMRCFV,PMRBFV(I),NCFDEF(I),NBFDEF(I),&
-                &YRDLOS(I),((NORMHT(I)+5)/100),ABIRTH(I),IPVEC(ITRE(I))
-        else
-           write(KOLIST,20) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
-                &ISPECL(I),ITRE(I),P,DP,DBH(I),DGI     ,HT(I),HTG(I),ICR(I),CW,&
-                &IDMR,PCT(I),IPTBAL,RTCUFV,RMCUFV,BFV(I),ICDF,IBDF,&
-                &((ITRUNC(I)+5)/100),PDBHI,PHTI,&
-                &RPTOCFV,RMRCFV,PMRBFV(I),NCFDEF(I),NBFDEF(I),&
-                &YRDLOS(I),((NORMHT(I)+5)/100),ABIRTH(I),IPVEC(ITRE(I))
+           !     USING REPORTED TOTAL AND MERCHANTABLE CUBIC FOOT VOLUMES TO MAINTAIN
+           !     HISTORIC DIFFERENCE BETWEEN EASTERN AND WESTERN VARIANT VOLUME REPORTING
+           if (VARACD.eq.'CS' .or. VARACD.eq.'LS' .or.&
+                &VARACD.eq.'NE' .or. VARACD.eq.'SN') then
+              RTCUFV = MCFV(I)
+              RMCUFV = SCFV(I)
+              RPTOCFV = PMRCFV(I)
+              RMRCFV = PSCFV(I)
+           else
+              RTCUFV = CFV(I)
+              RMCUFV = MCFV(I)
+              RPTOCFV = PTOCFV(I)
+              RMRCFV = PMRCFV(I)
+           end if
+
+           if (P.lt.9999.9995.and. DP.lt.9999.9995) then
+              write(KOLIST,21) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
+                   &ISPECL(I),ITRE(I),P,DP,DBH(I),DGI     ,HT(I),HTG(I),ICR(I),CW,&
+                   &IDMR,PCT(I),IPTBAL,RTCUFV,RMCUFV,BFV(I),ICDF,IBDF,&
+                   &((ITRUNC(I)+5)/100),PDBHI,PHTI,&
+                   &RPTOCFV,RMRCFV,PMRBFV(I),NCFDEF(I),NBFDEF(I),&
+                   &YRDLOS(I),((NORMHT(I)+5)/100),ABIRTH(I),IPVEC(ITRE(I))
+           else
+              write(KOLIST,20) TID,I,NSP(ISP(I),1)(1:2),ISP(I),IMC(I),&
+                   &ISPECL(I),ITRE(I),P,DP,DBH(I),DGI     ,HT(I),HTG(I),ICR(I),CW,&
+                   &IDMR,PCT(I),IPTBAL,RTCUFV,RMCUFV,BFV(I),ICDF,IBDF,&
+                   &((ITRUNC(I)+5)/100),PDBHI,PHTI,&
+                   &RPTOCFV,RMRCFV,PMRBFV(I),NCFDEF(I),NBFDEF(I),&
+                   &YRDLOS(I),((NORMHT(I)+5)/100),ABIRTH(I),IPVEC(ITRE(I))
+           end if
         end if
         150 continue
      end do

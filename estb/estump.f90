@@ -13,7 +13,6 @@ subroutine ESTUMP (JSSP,DBH,PREM,JPLOT,ISHAG)
   ! Common blocks
   include 'PRGPRM.f90'
   include 'CONTRL.f90'
-  include 'ESPARM.f90'
   include 'ESHOOT.f90'
   include 'ESHAP.f90'
   include 'ESCOMN.f90'

@@ -9,7 +9,6 @@ subroutine ESXCSH (TIME2,II,HHT,JOSTND,DEBUG)
 
   ! Common blocks
   include 'PRGPRM.f90'
-  include 'ESPARM.f90'
   include 'ESCOMN.f90'
   include 'ESHAP.f90'
 

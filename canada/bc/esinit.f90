@@ -9,7 +9,6 @@ subroutine ESINIT
 
   ! Common blocks
   include 'PRGPRM.f90'
-  include 'ESPARM.f90'
   include 'ESCOMN.f90'
   include 'ESHAP.f90'
   include 'ESRNCM.f90'

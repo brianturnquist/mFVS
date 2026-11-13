@@ -13,7 +13,6 @@ block data BLKDAT
   ! Common blocks
   include 'PRGPRM.f90'
   include 'PLOT.f90'
-  include 'ESPARM.f90'
   include 'ESCOMN.f90'
   include 'COEFFS.f90'
   include 'PDEN.f90'

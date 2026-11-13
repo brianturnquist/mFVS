@@ -10,7 +10,6 @@ subroutine GETSTD
 
   ! Common blocks
   include 'PRGPRM.f90'
-  include 'ESPARM.f90'
   include 'ARRAYS.f90'
   include 'COEFFS.f90'
   include 'CONTRL.f90'

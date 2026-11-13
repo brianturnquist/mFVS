@@ -4,13 +4,59 @@
 ! DBSQLITE $Id$
 subroutine DBSATRTLS(IWHO,KODE,TEM)
 
-  !     PURPOSE: TO OUTPUT THE ATRTLIST DATA TO THE DATABASE
+  !     PURPOSE: TO OUTPUT THE ATRTLIST DATA TO THE DATABASE. THE TABLE IS
+  !              WRITTEN BY DBSATCUT, BELOW, WHICH ALSO WRITES THE CUTS
+  !              LIST FOR DBSCUTS.
 
   !     INPUT: IWHO  - THE WHO CALLED ME VALUE WHICH MUST BE 3
   !                     INORDER FOR US TO CONTINUE
   !            KODE  - FOR LETTING CALLING ROUTINE KNOW IF THIS IS A
   !                     REDIRECT OF THE FLAT FILE REPORT OR IN
   !                     ADDITION TO
+  !            TEM   - TREELIST OPTION VALUE FROM PRTRLS (SEE DBSATCUT)
+
+  implicit none
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
+  include 'DBSCOM.f90'
+
+  ! Variables
+  integer :: IWHO,KODE
+  real    :: TEM
+
+  !     IF TREEOUT IS NOT TURNED ON OR THE IWHO VARIABLE IS NOT 1
+  !     THEN JUST RETURN
+
+  if (IATRTLIST.eq.0.or.IWHO.ne.3) return
+
+  !     IS THIS OUTPUT A REDIRECT OF THE REPORT THEN SET KODE TO 0
+
+  if (IATRTLIST.eq.2) KODE = 0
+
+  call DBSATCUT(.false.,PROB,TEM)
+  return
+end
+
+subroutine DBSATCUT(LCUT,TREEP,TEM)
+
+  !     PURPOSE: TO OUTPUT THE AFTER TREATMENT TREE LIST OR THE CUTS LIST
+  !              TO THE DATABASE.
+
+  !     INPUT: LCUT  - .FALSE. FOR THE AFTER TREATMENT LIST (FVS_ATRTList,
+  !                     SWITCH IATRTLIST, CALLED BY DBSATRTLS),
+  !                    .TRUE. FOR THE CUTS LIST (FVS_CutList, SWITCH
+  !                     ICUTLIST, CALLED BY DBSCUTS).
+  !            TREEP - TREES PER ACRE OF EACH RECORD: PROB FOR THE AFTER
+  !                     TREATMENT LIST, WK3 FOR THE CUTS LIST.
+  !            TEM   - AFTER TREATMENT LIST ONLY: WHEN ZERO IN CYCLE 0 THE
+  !                     DG COLUMN COMES FROM WORK1. NOT USED FOR THE CUTS LIST.
+
+  !     THE TWO LISTS DIFFER IN A FEW PLACES THAT ARE PRESERVED DELIBERATELY
+  !     (SEE THE LCUT BRANCHES): ERROR HANDLING AFTER "BEGIN", THE TABLE
+  !     CREATE AND THE INSERT; THE METRIC POINT BAL CONVERSION; THE CYCLE 0
+  !     DG; AND A READ OF THE FIA SPECIES CODE IN THE IMPERIAL CUTS LIST.
 
   implicit none
 
@@ -27,6 +73,8 @@ subroutine DBSATRTLS(IWHO,KODE,TEM)
   include 'METRIC.f90'
 
   ! Variables
+  logical :: LCUT
+  real    :: TREEP(*)
   character(len=8) :: TID
   character(len=8) :: CSPECIE1
   character(len=8) :: CSPECIE2
@@ -39,22 +87,13 @@ subroutine DBSATRTLS(IWHO,KODE,TEM)
   character(len=8) :: NAMDCF
   character(len=8) :: NAMDBF
   character(len=2000) :: SQLStmtStr
-  integer :: IWHO,I,JYR,IP,ITPLAB,IRCODE,IDMR,ICDF,IBDF,IPTBAL,KODE
+  integer :: I,JYR,IP,ITPLAB,IRCODE,IDMR,ICDF,IBDF,IPTBAL
   integer :: ISPC,I1,I2,I3
-  integer*4 :: IDCMP1,IDCMP2
+  integer*4 :: IDCMP1,IDCMP2,IFIASPP
   data IDCMP1,IDCMP2/10000000,20000000/
   real    :: CW,P,DGI,DP,TEM,ESTHT,TREAGE
 
   integer :: fsql3_tableexists,fsql3_exec,fsql3_addcolifabsent,iRet
-
-  !     IF TREEOUT IS NOT TURNED ON OR THE IWHO VARIABLE IS NOT 1
-  !     THEN JUST RETURN
-
-  if (IATRTLIST.eq.0.or.IWHO.ne.3) return
-
-  !     IS THIS OUTPUT A REDIRECT OF THE REPORT THEN SET KODE TO 0
-
-  if (IATRTLIST.eq.2) KODE = 0
 
   !     ALWAYS CALL CASE TO MAKE SURE WE HAVE AN UP TO DATE CASE NUMBER
 
@@ -65,14 +104,26 @@ subroutine DBSATRTLS(IWHO,KODE,TEM)
   if (LMETRICVAR) then
      if (VARACD.eq.'CS' .or. VARACD.eq.'LS' .or. VARACD.eq.'SN' .or.&
           &VARACD.eq.'NE' .or. VARACD.eq.'ON') then
-        TBLNAME = 'FVS_ATRTList_East_Metric'
+        if (LCUT) then
+           TBLNAME = 'FVS_CutList_East_Metric'
+        else
+           TBLNAME = 'FVS_ATRTList_East_Metric'
+        end if
         NTCUFT = 'TCuM'
         NMCUFT = 'MCuM'
         NBDFT = 'CCuM'
         NAMDCF = 'Ht2TDMCM'
-        NAMDBF = 'Ht2TDSBM'
+        if (LCUT) then
+           NAMDBF = 'Ht2TDSCM'
+        else
+           NAMDBF = 'Ht2TDSBM'
+        end if
      else
-        TBLNAME = 'FVS_ATRTList_Metric'
+        if (LCUT) then
+           TBLNAME = 'FVS_CutList_Metric'
+        else
+           TBLNAME = 'FVS_ATRTList_Metric'
+        end if
         NTCUFT = 'TCuM'
         NMCUFT = 'MCuM'
         NBDFT = 'CCuM'
@@ -80,7 +131,11 @@ subroutine DBSATRTLS(IWHO,KODE,TEM)
         NAMDBF = 'Ht2TDBM '
      end if
   else
-     TBLNAME = 'FVS_ATRTList'
+     if (LCUT) then
+        TBLNAME = 'FVS_CutList'
+     else
+        TBLNAME = 'FVS_ATRTList'
+     end if
      NTCUFT = 'TCuFt'
      NMCUFT = 'MCuFt'
      NSCUFT = 'SCuFt'
@@ -89,7 +144,15 @@ subroutine DBSATRTLS(IWHO,KODE,TEM)
      NAMDBF = 'Ht2TDBF '
   end if
 
+  !     ONLY THE CUTS LIST TURNS ITSELF OFF WHEN "BEGIN" FAILS (PRESERVED).
+
   IRCODE = fsql3_exec (IoutDBref,"Begin;"//Char(0))
+  if (LCUT) then
+     if (IRCODE .ne.0) then
+        ICUTLIST = 0
+        return
+     end if
+  end if
 
   !     CHECK TO SEE IF THE TREELIST TABLE EXISTS IN DATBASE
   !     IF IT DOESNT THEN WE NEED TO CREATE IT
@@ -172,8 +235,13 @@ subroutine DBSATRTLS(IWHO,KODE,TEM)
      end if
      IRCODE = fsql3_exec(IoutDBref,SQLStmtStr)
      if (IRCODE .ne.0) then
-        IRCODE = fsql3_exec (IoutDBref,"Commit;"//Char(0))
-        IATRTLIST = 0
+        !        THE CUTS LIST DOES NOT COMMIT HERE (PRESERVED).
+        if (LCUT) then
+           ICUTLIST = 0
+        else
+           IRCODE = fsql3_exec (IoutDBref,"Commit;"//Char(0))
+           IATRTLIST = 0
+        end if
         return
      end if
   end if
@@ -198,11 +266,15 @@ subroutine DBSATRTLS(IWHO,KODE,TEM)
         do I3 = I1,I2
            IP = 0
            do I = 1,ITRN
-              if (PROB(I).gt.0) IP = IP+1
+              if (TREEP(I).gt.0) IP = IP+1
            end do
            I = IND1(I3)
-           ITPLAB = 4
-           P = PROB(I)/GROSPC
+           if (LCUT) then
+              ITPLAB = 3
+           else
+              ITPLAB = 4
+           end if
+           P = TREEP(I)/GROSPC
            DP = 0.0
            !           SKIP OUTPUT IF P <= 0
            if (P.le.0.0) cycle
@@ -229,10 +301,16 @@ subroutine DBSATRTLS(IWHO,KODE,TEM)
            CW = CRWDTH(I)
 
            !           DECODE DEFECT AND ROUND OFF POINT BAL.
+           !           ONLY THE METRIC CUTS LIST CONVERTS POINT BAL TO METRIC; THE
+           !           METRIC AFTER TREATMENT LIST WRITES IT UNCONVERTED (PRESERVED).
 
            ICDF = (DEFECT(I)-((DEFECT(I)/10000)*10000))/100
            IBDF = DEFECT(I)-((DEFECT(I)/100)*100)
-           IPTBAL = NINT(PTBALT(I))
+           if (LMETRICVAR .and. LCUT) then
+              IPTBAL = NINT(PTBALT(I)*FT2pACRtoM2pHA)
+           else
+              IPTBAL = NINT(PTBALT(I))
+           end if
 
            !           DETERMINE ESTIMATED HEIGHT
            !           ESTIMATED HEIGHT IS NORMAL HEIGHT, UNLESS THE LATTER HAS NOT
@@ -255,7 +333,9 @@ subroutine DBSATRTLS(IWHO,KODE,TEM)
            !           GET DG INPUT
 
            DGI = DG(I)
-           if (ICYC.eq.0.and. TEM.eq.0) DGI = WORK1(I)
+           if (.not. LCUT) then
+              if (ICYC.eq.0.and. TEM.eq.0) DGI = WORK1(I)
+           end if
 
            !           LOAD SPECIES CODES FROM FVS, PLANTS AND FIA ARRAYS.
 
@@ -287,6 +367,9 @@ subroutine DBSATRTLS(IWHO,KODE,TEM)
                    &',',IPVEC(ITRE(I)),',',HT2TD(I,2)*FTtoM,&
                    &',',HT2TD(I,1)*FTtoM,',',TREAGE,');'
            else
+              !              THE CUTS LIST READS THE FIA CODE AS AN INTEGER (UNUSED)
+              !              HERE; KEPT BECAUSE IT CAN STOP THE RUN ON A NON-NUMERIC CODE.
+              if (LCUT) read(CSPECIE3,'(I4)') IFIASPP
               write(SQLStmtStr,*)'INSERT INTO ',TBLNAME,&
                    &' (CaseID,StandID,Year,PrdLen,TreeId,',&
                    &'TreeIndex,SpeciesFVS,SpeciesPLANTS,SpeciesFIA,TreeVal,',&
@@ -313,8 +396,13 @@ subroutine DBSATRTLS(IWHO,KODE,TEM)
 
            IRCODE = fsql3_exec(IoutDBref,trim(SQLStmtStr)//CHAR(0))
            if (IRCODE .ne.0) then
-              IATRTLIST = 0
-              IRCODE = fsql3_exec (IoutDBref,"Commit;"//Char(0))
+              !              THE CUTS LIST DOES NOT COMMIT HERE (PRESERVED).
+              if (LCUT) then
+                 ICUTLIST = 0
+              else
+                 IATRTLIST = 0
+                 IRCODE = fsql3_exec (IoutDBref,"Commit;"//Char(0))
+              end if
               return
            end if
         end do

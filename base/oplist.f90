@@ -2,7 +2,7 @@
 !   Write activity summaries   !
 !==============================!
 ! BASE $Id$
-subroutine OPLIST (LFIRST,NPLT,MGMID,ITITLE)
+recursive subroutine OPLIST (LFIRST,NPLT,MGMID,ITITLE)
   implicit none
 
   !     OPTION PROCESSING ROUTINE - NL CROOKSTON - JAN 1981 - MOSCOW
@@ -12,15 +12,19 @@ subroutine OPLIST (LFIRST,NPLT,MGMID,ITITLE)
   !     AND IF LFIRST IS FALSE, THE FINAL SCHEDULE, INCLUDING THE
   !     DISPOSITION OF ACTIVITIES, IS WRITTEN.
 
+  !     OPLIST IS RECURSIVE BECAUSE IN THE METRIC VARIANTS (BC, ON) IT
+  !     CALLS MCNVRT, WHICH CALLS BACK INTO THE OPKEY ENTRY BELOW.
+
   ! Common blocks
   include 'PRGPRM.f90'
   include 'CONTRL.f90'
   include 'OPCOM.f90'
   include 'KEYCOM.f90'
+  include 'METRIC.f90'
 
   ! Variables
   integer :: NTRSLT,I1,I,ICY,I2,II,IACTK,IDT,KEY,LOC,J1,J2,J,ID,K
-  integer :: IKEY,IKEY2
+  integer :: IARY,IKEY,IKEY2
   character(len=26) :: NPLT
   character(len=4) :: MGMID
   character(len=72) :: ITITLE
@@ -32,9 +36,16 @@ subroutine OPLIST (LFIRST,NPLT,MGMID,ITITLE)
   character(len=8) :: SCHED
   character(len=8) :: SUMMR
   character(len=4) :: TAB2(17)
-  parameter (NTRSLT = 148)
+  parameter (NTRSLT = 149)
   integer :: ITRSL1(NTRSLT),ITRSL2(NTRSLT)
   integer :: IOPCYHLD(MAXACT) ! Used for temp hold of IOPCYC array
+  real    :: PRMMLT(N_METRIC_PRMS)
+
+  !     ACTIVITY CODE 490 (TRANSLATED TO 203) IS IN THE METRIC (BC, ON)
+  !     TABLE ONLY. THE IMPERIAL VARIANTS NEVER HAD IT, SO THEY TREAT 490
+  !     AS NOT FOUND (SEE THE TWO OPBISR CALLS BELOW). THIS DIFFERENCE IS
+  !     PRESERVED DELIBERATELY.
+
   data ITRSL1/ &
        & 33,   80,   81,   82,   90,   91,   92,   93,   94,   95, &
        & 96,   97,   98,   99,  100,  101,  102,  110,  111,  120, &
@@ -42,15 +53,15 @@ subroutine OPLIST (LFIRST,NPLT,MGMID,ITITLE)
        & 216,  217,  218,  222,  223,  224,  225,  226,  227,  228, &
        & 229,  230,  231,  232,  233,  234,  235,  236,  237,  248, &
        & 249,  250,  260,  427,  428,  429,  430,  431,  432,  440, &
-       & 442,  443,  444,  445,  450,  491,  492,  493,  555,  810, &
-       & 811,  900, 1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, &
-       & 1009, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, &
-       & 2150, 2151, 2152, 2153, 2154, 2155, 2156, 2157, 2158, 2159, &
-       & 2160, 2208, 2209, 2210, 2320, 2401, 2402, 2403, 2414, 2415, &
-       & 2416, 2417, 2430, 2431, 2432, 2433, 2501, 2505, 2506, 2507, &
-       & 2512, 2520, 2521, 2522, 2523, 2525, 2529, 2530, 2538, 2539, &
-       & 2548, 2549, 2550, 2553, 2554, 2605, 2606, 2607, 2608, 2609, &
-       & 2701, 2702, 2703, 2704, 2801, 2802, 2803, 2804/
+       & 442,  443,  444,  445,  450,  490,  491,  492,  493,  555, &
+       & 810,  811,  900, 1001, 1002, 1003, 1004, 1005, 1006, 1007, &
+       & 1008, 1009, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, &
+       & 2009, 2150, 2151, 2152, 2153, 2154, 2155, 2156, 2157, 2158, &
+       & 2159, 2160, 2208, 2209, 2210, 2320, 2401, 2402, 2403, 2414, &
+       & 2415, 2416, 2417, 2430, 2431, 2432, 2433, 2501, 2505, 2506, &
+       & 2507, 2512, 2520, 2521, 2522, 2523, 2525, 2529, 2530, 2538, &
+       & 2539, 2548, 2549, 2550, 2553, 2554, 2605, 2606, 2607, 2608, &
+       & 2609, 2701, 2702, 2703, 2704, 2801, 2802, 2803, 2804/
 
   data ITRSL2/ &
        & 33,   17,   96,  102,    3,   58,   62,   70,   59,  207, &
@@ -59,15 +70,15 @@ subroutine OPLIST (LFIRST,NPLT,MGMID,ITITLE)
        & 42,   43,   44,   23,   24,   25,   26,   27,   28,   29, &
        & 30,  112,  115,   35,  122,  124,  129,  136,  141,  128, &
        & 108,   78,   34,  216,  211,  212,  202,  203,  229,  213, &
-       & 215,   93,  145,  146,  226,  204,  230,  205,  406,  306, &
-       & 336,  512,  901,  902,  903,  904,  905,  906,  910,  911, &
-       & 916, 1001, 1004, 1005, 1002, 1007, 1010, 1011, 1023, 1024, &
-       & 1114, 1108, 1114, 1109, 1116, 1114, 1114, 1124, 1114, 1124, &
-       & 1114, 1208, 1209, 1210, 1320, 1401, 1402, 1403, 1414, 1415, &
-       & 1416, 1417, 1430, 1431, 1432, 1433, 1501, 1505, 1506, 1507, &
-       & 1512, 1520, 1521, 1522, 1523, 1525, 1533, 1534, 1538, 1539, &
-       & 1548, 1549, 1550, 1553, 1554, 1601, 1602, 1603, 1604, 1605, &
-       & 1301, 1302, 1303, 1304,  703,  704,  705,  706/
+       & 215,   93,  145,  146,  226,  203,  204,  230,  205,  406, &
+       & 306,  336,  512,  901,  902,  903,  904,  905,  906,  910, &
+       & 911,  916, 1001, 1004, 1005, 1002, 1007, 1010, 1011, 1023, &
+       & 1024, 1114, 1108, 1114, 1109, 1116, 1114, 1114, 1124, 1114, &
+       & 1124, 1114, 1208, 1209, 1210, 1320, 1401, 1402, 1403, 1414, &
+       & 1415, 1416, 1417, 1430, 1431, 1432, 1433, 1501, 1505, 1506, &
+       & 1507, 1512, 1520, 1521, 1522, 1523, 1525, 1533, 1534, 1538, &
+       & 1539, 1548, 1549, 1550, 1553, 1554, 1601, 1602, 1603, 1604, &
+       & 1605, 1301, 1302, 1303, 1304,  703,  704,  705,  706/
 
   data TAB2/'CMPU','BASE','ESTB','DFTM','MPB', 'COVR', &
        & 'DBS ','CLIM','    ','RUST','MIST','WSBE','DFB', &
@@ -114,17 +125,31 @@ subroutine OPLIST (LFIRST,NPLT,MGMID,ITITLE)
   if (.not.LFIRST) write (JOSTND,15)
   TITL = SUMMR
   if (LFIRST) TITL = SCHED
-  write (JOSTND,10) TITL,NPLT,MGMID,ITITLE
-  10 format (//T54,'ACTIVITY ',A8//'STAND ID= ',A26, &
-       & '    MGMT ID= ',A4,4X,A72//130('-'))
-  if (LFIRST) write (JOSTND,11)
-  11 format(/'CYCLE  DATE  EXTENSION  KEYWORD   DATE  PARAMETERS:'/ &
-       & '-----  ----  ---------  --------  ----  ',90('-'))
-  if (.not.LFIRST) write (JOSTND,12)
-  12 format(/'CYCLE  DATE  EXTENSION  KEYWORD   DATE  ', &
-       & 'ACTIVITY DISPOSITION  PARAMETERS:'/ &
-       & '-----  ----  ---------  --------  ----  ',20('-'), &
-       & 2X,68('-'))
+  if (LMETRICVAR) then
+     write (JOSTND,110) TITL,NPLT,MGMID,ITITLE
+     110 format (//T54,'ACTIVITY ',A8//' STAND ID= ',A26, &
+          & '    MGMT ID= ',A4,4X,A72//130('-'))
+     if (LFIRST) write (JOSTND,111)
+     111 format(/' CYCLE  DATE  EXTENSION  KEYWORD   DATE  PARAMETERS:'/ &
+          & ' -----  ----  ---------  --------  ----  ',90('-'))
+     if (.not.LFIRST) write (JOSTND,112)
+     112 format(/' CYCLE  DATE  EXTENSION  KEYWORD   DATE  ', &
+          & 'ACTIVITY DISPOSITION  PARAMETERS:'/ &
+          & ' -----  ----  ---------  --------  ----  ',20('-'), &
+          & 2X,68('-'))
+  else
+     write (JOSTND,10) TITL,NPLT,MGMID,ITITLE
+     10 format (//T54,'ACTIVITY ',A8//'STAND ID= ',A26, &
+          & '    MGMT ID= ',A4,4X,A72//130('-'))
+     if (LFIRST) write (JOSTND,11)
+     11 format(/'CYCLE  DATE  EXTENSION  KEYWORD   DATE  PARAMETERS:'/ &
+          & '-----  ----  ---------  --------  ----  ',90('-'))
+     if (.not.LFIRST) write (JOSTND,12)
+     12 format(/'CYCLE  DATE  EXTENSION  KEYWORD   DATE  ', &
+          & 'ACTIVITY DISPOSITION  PARAMETERS:'/ &
+          & '-----  ----  ---------  --------  ----  ',20('-'), &
+          & 2X,68('-'))
+  end if
 
   !     IF THIS THE SECOND CALL (LFIRST=FALSE) MAKE SURE THAT THE DATE
   !     AN ACTIVITY WAS ACCOMPLISHED IS USED TO ASSIGN THE ACTIVITY
@@ -190,14 +215,25 @@ subroutine OPLIST (LFIRST,NPLT,MGMID,ITITLE)
         IACTK = IACT(I,1)
         IDT = IDATE(I)
 
+        !     INITIALIZE THE PARAMETER MULTIPLIERS FOR METRIC CONVERSION.
+        !     AT PRESENT THERE ARE AT MOST 12 PARAMETERS IN THE ARGUMENT LIST
+
+        if (LMETRICVAR) then
+           do IARY = 1,N_METRIC_PRMS
+              PRMMLT(IARY) = 1.0
+           end do
+        end if
+
         !     FIND THE ACTIVITY KODE (IACTK) IN THE TRANSLTAION TABLE.
 
         call OPBISR (NTRSLT,ITRSL1,IACTK,KEY)
+        if (.not. LMETRICVAR .and. IACTK.eq.490) KEY = 0
 
         !     IF THE ACTIVITY KODE IS NOT IN THE TRANSLATION TABLE;
         !     THEN: LOAD THE KEYWRD WITH '*UNKNOWN' AND BRANCH TO WRITE.
 
         if (KEY.le.0) goto 36
+        if (LMETRICVAR) call MCNVRT(IACTK,2,PARMS,PRMMLT)
         KEY = ITRSL2(KEY)
         goto 40
         36 continue
@@ -293,7 +329,12 @@ subroutine OPLIST (LFIRST,NPLT,MGMID,ITITLE)
         !     IF WRITTING THE COMPUTE'S, THEN ONLY WRITE 1 PARM.
 
         if (LOC.eq.1) J2 = J1
-        write (JOSTND,60) TAB2(LOC),KEYWRD,IDT,(PARMS(J),J = J1,J2)
+        if (LMETRICVAR) then
+           write (JOSTND,60) TAB2(LOC),KEYWRD,IDT, &
+                & (PARMS(J)*PRMMLT(J-J1+1),J = J1,J2)
+        else
+           write (JOSTND,60) TAB2(LOC),KEYWRD,IDT,(PARMS(J),J = J1,J2)
+        end if
         60 format (T16,A4,T25,A8,I6,((T41,8F11.4)))
         goto 150
         90 continue
@@ -312,11 +353,18 @@ subroutine OPLIST (LFIRST,NPLT,MGMID,ITITLE)
         if (J1.le.0) goto 95
         J2 = IACT(I,3)
         if (LOC.eq.1) J2 = J1
-        if (K.eq.0) write(JOSTND,91) TAB2(LOC),KEYWRD,IDT,ID, &
-             & (PARMS(J),J = J1,J2)
+        if (LMETRICVAR) then
+           if (K.eq.0) write(JOSTND,91) TAB2(LOC),KEYWRD,IDT,ID, &
+                & (PARMS(J)*PRMMLT(J-J1+1),J = J1,J2)
+           if (K.gt.0) write(JOSTND,92) TAB2(LOC),KEYWRD,IDT, &
+                & IDISPO(K),(PARMS(J)*PRMMLT(J-J1+1),J = J1,J2)
+        else
+           if (K.eq.0) write(JOSTND,91) TAB2(LOC),KEYWRD,IDT,ID, &
+                & (PARMS(J),J = J1,J2)
+           if (K.gt.0) write(JOSTND,92) TAB2(LOC),KEYWRD,IDT, &
+                & IDISPO(K),(PARMS(J),J = J1,J2)
+        end if
         91 format (T16,A4,T25,A8,I6,'  DONE IN',I5,((T63,6F11.4)))
-        if (K.gt.0) write(JOSTND,92) TAB2(LOC),KEYWRD,IDT, &
-             & IDISPO(K),(PARMS(J),J = J1,J2)
         92 format (T16,A4,T25,A8,I6,2X,A20,((T63,6F11.4)))
         goto 140
         95 continue
@@ -344,6 +392,7 @@ subroutine OPLIST (LFIRST,NPLT,MGMID,ITITLE)
 
   entry OPKEY(IKEY)
   call OPBISR (NTRSLT,ITRSL1,IKEY,IKEY2)
+  if (.not. LMETRICVAR .and. IKEY.eq.490) IKEY2 = 0
   if (IKEY2.le.0) return
   IKEY = ITRSL2(IKEY2)
   return

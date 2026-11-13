@@ -17,11 +17,28 @@ elseif (CMAKE_GENERATOR MATCHES "MinGW Makefiles" OR CMAKE_GENERATOR MATCHES "Un
 endif()
 
 # --- 2. VARIANT PROCESSING LOGIC ---
-# Define which variant to build (e.g., FVSie, FVSpn)
-file(GLOB tobuild FVSbc_sourceList.txt)
-#file(GLOB tobuild FVSon_sourceList.txt)
-#file(GLOB tobuild FVSie_sourceList.txt)
+# Choose the variants to build with -DFVS_VARIANTS=..., a semicolon-separated list
+# such as "FVSie;FVSpn", or "all" for every variant. The default is FVSbc.
+set(FVS_VARIANTS "FVSbc" CACHE STRING "Variants to build, e.g. FVSie;FVSpn, or all")
+if (FVS_VARIANTS STREQUAL "all")
+    file(GLOB tobuild FVS*_sourceList.txt)
+else()
+    set(tobuild)
+    foreach (variant ${FVS_VARIANTS})
+        if (NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${variant}_sourceList.txt")
+            message(FATAL_ERROR "No source list for variant ${variant}")
+        endif()
+        list(APPEND tobuild "${CMAKE_CURRENT_SOURCE_DIR}/${variant}_sourceList.txt")
+    endforeach()
+endif()
 list(SORT tobuild)
+
+# Files compiled by every variant are listed once, in common_sourceList.txt.
+set(commonListStrings "")
+if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/common_sourceList.txt")
+    file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/common_sourceList.txt" commonListStrings NEWLINE_CONSUME)
+    string(APPEND commonListStrings "\n")
+endif()
 
 set(dirsToProcess)
 
@@ -29,9 +46,9 @@ foreach (sourceList ${tobuild})
     get_filename_component(slfn ${sourceList} NAME)
     string(REPLACE "_sourceList.txt" "" prgName ${slfn})
 
-    # Read and adjust source paths
+    # Read the common and variant lists and adjust source paths
     file(STRINGS ${sourceList} sourceListStrings NEWLINE_CONSUME)
-    string(REPLACE "../" "../../" newsourceList "${sourceListStrings}")
+    string(REPLACE "../" "../../" newsourceList "${commonListStrings}${sourceListStrings}")
 
     # Extract the sub-project CMakeLists logic (text after the tag)
     file(READ "${CMAKE_CURRENT_LIST_FILE}" full_content)
@@ -170,7 +187,7 @@ message(STATUS "FVS_GIT_DATE:    ${FVS_GIT_DATE}")
 message(STATUS "FVS_GIT_BRANCH:  ${FVS_GIT_BRANCH}")
 
 # --- 4. COMPILER CONFIGURATION ---
-set(CMAKE_Fortran_Format FIXED)
+# All Fortran sources are free-form .f90, which CMake recognizes by extension.
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
 if(MSVC)
@@ -249,13 +266,6 @@ if(includeDirs)
 endif()
 
 # --- 6. PROPERTY ASSIGNMENT  ---
-
-foreach(src ${FsourceFVS} ${FsourceMAIN})
-    get_filename_component(src_name ${src} NAME)
-    if(src_name STREQUAL "version.f90" OR src_name STREQUAL "main.f90")
-        set_source_files_properties(${src} PROPERTIES Fortran_FORMAT FREE)
-    endif()
-endforeach()
 
 # Apply Fortran-specific indexing to .f77 and .inc
 if(FortranHeaders)

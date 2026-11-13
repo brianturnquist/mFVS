@@ -1,7 +1,6 @@
 ../fiavbc/nvbeqdef.f90
 ../fiavbc/nvb_region_check.f90
 
-../ca/common/ESPARM.f90
 ../ca/common/PRGPRM.f90
 
 ../common/ARRAYS.f90

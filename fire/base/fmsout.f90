@@ -35,6 +35,7 @@ subroutine FMSOUT (IYR)
   ! Common blocks
   include 'PRGPRM.f90'
   include 'FMPARM.f90'
+  include 'METRIC.f90'
 
   !.... COMMON INCLUDE FILES.
 
@@ -49,16 +50,34 @@ subroutine FMSOUT (IYR)
   ! Variables
   integer :: YRLAST,JYR,II
   real    :: SNVOLS,SNVOLH,TEMPV
-  real    :: TOTDH(MAXSP,100,6),TOTDS(MAXSP,100,6)
-  real    :: TOTHTH(MAXSP,100,6),TOTHTS(MAXSP,100,6)
-  real    :: TOTVLS(MAXSP,100,6),TOTVLH(MAXSP,100,6)
-  real    :: TOTDBH(MAXSP,100,6)
+
+  !     THE CLASS TOTALS ARE ALLOCATED ON EACH CALL, AS THE FORMER METRIC COPY
+  !     DID (FIXED-SIZE LOCAL ARRAYS OF THIS SIZE ARE MOVED TO STATIC STORAGE
+  !     WHEN MAXSP IS LARGE). THEY ARE FULLY ZEROED BELOW BEFORE USE, AND ARE
+  !     DEALLOCATED AUTOMATICALLY ON RETURN.
+
+  real,ALLOCATABLE:: TOTDH(:,:,:)
+  real,ALLOCATABLE:: TOTDS(:,:,:)
+  real,ALLOCATABLE:: TOTHTH(:,:,:)
+  real,ALLOCATABLE:: TOTHTS(:,:,:)
+  real,ALLOCATABLE:: TOTVLS(:,:,:)
+  real,ALLOCATABLE:: TOTVLH(:,:,:)
+  real,ALLOCATABLE:: TOTDBH(:,:,:)
+
   real    :: TOTN
   real    :: PRMS(4)
   logical :: DEBUG,LOK
   integer :: MYACT(1)
   data MYACT/2512/
   integer :: IYR,NTODO,JDO,NPRM,IACTK,IDC,JCL,DBSKODE
+
+  ALLOCATE(TOTDH(MAXSP,100,6))
+  ALLOCATE(TOTDS(MAXSP,100,6))
+  ALLOCATE(TOTHTH(MAXSP,100,6))
+  ALLOCATE(TOTHTS(MAXSP,100,6))
+  ALLOCATE(TOTVLS(MAXSP,100,6))
+  ALLOCATE(TOTVLH(MAXSP,100,6))
+  ALLOCATE(TOTDBH(MAXSP,100,6))
 
   !     CHECK FOR DEBUG.
 
@@ -207,6 +226,29 @@ subroutine FMSOUT (IYR)
      130 continue
   end do
 
+  if (LMETRICVAR) then
+
+     ! Convert units to metric equivalents, prior to sending to the DBS and/or sending
+     ! to a text file. Note that the text file version trims TOTVLH and TOTVLS to integers
+
+     do JYR = 1,YRLAST
+        do IDC = 1,MAXSP
+           do JCL = 1,6
+              TOTDBH(IDC,JYR,JCL) = TOTDBH(IDC,JYR,JCL) * INtoCM
+              TOTHTH(IDC,JYR,JCL) = TOTHTH(IDC,JYR,JCL) * FTtoM
+              TOTHTS(IDC,JYR,JCL) = TOTHTS(IDC,JYR,JCL) * FTtoM
+              TOTVLH(IDC,JYR,JCL) = TOTVLH(IDC,JYR,JCL) * FT3toM3
+              TOTVLS(IDC,JYR,JCL) = TOTVLS(IDC,JYR,JCL) * FT3toM3
+              TOTDH(IDC,JYR,JCL) = TOTDH(IDC,JYR,JCL)  / ACRtoHA
+              TOTDS(IDC,JYR,JCL) = TOTDS(IDC,JYR,JCL)  / ACRtoHA
+              142 continue
+           end do
+           141 continue
+        end do
+        140 continue
+     end do
+  end if
+
   !     CALL THE DBS MODULE TO OUTPUT DETAILED SNAG REPORT TO A DATABASE
 
   DBSKODE = 1
@@ -222,22 +264,43 @@ subroutine FMSOUT (IYR)
   !     Print the snag output headings.
 
   if (LSHEAD) then
-     write(JSNOUT,200) NPLT
-     write(JSNOUT,222)
-     write(JSNOUT,210)
-     write(JSNOUT,211)
-     write(JSNOUT,220)
-     write(JSNOUT,222)
-     200 format(' ESTIMATED SNAG CHARACTERISTICS ',&
-          &'(BASED ON STOCKABLE AREA), STAND ID=',A)
-     210 format(13X,'DEATH CURR',&
-          &' HEIGHT CURR VOLUME (FT3)      ',&
-          &'   DENSITY (SNAGS/ACRE)  ')
-     211 format(9X,'DBH  DBH ',1X,&
-          &4('-'),'(FT)',3('-'),1X,17('-'),1X,'YEAR',1X,23('-'))
-     220 format(' YEAR SP  CL  (IN)',1X,&
-          &' HARD  SOFT  HARD  SOFT TOTAL',&
-          &1X,'DIED   HARD    SOFT    TOTAL')
+     if (LMETRICVAR) then
+        write(JSNOUT,9200) NPLT
+        write(JSNOUT,222)
+        write(JSNOUT,9210)
+        write(JSNOUT,9211)
+        write(JSNOUT,9220)
+        write(JSNOUT,222)
+        ! The missing comma after the first string of 9200 (which prints an
+        ! apostrophe before "(BASED") is kept from the metric copy deliberately.
+        9200 format(' ESTIMATED SNAG CHARACTERISTICS '&
+             &'(BASED ON STOCKABLE AREA), STAND ID=',A)
+        9210 format(13X,'DEATH CURR',&
+             &' HEIGHT CURR VOLUME (M3)       ',&
+             &'    DENSITY (SNAGS/HA)   ')
+        9211 format(9X,'DBH  DBH ',1X,&
+             &4('-'),' (M)',3('-'),1X,17('-'),1X,'YEAR',1X,23('-'))
+        9220 format(' YEAR SP  CL  (CM)',1X,&
+             &' HARD  SOFT  HARD  SOFT TOTAL',&
+             &1X,'DIED   HARD    SOFT    TOTAL')
+     else
+        write(JSNOUT,200) NPLT
+        write(JSNOUT,222)
+        write(JSNOUT,210)
+        write(JSNOUT,211)
+        write(JSNOUT,220)
+        write(JSNOUT,222)
+        200 format(' ESTIMATED SNAG CHARACTERISTICS ',&
+             &'(BASED ON STOCKABLE AREA), STAND ID=',A)
+        210 format(13X,'DEATH CURR',&
+             &' HEIGHT CURR VOLUME (FT3)      ',&
+             &'   DENSITY (SNAGS/ACRE)  ')
+        211 format(9X,'DBH  DBH ',1X,&
+             &4('-'),'(FT)',3('-'),1X,17('-'),1X,'YEAR',1X,23('-'))
+        220 format(' YEAR SP  CL  (IN)',1X,&
+             &' HARD  SOFT  HARD  SOFT TOTAL',&
+             &1X,'DIED   HARD    SOFT    TOTAL')
+     end if
      222 format(1X,76('-'))
      LSHEAD = .false.
   end if

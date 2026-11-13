@@ -9,7 +9,6 @@ subroutine SITSET
   ! SPECIES WHICH WAS NOT ASSIGNED A SITE INDEX BY KEYWORD.
 
   ! Common blocks
-  include 'ESPARM.f90'
   include 'PRGPRM.f90'
   include 'ESCOMN.f90'
   include 'CONTRL.f90'

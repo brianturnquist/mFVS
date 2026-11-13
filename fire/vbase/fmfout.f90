@@ -37,6 +37,7 @@ subroutine FMFOUT(IYR, FLAME, FMD, IFIRE, CFTMP)
   ! Common blocks
   include 'PRGPRM.f90'
   include 'FMPARM.f90'
+  include 'METRIC.f90'
 
   !.... COMMON INCLUDE FILES.
 
@@ -69,6 +70,8 @@ subroutine FMFOUT(IYR, FLAME, FMD, IFIRE, CFTMP)
   integer :: IYR,JROUT,K,I,J,L,II,IJ,IK,ICRB,KSP,ICLS
   integer :: DBSKODEM,DBSKODEB,DBSKODEF
   real    :: FLAME,SUML3,SUMG3,BLIVE,TOTG3,PDUFF,PGR3,BDTOT
+  real    :: CONV
+  logical :: LRPT
 
   call DBCHK (DEBUG,'FMFOUT',6,ICYC)
   if (DEBUG) write(JOSTND,7) ICYC,IYR,FLAME,FMD,IFIRE,CFTMP
@@ -90,16 +93,31 @@ subroutine FMFOUT(IYR, FLAME, FMD, IFIRE, CFTMP)
   !     TIME WINDOW FOR PRODUCING THE REPORT. WRITE REPORT HEADER
   !     IF REQUESTED.
 
-  if (IYR .ge. IFMBRB .and. IYR .le. IFMBRE .and. IFIRE .ge.0) then
+  !     THE METRIC VARIANTS (BC, ON) TEST THE REPORT WINDOWS OF ALL THREE
+  !     REPORTS DIFFERENTLY; KEPT DELIBERATELY FROM THE FORMER METRIC COPY.
+
+  if (LMETRICVAR) then
+     LRPT = IFMBRB .lt.0.and. IFIRE .ge.0
+  else
+     LRPT = IYR .ge. IFMBRB .and. IYR .le. IFMBRE .and. IFIRE .ge.0
+  end if
+  if (LRPT) then
 
      !     CALL THE DBS MODULE TO OUTPUT BURN CONDITIONS DATA TO A DATABASE
 
      if (IFIRE .ne.0) then
         DBSKODEB = 1
-        call DBSFMBURN(IYR,NPLT,MOIS(1,1)*100,MOIS(1,2)*100,&
-             &MOIS(1,3)*100,MOIS(1,4)*100,MOIS(1,5)*100,MOIS(2,1)*100,&
-             &MOIS(2,2)*100,FWIND,INT(FMSLOP*100),FLAME,SCH,CFTMP,FMOD,&
-             &FWT,DBSKODEB)
+        if (LMETRICVAR) then
+           call DBSFMBURN(IYR,NPLT,MOIS(1,1)*100,MOIS(1,2)*100,&
+                &MOIS(1,3)*100,MOIS(1,4)*100,MOIS(1,5)*100,MOIS(2,1)*100,&
+                &MOIS(2,2)*100,FWIND*MItoKM,INT(FMSLOP*100),FLAME*FTtoM,&
+                &SCH*FTtoM,CFTMP,FMOD,FWT,DBSKODEB)
+        else
+           call DBSFMBURN(IYR,NPLT,MOIS(1,1)*100,MOIS(1,2)*100,&
+                &MOIS(1,3)*100,MOIS(1,4)*100,MOIS(1,5)*100,MOIS(2,1)*100,&
+                &MOIS(2,2)*100,FWIND,INT(FMSLOP*100),FLAME,SCH,CFTMP,FMOD,&
+                &FWT,DBSKODEB)
+        end if
         if (DBSKODEB.eq.0) goto 105
      end if
 
@@ -113,7 +131,11 @@ subroutine FMFOUT(IYR, FLAME, FMD, IFIRE, CFTMP)
         write (JROUT,40) IDBRN
         write (JROUT,45) IDBRN
         write (JROUT,46) IDBRN
-        write (JROUT,47) IDBRN
+        if (LMETRICVAR) then
+           write (JROUT,9047) IDBRN
+        else
+           write (JROUT,47) IDBRN
+        end if
         write (JROUT,40) IDBRN
         39 format(2(/1X,I5))
         40 format (1X,I5,1X,113('-'))
@@ -127,24 +149,45 @@ subroutine FMFOUT(IYR, FLAME, FMD, IFIRE, CFTMP)
              &'  SLOPE  LENGTH HEIGHT',12X,31('-'))
         47 format (1X,I5,1X,'YEAR  1HR 10HR 100HR  3+ DUFF LIVE W LIVE',&
              &' H (MPH)  (%)    (FT)  (FT)  FIRE TYPE   ',4('MOD %WT '))
+        9047 format (1X,I5,1X,'YEAR  1HR 10HR 100HR  3+ DUFF LIVE W LIVE',&
+             &' H (KMH)  (%)    (M)    (M)  FIRE TYPE   ',4('MOD %WT '))
      end if
 
      if (IFIRE .ne.0) then
         if (FMD.eq.0) then
-           write (JROUT,100) IDBRN,IYR,&
-                &(MOIS(1,1)*100),(MOIS(1,2)*100),&
-                &(MOIS(1,3)*100),(MOIS(1,4)*100),&
-                &(MOIS(1,5)*100),(MOIS(2,1)*100),(MOIS(2,2)*100),&
-                &FWIND, INT(FMSLOP*100), FLAME, SCH, CFTMP,&
-                &0,100
+           if (LMETRICVAR) then
+              write (JROUT,100) IDBRN,IYR,&
+                   &(MOIS(1,1)*100),(MOIS(1,2)*100),&
+                   &(MOIS(1,3)*100),(MOIS(1,4)*100),&
+                   &(MOIS(1,5)*100),(MOIS(2,1)*100),(MOIS(2,2)*100),&
+                   &FWIND*MItoKM, INT(FMSLOP*100), FLAME*FTtoM,&
+                   &SCH*FTtoM, CFTMP, 0,100
+           else
+              write (JROUT,100) IDBRN,IYR,&
+                   &(MOIS(1,1)*100),(MOIS(1,2)*100),&
+                   &(MOIS(1,3)*100),(MOIS(1,4)*100),&
+                   &(MOIS(1,5)*100),(MOIS(2,1)*100),(MOIS(2,2)*100),&
+                   &FWIND, INT(FMSLOP*100), FLAME, SCH, CFTMP,&
+                   &0,100
+           end if
         else
-           write (JROUT,100) IDBRN,IYR,&
-                &(MOIS(1,1)*100),(MOIS(1,2)*100),&
-                &(MOIS(1,3)*100),(MOIS(1,4)*100),&
-                &(MOIS(1,5)*100),(MOIS(2,1)*100),(MOIS(2,2)*100),&
-                &FWIND, INT(FMSLOP*100.), FLAME, SCH, CFTMP,&
-                &(FMOD(I),INT((FWT(I)*100.)+0.5),&
-                &I = 1,NFMODS)
+           if (LMETRICVAR) then
+              write (JROUT,100) IDBRN,IYR,&
+                   &(MOIS(1,1)*100),(MOIS(1,2)*100),&
+                   &(MOIS(1,3)*100),(MOIS(1,4)*100),&
+                   &(MOIS(1,5)*100),(MOIS(2,1)*100),(MOIS(2,2)*100),&
+                   &FWIND*MItoKM, INT(FMSLOP*100.), FLAME*FTtoM, SCH*FTtoM,&
+                   &CFTMP, (FMOD(I),INT((FWT(I)*100.)+0.5),&
+                   &I = 1,NFMODS)
+           else
+              write (JROUT,100) IDBRN,IYR,&
+                   &(MOIS(1,1)*100),(MOIS(1,2)*100),&
+                   &(MOIS(1,3)*100),(MOIS(1,4)*100),&
+                   &(MOIS(1,5)*100),(MOIS(2,1)*100),(MOIS(2,2)*100),&
+                   &FWIND, INT(FMSLOP*100.), FLAME, SCH, CFTMP,&
+                   &(FMOD(I),INT((FWT(I)*100.)+0.5),&
+                   &I = 1,NFMODS)
+           end if
            100 format(1X,2I5,5F5.0,F6.0,1X,F6.0,1X,F5.1,I6,2F7.1,2X,A,T89,&
                 &8(1X,I3))
         end if
@@ -162,7 +205,12 @@ subroutine FMFOUT(IYR, FLAME, FMD, IFIRE, CFTMP)
   !     TIME WINDOW FOR PRODUCING THE REPORT. WRITE REPORT HEADER
   !     IF REQUESTED.
 
-  if (IYR.ge.IFMFLB.and.IYR.le.IFMFLE.and.IFIRE.ge.0) then
+  if (LMETRICVAR) then
+     LRPT = IFMFLB .lt.0.and. IFIRE .ge.0
+  else
+     LRPT = IYR.ge.IFMFLB.and.IYR.le.IFMFLE.and.IFIRE.ge.0
+  end if
+  if (LRPT) then
 
      SUML3 = 0.0
      SUMG3 = 0.0
@@ -220,9 +268,19 @@ subroutine FMFOUT(IYR, FLAME, FMD, IFIRE, CFTMP)
      !     CALL THE DBS MODULE TO OUTPUT FUEL CONSUMPTION INFO TO A DATABASE
 
      DBSKODEF = 1
-     call DBSFMFUEL(IYR,NPLT,EXPOSR,BURNED(3,10),BURNED(3,11),&
-          &SUML3,SUMG3,BURNED(3,4),BURNED(3,5),BurnG12,BLIVE,BURNCR,&
-          &BDTOT,PDUFF,PGR3,ICRB,SMOKE(1),SMOKE(2),DBSKODEF)
+     if (LMETRICVAR) then
+        CONV = TItoTM/ACRtoHA
+        call DBSFMFUEL(IYR,NPLT,EXPOSR,&
+             &BURNED(3,10)*CONV,BURNED(3,11)*CONV,&
+             &SUML3*CONV,SUMG3*CONV,BURNED(3,4)*CONV,BURNED(3,5)*CONV,&
+             &BurnG12*CONV,BLIVE*CONV,BURNCR*CONV,&
+             &BDTOT*CONV,PDUFF,PGR3,ICRB,SMOKE(1)*CONV,SMOKE(2)*CONV,&
+             &DBSKODEF)
+     else
+        call DBSFMFUEL(IYR,NPLT,EXPOSR,BURNED(3,10),BURNED(3,11),&
+             &SUML3,SUMG3,BURNED(3,4),BURNED(3,5),BurnG12,BLIVE,BURNCR,&
+             &BDTOT,PDUFF,PGR3,ICRB,SMOKE(1),SMOKE(2),DBSKODEF)
+     end if
      if (DBSKODEF.eq.0) goto 252
 
      IFLPAS = IFLPAS + 1
@@ -233,13 +291,24 @@ subroutine FMFOUT(IYR, FLAME, FMD, IFIRE, CFTMP)
         write (JROUT,200) IDFUL,IDFUL
         write (JROUT,201) IDFUL
         write (JROUT,202) IDFUL
-        write (JROUT,203) IDFUL
+        if (LMETRICVAR) then
+           write (JROUT,9203) IDFUL
+        else
+           write (JROUT,203) IDFUL
+        end if
         write (JROUT,44) IDFUL,NPLT,MGMID
         write (JROUT,201) IDFUL
-        write (JROUT,205) IDFUL
-        write (JROUT,206) IDFUL
-        write (JROUT,207) IDFUL
-        write (JROUT,208) IDFUL
+        if (LMETRICVAR) then
+           write (JROUT,9205) IDFUL
+           write (JROUT,206) IDFUL
+           write (JROUT,9207) IDFUL
+           write (JROUT,9208) IDFUL
+        else
+           write (JROUT,205) IDFUL
+           write (JROUT,206) IDFUL
+           write (JROUT,207) IDFUL
+           write (JROUT,208) IDFUL
+        end if
         write (JROUT,201) IDFUL
         200 format(2(/1X,I5))
         201 format(1X,I5,1X,104('-'))
@@ -257,13 +326,37 @@ subroutine FMFOUT(IYR, FLAME, FMD, IFIRE, CFTMP)
              &' DUFF   0-3"    3"+  3-6" 6-12" ',&
              &' 12"+ SHRUB CRWNS CONS.  DUFF 3"+',&
              &'  CRWNG   <2.5   < 10')
+        9203 format(1X,I5,28X,'FUEL CONSUMPTION & PHYSICAL EFFECTS',&
+             &' REPORT')
+        9205 format(1X,I5,6X,'PERCENT',11X,'FUEL CONSUMED ',&
+             &'(TONNES/HA)',12X,12X,9X,6X,'%',2X,'     SMOKE')
+        9207 format(1X,I5,7X,'SOIL',1X,45X,'HERB&',6X,&
+             &' TOTAL',2X,'%CONSUME',1X,' WITH ',&
+             &2X,' (TONNES/HA)')
+        9208 format(1X,I5,1X,'YEAR EXPOSR  LITR ',&
+             &' DUFF  0-7.6   7.6+ -15.2 -30.5 ',&
+             &'30.5+ SHRUB CRWNS CONS.  DUFF 7.6+',&
+             &' CRWNG   <2.5   < 10')
      end if
 
-     write (JROUT,250) IDFUL,IYR,INT(EXPOSR),&
-          &BURNED(3,10), BURNED(3,11), SUML3, SUMG3,&
-          &BURNED(3,4), BURNED(3,5), BURNG12, BLIVE, BURNCR,&
-          &BDTOT, INT(PDUFF), INT(PGR3), ICRB,&
-          &SMOKE(1), SMOKE(2)
+     if (LMETRICVAR) then
+        ICRB = INT(CRBURN*100.0+.5)
+        CONV = TItoTM/ACRtoHA
+        if (IFIRE.eq.0) ICRB = 0
+        if (ICRB.lt.0) ICRB = -1
+        write (JROUT,250) IDFUL,IYR,INT(EXPOSR),&
+             &BURNED(3,10)*CONV, BURNED(3,11)*CONV, SUML3*CONV, SUMG3*CONV,&
+             &BURNED(3,4)*CONV, BURNED(3,5)*CONV, BurnG12*CONV,&
+             &BLIVE*CONV, BURNCR*CONV, BDTOT*CONV,&
+             &INT(PDUFF), INT(PGR3), ICRB,&
+             &SMOKE(1)*CONV, SMOKE(2)*CONV
+     else
+        write (JROUT,250) IDFUL,IYR,INT(EXPOSR),&
+             &BURNED(3,10), BURNED(3,11), SUML3, SUMG3,&
+             &BURNED(3,4), BURNED(3,5), BURNG12, BLIVE, BURNCR,&
+             &BDTOT, INT(PDUFF), INT(PGR3), ICRB,&
+             &SMOKE(1), SMOKE(2)
+     end if
      250 format(1X,I5,1X,I4,1X,I4,3X,2(F5.1,1X),2(F6.1,1X),&
           &5(F5.1,1X),F6.1,2X,I3,1X,I3,2X,I4,2X,F6.2,1X,F6.2)
 
@@ -279,8 +372,13 @@ subroutine FMFOUT(IYR, FLAME, FMD, IFIRE, CFTMP)
   !     WRITE THE MORTALITY REPORT IF CURRENT CYCLE IS WITHIN THE
   !     TIME WINDOW FOR PRODUCING THE REPORT.
 
-  if (IYR .ge. IFMMRB .and. IYR .le. IFMMRE .and.&
-       &IFIRE .ge.0) then
+  if (LMETRICVAR) then
+     LRPT = IFMMRB .lt.0.and. IFIRE .ge.0
+  else
+     LRPT = IYR .ge. IFMMRB .and. IYR .le. IFMMRE .and.&
+          &IFIRE .ge.0
+  end if
+  if (LRPT) then
 
      !       FIRST, ACCUMULATE MORTALITY INTO SPECIES & SIZE CLASSES
 
@@ -300,6 +398,8 @@ subroutine FMFOUT(IYR, FLAME, FMD, IFIRE, CFTMP)
            !           ACCUMULATED THE BA AND VOL KILLED.
 
            TOTBAK(KSP) = TOTBAK(KSP)+(CURKIL(I)*DBH(I)*DBH(I)*.005454154)
+           !           (THE FORMER METRIC COPY ALWAYS USED CFV; VARACD IS 'BC'
+           !           OR 'ON' THERE, SO THIS TEST GIVES THE SAME RESULT.)
            if (VARACD.eq.'CS' .or. VARACD.eq.'LS'&
                 &.or. VARACD.eq.'NE' .or. VARACD.eq.'SN') then
               TOTVOLK(KSP) = TOTVOLK(KSP)+(CURKIL(I)*MCFV(I))
@@ -343,7 +443,12 @@ subroutine FMFOUT(IYR, FLAME, FMD, IFIRE, CFTMP)
      !     CALL THE DBS MODULE TO OUTPUT THE MORTALITY REPORT TO A DATABASE
 
      DBSKODEM = 1
-     call DBSFMMORT(IYR,CLSKIL,TOTCLS,TOTBAK,TOTVOLK,DBSKODEM)
+     if (LMETRICVAR) then
+        call DBSFMMORT(IYR,CLSKIL/ACRtoHA,TOTCLS/ACRtoHA,&
+             &TOTBAK*FT2pACRtoM2pHA,TOTVOLK*FT3pACRtoM3pHA,DBSKODEM)
+     else
+        call DBSFMMORT(IYR,CLSKIL,TOTCLS,TOTBAK,TOTVOLK,DBSKODEM)
+     end if
      if (DBSKODEM.eq.0) return
 
      IMRPAS = IMRPAS + 1
@@ -354,18 +459,39 @@ subroutine FMFOUT(IYR, FLAME, FMD, IFIRE, CFTMP)
         write (JROUT,315) IDMRT, IDMRT
         write (JROUT,316) IDMRT
         write (JROUT,317) IDMRT
-        write (JROUT,318) IDMRT
+        if (LMETRICVAR) then
+           write (JROUT,9318) IDMRT
+        else
+           write (JROUT,318) IDMRT
+        end if
         write (JROUT,44) IDMRT,NPLT,MGMID
         write (JROUT,316) IDMRT
-        if ((VARACD .eq. 'SN') .or. (VARACD .eq. 'LS') .or.&
-             &(VARACD .eq. 'NE') .or. (VARACD .eq. 'CS')) then
-           write (JROUT,420) IDMRT
+        if (LMETRICVAR) then
+
+           select case (VARACD)
+
+           case ('CS','LS','NE','SN','ON')
+              write (JROUT,9420) IDMRT
+
+           case default
+              write (JROUT,9320) IDMRT
+
+           end select
+
+           write (JROUT,9321) IDMRT,&
+                &(LOWDBH(I)*INtoCM,LOWDBH(I+1)*INtoCM,I = 1,MAXCL-1),&
+                &LOWDBH(MAXCL)*INtoCM
         else
-           write (JROUT,320) IDMRT
+           if ((VARACD .eq. 'SN') .or. (VARACD .eq. 'LS') .or.&
+                &(VARACD .eq. 'NE') .or. (VARACD .eq. 'CS')) then
+              write (JROUT,420) IDMRT
+           else
+              write (JROUT,320) IDMRT
+           end if
+           write (JROUT,321) IDMRT,&
+                &(LOWDBH(I),LOWDBH(I+1),I = 1,MAXCL-1),&
+                &LOWDBH(MAXCL)
         end if
-        write (JROUT,321) IDMRT,&
-             &(LOWDBH(I),LOWDBH(I+1),I = 1,MAXCL-1),&
-             &LOWDBH(MAXCL)
         write (JROUT,316) IDMRT
 
         315 format (2(/1X,I5))
@@ -381,6 +507,18 @@ subroutine FMFOUT(IYR, FLAME, FMD, IFIRE, CFTMP)
              &'(BY DIAMETER CLASS IN INCHES)',T111,'BASAL    MERCH')
         321 format (1X,I5,1X,'YEAR  SP  ',&
              &6(2X,F4.1,'-',F4.1,2X),4X,'>=',F4.1,T111,'AREA     CU FT')
+        !        THE MISSING COMMA IN 9318 (WHICH PRINTS AN APOSTROPHE BEFORE
+        !        "(BASED") IS KEPT FROM THE FORMER METRIC COPY DELIBERATELY.
+        9318 format (1X,I5,43X,'MORTALITY REPORT '&
+             &'(BASED ON STOCKABLE AREA)')
+        9320 format (1X,I5,21X,&
+             &'   NUMBER KILLED / NUMBER BEFORE ',&
+             &'(BY DIAMETER CLASS IN CM)  ',T111,'BASAL    TOTAL')
+        9420 format (1X,I5,21X,&
+             &'NUMBER KILLED / NUMBER BEFORE ',&
+             &'(BY DIAMETER CLASS IN CM) ',T111,'BASAL    MERCH')
+        9321 format (1X,I5,1X,'YEAR  SP  ',&
+             &6(1X,F5.1,'-',F5.1,1X),4X,'>=',F5.1,T110,'  AREA     CU M')
      end if
 
      LFIRST = .true.
@@ -390,15 +528,25 @@ subroutine FMFOUT(IYR, FLAME, FMD, IFIRE, CFTMP)
         WPOS2 = 6
         do ICLS = 1,MAXCL
            if (TOTCLS(KSP,ICLS) .gt.0.0) then
-              write (ALLINE(WPOS1:WPOS2),'(I5)')&
-                   &INT(CLSKIL(KSP,ICLS))
+              if (LMETRICVAR) then
+                 write (ALLINE(WPOS1:WPOS2),'(I5)')&
+                      &INT(CLSKIL(KSP,ICLS)/ACRtoHA)
+              else
+                 write (ALLINE(WPOS1:WPOS2),'(I5)')&
+                      &INT(CLSKIL(KSP,ICLS))
+              end if
               WPOS1 = WPOS2 + 1
               WPOS2 = WPOS1
               write (ALLINE(WPOS1:WPOS2),'("/")')
               WPOS1 = WPOS1 + 1
               WPOS2 = WPOS2 + 5
-              write (ALLINE(WPOS1:WPOS2),'(I5)')&
-                   &INT(TOTCLS(KSP,ICLS))
+              if (LMETRICVAR) then
+                 write (ALLINE(WPOS1:WPOS2),'(I5)')&
+                      &INT(TOTCLS(KSP,ICLS)/ACRtoHA)
+              else
+                 write (ALLINE(WPOS1:WPOS2),'(I5)')&
+                      &INT(TOTCLS(KSP,ICLS))
+              end if
               WPOS1 = WPOS1 + 7
               WPOS2 = WPOS2 + 7
            else
@@ -415,24 +563,48 @@ subroutine FMFOUT(IYR, FLAME, FMD, IFIRE, CFTMP)
         if (TOTCLS(KSP,MAXCL1) .gt.0.0.and. KSP .lt. MXSP1) then
 
            if (LFIRST) then
-              write (JROUT,340) IDMRT,IYR,JSP(KSP),&
-                   &ALLINE,TOTBAK(KSP),INT(TOTVOLK(KSP))
+              if (LMETRICVAR) then
+                 write (JROUT,340) IDMRT,IYR,JSP(KSP),&
+                      &ALLINE,TOTBAK(KSP)*FT2pACRtoM2pHA,&
+                      &INT(TOTVOLK(KSP)*FT3pACRtoM3pHA)
+              else
+                 write (JROUT,340) IDMRT,IYR,JSP(KSP),&
+                      &ALLINE,TOTBAK(KSP),INT(TOTVOLK(KSP))
+              end if
 
               340 format(1X,I5,1X,I4,2X,A3,1X,A90,T108,F8.2,I9)
               LFIRST = .false.
            else
-              write (JROUT,345) IDMRT,JSP(KSP),ALLINE,&
-                   &TOTBAK(KSP),INT(TOTVOLK(KSP))
+              if (LMETRICVAR) then
+                 write (JROUT,345) IDMRT,JSP(KSP),ALLINE,&
+                      &TOTBAK(KSP)*FT2pACRtoM2pHA,&
+                      &INT(TOTVOLK(KSP)*FT3pACRtoM3pHA)
+              else
+                 write (JROUT,345) IDMRT,JSP(KSP),ALLINE,&
+                      &TOTBAK(KSP),INT(TOTVOLK(KSP))
+              end if
               345 format(1X,I5,7X,A3,1X,A90,T108,F8.2,I9)
            end if
         else if (TOTCLS(KSP,MAXCL1).gt.0.0.and. KSP.eq.MXSP1) then
            if (LFIRST) then
-              write (JROUT,340) IDMRT,IYR,'ALL',ALLINE,&
-                   &TOTBAK(KSP),INT(TOTVOLK(KSP))
+              if (LMETRICVAR) then
+                 write (JROUT,340) IDMRT,IYR,'ALL',ALLINE,&
+                      &TOTBAK(KSP)*FT2pACRtoM2pHA,&
+                      &INT(TOTVOLK(KSP)*FT3pACRtoM3pHA)
+              else
+                 write (JROUT,340) IDMRT,IYR,'ALL',ALLINE,&
+                      &TOTBAK(KSP),INT(TOTVOLK(KSP))
+              end if
               LFIRST = .false.
            else
-              write (JROUT,345) IDMRT,'ALL',ALLINE,&
-                   &TOTBAK(KSP),INT(TOTVOLK(KSP))
+              if (LMETRICVAR) then
+                 write (JROUT,345) IDMRT,'ALL',ALLINE,&
+                      &TOTBAK(KSP)*FT2pACRtoM2pHA,&
+                      &INT(TOTVOLK(KSP)*FT3pACRtoM3pHA)
+              else
+                 write (JROUT,345) IDMRT,'ALL',ALLINE,&
+                      &TOTBAK(KSP),INT(TOTVOLK(KSP))
+              end if
            end if
         end if
      end do
