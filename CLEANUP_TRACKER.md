@@ -8,9 +8,10 @@ with NVEL submodule `a73e697e220ffd0f792aa7ac10d84c911edb7ad7`.
 This document stores the redundancy and dormant-code findings before cleanup
 begins. The audit was read-only. No builds or simulations were run during the
 audit, and no source, build configuration, source list, test input, or reference
-output was changed. Creating this tracker is a documentation-only step; the
-model cleanup tasks below have not begun. P01–P03 verification preparation is
-now complete; see the [retained report](tests/parity/evidence/2026-11-13-p01-p03/README.md).
+output was changed. Creating this tracker was a documentation-only step.
+P01–P03 verification preparation and D01–D03 retirement are now complete; see
+the [verification report](tests/parity/evidence/2026-11-13-p01-p03/README.md) and
+[retirement report](tests/parity/evidence/2026-11-13-d01-d03/README.md).
 
 The findings combine repository-wide source-list inventory, targeted source
 comparisons, call/ENTRY inspection, and historical notes. They are not an
@@ -316,17 +317,25 @@ These are **deletion reviews**. For a scientific alternative, record meaningful
 differences and an exact historical recovery reference before deciding to
 retire it. Unknown historical intent is not evidence of abandoned research.
 
-- [ ] **D01 — `sn/sitsetOld.f90`.** Its header says it was replaced in Q2
+- [x] **D01 — `sn/sitsetOld.f90`.** Its header says it was replaced in Q2
   2023 and should be deleted after testing. This is the strongest apparently
   forgotten cleanup. Confirm the replacement's testing record and retain the
-  historical implementation reference.
-- [ ] **D02 — `rd/rdrout.f90`.** Its header explicitly declares it obsolete
+  historical implementation reference. Completed 13 November 2026: removed
+  the unselected old implementation, retained exact recovery references and
+  its differences from the selected implementation, and verified standard SN
+  plus targeted NC comparisons. No separate historical 2023 test receipt was
+  found; the present verification and its limits are in the retirement report.
+- [x] **D02 — `rd/rdrout.f90`.** Its header explicitly declares it obsolete
   after General Report Writer implementation in 2015. The old call is commented
-  out in `base/fvs.f90`. Strong retirement candidate.
-- [ ] **D03 — `vbase/natcrz.f90`.** The
+  out in `base/fvs.f90`. Completed 13 November 2026: removed only the unselected
+  obsolete file; preserved GENPRT and the selected `base/exrd.f90` ENTRY.
+- [x] **D03 — `vbase/natcrz.f90`.** The
   [2021 retirement note](changeNotes/2021.07.28_ldavid.txt) says its cruise
   postprocessor was unavailable. Review only this unselected US implementation;
-  keep `canada/bc/natcrz.f90`, which BC and ON still select.
+  keep `canada/bc/natcrz.f90`, which BC and ON still select. Completed
+  13 November 2026: removed only the retired US implementation. The selected
+  Canadian stub and historical notes are unchanged. Dormant Canadian source
+  lists still contain stale references, documented in the retirement report.
 - [ ] **D04 — `canada/on/findag_for.f90`.** Unselected second FINDAG
   implementation; ON selects `canada/on/findag.f90`. It appears superseded,
   but record its scientific differences before removal.
@@ -613,6 +622,35 @@ model bug was fixed. BC/ON simulation verification remains blocked.
 
 Evidence, exact scope, flags, artifact replay, and known limitations are in the
 [P01–P03 report](tests/parity/evidence/2026-11-13-p01-p03/README.md) and
-[verification tool instructions](tests/parity/README.md). Every C, M, D, R, U,
-B, and L item remains unchecked. This work does not establish parity for all
+[verification tool instructions](tests/parity/README.md). At completion of
+P01–P03, every C, M, D, R, U, B, and L item remained unchecked. That work does
+not establish parity for all
 variants or all input branches.
+
+### D01–D03 record — 13 November 2026
+
+**D01, D02, D03 completed:** removed `sn/sitsetOld.f90`, `rd/rdrout.f90`, and
+`vbase/natcrz.f90` only. These unselected sources total 1,115 lines / 32,464
+bytes. Exact blobs, SHA256 values, and recovery commands are retained against
+pre-deletion commit `3b26bc3621dffb53a64dd9ebd6dcca84a2fbf784`.
+
+The complete selected build inputs for all 24 variants are unchanged. All
+other 2,145 main-repository model source/include files checked are unchanged,
+as is NVEL. The active SN SITSET, General Report Writer, root-disease stub
+ENTRY, and Canadian NATCRZ stub remain intact. Two unused, already incomplete
+Canadian source lists retain historical references; no current recipe selects
+those lists. Their disposition remains separate from these three removals.
+
+Fresh original/pre-deletion IE and SN builds succeeded. Four cases, each run
+in original/current/candidate processes, pass all twelve pairwise comparisons:
+`ie-iet01`, `sn-snt01`, and two first-stand SN cases for NC locations 81103 and
+81105. All artifacts, database rows, baseline warnings/errors, and exit codes
+are compared using the existing contract. Candidate binaries are explicitly
+reused because selected inputs match; no recompilation is implied. Existing
+repository test decks were not edited.
+
+See the [retirement report](tests/parity/evidence/2026-11-13-d01-d03/README.md)
+for historical purpose, preservation decisions, exact verification scope,
+source identities, and replayable receipts. No model bug was fixed. BC/ON
+simulation parity remains blocked as recorded by P03. Every other cleanup
+checkbox remains open.

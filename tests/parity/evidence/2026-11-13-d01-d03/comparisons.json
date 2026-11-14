@@ -1,0 +1,98 @@
+[
+  {
+    "case": "ie-iet01",
+    "left": "original",
+    "right": "current",
+    "report": "compare-ie-iet01-original-current.json",
+    "returncode": 0,
+    "errors": []
+  },
+  {
+    "case": "ie-iet01",
+    "left": "original",
+    "right": "candidate",
+    "report": "compare-ie-iet01-original-candidate.json",
+    "returncode": 0,
+    "errors": []
+  },
+  {
+    "case": "ie-iet01",
+    "left": "current",
+    "right": "candidate",
+    "report": "compare-ie-iet01-current-candidate.json",
+    "returncode": 0,
+    "errors": []
+  },
+  {
+    "case": "sn-snt01",
+    "left": "original",
+    "right": "current",
+    "report": "compare-sn-snt01-original-current.json",
+    "returncode": 0,
+    "errors": []
+  },
+  {
+    "case": "sn-snt01",
+    "left": "original",
+    "right": "candidate",
+    "report": "compare-sn-snt01-original-candidate.json",
+    "returncode": 0,
+    "errors": []
+  },
+  {
+    "case": "sn-snt01",
+    "left": "current",
+    "right": "candidate",
+    "report": "compare-sn-snt01-current-candidate.json",
+    "returncode": 0,
+    "errors": []
+  },
+  {
+    "case": "sn-nc03",
+    "left": "original",
+    "right": "current",
+    "report": "compare-sn-nc03-original-current.json",
+    "returncode": 0,
+    "errors": []
+  },
+  {
+    "case": "sn-nc03",
+    "left": "original",
+    "right": "candidate",
+    "report": "compare-sn-nc03-original-candidate.json",
+    "returncode": 0,
+    "errors": []
+  },
+  {
+    "case": "sn-nc03",
+    "left": "current",
+    "right": "candidate",
+    "report": "compare-sn-nc03-current-candidate.json",
+    "returncode": 0,
+    "errors": []
+  },
+  {
+    "case": "sn-nc05",
+    "left": "original",
+    "right": "current",
+    "report": "compare-sn-nc05-original-current.json",
+    "returncode": 0,
+    "errors": []
+  },
+  {
+    "case": "sn-nc05",
+    "left": "original",
+    "right": "candidate",
+    "report": "compare-sn-nc05-original-candidate.json",
+    "returncode": 0,
+    "errors": []
+  },
+  {
+    "case": "sn-nc05",
+    "left": "current",
+    "right": "candidate",
+    "report": "compare-sn-nc05-current-candidate.json",
+    "returncode": 0,
+    "errors": []
+  }
+]

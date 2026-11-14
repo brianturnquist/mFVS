@@ -1,0 +1,344 @@
+--- retired/sn/sitsetOld.f90
++++ retained/sn/sitset.f90
+@@ -1,6 +1,6 @@
+-!====================!
+-!   sn : sitsetOld   !
+-!====================!
++!=====================================!
++!   Initialize species site indices   !
++!=====================================!
+ ! SN $Id$
+ subroutine SITSET
+   implicit none
+@@ -12,10 +12,9 @@
+   !  THIS SUBROUTINE FOLLOWS SE-TWIGS SUBROUTINES BLOCK1, CONV1, AND
+   !  CONV2.
+ 
+-  ! Note: This version of sitset.f has been replaced Q2 2023 to update
++  ! Note: This version of sitset.f has been revised Q2 2023 to update
+   !       Merchantability specifications for National Forests in NC,
+   !       per FSH 2409.18 Ch 50 Supplement R8_NC_2409.18-2022-1
+-  !       ** DELETE THIS FILE ONCE ALL TESTING HAS BEEN COMPLETE **
+ 
+   ! Common blocks
+   include 'PRGPRM.f90'
+@@ -149,13 +148,16 @@
+   if (SITEAR(ISISP) .le. SIMIN(ISISP)) then
+      SITEAR(ISISP) = SIMIN(ISISP)
+      write (JOSTND,110) JSP(ISISP), SITEAR(ISISP)
++     call ERRGRO(.true., 54)
+   end if
+   if (SITEAR(ISISP) .ge. SIMAX(ISISP)) then
+      SITEAR(ISISP) = SIMAX(ISISP)
+      write (JOSTND,110) JSP(ISISP), SITEAR(ISISP)
++     call ERRGRO(.true., 54)
+   end if
+-  110 FORMAT('***** WARNING - THE SITE SPECIES (',A4,') SITE INDEX VALU &
+-       &E WAS OUTSIDE OF THE ALLOWABLE RANGE, THE VALUE USED WAS ',F5.1)
++  110 format('***** WARNING - THE SITE SPECIES (',A4,') SITE INDEX ',&
++       &' VALUE WAS OUTSIDE OF THE ALLOWABLE RANGE, ',&
++       &'THE VALUE USED WAS ',F5.1)
+ 
+   !  COMPUTE RELATIVE SITE INDEX FOR SITE SPECIES
+ 
+@@ -378,22 +380,44 @@
+      if (IREGN.eq.8) then
+         if (DBHMIN(ISPC).le.0.) then !SET **DBHMIN** DEFAULT
+            if ((ISPC.le.17).or.(ISPC.eq.88)) then !SOFTWOODS
+-              if ((ISPC.eq.7).or.(ISPC.eq.13)) then
+-                 DBHMIN(ISPC) = 6.
++              if (IFOR.eq.11) then
++                 if ((KODIST.eq.3).or.(KODIST.eq.10)) then
++                    DBHMIN(ISPC) = 5.6
++                 else
++                    DBHMIN(ISPC) = 8.0
++                 end if
+               else
+-                 DBHMIN(ISPC) = 4.
++                 if ((ISPC.eq.7).or.(ISPC.eq.13)) then
++                    DBHMIN(ISPC) = 6.
++                 else
++                    DBHMIN(ISPC) = 4.
++                 end if
+               end if
+            else !HARDWOODS
+-              if ((ISPC.eq.39).or.(ISPC.eq.43).or.(ISPC.eq.44).or.&
+-                   &(ISPC.eq.52).or.(ISPC.eq.53).or.(ISPC.eq.55).or.&
+-                   &(ISPC.eq.63)) then
+-                 DBHMIN(ISPC) = 6.
++              if (IFOR.eq.11) then
++                 if ((KODIST.eq.3).or.(KODIST.eq.10)) then
++                    DBHMIN(ISPC) = 6.
++                 else
++                    DBHMIN(ISPC) = 8.
++                 end if
+               else
+-                 DBHMIN(ISPC) = 4.
++                 if ((ISPC.eq.39).or.(ISPC.eq.43).or.(ISPC.eq.44).or.&
++                      &(ISPC.eq.52).or.(ISPC.eq.53).or.(ISPC.eq.55).or.&
++                      &(ISPC.eq.63)) then
++                    DBHMIN(ISPC) = 6.
++                 else
++                    DBHMIN(ISPC) = 4.
++                 end if
+               end if
+            end if
+         end if
+-        if (TOPD(ISPC).le.0.)TOPD(ISPC) = 4. !SET **TOPD** DEFAULT
++        if (TOPD(ISPC).le.0.) then !SET **TOPD** DEFAULT
++           if (IFOR.eq.11) then
++              TOPD(ISPC) = 3.5
++           else
++              TOPD(ISPC) = 4.
++           end if
++        end if
+         if (BFMIND(ISPC).le.0.) then !SET **BFMIND** DEFAULT
+            if ((ISPC.le.17).or.(ISPC.eq.88)) then !SOFTWOODS
+               select case(IFOR)
+@@ -403,18 +427,113 @@
+                  else
+                     BFMIND(ISPC) = 10.
+                  end if
++              case(11)
++                 if ((KODIST.eq.3).or.(KODIST.eq.10)) then
++                    BFMIND(ISPC) = 11.0
++                 else if ((ISPC.eq.2).or.(ISPC.eq.12).or.& ! SYP, SPRUCE, FIR GROUP
++                      &(ISPC.eq.15).or.(ISPC.eq.16).or.(ISPC.eq.17)) then
++                    BFMIND(ISPC) = 12.
++                 else
++                    BFMIND(ISPC) = 10.
++                 end if
+               case default
+                  BFMIND(ISPC) = 10.
+               end select
+            else !HARDWOODS
+-              BFMIND(ISPC) = 12.
++              if (IFOR.eq.11) then
++                 if ((KODIST.eq.3).or.(KODIST.eq.10)) then
++                    BFMIND(ISPC) = 13.
++                 else
++                    BFMIND(ISPC) = 15.
++                 end if
++              else
++                 BFMIND(ISPC) = 12.
++              end if
+            end if
+         end if
+         if (BFTOPD(ISPC).le.0.) then !SET **BFTOPD** DEFAULT
+            if ((ISPC.le.17).or.(JSP(ISPC)(1:2).eq.'OS')) then
+-              BFTOPD(ISPC) = 7.
+-           else
+-              BFTOPD(ISPC) = 9.
++              if (IFOR.eq.11) then
++                 if ((KODIST.eq.3).or.(KODIST.eq.10)) then
++                    BFTOPD(ISPC) = 6.3
++                 else if ((ISPC.eq.2).or.(ISPC.eq.12).or.& ! SYP, SPRUCE, FIR GROUP
++                      &(ISPC.eq.15).or.(ISPC.eq.16).or.(ISPC.eq.17)) then
++                    BFTOPD(ISPC) = 9.
++                 else
++                    BFTOPD(ISPC) = 6.3
++                 end if
++              else
++                 BFTOPD(ISPC) = 7.
++              end if
++           else !HARDWOODS
++              if (IFOR.eq.11) then
++                 if ((KODIST.eq.3).or.(KODIST.eq.10)) then
++                    BFTOPD(ISPC) = 8.
++                 else
++                    BFTOPD(ISPC) = 11.
++                 end if
++              else
++                 BFTOPD(ISPC) = 9.
++              end if
++           end if
++        end if
++        if (SCFMIND(ISPC).le.0.) then !SET **SCFMIND** DEFAULT
++           if ((ISPC.le.17).or.(ISPC.eq.88)) then !SOFTWOODS
++              select case(IFOR)
++              case(10)
++                 if (ISPC.eq.2) then
++                    SCFMIND(ISPC) = 9.
++                 else
++                    SCFMIND(ISPC) = 10.
++                 end if
++              case(11)
++                 if ((KODIST.eq.3).or.(KODIST.eq.10)) then
++                    SCFMIND(ISPC) = 11.0
++                 else if ((ISPC.eq.2).or.(ISPC.eq.12).or.& ! SYP, SPRUCE, FIR GROUP
++                      &(ISPC.eq.15).or.(ISPC.eq.16).or.(ISPC.eq.17)) then
++                    SCFMIND(ISPC) = 12.
++                 else
++                    SCFMIND(ISPC) = 10.
++                 end if
++              case default
++                 SCFMIND(ISPC) = 10.
++              end select
++           else !HARDWOODS
++              if (IFOR.eq.11) then
++                 if ((KODIST.eq.3).or.(KODIST.eq.10)) then
++                    SCFMIND(ISPC) = 13.
++                 else
++                    SCFMIND(ISPC) = 15.
++                 end if
++              else
++                 SCFMIND(ISPC) = 12.
++              end if
++           end if
++        end if
++        if (SCFTOPD(ISPC).le.0.) then !SET **SCFTOPD** DEFAULT
++           if ((ISPC.le.17).or.(JSP(ISPC)(1:2).eq.'OS')) then
++              if (IFOR.eq.11) then
++                 if ((KODIST.eq.3).or.(KODIST.eq.10)) then
++                    SCFTOPD(ISPC) = 6.3
++                 else if ((ISPC.eq.2).or.(ISPC.eq.12).or.& ! SYP, SPRUCE, FIR GROUP
++                      &(ISPC.eq.15).or.(ISPC.eq.16).or.(ISPC.eq.17)) then
++                    SCFTOPD(ISPC) = 9.
++                 else
++                    SCFTOPD(ISPC) = 6.3
++                 end if
++              else
++                 SCFTOPD(ISPC) = 7.
++              end if
++           else !HARDWOODS
++              if (IFOR.eq.11) then
++                 if ((KODIST.eq.3).or.(KODIST.eq.10)) then
++                    SCFTOPD(ISPC) = 8.
++                 else
++                    SCFTOPD(ISPC) = 11.
++                 end if
++              else
++                 SCFTOPD(ISPC) = 9.
++              end if
+            end if
+         end if
+      else !REGION 9
+@@ -423,7 +542,7 @@
+               DBHMIN(ISPC) = 5.
+            else !HARDWOODS
+               select case(IFOR)
+-              case(5)
++              case(14)
+                  DBHMIN(ISPC) = 5.
+               case default
+                  DBHMIN(ISPC) = 6.
+@@ -431,11 +550,11 @@
+            end if
+         end if
+         if (TOPD(ISPC).le.0.) then !SET **TOPD** DEFAULT
+-           if (ISPC.le.17) then !SOFTWOODS
++           if (ISPC.le.17.or. ISPC.eq.88) then !SOFTWOODS
+               TOPD(ISPC) = 4.
+            else !HARDWOODS
+               select case (IFOR)
+-              case(8)
++              case(15)
+                  TOPD(ISPC) = 5.
+               case default
+                  TOPD(ISPC) = 4.
+@@ -443,17 +562,11 @@
+            end if
+         end if
+         if (BFMIND(ISPC).le.0.) then !SET **BFMIND** DEFAULT
+-           if (ISPC.le.17) then !SOFTWOODS
++           if (ISPC.le.17.or. ISPC.eq.88) then !SOFTWOODS
++              BFMIND(ISPC) = 9.
++           else !HARDWOODS
+               select case(IFOR)
+-              case(5)
+-                 BFMIND(ISPC) = 9.
+-                 if (ISPC.eq.2)BFMIND(ISPC) = 6.
+-              case default
+-                 BFMIND(ISPC) = 9.
+-              end select
+-           else !HARDWOODS
+-              select case(IFOR)
+-              case(5)
++              case(14)
+                  BFMIND(ISPC) = 9.
+               case default
+                  BFMIND(ISPC) = 11.
+@@ -461,23 +574,41 @@
+            end if
+         end if
+         if (BFTOPD(ISPC).le.0.) then !SET **BFTOPD** DEFAULT
+-           if (ISPC.le.17) then !SOFTWOOD
++           if (ISPC.le.17.or. ISPC.eq.88) then !SOFTWOOD
++              BFTOPD(ISPC) = 7.6
++           else !HARDWOODS
+               select case(IFOR)
+-              case(5)
+-                 BFTOPD(ISPC) = 7.6
+-                 if (ISPC.eq.2)BFTOPD(ISPC) = 5.
+-              case default
+-                 BFTOPD(ISPC) = 7.6
+-              end select
+-           else !HARDWOODS
+-              select case(IFOR)
+-              case(5)
++              case(14)
+                  BFTOPD(ISPC) = 7.6
+               case default
+                  BFTOPD(ISPC) = 9.6
+               end select
+            end if
+         end if
++        if (SCFMIND(ISPC).le.0.) then !SET **SCFMIND** DEFAULT
++           if (ISPC.le.17.or. ISPC.eq.88) then !SOFTWOODS
++              SCFMIND(ISPC) = 9.
++           else !HARDWOODS
++              select case(IFOR)
++              case(14)
++                 SCFMIND(ISPC) = 9.
++              case default
++                 SCFMIND(ISPC) = 11.
++              end select
++           end if
++        end if
++        if (SCFTOPD(ISPC).le.0.) then !SET **SCFTOPD** DEFAULT
++           if (ISPC.le.17.or. ISPC.eq.88) then !SOFTWOOD
++              SCFTOPD(ISPC) = 7.6
++           else !HARDWOODS
++              select case(IFOR)
++              case(14)
++                 SCFTOPD(ISPC) = 7.6
++              case default
++                 SCFTOPD(ISPC) = 9.6
++              end select
++           end if
++        end if
+      end if
+   end do
+ 
+@@ -486,8 +617,10 @@
+   PROD = '  '
+   VAR = 'SN'
+ 
++  if (LFIANVB) call NVB_REGION_CHECK
+   do ISPC = 1,MAXSP
+      read(FIAJSP(ISPC),'(I4)')IFIASP
++     VOLEQ = '           '
+      if (((METHC(ISPC).eq.6).or.(METHC(ISPC).eq.9)).and.&
+           &(VEQNNC(ISPC).eq.'           ')) then
+ 
+@@ -497,10 +630,19 @@
+ 
+         if (DEBUG)write(16,*)'VAR,IREGN,FORST,DIST,IFIASP,PROD,VOLEQ,',&
+              &'ERRFLAG= ',VAR,IREGN,FORST,DIST,IFIASP,PROD,VOLEQ,ERRFLAG
+-     end if
++
++     else if (METHC(ISPC).eq.10) then
++        call NVBEQDEF(IFIASP, VOLEQ)
++        VEQNNC(ISPC) = VOLEQ
++        if (DEBUG)write(16,*)'VAR,IREGN,FORST,DIST,IFIASP,PROD,VOLEQ,',&
++             &'ERRFLAG= ',VAR,IREGN,FORST,DIST,IFIASP,PROD,VOLEQ,ERRFLAG
++
++     end if
++     if (VEQNNC(ISPC)(11:11) .eq. CHAR(0)) VEQNNC(ISPC)(11:11) = " "
+      if (((METHB(ISPC).eq.6).or.(METHB(ISPC).eq.9)).and.&
+           &(VEQNNB(ISPC).eq.'           ')) then
+         PROD = '01'
++        VOLEQ = '           '
+         call VOLEQDEF(VAR,IREGN,FORST,DIST,IFIASP,PROD,VOLEQ,ERRFLAG)
+         VEQNNB(ISPC) = VOLEQ
+      end if

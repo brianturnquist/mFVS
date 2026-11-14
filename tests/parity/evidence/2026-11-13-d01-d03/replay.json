@@ -1,0 +1,102 @@
+{
+  "archive_sha256": "3c7aaa2860da99b4fdf12cde9b251dd824e133817511bf2c75e153ae6ec26d92",
+  "comparisons": [
+    {
+      "case": "ie-iet01",
+      "left": "original",
+      "right": "current",
+      "passed": true,
+      "report": "compare-ie-iet01-original-current.json",
+      "returncode": 0
+    },
+    {
+      "case": "ie-iet01",
+      "left": "original",
+      "right": "candidate",
+      "passed": true,
+      "report": "compare-ie-iet01-original-candidate.json",
+      "returncode": 0
+    },
+    {
+      "case": "ie-iet01",
+      "left": "current",
+      "right": "candidate",
+      "passed": true,
+      "report": "compare-ie-iet01-current-candidate.json",
+      "returncode": 0
+    },
+    {
+      "case": "sn-snt01",
+      "left": "original",
+      "right": "current",
+      "passed": true,
+      "report": "compare-sn-snt01-original-current.json",
+      "returncode": 0
+    },
+    {
+      "case": "sn-snt01",
+      "left": "original",
+      "right": "candidate",
+      "passed": true,
+      "report": "compare-sn-snt01-original-candidate.json",
+      "returncode": 0
+    },
+    {
+      "case": "sn-snt01",
+      "left": "current",
+      "right": "candidate",
+      "passed": true,
+      "report": "compare-sn-snt01-current-candidate.json",
+      "returncode": 0
+    },
+    {
+      "case": "sn-nc03",
+      "left": "original",
+      "right": "current",
+      "passed": true,
+      "report": "compare-sn-nc03-original-current.json",
+      "returncode": 0
+    },
+    {
+      "case": "sn-nc03",
+      "left": "original",
+      "right": "candidate",
+      "passed": true,
+      "report": "compare-sn-nc03-original-candidate.json",
+      "returncode": 0
+    },
+    {
+      "case": "sn-nc03",
+      "left": "current",
+      "right": "candidate",
+      "passed": true,
+      "report": "compare-sn-nc03-current-candidate.json",
+      "returncode": 0
+    },
+    {
+      "case": "sn-nc05",
+      "left": "original",
+      "right": "current",
+      "passed": true,
+      "report": "compare-sn-nc05-original-current.json",
+      "returncode": 0
+    },
+    {
+      "case": "sn-nc05",
+      "left": "original",
+      "right": "candidate",
+      "passed": true,
+      "report": "compare-sn-nc05-original-candidate.json",
+      "returncode": 0
+    },
+    {
+      "case": "sn-nc05",
+      "left": "current",
+      "right": "candidate",
+      "passed": true,
+      "report": "compare-sn-nc05-current-candidate.json",
+      "returncode": 0
+    }
+  ],
+  "passed": true
+}

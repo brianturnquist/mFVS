@@ -114,7 +114,7 @@ def main() -> int:
     parser.add_argument("--work-dir", type=Path, required=True)
     parser.add_argument("--evidence-dir", type=Path, required=True)
     parser.add_argument("--current-revision", default="HEAD")
-    parser.add_argument("--variants", nargs="+", choices=("ie", "bc", "on"), default=["ie", "bc", "on"])
+    parser.add_argument("--variants", nargs="+", choices=("ie", "bc", "on", "sn"), default=["ie", "bc", "on"])
     parser.add_argument("--jobs", type=int, default=4)
     args = parser.parse_args()
     work = args.work_dir.resolve()

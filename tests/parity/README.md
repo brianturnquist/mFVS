@@ -25,9 +25,13 @@ main revision explicitly. The candidate is a separate snapshot of the current
 working files, including new untracked source files. Both submodule identity
 and dirty status are recorded.
 
-The tools currently prepare IE, BC, and ON only. Extend deck coverage explicitly
+The tools currently prepare IE, BC, ON, and SN. Extend deck coverage explicitly
 when another cleanup requires it. Do not assume this first deck reaches every
 changed branch.
+
+The [D01–D03 retirement report](evidence/2026-11-13-d01-d03/README.md) adds SN
+coverage and a proof that all 24 variants' selected build inputs are unchanged.
+The P01–P03 default case list remains unchanged.
 
 ## Fresh verification
 
@@ -71,6 +75,17 @@ The final recording step is specific to P01–P03: it asserts the known original
 Canadian interfaces and expected input-failure boundary. If future bug repairs
 are separately authorized, revise those assertions in their own documented
 change. Never weaken a failed assertion to pass a consolidation.
+
+For the D01–D03 retirement, prepare `--variants ie sn`, then run
+`run_cases.py --cases ie-iet01 sn-snt01 sn-nc03 sn-nc05` against that evidence
+directory. The two NC cases derive only the first stand of `snt01.key`, replace
+STDINFO field 1 with 81103 or 81105, and append STOP. Their exact input bytes,
+source hashes, and derivation are retained; repository test decks stay intact.
+Compare original/current, original/candidate, and current/candidate for each
+case. The task-specific `verify_retirement.py` in that evidence directory
+records all-variant input identity and the retired files' recovery references.
+Do not run the Canadian-boundary-specific `record_evidence.py` on this IE/SN
+receipt; retain the task's raw artifacts and report as described there.
 
 Move or copy a completed evidence directory into the repository before checking
 off a task. Include its human-readable scope/results report and retain all

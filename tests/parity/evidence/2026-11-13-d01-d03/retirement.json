@@ -1,0 +1,356 @@
+{
+  "before_revision": "3b26bc3621dffb53a64dd9ebd6dcca84a2fbf784",
+  "nvel": "a73e697e220ffd0f792aa7ac10d84c911edb7ad7",
+  "retired": [
+    {
+      "path": "sn/sitsetOld.f90",
+      "git_blob": "1f72a35e9e80cf9799f79c2a02c3b709792b2bb2",
+      "sha256": "4ac53bcdd6264c796cdb24aa8d4f0fa3e4d4435429fc8926da1bc1ba815383f5",
+      "bytes": 20858,
+      "lines": 728,
+      "recover_with": "git show 3b26bc3621dffb53a64dd9ebd6dcca84a2fbf784:sn/sitsetOld.f90",
+      "selected_by": []
+    },
+    {
+      "path": "rd/rdrout.f90",
+      "git_blob": "3e388008d0701f8b85b77720f760898fed5ee18a",
+      "sha256": "4b8996171c48620ad855844f7f2f3795ab310a30d4674b4925bdf642ca0ed526",
+      "bytes": 1505,
+      "lines": 73,
+      "recover_with": "git show 3b26bc3621dffb53a64dd9ebd6dcca84a2fbf784:rd/rdrout.f90",
+      "selected_by": []
+    },
+    {
+      "path": "vbase/natcrz.f90",
+      "git_blob": "e6eb2d73e8aeb74f27bdc9f2c8f3514f33fe2ae1",
+      "sha256": "e88fc745d458972cae958d7f2b24cca7c9c7ceff75327c7eac9a0e9eba6b9630",
+      "bytes": 10101,
+      "lines": 314,
+      "recover_with": "git show 3b26bc3621dffb53a64dd9ebd6dcca84a2fbf784:vbase/natcrz.f90",
+      "selected_by": []
+    }
+  ],
+  "variants": {
+    "ak": {
+      "selected_files_and_manifests": 712,
+      "before_sha256": "b57c0e378d5241991ddf8a71dcd65d6a23b606702b575d41ec10c8af68a22595",
+      "candidate_sha256": "b57c0e378d5241991ddf8a71dcd65d6a23b606702b575d41ec10c8af68a22595",
+      "unchanged": true
+    },
+    "bc": {
+      "selected_files_and_manifests": 653,
+      "before_sha256": "72aaaf2c896b19b75955b2fc5f87a203a57c1ec405730c0cd3ec336431086683",
+      "candidate_sha256": "72aaaf2c896b19b75955b2fc5f87a203a57c1ec405730c0cd3ec336431086683",
+      "unchanged": true
+    },
+    "bm": {
+      "selected_files_and_manifests": 792,
+      "before_sha256": "e19a2075e452e19a041f08b5f39e66711ce248660b32e0935bdc1065728ea3bf",
+      "candidate_sha256": "e19a2075e452e19a041f08b5f39e66711ce248660b32e0935bdc1065728ea3bf",
+      "unchanged": true
+    },
+    "ca": {
+      "selected_files_and_manifests": 716,
+      "before_sha256": "73be835b0ae834663d77114224548ee037351649360446ca45c28a4ac489d953",
+      "candidate_sha256": "73be835b0ae834663d77114224548ee037351649360446ca45c28a4ac489d953",
+      "unchanged": true
+    },
+    "ci": {
+      "selected_files_and_manifests": 798,
+      "before_sha256": "74d52ff4254a5c4e5c7ed74181c631b2765fcc7854e4fc8401bba526067f0015",
+      "candidate_sha256": "74d52ff4254a5c4e5c7ed74181c631b2765fcc7854e4fc8401bba526067f0015",
+      "unchanged": true
+    },
+    "cr": {
+      "selected_files_and_manifests": 790,
+      "before_sha256": "6356b5f0ce8ede95d8be78ffc7d6e0d494c02e208a3c3cd590ed50843af72359",
+      "candidate_sha256": "6356b5f0ce8ede95d8be78ffc7d6e0d494c02e208a3c3cd590ed50843af72359",
+      "unchanged": true
+    },
+    "cs": {
+      "selected_files_and_manifests": 665,
+      "before_sha256": "f4d6707a3151222b18ab067eb0b6c3096419a03401a1f4fb94d042bcc60cacd9",
+      "candidate_sha256": "f4d6707a3151222b18ab067eb0b6c3096419a03401a1f4fb94d042bcc60cacd9",
+      "unchanged": true
+    },
+    "ec": {
+      "selected_files_and_manifests": 790,
+      "before_sha256": "07c5960cf104cbc304f28f50319059c7cd13b53a8ff329463f4c0dcb606e52aa",
+      "candidate_sha256": "07c5960cf104cbc304f28f50319059c7cd13b53a8ff329463f4c0dcb606e52aa",
+      "unchanged": true
+    },
+    "em": {
+      "selected_files_and_manifests": 800,
+      "before_sha256": "e97fe14c6cf30a5771a96d4a3eb92106782304cbda1a48758f4f2fbeb598598b",
+      "candidate_sha256": "e97fe14c6cf30a5771a96d4a3eb92106782304cbda1a48758f4f2fbeb598598b",
+      "unchanged": true
+    },
+    "ie": {
+      "selected_files_and_manifests": 796,
+      "before_sha256": "f05575f5162bdf318e4cf2e1781490b4a0fffc78e441272a0450a7bead177834",
+      "candidate_sha256": "f05575f5162bdf318e4cf2e1781490b4a0fffc78e441272a0450a7bead177834",
+      "unchanged": true
+    },
+    "kt": {
+      "selected_files_and_manifests": 795,
+      "before_sha256": "71adbb1c051b2eee016c08128745176c44f6f3ddf776c38b9879c0c91db6ca0a",
+      "candidate_sha256": "71adbb1c051b2eee016c08128745176c44f6f3ddf776c38b9879c0c91db6ca0a",
+      "unchanged": true
+    },
+    "ls": {
+      "selected_files_and_manifests": 667,
+      "before_sha256": "87fc5300eb1481c37c9dc53b4575010a54bf6d929af1cd7575d27aa127776452",
+      "candidate_sha256": "87fc5300eb1481c37c9dc53b4575010a54bf6d929af1cd7575d27aa127776452",
+      "unchanged": true
+    },
+    "nc": {
+      "selected_files_and_manifests": 795,
+      "before_sha256": "a28a70644d0763ffe31201215036132b63333598d3125b303d68bbcfe1e76c9b",
+      "candidate_sha256": "a28a70644d0763ffe31201215036132b63333598d3125b303d68bbcfe1e76c9b",
+      "unchanged": true
+    },
+    "ne": {
+      "selected_files_and_manifests": 666,
+      "before_sha256": "2656ad8cc281f343eea0035a1a2b63a633107470f63a54e033dcd5962760129e",
+      "candidate_sha256": "2656ad8cc281f343eea0035a1a2b63a633107470f63a54e033dcd5962760129e",
+      "unchanged": true
+    },
+    "oc": {
+      "selected_files_and_manifests": 740,
+      "before_sha256": "e4779c98528e3475066f4a19d0122dd681fd4b6da75669e6241c5f974a5a5b77",
+      "candidate_sha256": "e4779c98528e3475066f4a19d0122dd681fd4b6da75669e6241c5f974a5a5b77",
+      "unchanged": true
+    },
+    "on": {
+      "selected_files_and_manifests": 682,
+      "before_sha256": "a715cfe5f68abd5803e96bf73406b5e0917e3f575e2ae58f4585b2b94e1b8d5b",
+      "candidate_sha256": "a715cfe5f68abd5803e96bf73406b5e0917e3f575e2ae58f4585b2b94e1b8d5b",
+      "unchanged": true
+    },
+    "op": {
+      "selected_files_and_manifests": 733,
+      "before_sha256": "9a27871cd73616347a77f42f41047d7b0037981ff16de49ec8e9792d60805354",
+      "candidate_sha256": "9a27871cd73616347a77f42f41047d7b0037981ff16de49ec8e9792d60805354",
+      "unchanged": true
+    },
+    "pn": {
+      "selected_files_and_manifests": 788,
+      "before_sha256": "5ccb3efebebc4867dd2da66459ced9d27d7beee07b81c79e415bf5f5d1ee961f",
+      "candidate_sha256": "5ccb3efebebc4867dd2da66459ced9d27d7beee07b81c79e415bf5f5d1ee961f",
+      "unchanged": true
+    },
+    "sn": {
+      "selected_files_and_manifests": 663,
+      "before_sha256": "81c21d59a32035b7c55e99017c926610817ddfaa0e3643548e1c0fa99391fb3f",
+      "candidate_sha256": "81c21d59a32035b7c55e99017c926610817ddfaa0e3643548e1c0fa99391fb3f",
+      "unchanged": true
+    },
+    "so": {
+      "selected_files_and_manifests": 795,
+      "before_sha256": "d2d67902bdb0a79ed3508877c574624717f3474ce163fe1dd789e90b89753439",
+      "candidate_sha256": "d2d67902bdb0a79ed3508877c574624717f3474ce163fe1dd789e90b89753439",
+      "unchanged": true
+    },
+    "tt": {
+      "selected_files_and_manifests": 793,
+      "before_sha256": "b979d58e2e068d85c0362f319bec228007f0413eabdbf3f94ca53aa0ec292fd7",
+      "candidate_sha256": "b979d58e2e068d85c0362f319bec228007f0413eabdbf3f94ca53aa0ec292fd7",
+      "unchanged": true
+    },
+    "ut": {
+      "selected_files_and_manifests": 790,
+      "before_sha256": "39a7ad5f75665f355e54484632ed74b5e2b3005a692b9e07cf7fd318e0ad0caf",
+      "candidate_sha256": "39a7ad5f75665f355e54484632ed74b5e2b3005a692b9e07cf7fd318e0ad0caf",
+      "unchanged": true
+    },
+    "wc": {
+      "selected_files_and_manifests": 788,
+      "before_sha256": "e780c41cacf184107e1916acef9b5cfb796a629f7eaf1a338457496187c3041a",
+      "candidate_sha256": "e780c41cacf184107e1916acef9b5cfb796a629f7eaf1a338457496187c3041a",
+      "unchanged": true
+    },
+    "ws": {
+      "selected_files_and_manifests": 792,
+      "before_sha256": "f74340e49b8276ba770ccc4e173f40bd4bc0c4a9a6a0ac0a2869e3a55dc7fba3",
+      "candidate_sha256": "f74340e49b8276ba770ccc4e173f40bd4bc0c4a9a6a0ac0a2869e3a55dc7fba3",
+      "unchanged": true
+    }
+  },
+  "legacy_manifests": [
+    {
+      "path": "canada/bin/FVSon_sourceList.txt",
+      "retired_references": [
+        "../vbase/natcrz.f90"
+      ],
+      "supported_recipe_references": [],
+      "entries": 521,
+      "missing_before": 87,
+      "missing_after": 88,
+      "classification": "Unused historical list, already incomplete before deletion; retained unchanged"
+    },
+    {
+      "path": "canada/bin/FVSbcc_notReady.txt",
+      "retired_references": [
+        "../rd/rdrout.f90"
+      ],
+      "supported_recipe_references": [],
+      "entries": 712,
+      "missing_before": 114,
+      "missing_after": 115,
+      "classification": "Unused historical list, already incomplete before deletion; retained unchanged"
+    }
+  ],
+  "other_model_files_checked_unchanged": 2145,
+  "build_selection_unchanged": true,
+  "selected_rdrout_natcrz_statements": [
+    {
+      "file": "base/exrd.f90",
+      "line": 88,
+      "variants": [
+        "ak",
+        "ca",
+        "cs",
+        "ls",
+        "ne",
+        "oc",
+        "on",
+        "op",
+        "sn"
+      ],
+      "statement": "entry RDROUT"
+    },
+    {
+      "file": "canada/bc/natcrz.f90",
+      "line": 5,
+      "variants": [
+        "bc",
+        "on"
+      ],
+      "statement": "subroutine NATCRZ (IWHO)"
+    }
+  ],
+  "preserved": {
+    "sn/sitset.f90": {
+      "sha256": "a4fd42707d1a09bcdb5edfd5437730fee773efad82ce1f30d736cc42f68ddb8a",
+      "variants": [
+        "sn"
+      ]
+    },
+    "base/genrpt.f90": {
+      "sha256": "4c1ca4347b51e4beb22df5ff938460d02a4522b8eaf9d4d69b98455396fe98a4",
+      "variants": [
+        "ak",
+        "bc",
+        "bm",
+        "ca",
+        "ci",
+        "cr",
+        "cs",
+        "ec",
+        "em",
+        "ie",
+        "kt",
+        "ls",
+        "nc",
+        "ne",
+        "oc",
+        "on",
+        "op",
+        "pn",
+        "sn",
+        "so",
+        "tt",
+        "ut",
+        "wc",
+        "ws"
+      ]
+    },
+    "base/fvs.f90": {
+      "sha256": "ffad52ecb37f9daac9c8cd58ea4296039b431b7fbdc61b5375f0644f528a85aa",
+      "variants": [
+        "ak",
+        "bc",
+        "bm",
+        "ca",
+        "ci",
+        "cr",
+        "cs",
+        "ec",
+        "em",
+        "ie",
+        "kt",
+        "ls",
+        "nc",
+        "ne",
+        "oc",
+        "on",
+        "op",
+        "pn",
+        "sn",
+        "so",
+        "tt",
+        "ut",
+        "wc",
+        "ws"
+      ]
+    },
+    "base/exrd.f90": {
+      "sha256": "3d218156de40a186d445c8768db2df33ae1d628ecb7f3db96e5496fbcf2b1603",
+      "variants": [
+        "ak",
+        "ca",
+        "cs",
+        "ls",
+        "ne",
+        "oc",
+        "on",
+        "op",
+        "sn"
+      ]
+    },
+    "canada/bc/natcrz.f90": {
+      "sha256": "29503092969668cc8035886141eac12e70f1c2b93ece024c6794bd6f56b9709a",
+      "variants": [
+        "bc",
+        "on"
+      ]
+    }
+  },
+  "archive_integrity": {
+    "original": {
+      "revision": "c210536536d81fd9b46dccb9a571f0de1e55e944",
+      "blobs_checked": 3210,
+      "modified_paths": [
+        "bin/FVSbc_sourceList.txt",
+        "bin/FVSon_sourceList.txt"
+      ],
+      "allowed_modified_paths": [
+        "bin/FVSbc_sourceList.txt",
+        "bin/FVSon_sourceList.txt"
+      ],
+      "passed": true
+    },
+    "original_nvel": {
+      "revision": "38548071d5aa652bb90c7f111f86b427f798a1c9",
+      "blobs_checked": 282,
+      "modified_paths": [],
+      "allowed_modified_paths": [],
+      "passed": true
+    },
+    "current": {
+      "revision": "3b26bc3621dffb53a64dd9ebd6dcca84a2fbf784",
+      "blobs_checked": 3133,
+      "modified_paths": [],
+      "allowed_modified_paths": [],
+      "passed": true
+    },
+    "current_nvel": {
+      "revision": "a73e697e220ffd0f792aa7ac10d84c911edb7ad7",
+      "blobs_checked": 285,
+      "modified_paths": [],
+      "allowed_modified_paths": [],
+      "passed": true
+    }
+  },
+  "passed": true
+}
