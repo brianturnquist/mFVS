@@ -58,7 +58,7 @@
 ../pn/ecocls.f90
 ../pn/forkod.f90
 ../pn/formcl.f90
-../pn/grinit.f90
+../vbase/grinit.f90
 ../vbase/grohed.f90
 ../pn/habtyp.f90
 ../pn/htcalc.f90
@@ -380,7 +380,7 @@
 
 ../vstrp/essprt.f90
 
-../strp/esaddt.f90
+../estb/esaddt.f90
 ../strp/esblkd.f90
 ../estb/escprs.f90
 ../estb/esetpr.f90
@@ -603,7 +603,7 @@
 ../fire/pn/fmcblk.f90
 ../fire/pn/fmcrow.f90
 ../fire/pn/fmsfall.f90
-../fire/pn/fmvinit.f90
+../fire/base/fmvinit.f90
 ../fire/ie/fmcons.f90
 ../fire/base/fmmois.f90
 ../fire/base/fmcfmd.f90

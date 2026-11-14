@@ -1,0 +1,115 @@
+--- before/fire/cs/fmsfall.f90
++++ canonical/fire/base/fmsfall.f90
+@@ -1,7 +1,7 @@
+ !=======================!
+-!   fire/cs : fmsfall   !
++!   fire/base : fmsfall !
+ !=======================!
+-! FIRE-CS $Id$
++! FIRE-BASE $Id$
+ subroutine FMSFALL(IYR,KSP,D,ORIGDEN,DENTTL,ISWTCH,&
+      &RSOFT,RSMAL,DFALLN)
+   implicit none
+@@ -82,7 +82,7 @@
+   !  28% of remaining snags must fall every year in order for 90% of
+   !  the initial number to have fallen in 7 years:  (1-0.28)**7 = 0.1).
+   !  This could be done outside the snag loop except when either PBSOFT
+-  !  of PBSMAL equals 1, which may often be the case.  So it's done here.
++  !  or PBSMAL equals 1, which may often be the case.  So it's done here.
+ 
+   DFALLN = 0.
+   RSOFT = 0.0
+@@ -115,14 +115,68 @@
+   BASE = -0.001679 * D + 0.064311
+   if (BASE .lt.0.01) BASE = 0.01
+ 
+-  !  In Ozarks, fall down breakpt dbh is 12 inches. Also for redcedar
+-  !  and juniper species snags, the last 5% last long, even for small trees.
+-
+-  MODRATE = BASE * FALLX(KSP)
+-  if (MODRATE .gt.1) MODRATE = 1
+-  if ((D .lt.12.0) .and. (KSP .gt.2)) then
+-     DFALLN = MODRATE * ORIGDEN
++  !     CS/SN SHARE THE CAPPED-RATE, 12-INCH ALGORITHM. KEEP THEIR
++  !     SPECIES-1 DIFFERENCE, THEN RETURN BEFORE THE CI/IE ALGORITHM.
++
++  if (VARIANTCD.eq.'CS'.or.VARIANTCD.eq.'SN') then
++     !  In Ozarks, fall down breakpt dbh is 12 inches. Also for redcedar
++     !  and juniper species snags, the last 5% last long, even for small trees.
++
++     MODRATE = BASE * FALLX(KSP)
++     if (MODRATE .gt.1) MODRATE = 1
++     if ((D .lt.12.0) .and. ((VARIANTCD.eq.'CS'.and.KSP.gt.2).or.&
++          &(VARIANTCD.eq.'SN'.and.KSP.ne.2))) then
++        DFALLN = MODRATE * ORIGDEN
++     else
++
++        !  Near 5%, fall at least as many lrg snags as should fall at
++        !  final rate-of-fall, but be sure not to fall more than this
++        !  many below 5% all at once. This requires calculating FALLM2.
++        !  First, find the time X at which 5% of snags will be left
++        !  (proportion standing = -BASE*FALLX*time + 1).
++
++        X = (0.05 - 1) / (-1*MODRATE)
++
++        !  Then find the slope of the line that passes from
++        !  5% at this time to 0% at ALLDWN (adjusted for the different
++        !  FALLX values). If ALLDWN <= time at which 5% left, assign
++        !  a slope of -2 (removes last 5% of snags immediately). The
++        !  negative of this slope is the rate FALLM2.
++
++        if (ALLDWN(KSP) .le. X) then
++           FALLM2 = 2
++        else
++           FALLM2 = 0.05 / (ALLDWN(KSP) - X)
++        end if
++
++        !  Now proceed to calculate how many snags should normally fall.
++
++        if (DENTTL .le. (0.05*ORIGDEN)) then
++           DFALLN = FALLM2 * ORIGDEN
++        else
++           DFALLN = MODRATE * ORIGDEN
++           if (DENTTL .lt. (DFALLN + 0.05*ORIGDEN)) then
++              DFALLN = DENTTL - (ORIGDEN * (0.05 - FALLM2))
++           end if
++        end if
++     end if
++
++     return
++  end if
++
++  if (D .lt.18.0) then
++     DFALLN = BASE * FALLX(KSP) * ORIGDEN
+   else
++
++     !  Reduce base rate for larger spruce and larger larch.
++     !  Marcot's eqn is too fast (20 yrs @ 15 in DBH vs 95 yrs @ 24 in DBH)
++
++     ! THIS ADJUSTMENT BELONGS ONLY TO CI. THE OTHER CONSUMERS USED
++     ! THE IE IMPLEMENTATION, WHICH LEAVES BASE UNCHANGED HERE.
++
++     if (VARIANTCD .eq. 'CI') then
++        if (KSP .eq.8.or. KSP .eq.2) BASE = MAX(0.01, BASE * 0.32)
++     end if
+ 
+      !  Near 5%, fall at least as many lrg snags as should fall at
+      !  final rate-of-fall, but be sure not to fall more than this
+@@ -130,7 +184,7 @@
+      !  First, find the time X at which 5% of snags will be left
+      !  (proportion standing = -BASE*FALLX*time + 1).
+ 
+-     X = (0.05 - 1) / (-1*MODRATE)
++     X = (0.05 - 1) / (-BASE*FALLX(KSP))
+ 
+      !  Then find the slope of the line that passes from
+      !  5% at this time to 0% at ALLDWN (adjusted for the different
+@@ -149,7 +203,7 @@
+      if (DENTTL .le. (0.05*ORIGDEN)) then
+         DFALLN = FALLM2 * ORIGDEN
+      else
+-        DFALLN = MODRATE * ORIGDEN
++        DFALLN = BASE * FALLX(KSP) * ORIGDEN
+         if (DENTTL .lt. (DFALLN + 0.05*ORIGDEN)) then
+            DFALLN = DENTTL - (ORIGDEN * (0.05 - FALLM2))
+         end if

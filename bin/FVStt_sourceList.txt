@@ -385,7 +385,7 @@
 
 ../vstrp/essprt.f90
 
-../strp/esaddt.f90
+../estb/esaddt.f90
 ../strp/esblkd.f90
 ../estb/escprs.f90
 ../estb/esetpr.f90

@@ -1,0 +1,10 @@
+__attribute__((fn spec (". w w ")))
+void orgspc (integer(kind=4) & restrict inspec, integer(kind=4) & restrict outspc)
+{
+  static integer(kind=4) ospmap[50] = {242, 81, 242, 17, 202, 202, 202, 263, 263, 122, 122, 122, 122, 122, 122, 117, 122, 122, 122, 122, 231, 17, 122, 231, 231, 805, 805, 805, 805, 815, 818, 805, 805, 312, 312, 351, 361, 431, 492, 312, 312, 631, 312, 312, 312, 920, 492, 492, 492, 122};
+
+  *outspc = ospmap[(integer(kind=8)) *inspec + -1];
+  return;
+}
+
+

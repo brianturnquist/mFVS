@@ -1,0 +1,14 @@
+! Compare every valid table index, using the original mapping as the oracle.
+program CHECK_ORGANON
+  implicit none
+  include 'PRGPRM.f90'
+  integer :: TESTI,TESTSP
+  open(31,file='state.bin',access='stream',form='unformatted')
+  do TESTI = 1,MAXSP
+     TESTSP = -999
+     call ORGSPC(TESTI,TESTSP)
+     write(31) TESTI,TESTSP
+  end do
+  close(31)
+  write(*,*) 'ORGSPC cases:',MAXSP
+end program CHECK_ORGANON

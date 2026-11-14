@@ -60,7 +60,7 @@
 ../vbase/grohed.f90
 ../op/htgf.f90
 ../op/morts.f90
-../op/orgspc.f90
+../organon/orgspc.f90
 ../op/regent.f90
 ../op/sitset.f90
 
@@ -406,7 +406,7 @@
 
 ../vstrp/essprt.f90
 
-../strp/esaddt.f90
+../estb/esaddt.f90
 ../strp/esblkd.f90
 ../estb/escprs.f90
 ../estb/esetpr.f90

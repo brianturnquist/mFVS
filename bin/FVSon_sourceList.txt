@@ -373,7 +373,7 @@
 ../strp/estab.f90
 ../metric/strp/esuckr.f90
 
-../strp/esaddt.f90
+../estb/esaddt.f90
 ../strp/esblkd.f90
 ../estb/escprs.f90
 ../estb/esetpr.f90

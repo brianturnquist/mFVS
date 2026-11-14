@@ -1,0 +1,19 @@
+! Capture all GRINIT, LNKINT and DBINIT assignments before any growth runs.
+program CHECK_INITIALIZATION
+  implicit none
+@MODEL_INCLUDES@
+  integer :: TESTITER
+  open(31,file='state.bin',access='stream',form='unformatted')
+  do TESTITER = 1,2
+     call GRINIT
+@STATE_WRITES@
+     write(31) TESTITER
+     ELEV = -999.0
+     IFOR = -999
+     TLONG = -999.0
+     VARACD = 'XX'
+     IORDER = -999
+  end do
+  close(31)
+  write(*,*) 'GRINIT cases:',2
+end program CHECK_INITIALIZATION

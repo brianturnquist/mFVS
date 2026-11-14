@@ -29,6 +29,12 @@ subroutine ESADDT(ICALL)
   integer :: FNO
   real    :: PRMS(2),SUM,SUMSP(8)
   integer :: IDANUW
+  integer :: IDF
+  parameter (IDF = MERGE(5,3,VARIANTCD.eq.'AK'.or.VARIANTCD.eq.'CI'.or.&
+       &VARIANTCD.eq.'EM'.or.VARIANTCD.eq.'IE'.or.VARIANTCD.eq.'KT'))
+
+  !     KEEP THE FORMER ESTB/STRP SEEDLING BINS, INCLUDING THEIR KNOWN
+  !     SPECIES-INDEX DEFECTS. A SCIENTIFIC CORRECTION IS A SEPARATE TASK.
 
   !     ADDTREES CODE = 432
 
@@ -163,7 +169,7 @@ subroutine ESADDT(ICALL)
                     SUMSP(6) = SUMSP(6) + PROB(I)
                  case (10) ! PIPO
                     SUMSP(7) = SUMSP(7) + PROB(I)
-                 case (5) ! PSME
+                 case (IDF) ! PSME; FORMER ESTB = 5, FORMER STRP = 3
                     SUMSP(8) = SUMSP(8) + PROB(I)
                  end select
               end if

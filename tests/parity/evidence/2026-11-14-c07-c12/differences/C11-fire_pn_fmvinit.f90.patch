@@ -1,0 +1,29 @@
+--- before/fire/pn/fmvinit.f90
++++ canonical/fire/base/fmvinit.f90
+@@ -1,7 +1,7 @@
+ !=======================!
+-!   fire/pn : fmvinit   !
++!   fire/base : fmvinit !
+ !=======================!
+-! FIRE-PN $Id$
++! FIRE-BASE $Id$
+ subroutine FMVINIT
+   implicit none
+ 
+@@ -262,9 +262,14 @@
+         end do
+         LSW(I) = .true.
+ 
+-        !         Sitka spruce - ES
++        !         PN: SITKA SPRUCE. WC USED THE DOUGLAS-FIR GROUP FOR
++        !         INDEX 6. ITS OTHER DEFAULTS MATCH; KEEP V2T DISTINCT.
+      case (6)
+-        V2T(I) = 20.6
++        if (VARIANTCD.eq.'WC') then
++           V2T(I) = 28.1
++        else
++           V2T(I) = 20.6
++        end if
+         LEAFLF(I) = 5.0
+         TFALL(I,0) = 2.0
+         TFALL(I,1) = 5.0

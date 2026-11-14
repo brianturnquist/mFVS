@@ -1,0 +1,56 @@
+--- before/ne/cratet.f90
++++ canonical/vbase/cratet.f90
+@@ -1,7 +1,7 @@
+ !=========================================!
+ !   Calibrate tree growth relationships   !
+ !=========================================!
+-! NE $Id$
++! VBASE $Id$
+ subroutine CRATET
+   implicit none
+ 
+@@ -43,7 +43,7 @@
+   ! Variables
+   logical :: DEBUG,MISSCR,TKILL
+   character(len=4) :: UNDER
+-  integer :: IMR,IM,IS,JJ,NH,K1,K2,K3,K4,I1,I2,I3,IPTR,ISPC,II,I,J
++  integer :: I,J,II,ISPC,I1,I2,I3,NH,K1,K2,K3,K4,IS,JJ,IM,IMR,IPTR
+   integer :: KNT2(MAXSP),KNT(MAXSP)
+   real    :: SPCNT(MAXSP,3)
+   real    :: D2,SITAGE,SITHT,AGMAX,HTMAX,HTMAX2
+@@ -376,12 +376,22 @@
+      end do
+      KNT2(IPTR) = K4
+ 
+-     !  END OF SPECIES LOOP.
++     !  END OF SPECIES LOOP.  PRINT HEIGHT-DIAMETER COEFFICIENTS ON
++     !  DEBUG UNIT IF DESIRED.
+ 
+      140 continue
+      if (DEBUG) then
+-        write(JOSTND,9005) ISPC,AX,BX,IABFLG(ISPC)
++        ! NE REPORTS THE INTERCEPT AS WELL AS THE SLOPE. KEEP THE CS
++        ! DIAGNOSTIC LAYOUT AND THE NE LAYOUT EXACTLY AS BEFORE.
++        if (VARIANTCD.eq.'NE') then
++           write(JOSTND,9905) ISPC,AX,BX,IABFLG(ISPC)
++        else
++           write(JOSTND,9005) ISPC,BX,IABFLG(ISPC)
++        end if
+         9005 format('HEIGHT-DIAMETER COEFFICIENTS FOR SPECIES ',I2,&
++             &':  SLOPE=',F10.6,'  FLAG=',I3,&
++             &' (9005 CRATET)')
++        9905 format('HEIGHT-DIAMETER COEFFICIENTS FOR SPECIES ',I2,&
+              &':  INTERCEPT=',F10.6,'  SLOPE=',F10.6,'  FLAG=',I3,&
+              &' (9005 CRATET)')
+      end if
+@@ -421,6 +431,10 @@
+ 
+         if (H .lt.4.5) H = 4.5
+         144 continue
++        !      IF(D .GE. .01 .AND. D .LT. .02)H = .50
++        !      IF (D .GE. .02 .AND. D .LT. .05) H=1.0
++        !      IF (D .GE. .05 .AND. D .LT. .10) H=2.0
++        !      IF (D .EQ. .10) H=4.5
+         if (TKILL) go to 142
+         HT(II) = H
+         go to 146

@@ -1,0 +1,719 @@
+{
+  "before_revision": "92b1deeb7554b50af60e271dddcd6c7413cbb70e",
+  "tasks": [
+    {
+      "id": "C07",
+      "routine": "FMSFALL",
+      "sources": [
+        "fire/base/fmsfall.f90",
+        "fire/cs/fmsfall.f90",
+        "fire/sn/fmsfall.f90"
+      ],
+      "canonical": "fire/base/fmsfall.f90",
+      "consumers": {
+        "bc": "fire/base/fmsfall.f90",
+        "ca": "fire/base/fmsfall.f90",
+        "ci": "fire/base/fmsfall.f90",
+        "cs": "fire/cs/fmsfall.f90",
+        "ie": "fire/base/fmsfall.f90",
+        "kt": "fire/base/fmsfall.f90",
+        "nc": "fire/base/fmsfall.f90",
+        "oc": "fire/base/fmsfall.f90",
+        "sn": "fire/sn/fmsfall.f90",
+        "ws": "fire/base/fmsfall.f90"
+      },
+      "preservation_contract": "Preserve CS KSP>2 versus SN KSP/=2 below DBH 12, the capped MODRATE and existing shared CI/IE behavior. Check every shared consumer.",
+      "before_sources": {
+        "fire/base/fmsfall.f90": "8b0daabe801f109a6d6b1653d9607188baa5ecaf05322a096e212e9b4f67df97",
+        "fire/cs/fmsfall.f90": "438cebf6e66e729b3beab137ccccaf24c79e2254f37ac0970faf2db430d1591c",
+        "fire/sn/fmsfall.f90": "28e94ecd312ad4086a5d4dc2d0cd08f40380b5b47e4c9f81672dd469e29cb6e2"
+      },
+      "canonical_sha256": "d8a26b62c503c3fa5db5bb8bff4b0087b2c2b46e1e9222deab21321e661b75eb",
+      "signature": {
+        "kind": "subroutine",
+        "name": "FMSFALL",
+        "argument_count": 9,
+        "arguments": [
+          "IYR",
+          "KSP",
+          "D",
+          "ORIGDEN",
+          "DENTTL",
+          "ISWTCH",
+          "RSOFT",
+          "RSMAL",
+          "DFALLN"
+        ],
+        "source_sha256": "d8a26b62c503c3fa5db5bb8bff4b0087b2c2b46e1e9222deab21321e661b75eb"
+      },
+      "recovery_sources": [
+        {
+          "path": "fire/base/fmsfall.f90",
+          "sha256": "8b0daabe801f109a6d6b1653d9607188baa5ecaf05322a096e212e9b4f67df97",
+          "git_blob": "771317b0713ef80ba170d3c2d632bb139c6a738d",
+          "recovery": "git show 92b1deeb7554b50af60e271dddcd6c7413cbb70e:fire/base/fmsfall.f90",
+          "difference_file": "differences/C07-fire_base_fmsfall.f90.patch",
+          "difference_sha256": "5a2757d2b9f70616338f27054cea7d6af62a5e2ff06daec25439fc2108478f30"
+        },
+        {
+          "path": "fire/cs/fmsfall.f90",
+          "sha256": "438cebf6e66e729b3beab137ccccaf24c79e2254f37ac0970faf2db430d1591c",
+          "git_blob": "1d93a3eb32ac06f86dc55c497bc1989d4bf72524",
+          "recovery": "git show 92b1deeb7554b50af60e271dddcd6c7413cbb70e:fire/cs/fmsfall.f90",
+          "difference_file": "differences/C07-fire_cs_fmsfall.f90.patch",
+          "difference_sha256": "18641de4e1f46a8977672b7b1450e007bba061acb853b820920d9522b9f5d5f7"
+        },
+        {
+          "path": "fire/sn/fmsfall.f90",
+          "sha256": "28e94ecd312ad4086a5d4dc2d0cd08f40380b5b47e4c9f81672dd469e29cb6e2",
+          "git_blob": "b692b8a84f5bdb212bcaed33787ea4df8447950d",
+          "recovery": "git show 92b1deeb7554b50af60e271dddcd6c7413cbb70e:fire/sn/fmsfall.f90",
+          "difference_file": "differences/C07-fire_sn_fmsfall.f90.patch",
+          "difference_sha256": "745e7fa900f848029ea8069bc696d4663f9d2d940ae88c7b26b40faef78c8f94"
+        }
+      ]
+    },
+    {
+      "id": "C08",
+      "routine": "GRINIT",
+      "sources": [
+        "pn/grinit.f90",
+        "wc/grinit.f90"
+      ],
+      "canonical": "vbase/grinit.f90",
+      "consumers": {
+        "pn": "pn/grinit.f90",
+        "wc": "wc/grinit.f90"
+      },
+      "preservation_contract": "Preserve variant code, elevation 7/35, forest 2/6 and longitude 123/122, and all initialization order before growth.",
+      "before_sources": {
+        "pn/grinit.f90": "276ef3e17a24b4e260cb3808ffd6e93ff87d90b2db4a854309d72016f9e824cb",
+        "wc/grinit.f90": "ec8ac5303b7dd93295c18682305e2e750078fc2f3623493b723119ee9f63340a"
+      },
+      "canonical_sha256": "0623f900199e37207f9513d33e9145bc31bd7007a5561c7471c8d7db76ef33b9",
+      "signature": {
+        "kind": "subroutine",
+        "name": "GRINIT",
+        "argument_count": 0,
+        "arguments": [],
+        "source_sha256": "0623f900199e37207f9513d33e9145bc31bd7007a5561c7471c8d7db76ef33b9"
+      },
+      "recovery_sources": [
+        {
+          "path": "pn/grinit.f90",
+          "sha256": "276ef3e17a24b4e260cb3808ffd6e93ff87d90b2db4a854309d72016f9e824cb",
+          "git_blob": "cf939a3c334fd43fbeec98016dccdc00d4ed7e83",
+          "recovery": "git show 92b1deeb7554b50af60e271dddcd6c7413cbb70e:pn/grinit.f90",
+          "difference_file": "differences/C08-pn_grinit.f90.patch",
+          "difference_sha256": "f35d11deb6e8687143829705106198b50d7279f884a62e3b739a2d1be0b1c35c"
+        },
+        {
+          "path": "wc/grinit.f90",
+          "sha256": "ec8ac5303b7dd93295c18682305e2e750078fc2f3623493b723119ee9f63340a",
+          "git_blob": "4d7b3c9d90813b831b5e949fe26fba00c8e3e160",
+          "recovery": "git show 92b1deeb7554b50af60e271dddcd6c7413cbb70e:wc/grinit.f90",
+          "difference_file": "differences/C08-wc_grinit.f90.patch",
+          "difference_sha256": "6aa7a0e5fb88772d2182e17e449641ede9bb3cfa8f34f6bf7f7de20337bf1a5e"
+        }
+      ]
+    },
+    {
+      "id": "C09",
+      "routine": "CRATET",
+      "sources": [
+        "cs/cratet.f90",
+        "ne/cratet.f90"
+      ],
+      "canonical": "vbase/cratet.f90",
+      "consumers": {
+        "cs": "cs/cratet.f90",
+        "ne": "ne/cratet.f90"
+      },
+      "preservation_contract": "Preserve all calibration calculations and NE-only intercept diagnostics.",
+      "before_sources": {
+        "cs/cratet.f90": "a814d28e88337b36bb90e72641672891d52f48a864c9b460b936f4c1e3477d8d",
+        "ne/cratet.f90": "c1c12760192cefc522e7ce563da7d566cfaa8175065da9cef0e0160ee3424d2f"
+      },
+      "canonical_sha256": "159e02dd5b7e750ce6f4defd785eaab9b46d619f35c33562b7e6b44a34f523b6",
+      "signature": {
+        "kind": "subroutine",
+        "name": "CRATET",
+        "argument_count": 0,
+        "arguments": [],
+        "source_sha256": "159e02dd5b7e750ce6f4defd785eaab9b46d619f35c33562b7e6b44a34f523b6"
+      },
+      "recovery_sources": [
+        {
+          "path": "cs/cratet.f90",
+          "sha256": "a814d28e88337b36bb90e72641672891d52f48a864c9b460b936f4c1e3477d8d",
+          "git_blob": "b677b7bdb48af412f50f630670db93f2e1fce9b6",
+          "recovery": "git show 92b1deeb7554b50af60e271dddcd6c7413cbb70e:cs/cratet.f90",
+          "difference_file": "differences/C09-cs_cratet.f90.patch",
+          "difference_sha256": "176248334a53217b6da9d527c3515e711e78b4cc56232485ea4bb9cfb47bc0f7"
+        },
+        {
+          "path": "ne/cratet.f90",
+          "sha256": "c1c12760192cefc522e7ce563da7d566cfaa8175065da9cef0e0160ee3424d2f",
+          "git_blob": "5acec6d950580091a6843f276600c35ad20180ba",
+          "recovery": "git show 92b1deeb7554b50af60e271dddcd6c7413cbb70e:ne/cratet.f90",
+          "difference_file": "differences/C09-ne_cratet.f90.patch",
+          "difference_sha256": "5d7af3c412d288e7802d40c8e48bb792ddb492d85c85a787d37809a1b01f5c7a"
+        }
+      ]
+    },
+    {
+      "id": "C10",
+      "routine": "ESADDT",
+      "sources": [
+        "estb/esaddt.f90",
+        "strp/esaddt.f90"
+      ],
+      "canonical": "estb/esaddt.f90",
+      "consumers": {
+        "ak": "estb/esaddt.f90",
+        "bc": "strp/esaddt.f90",
+        "bm": "strp/esaddt.f90",
+        "ca": "strp/esaddt.f90",
+        "ci": "estb/esaddt.f90",
+        "cr": "strp/esaddt.f90",
+        "cs": "strp/esaddt.f90",
+        "ec": "strp/esaddt.f90",
+        "em": "estb/esaddt.f90",
+        "ie": "estb/esaddt.f90",
+        "kt": "estb/esaddt.f90",
+        "ls": "strp/esaddt.f90",
+        "nc": "strp/esaddt.f90",
+        "ne": "strp/esaddt.f90",
+        "oc": "strp/esaddt.f90",
+        "on": "strp/esaddt.f90",
+        "op": "strp/esaddt.f90",
+        "pn": "strp/esaddt.f90",
+        "sn": "strp/esaddt.f90",
+        "so": "strp/esaddt.f90",
+        "tt": "strp/esaddt.f90",
+        "ut": "strp/esaddt.f90",
+        "wc": "strp/esaddt.f90",
+        "ws": "strp/esaddt.f90"
+      },
+      "preservation_contract": "Preserve old source selection: seedling DF index 5 for AK/CI/EM/IE/KT, 3 for all STRP consumers. Bug 3 remains unfixed.",
+      "before_sources": {
+        "estb/esaddt.f90": "50a77a23617010e5ce4953aeaa7c67ee7b006e651d2dbe73d24cd65ffe3fdd3e",
+        "strp/esaddt.f90": "f4206349ab2d3e283731fc8162c99ec156c6ce36e79dbb4516ce071146f128f4"
+      },
+      "canonical_sha256": "a52aa54f2e402bb8faeea118f727e3fcaee41e76db3ca804c6a92bd343661beb",
+      "signature": {
+        "kind": "subroutine",
+        "name": "ESADDT",
+        "argument_count": 1,
+        "arguments": [
+          "ICALL"
+        ],
+        "source_sha256": "a52aa54f2e402bb8faeea118f727e3fcaee41e76db3ca804c6a92bd343661beb"
+      },
+      "recovery_sources": [
+        {
+          "path": "estb/esaddt.f90",
+          "sha256": "50a77a23617010e5ce4953aeaa7c67ee7b006e651d2dbe73d24cd65ffe3fdd3e",
+          "git_blob": "377f25039b14594e8665eb823668b7594d6216ed",
+          "recovery": "git show 92b1deeb7554b50af60e271dddcd6c7413cbb70e:estb/esaddt.f90",
+          "difference_file": "differences/C10-estb_esaddt.f90.patch",
+          "difference_sha256": "f03ac9969f6a6846491c929c9b6ac2b8cd3579e16f82b4d414512adf0e755645"
+        },
+        {
+          "path": "strp/esaddt.f90",
+          "sha256": "f4206349ab2d3e283731fc8162c99ec156c6ce36e79dbb4516ce071146f128f4",
+          "git_blob": "9f0ebe4a577f52c586cf1a3ec19697f9ba47fc6c",
+          "recovery": "git show 92b1deeb7554b50af60e271dddcd6c7413cbb70e:strp/esaddt.f90",
+          "difference_file": "differences/C10-strp_esaddt.f90.patch",
+          "difference_sha256": "c7fe9b9632158391a891da778f4fd14fb05a43c54e8928af944e860a62152379"
+        }
+      ]
+    },
+    {
+      "id": "C11",
+      "routine": "FMVINIT",
+      "sources": [
+        "fire/pn/fmvinit.f90",
+        "fire/wc/fmvinit.f90"
+      ],
+      "canonical": "fire/base/fmvinit.f90",
+      "consumers": {
+        "pn": "fire/pn/fmvinit.f90",
+        "wc": "fire/wc/fmvinit.f90"
+      },
+      "preservation_contract": "Preserve complete initialization and PN species-6 defaults versus WC shared-group defaults.",
+      "before_sources": {
+        "fire/pn/fmvinit.f90": "ad20f21ad549b0c7f59890c9734426fb4e2c53dbce484a39842afd680febda9c",
+        "fire/wc/fmvinit.f90": "826c0ff6101010b6f13781408ce631f25cf3c9aaed75e67db55717c779ed5421"
+      },
+      "canonical_sha256": "da7c0c57a4ac15aa26398a2f752fbbf53df41bff2a772de47c9762e919d712e9",
+      "signature": {
+        "kind": "subroutine",
+        "name": "FMVINIT",
+        "argument_count": 0,
+        "arguments": [],
+        "source_sha256": "da7c0c57a4ac15aa26398a2f752fbbf53df41bff2a772de47c9762e919d712e9"
+      },
+      "recovery_sources": [
+        {
+          "path": "fire/pn/fmvinit.f90",
+          "sha256": "ad20f21ad549b0c7f59890c9734426fb4e2c53dbce484a39842afd680febda9c",
+          "git_blob": "f12b7d89e785086cd8bb7c9c9c4d9dd8a237e6ab",
+          "recovery": "git show 92b1deeb7554b50af60e271dddcd6c7413cbb70e:fire/pn/fmvinit.f90",
+          "difference_file": "differences/C11-fire_pn_fmvinit.f90.patch",
+          "difference_sha256": "3aa3c310180881af345ebb3fcb74feefcc962eadf670a1a447313225a210dd50"
+        },
+        {
+          "path": "fire/wc/fmvinit.f90",
+          "sha256": "826c0ff6101010b6f13781408ce631f25cf3c9aaed75e67db55717c779ed5421",
+          "git_blob": "f75426917abd512c3c9ed05f6784ab42f132455c",
+          "recovery": "git show 92b1deeb7554b50af60e271dddcd6c7413cbb70e:fire/wc/fmvinit.f90",
+          "difference_file": "differences/C11-fire_wc_fmvinit.f90.patch",
+          "difference_sha256": "652b5190d61464f5449994a36a4f2c085fe45316aed980f2ec4dd56dc0189a00"
+        }
+      ]
+    },
+    {
+      "id": "C12",
+      "routine": "ORGSPC",
+      "sources": [
+        "oc/orgspc.f90",
+        "op/orgspc.f90"
+      ],
+      "canonical": "organon/orgspc.f90",
+      "consumers": {
+        "oc": "oc/orgspc.f90",
+        "op": "op/orgspc.f90"
+      },
+      "preservation_contract": "Preserve complete 50-entry OC and 39-entry OP tables and every species translation.",
+      "before_sources": {
+        "oc/orgspc.f90": "069d341d4ce93f05caaf6c27e50ea0251be67ad125d9ea33484f643e62cf06e1",
+        "op/orgspc.f90": "e12a42f78eb61a77d40c143b900c60d116754075189ee6cdb71af4f178be1553"
+      },
+      "canonical_sha256": "f78fd2e00c24f204da6853741abda9e6f8fcb61c4d05681a250f07c44bd0938e",
+      "signature": {
+        "kind": "subroutine",
+        "name": "ORGSPC",
+        "argument_count": 2,
+        "arguments": [
+          "INSPEC",
+          "OUTSPC"
+        ],
+        "source_sha256": "f78fd2e00c24f204da6853741abda9e6f8fcb61c4d05681a250f07c44bd0938e"
+      },
+      "recovery_sources": [
+        {
+          "path": "oc/orgspc.f90",
+          "sha256": "069d341d4ce93f05caaf6c27e50ea0251be67ad125d9ea33484f643e62cf06e1",
+          "git_blob": "cb07c2d7282bfb318a8424cd81905d536401f555",
+          "recovery": "git show 92b1deeb7554b50af60e271dddcd6c7413cbb70e:oc/orgspc.f90",
+          "difference_file": "differences/C12-oc_orgspc.f90.patch",
+          "difference_sha256": "948b96cfc9a254c3f76c88c4e02254b46a6c438c166634ffa60da3b0576b22ef"
+        },
+        {
+          "path": "op/orgspc.f90",
+          "sha256": "e12a42f78eb61a77d40c143b900c60d116754075189ee6cdb71af4f178be1553",
+          "git_blob": "03bc4649cca8e3c2832a9b2c0aaa869f10bf39f4",
+          "recovery": "git show 92b1deeb7554b50af60e271dddcd6c7413cbb70e:op/orgspc.f90",
+          "difference_file": "differences/C12-op_orgspc.f90.patch",
+          "difference_sha256": "9727b0b1f385134bbf0729120975eb7b8fdc6301cbc42ea1aa26d5be6fd11711"
+        }
+      ]
+    }
+  ],
+  "variants": {
+    "ak": {
+      "manifest_sha256": "6e1767ab00482e9d381ab668f7098f3a0d2117a7deca1b32590760c3a7e568d8",
+      "rewrites": {},
+      "selected_input_count": 712,
+      "selected_definitions": {
+        "C07": "fire/pn/fmsfall.f90",
+        "C08": "ak/grinit.f90",
+        "C09": "ak/cratet.f90",
+        "C10": "estb/esaddt.f90",
+        "C11": "fire/ak/fmvinit.f90",
+        "C12": null
+      },
+      "input_inventory_sha256": "8a8a8c1c6e28f7dbbe5e6f60094c255c7f690d4db84cbd463203dbdfc9c00620"
+    },
+    "bc": {
+      "manifest_sha256": "62a7e1f7f6839f9c55c2a780715c882f6011ec8d0a55e3b78e04bad2df1549f7",
+      "rewrites": {
+        "strp/esaddt.f90": "estb/esaddt.f90"
+      },
+      "selected_input_count": 653,
+      "selected_definitions": {
+        "C07": "fire/base/fmsfall.f90",
+        "C08": "canada/bc/grinit.f90",
+        "C09": "canada/bc/cratet.f90",
+        "C10": "estb/esaddt.f90",
+        "C11": "canada/fire/bc/fmvinit.f90",
+        "C12": null
+      },
+      "input_inventory_sha256": "37589d21ba3c30f5565cc755f75421274a7da5ff44f284db3c850022d1ce028a"
+    },
+    "bm": {
+      "manifest_sha256": "4645dfb248907b5285f43c5d92650ef1860e81d1014d5414afd1e4d4704ea2a7",
+      "rewrites": {
+        "strp/esaddt.f90": "estb/esaddt.f90"
+      },
+      "selected_input_count": 792,
+      "selected_definitions": {
+        "C07": "fire/pn/fmsfall.f90",
+        "C08": "bm/grinit.f90",
+        "C09": "bm/cratet.f90",
+        "C10": "estb/esaddt.f90",
+        "C11": "fire/bm/fmvinit.f90",
+        "C12": null
+      },
+      "input_inventory_sha256": "d38e0e64f1cf5e17933e12a9bfc4370f97ace477663b3c628b9e90c25939492f"
+    },
+    "ca": {
+      "manifest_sha256": "0dd4cff1c8182e2cc206aa0f83e81d90a931d0b972c55d5adedcf2fd0e7e4c20",
+      "rewrites": {
+        "strp/esaddt.f90": "estb/esaddt.f90"
+      },
+      "selected_input_count": 716,
+      "selected_definitions": {
+        "C07": "fire/base/fmsfall.f90",
+        "C08": "ca/grinit.f90",
+        "C09": "ca/cratet.f90",
+        "C10": "estb/esaddt.f90",
+        "C11": "fire/ca/fmvinit.f90",
+        "C12": null
+      },
+      "input_inventory_sha256": "80a94779e0aff0b1c5a6bd949ad07811f171c901ca20d3fb78c1789fff151b53"
+    },
+    "ci": {
+      "manifest_sha256": "de94e2b87ad10ca400e65373ccfac00775e57b23a01b5b0e7481f665059c4568",
+      "rewrites": {},
+      "selected_input_count": 798,
+      "selected_definitions": {
+        "C07": "fire/base/fmsfall.f90",
+        "C08": "ci/grinit.f90",
+        "C09": "ci/cratet.f90",
+        "C10": "estb/esaddt.f90",
+        "C11": "fire/ci/fmvinit.f90",
+        "C12": null
+      },
+      "input_inventory_sha256": "1c6f388401085c633037aae70304a808e70d91aae456644822b5c8d71c7d96ca"
+    },
+    "cr": {
+      "manifest_sha256": "da291378d5b7fa0ca9f4a36ac79321b3501cca08f4f1b24c1a8a1cdc3d72a209",
+      "rewrites": {
+        "strp/esaddt.f90": "estb/esaddt.f90"
+      },
+      "selected_input_count": 790,
+      "selected_definitions": {
+        "C07": "fire/vut/fmsfall.f90",
+        "C08": "cr/grinit.f90",
+        "C09": "cr/cratet.f90",
+        "C10": "estb/esaddt.f90",
+        "C11": "fire/cr/fmvinit.f90",
+        "C12": null
+      },
+      "input_inventory_sha256": "65b4978c96294617d7607601babb7778bc4a7e15b9d870a06672329522982911"
+    },
+    "cs": {
+      "manifest_sha256": "40b9f2c353cb59a838db69afe57d9ffa67df3583e9b9700ffe77bc7f51d88df1",
+      "rewrites": {
+        "fire/cs/fmsfall.f90": "fire/base/fmsfall.f90",
+        "cs/cratet.f90": "vbase/cratet.f90",
+        "strp/esaddt.f90": "estb/esaddt.f90"
+      },
+      "selected_input_count": 665,
+      "selected_definitions": {
+        "C07": "fire/base/fmsfall.f90",
+        "C08": "cs/grinit.f90",
+        "C09": "vbase/cratet.f90",
+        "C10": "estb/esaddt.f90",
+        "C11": "fire/cs/fmvinit.f90",
+        "C12": null
+      },
+      "input_inventory_sha256": "acb0b8d10f000da7e97e1f1724c8176318d427e59e384b1583bd59026c11dd9a"
+    },
+    "ec": {
+      "manifest_sha256": "490635fcc001036a826e85f472311fabc131095dd2b25031c9fa4fadbeb1166c",
+      "rewrites": {
+        "strp/esaddt.f90": "estb/esaddt.f90"
+      },
+      "selected_input_count": 790,
+      "selected_definitions": {
+        "C07": "fire/pn/fmsfall.f90",
+        "C08": "ec/grinit.f90",
+        "C09": "ec/cratet.f90",
+        "C10": "estb/esaddt.f90",
+        "C11": "fire/ec/fmvinit.f90",
+        "C12": null
+      },
+      "input_inventory_sha256": "1e9fb2a9f663e346d4f430b4f0928cf50c8ace76b963993642c735df3bd8bf68"
+    },
+    "em": {
+      "manifest_sha256": "975e04e0e9829fbc412542f3a78b175ea049b282147bc5f18a1b96d7ba6c04bd",
+      "rewrites": {},
+      "selected_input_count": 800,
+      "selected_definitions": {
+        "C07": "fire/em/fmsfall.f90",
+        "C08": "em/grinit.f90",
+        "C09": "em/cratet.f90",
+        "C10": "estb/esaddt.f90",
+        "C11": "fire/em/fmvinit.f90",
+        "C12": null
+      },
+      "input_inventory_sha256": "8ff69a44f5ac89058f9e58323efb72535c1d6e93bbbdd69958434f7b95a48716"
+    },
+    "ie": {
+      "manifest_sha256": "30121cbaa3291a0c63789235e699353043f76d5ca1cb3994c28f18a5d98c2c1f",
+      "rewrites": {},
+      "selected_input_count": 796,
+      "selected_definitions": {
+        "C07": "fire/base/fmsfall.f90",
+        "C08": "ie/grinit.f90",
+        "C09": "ie/cratet.f90",
+        "C10": "estb/esaddt.f90",
+        "C11": "fire/ie/fmvinit.f90",
+        "C12": null
+      },
+      "input_inventory_sha256": "eae0cab0e94668c1d1ff633944cfef825c52f498defb40fd3238e58cc591072c"
+    },
+    "kt": {
+      "manifest_sha256": "ff30a0cdae5a0068b463cca8e6496463a268150736cbf9daed4ad6dacc04beab",
+      "rewrites": {},
+      "selected_input_count": 795,
+      "selected_definitions": {
+        "C07": "fire/base/fmsfall.f90",
+        "C08": "kt/grinit.f90",
+        "C09": "kt/cratet.f90",
+        "C10": "estb/esaddt.f90",
+        "C11": "fire/kt/fmvinit.f90",
+        "C12": null
+      },
+      "input_inventory_sha256": "8491713519deb1c55b366f23ca8ea6ff68e62905886d1b6571f255ea794b34a2"
+    },
+    "ls": {
+      "manifest_sha256": "e426916874f07147fbb3398c00267639cc9259f82aebace348ae7688d2c666ef",
+      "rewrites": {
+        "strp/esaddt.f90": "estb/esaddt.f90"
+      },
+      "selected_input_count": 667,
+      "selected_definitions": {
+        "C07": "fire/ls/fmsfall.f90",
+        "C08": "ls/grinit.f90",
+        "C09": "ls/cratet.f90",
+        "C10": "estb/esaddt.f90",
+        "C11": "fire/ls/fmvinit.f90",
+        "C12": null
+      },
+      "input_inventory_sha256": "2d96e89c6650d1a9e03ebc6560128efc2312ed572a06637f7355139932cf2d0b"
+    },
+    "nc": {
+      "manifest_sha256": "ef3c0269f35998898db974f8c275b292030af59bb8c211cd6ae6391ba8feb00a",
+      "rewrites": {
+        "strp/esaddt.f90": "estb/esaddt.f90"
+      },
+      "selected_input_count": 795,
+      "selected_definitions": {
+        "C07": "fire/base/fmsfall.f90",
+        "C08": "nc/grinit.f90",
+        "C09": "nc/cratet.f90",
+        "C10": "estb/esaddt.f90",
+        "C11": "fire/nc/fmvinit.f90",
+        "C12": null
+      },
+      "input_inventory_sha256": "2a95cfc1506490091b0bd42ef5dc75d8e1b02711f8fe8a250c652566a84ea7c7"
+    },
+    "ne": {
+      "manifest_sha256": "59b066b2024e16ed057f041597422df9f27808bfb131986c2a2587bc74890b9c",
+      "rewrites": {
+        "ne/cratet.f90": "vbase/cratet.f90",
+        "strp/esaddt.f90": "estb/esaddt.f90"
+      },
+      "selected_input_count": 666,
+      "selected_definitions": {
+        "C07": "fire/ne/fmsfall.f90",
+        "C08": "ne/grinit.f90",
+        "C09": "vbase/cratet.f90",
+        "C10": "estb/esaddt.f90",
+        "C11": "fire/ne/fmvinit.f90",
+        "C12": null
+      },
+      "input_inventory_sha256": "fbe9ca2d2f9efbdb67174cfd920dd2318004969b7ee46da1826aae99f8324b75"
+    },
+    "oc": {
+      "manifest_sha256": "da470f62932b82f59fd64a1a7c532c9e8f70c02f36887a958f338b9c70d71518",
+      "rewrites": {
+        "strp/esaddt.f90": "estb/esaddt.f90",
+        "oc/orgspc.f90": "organon/orgspc.f90"
+      },
+      "selected_input_count": 740,
+      "selected_definitions": {
+        "C07": "fire/base/fmsfall.f90",
+        "C08": "oc/grinit.f90",
+        "C09": "oc/cratet.f90",
+        "C10": "estb/esaddt.f90",
+        "C11": "fire/ca/fmvinit.f90",
+        "C12": "organon/orgspc.f90"
+      },
+      "input_inventory_sha256": "ea224da503cfb198508c93f46bf3c378832d14da0b2fdbaa66ef9282d918d70e"
+    },
+    "on": {
+      "manifest_sha256": "f334465022de1ca28947791c724212c5222a7a6259f0d8333e1ceef293a6376d",
+      "rewrites": {
+        "strp/esaddt.f90": "estb/esaddt.f90"
+      },
+      "selected_input_count": 682,
+      "selected_definitions": {
+        "C07": "fire/ls/fmsfall.f90",
+        "C08": "canada/on/grinit.f90",
+        "C09": "canada/on/cratet.f90",
+        "C10": "estb/esaddt.f90",
+        "C11": "fire/ls/fmvinit.f90",
+        "C12": null
+      },
+      "input_inventory_sha256": "f82f936e1bbb2e15f5fc50d81131f8fa7039ee8056f42c267bfeb01bb796a0cb"
+    },
+    "op": {
+      "manifest_sha256": "19ae39dd14936f8761d95ac5309cc6ac5e764b5930359797cf927c7fcfcbf9ec",
+      "rewrites": {
+        "strp/esaddt.f90": "estb/esaddt.f90",
+        "op/orgspc.f90": "organon/orgspc.f90"
+      },
+      "selected_input_count": 733,
+      "selected_definitions": {
+        "C07": "fire/pn/fmsfall.f90",
+        "C08": "op/grinit.f90",
+        "C09": "op/cratet.f90",
+        "C10": "estb/esaddt.f90",
+        "C11": "fire/op/fmvinit.f90",
+        "C12": "organon/orgspc.f90"
+      },
+      "input_inventory_sha256": "c63079559af04296ced07aee3e79aedb32d10f2f227fbde9cbf446147effb8b8"
+    },
+    "pn": {
+      "manifest_sha256": "1d6c4ece64a1bacfad0e7d63b59b267593ab286623ec50404395e8c641c0d18d",
+      "rewrites": {
+        "pn/grinit.f90": "vbase/grinit.f90",
+        "strp/esaddt.f90": "estb/esaddt.f90",
+        "fire/pn/fmvinit.f90": "fire/base/fmvinit.f90"
+      },
+      "selected_input_count": 788,
+      "selected_definitions": {
+        "C07": "fire/pn/fmsfall.f90",
+        "C08": "vbase/grinit.f90",
+        "C09": "wc/cratet.f90",
+        "C10": "estb/esaddt.f90",
+        "C11": "fire/base/fmvinit.f90",
+        "C12": null
+      },
+      "input_inventory_sha256": "387d942ea69000d72be092a9981c1f2d73b138cf38e60a9b0c34050ff74c1819"
+    },
+    "sn": {
+      "manifest_sha256": "08fe688cc134736e3febea0529b0c21ca7312dc2fe90d6becee977a2937268ba",
+      "rewrites": {
+        "fire/sn/fmsfall.f90": "fire/base/fmsfall.f90",
+        "strp/esaddt.f90": "estb/esaddt.f90"
+      },
+      "selected_input_count": 663,
+      "selected_definitions": {
+        "C07": "fire/base/fmsfall.f90",
+        "C08": "sn/grinit.f90",
+        "C09": "sn/cratet.f90",
+        "C10": "estb/esaddt.f90",
+        "C11": "fire/sn/fmvinit.f90",
+        "C12": null
+      },
+      "input_inventory_sha256": "dd4b8a60da8d69e8654688486a6c4efd5dc78fe20c404d785b13a90705d980c7"
+    },
+    "so": {
+      "manifest_sha256": "11caecc13f83d97e66ed22d3de2ebca612506532618231ee598c6157201dff00",
+      "rewrites": {
+        "strp/esaddt.f90": "estb/esaddt.f90"
+      },
+      "selected_input_count": 795,
+      "selected_definitions": {
+        "C07": "fire/so/fmsfall.f90",
+        "C08": "so/grinit.f90",
+        "C09": "so/cratet.f90",
+        "C10": "estb/esaddt.f90",
+        "C11": "fire/so/fmvinit.f90",
+        "C12": null
+      },
+      "input_inventory_sha256": "96b5fa71c7d1025dc6542099774237b88c25e14dc46adfeb9bca374d44bb0fab"
+    },
+    "tt": {
+      "manifest_sha256": "39361259c060961a273cc177433f1affa4543c7d94d641334b63b052b5d11c29",
+      "rewrites": {
+        "strp/esaddt.f90": "estb/esaddt.f90"
+      },
+      "selected_input_count": 793,
+      "selected_definitions": {
+        "C07": "fire/vut/fmsfall.f90",
+        "C08": "tt/grinit.f90",
+        "C09": "tt/cratet.f90",
+        "C10": "estb/esaddt.f90",
+        "C11": "fire/tt/fmvinit.f90",
+        "C12": null
+      },
+      "input_inventory_sha256": "6413140faf6fbba6b90005acc1ac8ed3093eaf96387128fdfdf40fe67cfde62f"
+    },
+    "ut": {
+      "manifest_sha256": "8a3ae3337d5db2a407965ce30c580b4949ec698dd127da41a985aea921547bfe",
+      "rewrites": {
+        "strp/esaddt.f90": "estb/esaddt.f90"
+      },
+      "selected_input_count": 790,
+      "selected_definitions": {
+        "C07": "fire/vut/fmsfall.f90",
+        "C08": "ut/grinit.f90",
+        "C09": "ut/cratet.f90",
+        "C10": "estb/esaddt.f90",
+        "C11": "fire/ut/fmvinit.f90",
+        "C12": null
+      },
+      "input_inventory_sha256": "e2b606c5753afca96da934d78de6dfdaaee9e417b142de2ac34b1424ad7d13dd"
+    },
+    "wc": {
+      "manifest_sha256": "3f3c48f6c3d155ea792d238af3e9d2b081562cb30d309a86d4be96e9d38afc21",
+      "rewrites": {
+        "wc/grinit.f90": "vbase/grinit.f90",
+        "strp/esaddt.f90": "estb/esaddt.f90",
+        "fire/wc/fmvinit.f90": "fire/base/fmvinit.f90"
+      },
+      "selected_input_count": 788,
+      "selected_definitions": {
+        "C07": "fire/pn/fmsfall.f90",
+        "C08": "vbase/grinit.f90",
+        "C09": "wc/cratet.f90",
+        "C10": "estb/esaddt.f90",
+        "C11": "fire/base/fmvinit.f90",
+        "C12": null
+      },
+      "input_inventory_sha256": "0a62d5b6a37411e90580c8bb5deb35e01ae7ffa3ec7ec25eab747eb6a5b38485"
+    },
+    "ws": {
+      "manifest_sha256": "75c899edc1c4f54c12ad5d26b6fbf89c1f327b2d814b40e3a0b32bc122c993cd",
+      "rewrites": {
+        "strp/esaddt.f90": "estb/esaddt.f90"
+      },
+      "selected_input_count": 792,
+      "selected_definitions": {
+        "C07": "fire/base/fmsfall.f90",
+        "C08": "ws/grinit.f90",
+        "C09": "ws/cratet.f90",
+        "C10": "estb/esaddt.f90",
+        "C11": "fire/ws/fmvinit.f90",
+        "C12": null
+      },
+      "input_inventory_sha256": "e1618f1a6faccb49ecaf04ff625211553622c50a49d9178297dbe65618b0e521"
+    }
+  },
+  "other_model_files_unchanged": 2096,
+  "working_nvel": {
+    "revision": "a73e697e220ffd0f792aa7ac10d84c911edb7ad7",
+    "blobs_checked": 285,
+    "modified_paths": [],
+    "allowed_modified_paths": [],
+    "passed": true
+  },
+  "passed": true
+}

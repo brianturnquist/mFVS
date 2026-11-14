@@ -1,0 +1,52 @@
+! Exercise real ESADDT export/formatting with controlled local option context.
+program CHECK_ADDTREES
+  implicit none
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
+  include 'CONTRL.f90'
+  include 'OUTCOM.f90'
+  include 'PLOT.f90'
+  include 'ESHAP.f90'
+  include 'ESHAP2.f90'
+  include 'VARCOM.f90'
+  integer :: TESTI,TESTMODE,TESTDONE,TESTDELETE
+  logical :: TESTDEBUG
+  common /TESTDBG/ TESTDEBUG
+  common /TESTADDT/ TESTMODE,TESTDONE,TESTDELETE
+  open(31,file='state.bin',access='stream',form='unformatted')
+  ICYC = 1
+  JOSTND = 6
+  IY(2) = 2001
+  VARACD = '@VARIANT@'
+  NPLT = 'STAND'
+  KODTYP = 10
+  ISLOP = 5
+  IASPEC = 90
+  ELEV = 10.0
+  GROSPC = 1.0
+  SDIBC = 100.0
+  SDIAC = 80.0
+  OLDBA = 25.0
+  ATBA = 20.0
+  do TESTMODE = 0,3
+     TESTDONE = 0
+     TESTDELETE = 0
+     TESTDEBUG = TESTMODE.eq.1
+     write(KWDFIL,'(A,I1)') 'fixture',TESTMODE
+     ITRN = MAXSP+1
+     do TESTI = 1,MAXSP
+        ISP(TESTI) = TESTI
+        DBH(TESTI) = 1.0
+        PROB(TESTI) = REAL(TESTI)+0.25
+     end do
+     ISP(MAXSP+1) = 3
+     DBH(MAXSP+1) = 1.000001
+     PROB(MAXSP+1) = 101.0
+     if (TESTMODE.eq.2) DBH(3) = 1.000001
+     call ESADDT(1)
+     write(31) TESTMODE,TESTDONE,TESTDELETE
+     write(31) DBH(1:ITRN),PROB(1:ITRN),ISP(1:ITRN)
+  end do
+  close(31)
+  write(*,*) 'ESADDT cases:',4
+end program CHECK_ADDTREES

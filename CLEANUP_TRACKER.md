@@ -15,8 +15,11 @@ the retirement reports for [D01–D03](tests/parity/evidence/2026-11-13-d01-d03/
 and [D04–D13](tests/parity/evidence/2026-11-13-d04-d13/README.md).
 D14 remains pending. C01–C06 are now complete; the user accepted the exact
 routine and runtime-object evidence for C01/C06 while leaving BC/ON simulation
-parity blocked. There are 41 completed and 79 pending checkbox items. See the
-[C01–C06 report](tests/parity/evidence/2026-11-14-c01-c06/README.md).
+parity blocked. See the [C01–C06 report](tests/parity/evidence/2026-11-14-c01-c06/README.md).
+C07–C12 are now complete; the user accepted the routine/file-output and
+executable-statement evidence for C07/C10 while leaving BC/ON simulation parity
+blocked. There are 47 completed and 73 pending checkbox items. See the
+[C07–C12 report](tests/parity/evidence/2026-11-14-c07-c12/README.md).
 
 The findings combine repository-wide source-list inventory, targeted source
 comparisons, call/ENTRY inspection, and historical notes. They are not an
@@ -140,6 +143,11 @@ upstream reference and cannot be reported as pristine-original parity.
   while leaving BC/ON simulation parity blocked. This does not relax the gate
   for other tasks. See the [acceptance record](tests/parity/evidence/2026-11-14-c01-c06/acceptance.json).
 
+  **Additional limited acceptance, 14 November 2026:** the user accepted exact
+  routine/file-output comparisons and executable-statement evidence for C07
+  and C10. BC/ON simulation parity remains blocked, and this grants no general
+  exception for other tasks. See the [acceptance record](tests/parity/evidence/2026-11-14-c07-c12/acceptance.json).
+
 ## Centralized definitions
 
 Use existing shared areas for canonical routines. Avoid adding another set of
@@ -224,23 +232,35 @@ the named variants below are starting points, not a substitute for that check.
   seven available integrated simulations pass; BC runtime objects match.
   The user accepted that evidence for this task's completion; BC integrated
   simulation parity remains blocked.
-- [ ] **C07 — CS/SN FMSFALL.** Centralize in `fire/base/`. Preserve the
-  small-tree condition: `KSP > 2` for CS versus `KSP /= 2` for SN.
-- [ ] **C08 — PN/WC GRINIT.** Centralize in `vbase/`. Preserve the four
-  statement differences: variant code, default elevation, default forest, and
-  default longitude. Compare initialization before growth.
-- [ ] **C09 — CS/NE CRATET.** Centralize in `vbase/`. Beyond declaration
-  ordering, NE debug output includes the intercept. Preserve diagnostics as
-  well as calculations.
-- [ ] **C10 — ESADDT.** Merge `estb/esaddt.f90` and `strp/esaddt.f90` into
-  `estb/`. Preserve the different Douglas-fir indices, 5 versus 3. Bug 3 in
-  `FOUND_BUGS.md` requires a separate model-changing fix, not a correction
-  hidden in this consolidation.
-- [ ] **C11 — PN/WC FMVINIT.** Centralize in shared fire code. Species 6 has
-  separate PN defaults but joins another group in WC. Exercise that species
-  explicitly and preserve the initialization sequence.
-- [ ] **C12 — OC/OP ORGSPC.** Centralize in `organon/`. Preserve both complete
-  species translation tables and their lengths; compare every species mapping.
+- [x] **C07 — CS/SN FMSFALL.** Completed 14 November 2026 in
+  `fire/base/fmsfall.f90`. Preserved CS `KSP > 2` versus SN `KSP /= 2`,
+  the 12-inch breakpoint and capped rate. All ten shared consumers match
+  direct original/baseline outputs; the former shared executable body is
+  unchanged after compile-time selection. The user accepted that alternative
+  evidence for completion; no runtime-object equality or BC simulation result
+  is claimed.
+- [x] **C08 — PN/WC GRINIT.** Completed 14 November 2026 in
+  `vbase/grinit.f90`. Preserved variant code, elevation 7/35, forest 2/6 and
+  longitude 123/122 at the original positions. All 210 assigned model/helper
+  variables match before growth; integrated comparisons pass.
+- [x] **C09 — CS/NE CRATET.** Completed 14 November 2026 in
+  `vbase/cratet.f90`. Preserved numeric calculations and CS slope-only versus
+  NE intercept-plus-slope diagnostics. Real-engine debug decks exercise and
+  exactly compare both layouts against original F77 and the baseline.
+- [x] **C10 — ESADDT.** Completed 14 November 2026 in `estb/esaddt.f90`
+  for all 24 variants. Compile-time IDF preserves former ESTB index 5 versus
+  STRP index 3, including bug 3. All direct export files and executable bodies
+  match original/baseline after parameter resolution. New data-flow concerns
+  are recorded unfixed. The user accepted that alternative evidence for
+  completion; BC/ON integrated simulation parity remains blocked.
+- [x] **C11 — PN/WC FMVINIT.** Completed 14 November 2026 in
+  `fire/base/fmvinit.f90`. Preserved species-6 initial V2T 20.6 versus 28.1,
+  all other defaults, and the existing final unit conversion. All 37 assigned
+  variables/species and integrated outputs match original/baseline.
+- [x] **C12 — OC/OP ORGSPC.** Completed 14 November 2026 in
+  `organon/orgspc.f90`. Preserved every value and index of the 50-entry OC and
+  39-entry OP tables. All actual mapping calls and integrated outputs match
+  original/baseline; old species-order commentary and recovery refs remain.
 - [ ] **C13 — First FIA database binding helper.** Extract one contiguous
   common field group from `dbsqlite/dbs_fiavbc_trls.f90` and
   `dbsqlite/dbs_fiavbc_atrtls.f90` into `dbsqlite/`. Preserve column order,
@@ -778,3 +798,49 @@ authorizing completion of these two checkboxes using that evidence. The
 retains the scope and response. The P03 simulation boundary remains blocked;
 the exception applies only to C01/C06. No model bug was fixed and no later
 cleanup task was implemented. There are now 41 completed and 79 pending items.
+
+
+### C07–C12 record — 14 November 2026
+
+**All six implementations are complete and checked off.** The user accepted
+the alternative Canadian evidence for C07/C10 on 14 November 2026.
+The thirteen selected definitions now use six shared definitions, reducing
+model source by 2,229 lines (4,587 to 2,358). Eleven former copies are removed.
+The pre-cleanup revision is `92b1deeb7554b50af60e271dddcd6c7413cbb70e`;
+NVEL remains `a73e697e220ffd0f792aa7ac10d84c911edb7ad7`.
+The plan was stored before edits. All source hashes/blobs, public signatures,
+consumer rewrites, scientific differences and recovery commands are retained
+in the [C07–C12 report](tests/parity/evidence/2026-11-14-c07-c12/README.md).
+
+All 72 state/variant build identities succeeded: 26 fresh compilations and
+46 retained binaries with exact selected input, compiler/flag/platform and
+binary-hash matches. Reuse is explicit in the receipt. All 24 candidates are
+fresh builds, and every state runs independently. All 81 integrated pairwise
+comparisons pass: 66 standard US output comparisons, six CS/NE calibration
+debug comparisons and nine Canadian failure-boundary comparisons. All 120
+direct comparisons across 40 routine/variant fixtures also pass. Raw artifacts,
+including actual ESADDT export/response files, replay exactly. The comparator
+is unchanged and remains bound to its retained mismatch/header controls.
+
+C07 preserves the CS/SN species-1 distinction and the eight earlier shared
+consumers' executable body. C08 captures all 210 assigned initialization/helper
+variables before growth. C09 exercises actual intercept/slope diagnostics
+through complete engine runs. C10 preserves both seedling-bin profiles and
+matches the entire original executable body after resolving its constant
+species index. C11 captures all 37 initialized variables/species, including the
+original final unit conversion. C12 preserves and calls all 89 mapping entries.
+All 2,096 other model source/include files, COMMON declarations, NVEL, repository
+input decks and earlier evidence remain unchanged. No model bug is fixed.
+ESADDT data-flow concerns are recorded for later reachability/impact review.
+
+**C07/C10 acceptance, 14 November 2026:** existing bugs still prevent BC/ON
+integrated simulation. Their direct and executable-statement evidence is
+recorded separately; C07's generated code has different local stack offsets,
+so no runtime-object equality is claimed. The user explicitly answered
+“Accept this evidence for C07/C10”, authorizing completion using the exact
+routine/file-output and executable-statement evidence. The
+[acceptance record](tests/parity/evidence/2026-11-14-c07-c12/acceptance.json)
+retains the response and scope. The P03 simulation boundary remains blocked;
+this additional exception applies only to C07/C10. No model bug was fixed and
+no C13+ or D14 cleanup was implemented. The tracker has 47 completed and
+73 pending items.

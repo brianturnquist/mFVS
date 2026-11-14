@@ -1,0 +1,31 @@
+--- before/cs/cratet.f90
++++ canonical/vbase/cratet.f90
+@@ -1,7 +1,7 @@
+ !=========================================!
+ !   Calibrate tree growth relationships   !
+ !=========================================!
+-! CS $Id$
++! VBASE $Id$
+ subroutine CRATET
+   implicit none
+ 
+@@ -381,9 +381,18 @@
+ 
+      140 continue
+      if (DEBUG) then
+-        write(JOSTND,9005) ISPC,BX,IABFLG(ISPC)
++        ! NE REPORTS THE INTERCEPT AS WELL AS THE SLOPE. KEEP THE CS
++        ! DIAGNOSTIC LAYOUT AND THE NE LAYOUT EXACTLY AS BEFORE.
++        if (VARIANTCD.eq.'NE') then
++           write(JOSTND,9905) ISPC,AX,BX,IABFLG(ISPC)
++        else
++           write(JOSTND,9005) ISPC,BX,IABFLG(ISPC)
++        end if
+         9005 format('HEIGHT-DIAMETER COEFFICIENTS FOR SPECIES ',I2,&
+              &':  SLOPE=',F10.6,'  FLAG=',I3,&
++             &' (9005 CRATET)')
++        9905 format('HEIGHT-DIAMETER COEFFICIENTS FOR SPECIES ',I2,&
++             &':  INTERCEPT=',F10.6,'  SLOPE=',F10.6,'  FLAG=',I3,&
+              &' (9005 CRATET)')
+      end if
+ 

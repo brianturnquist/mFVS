@@ -1,0 +1,173 @@
+{
+  "before_revision": "92b1deeb7554b50af60e271dddcd6c7413cbb70e",
+  "before_nvel": "a73e697e220ffd0f792aa7ac10d84c911edb7ad7",
+  "tasks": [
+    {
+      "id": "C07",
+      "routine": "FMSFALL",
+      "sources": [
+        "fire/base/fmsfall.f90",
+        "fire/cs/fmsfall.f90",
+        "fire/sn/fmsfall.f90"
+      ],
+      "canonical": "fire/base/fmsfall.f90",
+      "consumers": {
+        "bc": "fire/base/fmsfall.f90",
+        "ca": "fire/base/fmsfall.f90",
+        "ci": "fire/base/fmsfall.f90",
+        "cs": "fire/cs/fmsfall.f90",
+        "ie": "fire/base/fmsfall.f90",
+        "kt": "fire/base/fmsfall.f90",
+        "nc": "fire/base/fmsfall.f90",
+        "oc": "fire/base/fmsfall.f90",
+        "sn": "fire/sn/fmsfall.f90",
+        "ws": "fire/base/fmsfall.f90"
+      },
+      "preservation_contract": "Preserve CS KSP>2 versus SN KSP/=2 below DBH 12, the capped MODRATE and existing shared CI/IE behavior. Check every shared consumer.",
+      "before_sources": {
+        "fire/base/fmsfall.f90": "8b0daabe801f109a6d6b1653d9607188baa5ecaf05322a096e212e9b4f67df97",
+        "fire/cs/fmsfall.f90": "438cebf6e66e729b3beab137ccccaf24c79e2254f37ac0970faf2db430d1591c",
+        "fire/sn/fmsfall.f90": "28e94ecd312ad4086a5d4dc2d0cd08f40380b5b47e4c9f81672dd469e29cb6e2"
+      }
+    },
+    {
+      "id": "C08",
+      "routine": "GRINIT",
+      "sources": [
+        "pn/grinit.f90",
+        "wc/grinit.f90"
+      ],
+      "canonical": "vbase/grinit.f90",
+      "consumers": {
+        "pn": "pn/grinit.f90",
+        "wc": "wc/grinit.f90"
+      },
+      "preservation_contract": "Preserve variant code, elevation 7/35, forest 2/6 and longitude 123/122, and all initialization order before growth.",
+      "before_sources": {
+        "pn/grinit.f90": "276ef3e17a24b4e260cb3808ffd6e93ff87d90b2db4a854309d72016f9e824cb",
+        "wc/grinit.f90": "ec8ac5303b7dd93295c18682305e2e750078fc2f3623493b723119ee9f63340a"
+      }
+    },
+    {
+      "id": "C09",
+      "routine": "CRATET",
+      "sources": [
+        "cs/cratet.f90",
+        "ne/cratet.f90"
+      ],
+      "canonical": "vbase/cratet.f90",
+      "consumers": {
+        "cs": "cs/cratet.f90",
+        "ne": "ne/cratet.f90"
+      },
+      "preservation_contract": "Preserve all calibration calculations and NE-only intercept diagnostics.",
+      "before_sources": {
+        "cs/cratet.f90": "a814d28e88337b36bb90e72641672891d52f48a864c9b460b936f4c1e3477d8d",
+        "ne/cratet.f90": "c1c12760192cefc522e7ce563da7d566cfaa8175065da9cef0e0160ee3424d2f"
+      }
+    },
+    {
+      "id": "C10",
+      "routine": "ESADDT",
+      "sources": [
+        "estb/esaddt.f90",
+        "strp/esaddt.f90"
+      ],
+      "canonical": "estb/esaddt.f90",
+      "consumers": {
+        "ak": "estb/esaddt.f90",
+        "bc": "strp/esaddt.f90",
+        "bm": "strp/esaddt.f90",
+        "ca": "strp/esaddt.f90",
+        "ci": "estb/esaddt.f90",
+        "cr": "strp/esaddt.f90",
+        "cs": "strp/esaddt.f90",
+        "ec": "strp/esaddt.f90",
+        "em": "estb/esaddt.f90",
+        "ie": "estb/esaddt.f90",
+        "kt": "estb/esaddt.f90",
+        "ls": "strp/esaddt.f90",
+        "nc": "strp/esaddt.f90",
+        "ne": "strp/esaddt.f90",
+        "oc": "strp/esaddt.f90",
+        "on": "strp/esaddt.f90",
+        "op": "strp/esaddt.f90",
+        "pn": "strp/esaddt.f90",
+        "sn": "strp/esaddt.f90",
+        "so": "strp/esaddt.f90",
+        "tt": "strp/esaddt.f90",
+        "ut": "strp/esaddt.f90",
+        "wc": "strp/esaddt.f90",
+        "ws": "strp/esaddt.f90"
+      },
+      "preservation_contract": "Preserve old source selection: seedling DF index 5 for AK/CI/EM/IE/KT, 3 for all STRP consumers. Bug 3 remains unfixed.",
+      "before_sources": {
+        "estb/esaddt.f90": "50a77a23617010e5ce4953aeaa7c67ee7b006e651d2dbe73d24cd65ffe3fdd3e",
+        "strp/esaddt.f90": "f4206349ab2d3e283731fc8162c99ec156c6ce36e79dbb4516ce071146f128f4"
+      }
+    },
+    {
+      "id": "C11",
+      "routine": "FMVINIT",
+      "sources": [
+        "fire/pn/fmvinit.f90",
+        "fire/wc/fmvinit.f90"
+      ],
+      "canonical": "fire/base/fmvinit.f90",
+      "consumers": {
+        "pn": "fire/pn/fmvinit.f90",
+        "wc": "fire/wc/fmvinit.f90"
+      },
+      "preservation_contract": "Preserve complete initialization and PN species-6 defaults versus WC shared-group defaults.",
+      "before_sources": {
+        "fire/pn/fmvinit.f90": "ad20f21ad549b0c7f59890c9734426fb4e2c53dbce484a39842afd680febda9c",
+        "fire/wc/fmvinit.f90": "826c0ff6101010b6f13781408ce631f25cf3c9aaed75e67db55717c779ed5421"
+      }
+    },
+    {
+      "id": "C12",
+      "routine": "ORGSPC",
+      "sources": [
+        "oc/orgspc.f90",
+        "op/orgspc.f90"
+      ],
+      "canonical": "organon/orgspc.f90",
+      "consumers": {
+        "oc": "oc/orgspc.f90",
+        "op": "op/orgspc.f90"
+      },
+      "preservation_contract": "Preserve complete 50-entry OC and 39-entry OP tables and every species translation.",
+      "before_sources": {
+        "oc/orgspc.f90": "069d341d4ce93f05caaf6c27e50ea0251be67ad125d9ea33484f643e62cf06e1",
+        "op/orgspc.f90": "e12a42f78eb61a77d40c143b900c60d116754075189ee6cdb71af4f178be1553"
+      }
+    }
+  ],
+  "affected_variants": [
+    "ak",
+    "bc",
+    "bm",
+    "ca",
+    "ci",
+    "cr",
+    "cs",
+    "ec",
+    "em",
+    "ie",
+    "kt",
+    "ls",
+    "nc",
+    "ne",
+    "oc",
+    "on",
+    "op",
+    "pn",
+    "sn",
+    "so",
+    "tt",
+    "ut",
+    "wc",
+    "ws"
+  ],
+  "coverage": "All 24 variants. Original/current/candidate integrated outputs plus direct differing-branch tests. No bug fixes. Previous Canadian acceptance was explicitly limited to C01/C06."
+}

@@ -1,0 +1,259 @@
+{
+  "equal": true,
+  "errors": [],
+  "files": {
+    "FVSOut.db": {
+      "kind": "sqlite",
+      "equal": true,
+      "left": {
+        "schema": [
+          [
+            "index",
+            "sqlite_autoindex_FVS_Cases_1",
+            "FVS_Cases",
+            null
+          ],
+          [
+            "table",
+            "FVS_Cases",
+            "FVS_Cases",
+            "CREATE TABLE FVS_Cases (CaseID text primary key,Stand_CN text not null,StandID text not null,MgmtID text,RunTitle text,KeywordFile text,SamplingWt real,Variant text,Version text,RV text,Groups text,RunDateTime text)"
+          ],
+          [
+            "table",
+            "FVS_Error",
+            "FVS_Error",
+            "CREATE TABLE FVS_Error(CaseID text not null,StandID text not null,Message text)"
+          ],
+          [
+            "table",
+            "FVS_InvReference",
+            "FVS_InvReference",
+            "CREATE TABLE FVS_InvReference (CaseID text not null, StandID text not null, LocationCode int, SpeciesNum int, SpeciesFVS text, SpeciesPlants text, SpeciesFIA text, SDIType text,SDIMax int, SiteIndex int, CFCruiseType text,CFVolEq text, CFMinDBH real, CFTopDia real, CFStump real, CFSawMinDBH real, CFSawTopDia real, CFSawStump real, BFVolEq text, BFMinDBH real, BFTopDia real, BFStump real)"
+          ]
+        ],
+        "user_version": 0,
+        "tables": {
+          "FVS_Cases": {
+            "columns": [
+              "CaseID",
+              "Stand_CN",
+              "StandID",
+              "MgmtID",
+              "RunTitle",
+              "KeywordFile",
+              "SamplingWt",
+              "Variant",
+              "Version",
+              "RV",
+              "Groups",
+              "RunDateTime"
+            ],
+            "rows": 5,
+            "sha256": "ffdef9afec2a6af097769d1416a54f06b426955276a990931853916da1e9f2a7",
+            "metadata": {
+              "Version": 5,
+              "RV": 5,
+              "RunDateTime": 5
+            }
+          },
+          "FVS_Error": {
+            "columns": [
+              "CaseID",
+              "StandID",
+              "Message"
+            ],
+            "rows": 4,
+            "sha256": "3e1ffabbbd0f4480bfd2efa5a3c8e02c59c013912b8ad49924600687a95e37d9",
+            "metadata": {}
+          },
+          "FVS_InvReference": {
+            "columns": [
+              "CaseID",
+              "StandID",
+              "LocationCode",
+              "SpeciesNum",
+              "SpeciesFVS",
+              "SpeciesPlants",
+              "SpeciesFIA",
+              "SDIType",
+              "SDIMax",
+              "SiteIndex",
+              "CFCruiseType",
+              "CFVolEq",
+              "CFMinDBH",
+              "CFTopDia",
+              "CFStump",
+              "CFSawMinDBH",
+              "CFSawTopDia",
+              "CFSawStump",
+              "BFVolEq",
+              "BFMinDBH",
+              "BFTopDia",
+              "BFStump"
+            ],
+            "rows": 115,
+            "sha256": "437ff9708792f33b5ce53137bb889a28b3a0ac4d7ca1ac56c87d3378c4e2acb2",
+            "metadata": {}
+          }
+        }
+      },
+      "right": {
+        "schema": [
+          [
+            "index",
+            "sqlite_autoindex_FVS_Cases_1",
+            "FVS_Cases",
+            null
+          ],
+          [
+            "table",
+            "FVS_Cases",
+            "FVS_Cases",
+            "CREATE TABLE FVS_Cases (CaseID text primary key,Stand_CN text not null,StandID text not null,MgmtID text,RunTitle text,KeywordFile text,SamplingWt real,Variant text,Version text,RV text,Groups text,RunDateTime text)"
+          ],
+          [
+            "table",
+            "FVS_Error",
+            "FVS_Error",
+            "CREATE TABLE FVS_Error(CaseID text not null,StandID text not null,Message text)"
+          ],
+          [
+            "table",
+            "FVS_InvReference",
+            "FVS_InvReference",
+            "CREATE TABLE FVS_InvReference (CaseID text not null, StandID text not null, LocationCode int, SpeciesNum int, SpeciesFVS text, SpeciesPlants text, SpeciesFIA text, SDIType text,SDIMax int, SiteIndex int, CFCruiseType text,CFVolEq text, CFMinDBH real, CFTopDia real, CFStump real, CFSawMinDBH real, CFSawTopDia real, CFSawStump real, BFVolEq text, BFMinDBH real, BFTopDia real, BFStump real)"
+          ]
+        ],
+        "user_version": 0,
+        "tables": {
+          "FVS_Cases": {
+            "columns": [
+              "CaseID",
+              "Stand_CN",
+              "StandID",
+              "MgmtID",
+              "RunTitle",
+              "KeywordFile",
+              "SamplingWt",
+              "Variant",
+              "Version",
+              "RV",
+              "Groups",
+              "RunDateTime"
+            ],
+            "rows": 5,
+            "sha256": "ffdef9afec2a6af097769d1416a54f06b426955276a990931853916da1e9f2a7",
+            "metadata": {
+              "Version": 5,
+              "RV": 5,
+              "RunDateTime": 5
+            }
+          },
+          "FVS_Error": {
+            "columns": [
+              "CaseID",
+              "StandID",
+              "Message"
+            ],
+            "rows": 4,
+            "sha256": "3e1ffabbbd0f4480bfd2efa5a3c8e02c59c013912b8ad49924600687a95e37d9",
+            "metadata": {}
+          },
+          "FVS_InvReference": {
+            "columns": [
+              "CaseID",
+              "StandID",
+              "LocationCode",
+              "SpeciesNum",
+              "SpeciesFVS",
+              "SpeciesPlants",
+              "SpeciesFIA",
+              "SDIType",
+              "SDIMax",
+              "SiteIndex",
+              "CFCruiseType",
+              "CFVolEq",
+              "CFMinDBH",
+              "CFTopDia",
+              "CFStump",
+              "CFSawMinDBH",
+              "CFSawTopDia",
+              "CFSawStump",
+              "BFVolEq",
+              "BFMinDBH",
+              "BFTopDia",
+              "BFStump"
+            ],
+            "rows": 115,
+            "sha256": "437ff9708792f33b5ce53137bb889a28b3a0ac4d7ca1ac56c87d3378c4e2acb2",
+            "metadata": {}
+          }
+        }
+      }
+    },
+    "akt01.out": {
+      "kind": "bytes/text",
+      "equal": true,
+      "left_sha256": "26d98acccc839fc7a36b20e399b3d97ad258194c5ec31a4b2f13dbd1c11b3a39",
+      "right_sha256": "26d98acccc839fc7a36b20e399b3d97ad258194c5ec31a4b2f13dbd1c11b3a39",
+      "left_normalizations": {
+        "grohed_metadata": 21
+      },
+      "right_normalizations": {
+        "grohed_metadata": 21
+      }
+    },
+    "akt01.sng": {
+      "kind": "bytes/text",
+      "equal": true,
+      "left_sha256": "11064c82ae92a17e4513be74ac115f5093408d4110eddc95721bc1267c5f19b2",
+      "right_sha256": "11064c82ae92a17e4513be74ac115f5093408d4110eddc95721bc1267c5f19b2",
+      "left_normalizations": {},
+      "right_normalizations": {}
+    },
+    "akt01.sum": {
+      "kind": "bytes/text",
+      "equal": true,
+      "left_sha256": "cc26d65b2b5ce0acd3d3582a13d4260d1e8432427f17c5e4689879985c672fee",
+      "right_sha256": "cc26d65b2b5ce0acd3d3582a13d4260d1e8432427f17c5e4689879985c672fee",
+      "left_normalizations": {
+        "summary_metadata": 5
+      },
+      "right_normalizations": {
+        "summary_metadata": 5
+      }
+    },
+    "returncode.txt": {
+      "kind": "bytes/text",
+      "equal": true,
+      "left_sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+      "right_sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+      "left_normalizations": {},
+      "right_normalizations": {}
+    },
+    "stderr.txt": {
+      "kind": "bytes/text",
+      "equal": true,
+      "left_sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+      "right_sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+      "left_normalizations": {},
+      "right_normalizations": {}
+    },
+    "stdout.txt": {
+      "kind": "bytes/text",
+      "equal": true,
+      "left_sha256": "3004bf4c942e4c98b93da003566f07dd0c3f447c35d18b4bea99368b49a621bd",
+      "right_sha256": "3004bf4c942e4c98b93da003566f07dd0c3f447c35d18b4bea99368b49a621bd",
+      "left_normalizations": {},
+      "right_normalizations": {}
+    }
+  },
+  "case": "ak-akt01",
+  "left": "original",
+  "right": "candidate",
+  "returncodes": [
+    10,
+    10
+  ]
+}

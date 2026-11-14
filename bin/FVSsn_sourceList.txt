@@ -374,7 +374,7 @@
 
 ../vstrp/essprt.f90
 
-../strp/esaddt.f90
+../estb/esaddt.f90
 ../strp/esblkd.f90
 ../estb/escprs.f90
 ../estb/esetpr.f90
@@ -574,7 +574,7 @@
 ../fire/sn/fmcfmd.f90
 ../fire/sn/fmcrow.f90
 ../fire/base/fmmois.f90
-../fire/sn/fmsfall.f90
+../fire/base/fmsfall.f90
 ../fire/sn/fmsnft.f90
 ../fire/sn/fmvinit.f90
 ../fire/ie/fmcons.f90

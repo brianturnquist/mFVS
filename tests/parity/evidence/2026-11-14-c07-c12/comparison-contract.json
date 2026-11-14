@@ -1,0 +1,23 @@
+{
+  "source_evidence": "tests/parity/evidence/2026-11-14-c01-c06",
+  "comparator_unchanged": true,
+  "control_tool_unchanged": true,
+  "tools": {
+    "tests/parity/compare_outputs.py": "03b71d9d4e667496c7b4bee41f8f39bd7382d0443d7699faf8723c44d28e7d0d",
+    "tests/parity/check_comparator.py": "06da379178fb37c67b5c703f815ed060f0aabfbcca2bf73bbcbade6fe8eb317a"
+  },
+  "retained_controls": {
+    "comparator-controls.json": {
+      "file": "tests/parity/evidence/2026-11-14-c01-c06/comparator-controls.json",
+      "sha256": "27951900f387ef17629b4898a09e5f7536eedfa9ffe3c4fe63859e9f43350560",
+      "cases": 10
+    },
+    "metadata-controls.json": {
+      "file": "tests/parity/evidence/2026-11-14-c01-c06/metadata-controls.json",
+      "sha256": "e45804c184f14cd94fa8b4fbf1c77042da0101a690000bdb751aa765214900d0",
+      "cases": 24
+    }
+  },
+  "tolerance_or_rounding_added": false,
+  "passed": true
+}

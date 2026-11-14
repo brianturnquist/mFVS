@@ -1,0 +1,101 @@
+[
+  {
+    "state": "original",
+    "case": "bc-StandStructure",
+    "returncode": 20,
+    "invalid_keyword_errors": 300,
+    "eight_nul_sequences": 296,
+    "generated_summary_files": [],
+    "generated_databases": [],
+    "simulation_parity": "blocked",
+    "listing_sha256": "403a83e0d13b8f68da13c4f6225ff502fc7b59374d25f63ebc4cf4606b45fd68"
+  },
+  {
+    "state": "current",
+    "case": "bc-StandStructure",
+    "returncode": 20,
+    "invalid_keyword_errors": 300,
+    "eight_nul_sequences": 296,
+    "generated_summary_files": [],
+    "generated_databases": [],
+    "simulation_parity": "blocked",
+    "listing_sha256": "bc516c3fa3ade330cb88d595ca36e1a2fed207bfeb538143feac89a365612507"
+  },
+  {
+    "state": "candidate",
+    "case": "bc-StandStructure",
+    "returncode": 20,
+    "invalid_keyword_errors": 300,
+    "eight_nul_sequences": 296,
+    "generated_summary_files": [],
+    "generated_databases": [],
+    "simulation_parity": "blocked",
+    "listing_sha256": "bc516c3fa3ade330cb88d595ca36e1a2fed207bfeb538143feac89a365612507"
+  },
+  {
+    "state": "original",
+    "case": "bc-YSM-SkyRanch",
+    "returncode": 20,
+    "invalid_keyword_errors": 461,
+    "eight_nul_sequences": 461,
+    "generated_summary_files": [],
+    "generated_databases": [],
+    "simulation_parity": "blocked",
+    "listing_sha256": "d45584ce6b149deb1ab77fa3addfbbf9f8c01cb135dfd95225c5024c3c914674"
+  },
+  {
+    "state": "current",
+    "case": "bc-YSM-SkyRanch",
+    "returncode": 20,
+    "invalid_keyword_errors": 461,
+    "eight_nul_sequences": 461,
+    "generated_summary_files": [],
+    "generated_databases": [],
+    "simulation_parity": "blocked",
+    "listing_sha256": "d45584ce6b149deb1ab77fa3addfbbf9f8c01cb135dfd95225c5024c3c914674"
+  },
+  {
+    "state": "candidate",
+    "case": "bc-YSM-SkyRanch",
+    "returncode": 20,
+    "invalid_keyword_errors": 461,
+    "eight_nul_sequences": 461,
+    "generated_summary_files": [],
+    "generated_databases": [],
+    "simulation_parity": "blocked",
+    "listing_sha256": "d45584ce6b149deb1ab77fa3addfbbf9f8c01cb135dfd95225c5024c3c914674"
+  },
+  {
+    "state": "original",
+    "case": "on-Hardwood",
+    "returncode": 20,
+    "invalid_keyword_errors": 30,
+    "eight_nul_sequences": 30,
+    "generated_summary_files": [],
+    "generated_databases": [],
+    "simulation_parity": "blocked",
+    "listing_sha256": "4d3ea51958df5ea535bac5f9c0d7c06c716fa5a3e784ba775b8d524c4a969280"
+  },
+  {
+    "state": "current",
+    "case": "on-Hardwood",
+    "returncode": 20,
+    "invalid_keyword_errors": 30,
+    "eight_nul_sequences": 30,
+    "generated_summary_files": [],
+    "generated_databases": [],
+    "simulation_parity": "blocked",
+    "listing_sha256": "1bb35ae04f4ead55fa131f969bf10b92e5c404ddb06036d7af76d0a111e1e772"
+  },
+  {
+    "state": "candidate",
+    "case": "on-Hardwood",
+    "returncode": 20,
+    "invalid_keyword_errors": 30,
+    "eight_nul_sequences": 30,
+    "generated_summary_files": [],
+    "generated_databases": [],
+    "simulation_parity": "blocked",
+    "listing_sha256": "1bb35ae04f4ead55fa131f969bf10b92e5c404ddb06036d7af76d0a111e1e772"
+  }
+]

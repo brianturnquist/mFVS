@@ -1,0 +1,81 @@
+--- before/fire/wc/fmvinit.f90
++++ canonical/fire/base/fmvinit.f90
+@@ -1,11 +1,10 @@
+ !=======================!
+-!   fire/wc : fmvinit   !
++!   fire/base : fmvinit !
+ !=======================!
+-! FIRE-WC $Id$
++! FIRE-BASE $Id$
+ subroutine FMVINIT
+   implicit none
+ 
+-  !    VIRTUALLY IDENTICAL TO PN-FFE VERSION
+   !  Purpose:
+   !      Initialize variant-specific variables for the Fire Model
+ 
+@@ -104,7 +103,7 @@
+   DKR(8,4) = 0.077 ! 35 - 50"
+   DKR(9,4) = 0.077 !  > 50"
+ 
+-  !     LITTER LOSS/YR (10) AND DUFF LOSS/YR (11)
++  !  LITTER LOSS/YR (10) AND DUFF LOSS/YR (11)
+ 
+   do J = 1,4
+      DKR(10,J) = 0.5
+@@ -168,7 +167,8 @@
+   !     ALLDWN() - YEARS DEAD AT WHICH ALL SNAGS WILL BE FALLEN
+   !     DECAYX() - DECAY RATE MULTIPLIER       (PP = 1.0 in NI var)
+   !     FALLX()  - FALL RATE MULTIPLIER        (PP = 1.0 in NI var)
+-  !     HTX()    - HEIGHT-LOSS RATE MULTIPLIER (PP = 1.0 in NI var)
++  !     HTX()    - HEIGHT-LOSS RATE MULTIPLIER (always set to 1.0,
++  !                                     but users can change thru keyword)
+ 
+   !     ** NOTE THAT SNAG RATE PARAMETERS ARE ALL RELATIVE TO PP **
+ 
+@@ -262,6 +262,27 @@
+         end do
+         LSW(I) = .true.
+ 
++        !         PN: SITKA SPRUCE. WC USED THE DOUGLAS-FIR GROUP FOR
++        !         INDEX 6. ITS OTHER DEFAULTS MATCH; KEEP V2T DISTINCT.
++     case (6)
++        if (VARIANTCD.eq.'WC') then
++           V2T(I) = 28.1
++        else
++           V2T(I) = 20.6
++        end if
++        LEAFLF(I) = 5.0
++        TFALL(I,0) = 2.0
++        TFALL(I,1) = 5.0
++        TFALL(I,2) = 5.0
++        TFALL(I,3) = 15.0
++        ALLDWN(I) = 110.0
++        DECAYX(I) = 1.0
++        FALLX(I) = 1.0
++        do J = 1,4
++           HTX(I,J) = 1.0
++        end do
++        LSW(I) = .true.
++
+         !         noble fir - DF, SO
+      case (7)
+         V2T(I) = 23.1
+@@ -310,7 +331,7 @@
+         end do
+         LSW(I) = .true.
+ 
+-        !         Engelmann spruce/Sitka spruce - SO, use ES
++        !         Engelmann spruce - SO
+      case (10)
+         V2T(I) = 20.6
+         LEAFLF(I) = 6.0
+@@ -407,7 +428,7 @@
+         LSW(I) = .true.
+ 
+         !         Douglas-fir, "not used"
+-     case (16,6,38)
++     case (16,38)
+         V2T(I) = 28.1 ! coast
+         LEAFLF(I) = 5.0
+         TFALL(I,0) = 2.0

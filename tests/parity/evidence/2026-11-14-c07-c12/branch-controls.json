@@ -1,0 +1,679 @@
+{
+  "checks": [
+    {
+      "case": "C07",
+      "species_case": 1,
+      "diameter_case": 2,
+      "at_five_percent_density": true,
+      "CS": [
+        0.0,
+        0.8306186199188232,
+        200.0
+      ],
+      "SN": [
+        0.0,
+        0.8306186199188232,
+        4.416299819946289
+      ],
+      "equal": false
+    },
+    {
+      "case": "C07",
+      "species_case": 1,
+      "diameter_case": 3,
+      "at_five_percent_density": true,
+      "CS": [
+        0.0,
+        0.8306186199188232,
+        200.0
+      ],
+      "SN": [
+        0.0,
+        0.8306186199188232,
+        200.0
+      ],
+      "equal": true
+    },
+    {
+      "case": "C07",
+      "species_case": 1,
+      "diameter_case": 4,
+      "at_five_percent_density": true,
+      "CS": [
+        0.0,
+        0.8306186199188232,
+        200.0
+      ],
+      "SN": [
+        0.0,
+        0.8306186199188232,
+        200.0
+      ],
+      "equal": true
+    },
+    {
+      "case": "C07",
+      "species_case": 2,
+      "diameter_case": 2,
+      "at_five_percent_density": true,
+      "CS": [
+        0.0,
+        0.8306186199188232,
+        200.0
+      ],
+      "SN": [
+        0.0,
+        0.8306186199188232,
+        200.0
+      ],
+      "equal": true
+    },
+    {
+      "case": "C07",
+      "species_case": 2,
+      "diameter_case": 3,
+      "at_five_percent_density": true,
+      "CS": [
+        0.0,
+        0.8306186199188232,
+        200.0
+      ],
+      "SN": [
+        0.0,
+        0.8306186199188232,
+        200.0
+      ],
+      "equal": true
+    },
+    {
+      "case": "C07",
+      "species_case": 2,
+      "diameter_case": 4,
+      "at_five_percent_density": true,
+      "CS": [
+        0.0,
+        0.8306186199188232,
+        200.0
+      ],
+      "SN": [
+        0.0,
+        0.8306186199188232,
+        200.0
+      ],
+      "equal": true
+    },
+    {
+      "case": "C07",
+      "species_case": 3,
+      "diameter_case": 2,
+      "at_five_percent_density": true,
+      "CS": [
+        0.0,
+        0.8306186199188232,
+        4.416299819946289
+      ],
+      "SN": [
+        0.0,
+        0.8306186199188232,
+        4.416299819946289
+      ],
+      "equal": true
+    },
+    {
+      "case": "C07",
+      "species_case": 3,
+      "diameter_case": 3,
+      "at_five_percent_density": true,
+      "CS": [
+        0.0,
+        0.8306186199188232,
+        200.0
+      ],
+      "SN": [
+        0.0,
+        0.8306186199188232,
+        200.0
+      ],
+      "equal": true
+    },
+    {
+      "case": "C07",
+      "species_case": 3,
+      "diameter_case": 4,
+      "at_five_percent_density": true,
+      "CS": [
+        0.0,
+        0.8306186199188232,
+        200.0
+      ],
+      "SN": [
+        0.0,
+        0.8306186199188232,
+        200.0
+      ],
+      "equal": true
+    },
+    {
+      "case": "C11-pn",
+      "species": 6,
+      "initial_density_lb_per_cubic_ft": 20.6,
+      "returned_V2T_tons_per_cubic_ft": 0.010300000198185444,
+      "existing_conversion_preserved": true,
+      "captured_variables": 37
+    },
+    {
+      "case": "C11-wc",
+      "species": 6,
+      "initial_density_lb_per_cubic_ft": 28.1,
+      "returned_V2T_tons_per_cubic_ft": 0.014050000347197056,
+      "existing_conversion_preserved": true,
+      "captured_variables": 37
+    },
+    {
+      "case": "C08-pn",
+      "defaults": {
+        "ELEV": 7.0,
+        "IFOR": 2,
+        "TLONG": 123.0
+      },
+      "captured_variables": 210
+    },
+    {
+      "case": "C08-wc",
+      "defaults": {
+        "ELEV": 35.0,
+        "IFOR": 6,
+        "TLONG": 122.0
+      },
+      "captured_variables": 210
+    },
+    {
+      "case": "C10-ak",
+      "exports": [
+        {
+          "file": "fixture1_STAND_2000_AK.es1",
+          "DF_bin": 5.2,
+          "stand_TPA": 101.0
+        },
+        {
+          "file": "fixture2_STAND_2000_AK.es1",
+          "DF_bin": 5.2,
+          "stand_TPA": 104.2
+        }
+      ],
+      "original_current_candidate_exact": true
+    },
+    {
+      "case": "C10-bc",
+      "exports": [
+        {
+          "file": "fixture1_STAND_2000_BC.es1",
+          "DF_bin": 3.2,
+          "stand_TPA": 101.0
+        },
+        {
+          "file": "fixture2_STAND_2000_BC.es1",
+          "DF_bin": 0.0,
+          "stand_TPA": 104.2
+        }
+      ],
+      "original_current_candidate_exact": true
+    },
+    {
+      "case": "C10-bm",
+      "exports": [
+        {
+          "file": "fixture1_STAND_2000_BM.es1",
+          "DF_bin": 3.2,
+          "stand_TPA": 101.0
+        },
+        {
+          "file": "fixture2_STAND_2000_BM.es1",
+          "DF_bin": 0.0,
+          "stand_TPA": 104.2
+        }
+      ],
+      "original_current_candidate_exact": true
+    },
+    {
+      "case": "C10-ca",
+      "exports": [
+        {
+          "file": "fixture1_STAND_2000_CA.es1",
+          "DF_bin": 3.2,
+          "stand_TPA": 101.0
+        },
+        {
+          "file": "fixture2_STAND_2000_CA.es1",
+          "DF_bin": 0.0,
+          "stand_TPA": 104.2
+        }
+      ],
+      "original_current_candidate_exact": true
+    },
+    {
+      "case": "C10-ci",
+      "exports": [
+        {
+          "file": "fixture1_STAND_2000_CI.es1",
+          "DF_bin": 5.2,
+          "stand_TPA": 101.0
+        },
+        {
+          "file": "fixture2_STAND_2000_CI.es1",
+          "DF_bin": 5.2,
+          "stand_TPA": 104.2
+        }
+      ],
+      "original_current_candidate_exact": true
+    },
+    {
+      "case": "C10-cr",
+      "exports": [
+        {
+          "file": "fixture1_STAND_2000_CR.es1",
+          "DF_bin": 3.2,
+          "stand_TPA": 101.0
+        },
+        {
+          "file": "fixture2_STAND_2000_CR.es1",
+          "DF_bin": 0.0,
+          "stand_TPA": 104.2
+        }
+      ],
+      "original_current_candidate_exact": true
+    },
+    {
+      "case": "C10-cs",
+      "exports": [
+        {
+          "file": "fixture1_STAND_2000_CS.es1",
+          "DF_bin": 3.2,
+          "stand_TPA": 101.0
+        },
+        {
+          "file": "fixture2_STAND_2000_CS.es1",
+          "DF_bin": 0.0,
+          "stand_TPA": 104.2
+        }
+      ],
+      "original_current_candidate_exact": true
+    },
+    {
+      "case": "C10-ec",
+      "exports": [
+        {
+          "file": "fixture1_STAND_2000_EC.es1",
+          "DF_bin": 3.2,
+          "stand_TPA": 101.0
+        },
+        {
+          "file": "fixture2_STAND_2000_EC.es1",
+          "DF_bin": 0.0,
+          "stand_TPA": 104.2
+        }
+      ],
+      "original_current_candidate_exact": true
+    },
+    {
+      "case": "C10-em",
+      "exports": [
+        {
+          "file": "fixture1_STAND_2000_EM.es1",
+          "DF_bin": 5.2,
+          "stand_TPA": 101.0
+        },
+        {
+          "file": "fixture2_STAND_2000_EM.es1",
+          "DF_bin": 5.2,
+          "stand_TPA": 104.2
+        }
+      ],
+      "original_current_candidate_exact": true
+    },
+    {
+      "case": "C10-ie",
+      "exports": [
+        {
+          "file": "fixture1_STAND_2000_IE.es1",
+          "DF_bin": 5.2,
+          "stand_TPA": 101.0
+        },
+        {
+          "file": "fixture2_STAND_2000_IE.es1",
+          "DF_bin": 5.2,
+          "stand_TPA": 104.2
+        }
+      ],
+      "original_current_candidate_exact": true
+    },
+    {
+      "case": "C10-kt",
+      "exports": [
+        {
+          "file": "fixture1_STAND_2000_KT.es1",
+          "DF_bin": 5.2,
+          "stand_TPA": 101.0
+        },
+        {
+          "file": "fixture2_STAND_2000_KT.es1",
+          "DF_bin": 5.2,
+          "stand_TPA": 104.2
+        }
+      ],
+      "original_current_candidate_exact": true
+    },
+    {
+      "case": "C10-ls",
+      "exports": [
+        {
+          "file": "fixture1_STAND_2000_LS.es1",
+          "DF_bin": 3.2,
+          "stand_TPA": 101.0
+        },
+        {
+          "file": "fixture2_STAND_2000_LS.es1",
+          "DF_bin": 0.0,
+          "stand_TPA": 104.2
+        }
+      ],
+      "original_current_candidate_exact": true
+    },
+    {
+      "case": "C10-nc",
+      "exports": [
+        {
+          "file": "fixture1_STAND_2000_NC.es1",
+          "DF_bin": 3.2,
+          "stand_TPA": 101.0
+        },
+        {
+          "file": "fixture2_STAND_2000_NC.es1",
+          "DF_bin": 0.0,
+          "stand_TPA": 104.2
+        }
+      ],
+      "original_current_candidate_exact": true
+    },
+    {
+      "case": "C10-ne",
+      "exports": [
+        {
+          "file": "fixture1_STAND_2000_NE.es1",
+          "DF_bin": 3.2,
+          "stand_TPA": 101.0
+        },
+        {
+          "file": "fixture2_STAND_2000_NE.es1",
+          "DF_bin": 0.0,
+          "stand_TPA": 104.2
+        }
+      ],
+      "original_current_candidate_exact": true
+    },
+    {
+      "case": "C10-oc",
+      "exports": [
+        {
+          "file": "fixture1_STAND_2000_OC.es1",
+          "DF_bin": 3.2,
+          "stand_TPA": 101.0
+        },
+        {
+          "file": "fixture2_STAND_2000_OC.es1",
+          "DF_bin": 0.0,
+          "stand_TPA": 104.2
+        }
+      ],
+      "original_current_candidate_exact": true
+    },
+    {
+      "case": "C10-on",
+      "exports": [
+        {
+          "file": "fixture1_STAND_2000_ON.es1",
+          "DF_bin": 3.2,
+          "stand_TPA": 101.0
+        },
+        {
+          "file": "fixture2_STAND_2000_ON.es1",
+          "DF_bin": 0.0,
+          "stand_TPA": 104.2
+        }
+      ],
+      "original_current_candidate_exact": true
+    },
+    {
+      "case": "C10-op",
+      "exports": [
+        {
+          "file": "fixture1_STAND_2000_OP.es1",
+          "DF_bin": 3.2,
+          "stand_TPA": 101.0
+        },
+        {
+          "file": "fixture2_STAND_2000_OP.es1",
+          "DF_bin": 0.0,
+          "stand_TPA": 104.2
+        }
+      ],
+      "original_current_candidate_exact": true
+    },
+    {
+      "case": "C10-pn",
+      "exports": [
+        {
+          "file": "fixture1_STAND_2000_PN.es1",
+          "DF_bin": 3.2,
+          "stand_TPA": 101.0
+        },
+        {
+          "file": "fixture2_STAND_2000_PN.es1",
+          "DF_bin": 0.0,
+          "stand_TPA": 104.2
+        }
+      ],
+      "original_current_candidate_exact": true
+    },
+    {
+      "case": "C10-sn",
+      "exports": [
+        {
+          "file": "fixture1_STAND_2000_SN.es1",
+          "DF_bin": 3.2,
+          "stand_TPA": 101.0
+        },
+        {
+          "file": "fixture2_STAND_2000_SN.es1",
+          "DF_bin": 0.0,
+          "stand_TPA": 104.2
+        }
+      ],
+      "original_current_candidate_exact": true
+    },
+    {
+      "case": "C10-so",
+      "exports": [
+        {
+          "file": "fixture1_STAND_2000_SO.es1",
+          "DF_bin": 3.2,
+          "stand_TPA": 101.0
+        },
+        {
+          "file": "fixture2_STAND_2000_SO.es1",
+          "DF_bin": 0.0,
+          "stand_TPA": 104.2
+        }
+      ],
+      "original_current_candidate_exact": true
+    },
+    {
+      "case": "C10-tt",
+      "exports": [
+        {
+          "file": "fixture1_STAND_2000_TT.es1",
+          "DF_bin": 3.2,
+          "stand_TPA": 101.0
+        },
+        {
+          "file": "fixture2_STAND_2000_TT.es1",
+          "DF_bin": 0.0,
+          "stand_TPA": 104.2
+        }
+      ],
+      "original_current_candidate_exact": true
+    },
+    {
+      "case": "C10-ut",
+      "exports": [
+        {
+          "file": "fixture1_STAND_2000_UT.es1",
+          "DF_bin": 3.2,
+          "stand_TPA": 101.0
+        },
+        {
+          "file": "fixture2_STAND_2000_UT.es1",
+          "DF_bin": 0.0,
+          "stand_TPA": 104.2
+        }
+      ],
+      "original_current_candidate_exact": true
+    },
+    {
+      "case": "C10-wc",
+      "exports": [
+        {
+          "file": "fixture1_STAND_2000_WC.es1",
+          "DF_bin": 3.2,
+          "stand_TPA": 101.0
+        },
+        {
+          "file": "fixture2_STAND_2000_WC.es1",
+          "DF_bin": 0.0,
+          "stand_TPA": 104.2
+        }
+      ],
+      "original_current_candidate_exact": true
+    },
+    {
+      "case": "C10-ws",
+      "exports": [
+        {
+          "file": "fixture1_STAND_2000_WS.es1",
+          "DF_bin": 3.2,
+          "stand_TPA": 101.0
+        },
+        {
+          "file": "fixture2_STAND_2000_WS.es1",
+          "DF_bin": 0.0,
+          "stand_TPA": 104.2
+        }
+      ],
+      "original_current_candidate_exact": true
+    },
+    {
+      "case": "C12-oc",
+      "length": 50,
+      "all_literals_and_actual_calls_preserved": true,
+      "mapping": [
+        242,
+        81,
+        242,
+        17,
+        202,
+        202,
+        202,
+        263,
+        263,
+        122,
+        122,
+        122,
+        122,
+        122,
+        122,
+        117,
+        122,
+        122,
+        122,
+        122,
+        231,
+        17,
+        122,
+        231,
+        231,
+        805,
+        805,
+        805,
+        805,
+        815,
+        818,
+        805,
+        805,
+        312,
+        312,
+        351,
+        361,
+        431,
+        492,
+        312,
+        312,
+        631,
+        312,
+        312,
+        312,
+        920,
+        492,
+        492,
+        492,
+        122
+      ]
+    },
+    {
+      "case": "C12-op",
+      "length": 39,
+      "all_literals_and_actual_calls_preserved": true,
+      "mapping": [
+        17,
+        17,
+        17,
+        17,
+        202,
+        202,
+        17,
+        242,
+        242,
+        202,
+        202,
+        202,
+        202,
+        202,
+        202,
+        202,
+        263,
+        242,
+        263,
+        263,
+        312,
+        351,
+        361,
+        312,
+        361,
+        312,
+        312,
+        815,
+        231,
+        17,
+        202,
+        202,
+        231,
+        492,
+        492,
+        492,
+        920,
+        492,
+        492
+      ]
+    }
+  ],
+  "passed": true
+}

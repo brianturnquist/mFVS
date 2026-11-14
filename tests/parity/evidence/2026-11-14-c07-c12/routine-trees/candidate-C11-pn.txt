@@ -1,0 +1,1659 @@
+__attribute__((fn spec (". ")))
+void fmvinit ()
+{
+  static logical(kind=4) cfim_on [value-expr: cfimcom.cfim_on];
+  static real(kind=4) cfim_bd [value-expr: cfimcom.cfim_bd];
+  static real(kind=4) cfim_dc [value-expr: cfimcom.cfim_dc];
+  static real(kind=4) cfim_input[26] [value-expr: cfimcom.cfim_input];
+  static real(kind=4) potcons[9] [value-expr: cfimcom.potcons];
+  static character(kind=1) calcsdi[1:7] [value-expr: conchr.calcsdi];
+  static character(kind=1) iused[39][1:4] [value-expr: conchr.iused];
+  static character(kind=1) kwdfil[1:250] [value-expr: conchr.kwdfil];
+  static character(kind=1) namgrp[30][1:10] [value-expr: conchr.namgrp];
+  static character(kind=1) ptgname[30][1:10] [value-expr: conchr.ptgname];
+  static character(kind=1) trefmt[1:160] [value-expr: conchr.trefmt];
+  static character(kind=1) varacd[1:2] [value-expr: conchr.varacd];
+  static character(kind=1) cfctype[1:1] [value-expr: conchr.cfctype];
+  static character(kind=1) bfctype[1:1] [value-expr: conchr.bfctype];
+  static real(kind=4) auteff [value-expr: contrl.auteff];
+  static real(kind=4) autmax [value-expr: contrl.autmax];
+  static real(kind=4) autmin [value-expr: contrl.autmin];
+  static real(kind=4) bamax [value-expr: contrl.bamax];
+  static real(kind=4) bamin [value-expr: contrl.bamin];
+  static real(kind=4) bfmin [value-expr: contrl.bfmin];
+  static real(kind=4) cccoef [value-expr: contrl.cccoef];
+  static real(kind=4) cccoef2 [value-expr: contrl.cccoef2];
+  static real(kind=4) cfmin [value-expr: contrl.cfmin];
+  static real(kind=4) dbhmin[39] [value-expr: contrl.dbhmin];
+  static real(kind=4) dbhsdi [value-expr: contrl.dbhsdi];
+  static real(kind=4) dbhstage [value-expr: contrl.dbhstage];
+  static real(kind=4) dbhzeide [value-expr: contrl.dbhzeide];
+  static real(kind=4) dgsd [value-expr: contrl.dgsd];
+  static real(kind=4) dr016 [value-expr: contrl.dr016];
+  static real(kind=4) eff [value-expr: contrl.eff];
+  static real(kind=4) fintm [value-expr: contrl.fintm];
+  static real(kind=4) frmcls[39] [value-expr: contrl.frmcls];
+  static integer(kind=4) ibegin[39] [value-expr: contrl.ibegin];
+  static integer(kind=4) iccode [value-expr: contrl.iccode];
+  static integer(kind=4) icflag [value-expr: contrl.icflag];
+  static integer(kind=4) icl1 [value-expr: contrl.icl1];
+  static integer(kind=4) icl2 [value-expr: contrl.icl2];
+  static integer(kind=4) icl3 [value-expr: contrl.icl3];
+  static integer(kind=4) icl4 [value-expr: contrl.icl4];
+  static integer(kind=4) icl5 [value-expr: contrl.icl5];
+  static integer(kind=4) icl6 [value-expr: contrl.icl6];
+  static integer(kind=4) icyc [value-expr: contrl.icyc];
+  static integer(kind=4) idg [value-expr: contrl.idg];
+  static integer(kind=4) ifst [value-expr: contrl.ifst];
+  static integer(kind=4) ins[6] [value-expr: contrl.ins];
+  static integer(kind=4) iptgrp[1560] [value-expr: contrl.iptgrp];
+  static integer(kind=4) iread [value-expr: contrl.iread];
+  static integer(kind=4) irec1 [value-expr: contrl.irec1];
+  static integer(kind=4) irec2 [value-expr: contrl.irec2];
+  static integer(kind=4) irecnt [value-expr: contrl.irecnt];
+  static integer(kind=4) irecrd [value-expr: contrl.irecrd];
+  static integer(kind=4) iref[39] [value-expr: contrl.iref];
+  static integer(kind=4) isct[78] [value-expr: contrl.isct];
+  static integer(kind=4) ispgrp[2760] [value-expr: contrl.ispgrp];
+  static integer(kind=4) istdat [value-expr: contrl.istdat];
+  static integer(kind=4) itable[7] [value-expr: contrl.itable];
+  static integer(kind=4) ithnpa [value-expr: contrl.ithnpa];
+  static integer(kind=4) ithnpi [value-expr: contrl.ithnpi];
+  static integer(kind=4) ithnpn [value-expr: contrl.ithnpn];
+  static integer(kind=4) itrn [value-expr: contrl.itrn];
+  static integer(kind=4) iy[41] [value-expr: contrl.iy];
+  static integer(kind=4) jocalb [value-expr: contrl.jocalb];
+  static integer(kind=4) jolist [value-expr: contrl.jolist];
+  static integer(kind=4) jostnd [value-expr: contrl.jostnd];
+  static integer(kind=4) josum [value-expr: contrl.josum];
+  static integer(kind=4) jotree [value-expr: contrl.jotree];
+  static integer(kind=4) kount[39] [value-expr: contrl.kount];
+  static integer(kind=4) kptr[39] [value-expr: contrl.kptr];
+  static logical(kind=4) lauton [value-expr: contrl.lauton];
+  static logical(kind=4) lbkden [value-expr: contrl.lbkden];
+  static logical(kind=4) lbvols [value-expr: contrl.lbvols];
+  static logical(kind=4) lcvols [value-expr: contrl.lcvols];
+  static logical(kind=4) ldcor2 [value-expr: contrl.ldcor2];
+  static logical(kind=4) ldgcal[39] [value-expr: contrl.ldgcal];
+  static logical(kind=4) ldubdg [value-expr: contrl.ldubdg];
+  static logical(kind=4) leavesp[39] [value-expr: contrl.leavesp];
+  static logical(kind=4) lfia [value-expr: contrl.lfia];
+  static logical(kind=4) lfire [value-expr: contrl.lfire];
+  static logical(kind=4) lflag [value-expr: contrl.lflag];
+  static logical(kind=4) lhtdrg[39] [value-expr: contrl.lhtdrg];
+  static logical(kind=4) lmort [value-expr: contrl.lmort];
+  static logical(kind=4) lperm [value-expr: contrl.lperm];
+  static logical(kind=4) lrcor2 [value-expr: contrl.lrcor2];
+  static logical(kind=4) lsite [value-expr: contrl.lsite];
+  static logical(kind=4) lstart [value-expr: contrl.lstart];
+  static integer(kind=4) lstknt [value-expr: contrl.lstknt];
+  static logical(kind=4) lsumry [value-expr: contrl.lsumry];
+  static logical(kind=4) ltrip [value-expr: contrl.ltrip];
+  static logical(kind=4) lzeide [value-expr: contrl.lzeide];
+  static integer(kind=4) methb[39] [value-expr: contrl.methb];
+  static integer(kind=4) methc[39] [value-expr: contrl.methc];
+  static logical(kind=4) mordat [value-expr: contrl.mordat];
+  static integer(kind=4) ncyc [value-expr: contrl.ncyc];
+  static logical(kind=4) notrip [value-expr: contrl.notrip];
+  static integer(kind=4) nptgrp [value-expr: contrl.nptgrp];
+  static integer(kind=4) nspgrp [value-expr: contrl.nspgrp];
+  static integer(kind=4) nstknt [value-expr: contrl.nstknt];
+  static integer(kind=4) numsp [value-expr: contrl.numsp];
+  static real(kind=4) pbawt [value-expr: contrl.pbawt];
+  static real(kind=4) pccfwt [value-expr: contrl.pccfwt];
+  static real(kind=4) ptpawt [value-expr: contrl.ptpawt];
+  static real(kind=4) rcor2[39] [value-expr: contrl.rcor2];
+  static real(kind=4) sizcap[156] [value-expr: contrl.sizcap];
+  static real(kind=4) spclwt [value-expr: contrl.spclwt];
+  static real(kind=4) stmp[39] [value-expr: contrl.stmp];
+  static real(kind=4) tcfmin [value-expr: contrl.tcfmin];
+  static real(kind=4) tcwt [value-expr: contrl.tcwt];
+  static real(kind=4) topd[39] [value-expr: contrl.topd];
+  static real(kind=4) trm [value-expr: contrl.trm];
+  static real(kind=4) yr [value-expr: contrl.yr];
+  static real(kind=4) scfmind[39] [value-expr: contrl.scfmind];
+  static real(kind=4) scftopd[39] [value-expr: contrl.scftopd];
+  static logical(kind=4) lfianvb [value-expr: contrl.lfianvb];
+  static real(kind=4) scfstmp[39] [value-expr: contrl.scfstmp];
+  static real(kind=4) scfmin [value-expr: contrl.scfmin];
+  static real(kind=4) atdr016 [value-expr: contrl.atdr016];
+  static real(kind=4) odr016 [value-expr: contrl.odr016];
+  static integer(kind=4) idcrpt [value-expr: crbcom.idcrpt];
+  static integer(kind=4) icrptb [value-expr: crbcom.icrptb];
+  static integer(kind=4) icrpte [value-expr: crbcom.icrpte];
+  static integer(kind=4) icrpas [value-expr: crbcom.icrpas];
+  static integer(kind=4) idchrv [value-expr: crbcom.idchrv];
+  static integer(kind=4) ichrvb [value-expr: crbcom.ichrvb];
+  static integer(kind=4) ichrve [value-expr: crbcom.ichrve];
+  static integer(kind=4) ichpas [value-expr: crbcom.ichpas];
+  static integer(kind=4) icmeth [value-expr: crbcom.icmeth];
+  static integer(kind=4) icmetrc [value-expr: crbcom.icmetrc];
+  static integer(kind=4) ichabt [value-expr: crbcom.ichabt];
+  static real(kind=4) crdcay [value-expr: crbcom.crdcay];
+  static real(kind=4) cdbrk[2] [value-expr: crbcom.cdbrk];
+  static real(kind=4) biocon[2] [value-expr: crbcom.biocon];
+  static real(kind=4) biolive [value-expr: crbcom.biolive];
+  static real(kind=4) biorem[2] [value-expr: crbcom.biorem];
+  static real(kind=4) biosnag [value-expr: crbcom.biosnag];
+  static real(kind=4) bioddw [value-expr: crbcom.bioddw];
+  static real(kind=4) bioflr [value-expr: crbcom.bioflr];
+  static real(kind=4) bioshrb [value-expr: crbcom.bioshrb];
+  static real(kind=4) bioroot [value-expr: crbcom.bioroot];
+  static real(kind=4) fate[160] [value-expr: crbcom.fate];
+  static real(kind=4) carbval[17] [value-expr: crbcom.carbval];
+  static real(kind=4) alldwn[39] [value-expr: fmcom.alldwn];
+  static integer(kind=4) burnyr [value-expr: fmcom.burnyr];
+  static real(kind=4) canmht [value-expr: fmcom.canmht];
+  static real(kind=4) cbhcut [value-expr: fmcom.cbhcut];
+  static integer(kind=4) covtyp [value-expr: fmcom.covtyp];
+  static real(kind=4) crburn [value-expr: fmcom.crburn];
+  static real(kind=4) crownw[18000] [value-expr: fmcom.crownw];
+  static real(kind=4) curkil[3000] [value-expr: fmcom.curkil];
+  static real(kind=4) cwd[330] [value-expr: fmcom.cwd];
+  static real(kind=4) cwd2b[1440] [value-expr: fmcom.cwd2b];
+  static real(kind=4) cwd2b2[1440] [value-expr: fmcom.cwd2b2];
+  static real(kind=4) cwdcut [value-expr: fmcom.cwdcut];
+  static real(kind=4) cwdnew[22] [value-expr: fmcom.cwdnew];
+  static real(kind=4) cwdvol[300] [value-expr: fmcom.cwdvol];
+  static real(kind=4) cwdcov[300] [value-expr: fmcom.cwdcov];
+  static real(kind=4) dbhs[2000] [value-expr: fmcom.dbhs];
+  static real(kind=4) decayx[39] [value-expr: fmcom.decayx];
+  static real(kind=4) denih[2000] [value-expr: fmcom.denih];
+  static real(kind=4) denis[2000] [value-expr: fmcom.denis];
+  static real(kind=4) dend[2000] [value-expr: fmcom.dend];
+  static real(kind=4) dkr[44] [value-expr: fmcom.dkr];
+  static integer(kind=4) dkrcls[39] [value-expr: fmcom.dkrcls];
+  static real(kind=4) dkrdef[4] [value-expr: fmcom.dkrdef];
+  static real(kind=4) dspdbh[741] [value-expr: fmcom.dspdbh];
+  static real(kind=4) fallx[39] [value-expr: fmcom.fallx];
+  static real(kind=4) flive[2] [value-expr: fmcom.flive];
+  static real(kind=4) firkil[3000] [value-expr: fmcom.firkil];
+  static real(kind=4) folmc [value-expr: fmcom.folmc];
+  static real(kind=4) fmprob[3000] [value-expr: fmcom.fmprob];
+  static real(kind=4) fmtba[39] [value-expr: fmcom.fmtba];
+  static integer(kind=4) nfmsvpx [value-expr: fmcom.nfmsvpx];
+  static integer(kind=4) fmicr[3000] [value-expr: fmcom.fmicr];
+  static integer(kind=4) fmkod [value-expr: fmcom.fmkod];
+  static real(kind=4) fmslop [value-expr: fmcom.fmslop];
+  static integer(kind=4) ftreat [value-expr: fmcom.ftreat];
+  static real(kind=4) fmortmlt[3000] [value-expr: fmcom.fmortmlt];
+  static real(kind=4) fuarea[20] [value-expr: fmcom.fuarea];
+  static integer(kind=4) grow[3000] [value-expr: fmcom.grow];
+  static logical(kind=4) hard[2000] [value-expr: fmcom.hard];
+  static integer(kind=4) hartyp [value-expr: fmcom.hartyp];
+  static integer(kind=4) harvyr [value-expr: fmcom.harvyr];
+  static real(kind=4) htdead[2000] [value-expr: fmcom.htdead];
+  static real(kind=4) htih[2000] [value-expr: fmcom.htih];
+  static real(kind=4) htis[2000] [value-expr: fmcom.htis];
+  static real(kind=4) htr1 [value-expr: fmcom.htr1];
+  static real(kind=4) htr2 [value-expr: fmcom.htr2];
+  static real(kind=4) htx[156] [value-expr: fmcom.htx];
+  static real(kind=4) htxsft [value-expr: fmcom.htxsft];
+  static integer(kind=4) icansp [value-expr: fmcom.icansp];
+  static integer(kind=4) icbhmt [value-expr: fmcom.icbhmt];
+  static integer(kind=4) icycrm [value-expr: fmcom.icycrm];
+  static integer(kind=4) ifmyr1 [value-expr: fmcom.ifmyr1];
+  static integer(kind=4) ifmyr2 [value-expr: fmcom.ifmyr2];
+  static integer(kind=4) iftyr [value-expr: fmcom.iftyr];
+  static integer(kind=4) isalvc [value-expr: fmcom.isalvc];
+  static integer(kind=4) isalvs [value-expr: fmcom.isalvs];
+  static integer(kind=4) isngsm [value-expr: fmcom.isngsm];
+  static integer(kind=4) itrnl [value-expr: fmcom.itrnl];
+  static integer(kind=4) jcout [value-expr: fmcom.jcout];
+  static integer(kind=4) jfrout[3] [value-expr: fmcom.jfrout];
+  static integer(kind=4) jlout[3] [value-expr: fmcom.jlout];
+  static logical(kind=4) lanhed [value-expr: fmcom.lanhed];
+  static real(kind=4) leaflf[39] [value-expr: fmcom.leaflf];
+  static logical(kind=4) lfmon [value-expr: fmcom.lfmon];
+  static logical(kind=4) lfmon2 [value-expr: fmcom.lfmon2];
+  static logical(kind=4) lfrout[3] [value-expr: fmcom.lfrout];
+  static logical(kind=4) ldynfm [value-expr: fmcom.ldynfm];
+  static real(kind=4) limbrk [value-expr: fmcom.limbrk];
+  static logical(kind=4) ldhead [value-expr: fmcom.ldhead];
+  static logical(kind=4) lshead [value-expr: fmcom.lshead];
+  static logical(kind=4) lvwest [value-expr: fmcom.lvwest];
+  static real(kind=4) maxht[741] [value-expr: fmcom.maxht];
+  static real(kind=4) minht[741] [value-expr: fmcom.minht];
+  static integer(kind=4) nsnag [value-expr: fmcom.nsnag];
+  static integer(kind=4) nyrs [value-expr: fmcom.nyrs];
+  static real(kind=4) nzero [value-expr: fmcom.nzero];
+  static integer(kind=4) oldcovtyp [value-expr: fmcom.oldcovtyp];
+  static real(kind=4) oldcrl[3000] [value-expr: fmcom.oldcrl];
+  static real(kind=4) oldht[3000] [value-expr: fmcom.oldht];
+  static real(kind=4) oldcrw[18000] [value-expr: fmcom.oldcrw];
+  static integer(kind=4) oldict [value-expr: fmcom.oldict];
+  static integer(kind=4) oldict2 [value-expr: fmcom.oldict2];
+  static real(kind=4) oldictwt[2] [value-expr: fmcom.oldictwt];
+  static real(kind=4) pbfrih[2000] [value-expr: fmcom.pbfrih];
+  static real(kind=4) pbfris[2000] [value-expr: fmcom.pbfris];
+  static real(kind=4) pbscor [value-expr: fmcom.pbscor];
+  static real(kind=4) pbsoft [value-expr: fmcom.pbsoft];
+  static real(kind=4) pbsize [value-expr: fmcom.pbsize];
+  static real(kind=4) pbsmal [value-expr: fmcom.pbsmal];
+  static real(kind=4) pbtime [value-expr: fmcom.pbtime];
+  static integer(kind=4) pburnyr [value-expr: fmcom.pburnyr];
+  static real(kind=4) percov [value-expr: fmcom.percov];
+  static real(kind=4) prduff[44] [value-expr: fmcom.prduff];
+  static real(kind=4) prsnag [value-expr: fmcom.prsnag];
+  static real(kind=4) psoft[39] [value-expr: fmcom.psoft];
+  static real(kind=4) prpile[11] [value-expr: fmcom.prpile];
+  static real(kind=4) salvspa[4000] [value-expr: fmcom.salvspa];
+  static real(kind=4) sccf [value-expr: fmcom.sccf];
+  static real(kind=4) setdecay[44] [value-expr: fmcom.setdecay];
+  static real(kind=4) sngnew[3000] [value-expr: fmcom.sngnew];
+  static real(kind=4) snprcl[6] [value-expr: fmcom.snprcl];
+  static integer(kind=4) sps[2000] [value-expr: fmcom.sps];
+  static real(kind=4) tcwd[6] [value-expr: fmcom.tcwd];
+  static real(kind=4) tcwd2[6] [value-expr: fmcom.tcwd2];
+  static real(kind=4) tfall[234] [value-expr: fmcom.tfall];
+  static real(kind=4) toduff[44] [value-expr: fmcom.toduff];
+  static real(kind=4) tonrmc [value-expr: fmcom.tonrmc];
+  static real(kind=4) tonrms [value-expr: fmcom.tonrms];
+  static real(kind=4) tonrmh [value-expr: fmcom.tonrmh];
+  static real(kind=4) totacr [value-expr: fmcom.totacr];
+  static real(kind=4) v2t[39] [value-expr: fmcom.v2t];
+  static integer(kind=4) yrdead[2000] [value-expr: fmcom.yrdead];
+  static logical(kind=4) lremt [value-expr: fmcom.lremt];
+  static integer(kind=4) nsnagsalv [value-expr: fmcom.nsnagsalv];
+  static real(kind=4) htdeadsalv[2000] [value-expr: fmcom.htdeadsalv];
+  static integer(kind=4) spssalv[2000] [value-expr: fmcom.spssalv];
+  static real(kind=4) dbhssalv[2000] [value-expr: fmcom.dbhssalv];
+  static real(kind=4) htihsalv[2000] [value-expr: fmcom.htihsalv];
+  static real(kind=4) htissalv[2000] [value-expr: fmcom.htissalv];
+  static logical(kind=4) hardsalv[2000] [value-expr: fmcom.hardsalv];
+  static real(kind=4) premst[3000] [value-expr: fmcom.premst];
+  static real(kind=4) premcr[3000] [value-expr: fmcom.premcr];
+  static integer(kind=4) ispcc[3000] [value-expr: fmcom.ispcc];
+  static real(kind=4) dbhc[3000] [value-expr: fmcom.dbhc];
+  static real(kind=4) htc[3000] [value-expr: fmcom.htc];
+  static real(kind=4) crownwc[18000] [value-expr: fmcom.crownwc];
+  static integer(kind=4) actcbh [value-expr: fmfcom.actcbh];
+  static integer(kind=4) atemp [value-expr: fmfcom.atemp];
+  static real(kind=4) burned[33] [value-expr: fmfcom.burned];
+  static real(kind=4) burncr [value-expr: fmfcom.burncr];
+  static real(kind=4) burnlv[2] [value-expr: fmfcom.burnlv];
+  static integer(kind=4) burnseas [value-expr: fmfcom.burnseas];
+  static real(kind=4) cancls[4] [value-expr: fmfcom.cancls];
+  static real(kind=4) cbd [value-expr: fmfcom.cbd];
+  static real(kind=4) ccchng [value-expr: fmfcom.ccchng];
+  static real(kind=4) cccrit [value-expr: fmfcom.cccrit];
+  static real(kind=4) corfac[4] [value-expr: fmfcom.corfac];
+  static real(kind=4) depth [value-expr: fmfcom.depth];
+  static real(kind=4) dpmod [value-expr: fmfcom.dpmod];
+  static real(kind=4) exposr [value-expr: fmfcom.exposr];
+  static real(kind=4) firacr[2] [value-expr: fmfcom.firacr];
+  static integer(kind=4) flag[3] [value-expr: fmfcom.flag];
+  static integer(kind=4) fm89yr [value-expr: fmfcom.fm89yr];
+  static real(kind=4) fmacre[14] [value-expr: fmfcom.fmacre];
+  static real(kind=4) fmdep[256] [value-expr: fmfcom.fmdep];
+  static real(kind=4) fmload[3584] [value-expr: fmfcom.fmload];
+  static integer(kind=4) fmod[5] [value-expr: fmfcom.fmod];
+  static real(kind=4) fwg[14] [value-expr: fmfcom.fwg];
+  static real(kind=4) fwind [value-expr: fmfcom.fwind];
+  static real(kind=4) fwt[5] [value-expr: fmfcom.fwt];
+  static integer(kind=4) iflogic [value-expr: fmfcom.iflogic];
+  static integer(kind=4) ifmset [value-expr: fmfcom.ifmset];
+  static integer(kind=4) ifuelmon[256] [value-expr: fmfcom.ifuelmon];
+  static real(kind=4) large [value-expr: fmfcom.large];
+  static logical(kind=4) lhead [value-expr: fmfcom.lhead];
+  static logical(kind=4) lsw[39] [value-expr: fmfcom.lsw];
+  static real(kind=4) mext[3] [value-expr: fmfcom.mext];
+  static real(kind=4) minsol [value-expr: fmfcom.minsol];
+  static real(kind=4) mois[10] [value-expr: fmfcom.mois];
+  static real(kind=4) moisex[256] [value-expr: fmfcom.moisex];
+  static integer(kind=4) mps[8] [value-expr: fmfcom.mps];
+  static integer(kind=4) nd [value-expr: fmfcom.nd];
+  static integer(kind=4) nl [value-expr: fmfcom.nl];
+  static real(kind=4) olarge [value-expr: fmfcom.olarge];
+  static real(kind=4) osmall [value-expr: fmfcom.osmall];
+  static logical(kind=4) lflbrn [value-expr: fmfcom.lflbrn];
+  static integer(kind=4) pottyp[2] [value-expr: fmfcom.pottyp];
+  static real(kind=4) potfsr[4] [value-expr: fmfcom.potfsr];
+  static real(kind=4) potrint[2] [value-expr: fmfcom.potrint];
+  static real(kind=4) pbrncr [value-expr: fmfcom.pbrncr];
+  static real(kind=4) pflacr[12] [value-expr: fmfcom.pflacr];
+  static integer(kind=4) plsiz[2] [value-expr: fmfcom.plsiz];
+  static real(kind=4) potkil[4] [value-expr: fmfcom.potkil];
+  static real(kind=4) potvol[2] [value-expr: fmfcom.potvol];
+  static real(kind=4) presvl[16] [value-expr: fmfcom.presvl];
+  static real(kind=4) prv8 [value-expr: fmfcom.prv8];
+  static real(kind=4) prv9 [value-expr: fmfcom.prv9];
+  static real(kind=4) rfinal [value-expr: fmfcom.rfinal];
+  static real(kind=4) sch [value-expr: fmfcom.sch];
+  static real(kind=4) small [value-expr: fmfcom.small];
+  static real(kind=4) slchng [value-expr: fmfcom.slchng];
+  static real(kind=4) slcrit [value-expr: fmfcom.slcrit];
+  static real(kind=4) smoke[2] [value-expr: fmfcom.smoke];
+  static real(kind=4) scbe[3] [value-expr: fmfcom.scbe];
+  static integer(kind=4) soiltp [value-expr: fmfcom.soiltp];
+  static integer(kind=4) surfvl[2048] [value-expr: fmfcom.surfvl];
+  static real(kind=4) sfrate[3] [value-expr: fmfcom.sfrate];
+  static real(kind=4) sirxi[3] [value-expr: fmfcom.sirxi];
+  static real(kind=4) sphis[3] [value-expr: fmfcom.sphis];
+  static real(kind=4) srhobq[3] [value-expr: fmfcom.srhobq];
+  static real(kind=4) ssigma[3] [value-expr: fmfcom.ssigma];
+  static real(kind=4) sxir[3] [value-expr: fmfcom.sxir];
+  static integer(kind=4) ifmbrb [value-expr: fmfcom.ifmbrb];
+  static integer(kind=4) ifmbre [value-expr: fmfcom.ifmbre];
+  static integer(kind=4) ifmflb [value-expr: fmfcom.ifmflb];
+  static real(kind=4) lowdbh[7] [value-expr: fmfcom.lowdbh];
+  static integer(kind=4) idbrn [value-expr: fmfcom.idbrn];
+  static integer(kind=4) idful [value-expr: fmfcom.idful];
+  static integer(kind=4) ifmfle [value-expr: fmfcom.ifmfle];
+  static integer(kind=4) ifmmrb [value-expr: fmfcom.ifmmrb];
+  static integer(kind=4) ifmmre [value-expr: fmfcom.ifmmre];
+  static integer(kind=4) iflalb [value-expr: fmfcom.iflalb];
+  static integer(kind=4) iflale [value-expr: fmfcom.iflale];
+  static integer(kind=4) idmrt [value-expr: fmfcom.idmrt];
+  static integer(kind=4) idflal [value-expr: fmfcom.idflal];
+  static integer(kind=4) ibrpas [value-expr: fmfcom.ibrpas];
+  static integer(kind=4) iflpas [value-expr: fmfcom.iflpas];
+  static integer(kind=4) imrpas [value-expr: fmfcom.imrpas];
+  static integer(kind=4) ifapas [value-expr: fmfcom.ifapas];
+  static integer(kind=4) ipflmb [value-expr: fmfcom.ipflmb];
+  static integer(kind=4) ipflme [value-expr: fmfcom.ipflme];
+  static integer(kind=4) idpflm [value-expr: fmfcom.idpflm];
+  static integer(kind=4) ipfpas [value-expr: fmfcom.ipfpas];
+  static integer(kind=4) idwpas [value-expr: fmfcom.idwpas];
+  static integer(kind=4) idcpas [value-expr: fmfcom.idcpas];
+  static integer(kind=4) iddwrp [value-expr: fmfcom.iddwrp];
+  static integer(kind=4) iddwcv [value-expr: fmfcom.iddwcv];
+  static integer(kind=4) idwrpb [value-expr: fmfcom.idwrpb];
+  static integer(kind=4) idwrpe [value-expr: fmfcom.idwrpe];
+  static integer(kind=4) idwcvb [value-expr: fmfcom.idwcvb];
+  static integer(kind=4) idwcve [value-expr: fmfcom.idwcve];
+  static integer(kind=4) isnagb [value-expr: fmfcom.isnagb];
+  static integer(kind=4) isnage [value-expr: fmfcom.isnage];
+  static integer(kind=4) firtype [value-expr: fmfcom.firtype];
+  static integer(kind=4) icfpb [value-expr: fmfcom.icfpb];
+  static integer(kind=4) icfpe [value-expr: fmfcom.icfpe];
+  static integer(kind=4) idryb [value-expr: fmfcom.idryb];
+  static integer(kind=4) idrye [value-expr: fmfcom.idrye];
+  static integer(kind=4) jsnout [value-expr: fmfcom.jsnout];
+  static real(kind=4) prewnd[2] [value-expr: fmfcom.prewnd];
+  static integer(kind=4) potseas[2] [value-expr: fmfcom.potseas];
+  static real(kind=4) potpab[2] [value-expr: fmfcom.potpab];
+  static real(kind=4) potemp[2] [value-expr: fmfcom.potemp];
+  static integer(kind=4) fmdusr[4] [value-expr: fmfcom.fmdusr];
+  static integer(kind=4) idsheat [value-expr: fmfcom.idsheat];
+  static integer(kind=4) isheatb [value-expr: fmfcom.isheatb];
+  static integer(kind=4) isheate [value-expr: fmfcom.isheate];
+  static real(kind=4) fwtusr[4] [value-expr: fmfcom.fwtusr];
+  static logical(kind=4) lusrfm [value-expr: fmfcom.lusrfm];
+  static logical(kind=4) latfuel [value-expr: fmfcom.latfuel];
+  static logical(kind=4) latshrb [value-expr: fmfcom.latshrb];
+  static logical(kind=4) lprv89 [value-expr: fmfcom.lprv89];
+  static integer(kind=4) nfmods [value-expr: fmfcom.nfmods];
+  static real(kind=4) pflam[4] [value-expr: fmfcom.pflam];
+  static real(kind=4) tcload [value-expr: fmfcom.tcload];
+  static real(kind=4) usav[3] [value-expr: fmfcom.usav];
+  static real(kind=4) ubd[2] [value-expr: fmfcom.ubd];
+  static real(kind=4) ulhv [value-expr: fmfcom.ulhv];
+  static real(kind=4) aspect [value-expr: plot.aspect];
+  static real(kind=4) atavd [value-expr: plot.atavd];
+  static real(kind=4) atavh [value-expr: plot.atavh];
+  static real(kind=4) atba [value-expr: plot.atba];
+  static real(kind=4) atccf [value-expr: plot.atccf];
+  static real(kind=4) atsdix [value-expr: plot.atsdix];
+  static real(kind=4) attpa [value-expr: plot.attpa];
+  static real(kind=4) avh [value-expr: plot.avh];
+  static real(kind=4) ba [value-expr: plot.ba];
+  static real(kind=4) baf [value-expr: plot.baf];
+  static real(kind=4) barank[39] [value-expr: plot.barank];
+  static real(kind=4) brk [value-expr: plot.brk];
+  static real(kind=4) btsdix [value-expr: plot.btsdix];
+  static real(kind=4) covmlt [value-expr: plot.covmlt];
+  static real(kind=4) covyr [value-expr: plot.covyr];
+  static real(kind=4) elev [value-expr: plot.elev];
+  static real(kind=4) fint [value-expr: plot.fint];
+  static real(kind=4) fpa [value-expr: plot.fpa];
+  static real(kind=4) grospc [value-expr: plot.grospc];
+  static integer(kind=4) iage [value-expr: plot.iage];
+  static integer(kind=4) iaspec [value-expr: plot.iaspec];
+  static integer(kind=4) icage [value-expr: plot.icage];
+  static integer(kind=4) icnty [value-expr: plot.icnty];
+  static integer(kind=4) ifint [value-expr: plot.ifint];
+  static integer(kind=4) ifor [value-expr: plot.ifor];
+  static integer(kind=4) ifortp [value-expr: plot.ifortp];
+  static integer(kind=4) igl [value-expr: plot.igl];
+  static integer(kind=4) iifortp [value-expr: plot.iifortp];
+  static integer(kind=4) imodty [value-expr: plot.imodty];
+  static integer(kind=4) iphreg [value-expr: plot.iphreg];
+  static integer(kind=4) iptinv [value-expr: plot.iptinv];
+  static integer(kind=4) ipvec[500] [value-expr: plot.ipvec];
+  static integer(kind=4) isisp [value-expr: plot.isisp];
+  static integer(kind=4) islop [value-expr: plot.islop];
+  static integer(kind=4) ismall [value-expr: plot.ismall];
+  static integer(kind=4) istate [value-expr: plot.istate];
+  static integer(kind=4) istcl [value-expr: plot.istcl];
+  static integer(kind=4) iszcl [value-expr: plot.iszcl];
+  static integer(kind=4) itype [value-expr: plot.itype];
+  static integer(kind=4) jspin[39] [value-expr: plot.jspin];
+  static integer(kind=4) jspindef [value-expr: plot.jspindef];
+  static integer(kind=4) jtype[122] [value-expr: plot.jtype];
+  static integer(kind=4) kodfor [value-expr: plot.kodfor];
+  static integer(kind=4) kodtyp [value-expr: plot.kodtyp];
+  static integer(kind=4) managd [value-expr: plot.managd];
+  static integer(kind=4) nonstk [value-expr: plot.nonstk];
+  static integer(kind=4) nsitet [value-expr: plot.nsitet];
+  static real(kind=4) oldavh [value-expr: plot.oldavh];
+  static real(kind=4) oldba [value-expr: plot.oldba];
+  static real(kind=4) oldtpa [value-expr: plot.oldtpa];
+  static real(kind=4) ormsqd [value-expr: plot.ormsqd];
+  static real(kind=4) pi [value-expr: plot.pi];
+  static real(kind=4) pmsdil [value-expr: plot.pmsdil];
+  static real(kind=4) pmsdiu [value-expr: plot.pmsdiu];
+  static real(kind=4) relden [value-expr: plot.relden];
+  static real(kind=4) reldm1 [value-expr: plot.reldm1];
+  static real(kind=4) reldsp[39] [value-expr: plot.reldsp];
+  static real(kind=4) rmai [value-expr: plot.rmai];
+  static real(kind=4) rmsqd [value-expr: plot.rmsqd];
+  static real(kind=4) samwt [value-expr: plot.samwt];
+  static real(kind=4) sdiac [value-expr: plot.sdiac];
+  static real(kind=4) sdiac2 [value-expr: plot.sdiac2];
+  static real(kind=4) sdibc [value-expr: plot.sdibc];
+  static real(kind=4) sdibc2 [value-expr: plot.sdibc2];
+  static real(kind=4) sdidef[39] [value-expr: plot.sdidef];
+  static real(kind=4) sdimax [value-expr: plot.sdimax];
+  static real(kind=4) sitear[39] [value-expr: plot.sitear];
+  static real(kind=4) sitetr[120] [value-expr: plot.sitetr];
+  static real(kind=4) slope [value-expr: plot.slope];
+  static real(kind=4) stndsi [value-expr: plot.stndsi];
+  static real(kind=4) tfpa [value-expr: plot.tfpa];
+  static real(kind=4) tlat [value-expr: plot.tlat];
+  static real(kind=4) tlong [value-expr: plot.tlong];
+  static real(kind=4) tprob [value-expr: plot.tprob];
+  static real(kind=4) vmlt [value-expr: plot.vmlt];
+  static real(kind=4) vmltyr [value-expr: plot.vmltyr];
+  static integer(kind=4) istdorg [value-expr: plot.istdorg];
+  static character(kind=1) cpvref[1:10] [value-expr: pltchr.cpvref];
+  static character(kind=1) dbcn[1:40] [value-expr: pltchr.dbcn];
+  static character(kind=1) ecoreg[1:4] [value-expr: pltchr.ecoreg];
+  static character(kind=1) fiajsp[39][1:4] [value-expr: pltchr.fiajsp];
+  static character(kind=1) jsp[39][1:4] [value-expr: pltchr.jsp];
+  static character(kind=1) mgmid[1:4] [value-expr: pltchr.mgmid];
+  static character(kind=1) nplt[1:26] [value-expr: pltchr.nplt];
+  static character(kind=1) nsp[117][1:4] [value-expr: pltchr.nsp];
+  static character(kind=1) plnjsp[39][1:6] [value-expr: pltchr.plnjsp];
+  integer(kind=4) i;
+  integer(kind=4) j;
+
+  lvwest = 1;
+  cancls[0] = 5.0e+0;
+  cancls[1] = 1.75e+1;
+  cancls[2] = 3.75e+1;
+  cancls[3] = 7.5e+1;
+  corfac[0] = 5.0e-1;
+  corfac[1] = 3.00000011920928955078125e-1;
+  corfac[2] = 2.0000000298023223876953125e-1;
+  corfac[3] = 1.00000001490116119384765625e-1;
+  snprcl[0] = 0.0;
+  snprcl[1] = 1.2e+1;
+  snprcl[2] = 1.8e+1;
+  snprcl[3] = 2.4e+1;
+  snprcl[4] = 3.0e+1;
+  snprcl[5] = 3.6e+1;
+  lowdbh[0] = 0.0;
+  lowdbh[1] = 5.0e+0;
+  lowdbh[2] = 1.0e+1;
+  lowdbh[3] = 2.0e+1;
+  lowdbh[4] = 3.0e+1;
+  lowdbh[5] = 4.0e+1;
+  lowdbh[6] = 5.0e+1;
+  prewnd[0] = 2.0e+1;
+  prewnd[1] = 6.0e+0;
+  potemp[0] = 7.0e+1;
+  potemp[1] = 7.0e+1;
+  dkr[0] = 6.8999998271465301513671875e-2;
+  dkr[1] = 6.8999998271465301513671875e-2;
+  dkr[2] = 6.8999998271465301513671875e-2;
+  dkr[3] = 1.200000010430812835693359375e-2;
+  dkr[4] = 1.200000010430812835693359375e-2;
+  dkr[5] = 1.200000010430812835693359375e-2;
+  dkr[6] = 1.200000010430812835693359375e-2;
+  dkr[7] = 1.200000010430812835693359375e-2;
+  dkr[8] = 1.200000010430812835693359375e-2;
+  dkr[11] = 8.10000002384185791015625e-2;
+  dkr[12] = 8.10000002384185791015625e-2;
+  dkr[13] = 8.10000002384185791015625e-2;
+  dkr[14] = 2.500000037252902984619140625e-2;
+  dkr[15] = 2.500000037252902984619140625e-2;
+  dkr[16] = 2.500000037252902984619140625e-2;
+  dkr[17] = 2.500000037252902984619140625e-2;
+  dkr[18] = 2.500000037252902984619140625e-2;
+  dkr[19] = 2.500000037252902984619140625e-2;
+  dkr[22] = 9.700000286102294921875e-2;
+  dkr[23] = 9.700000286102294921875e-2;
+  dkr[24] = 9.700000286102294921875e-2;
+  dkr[25] = 4.1000001132488250732421875e-2;
+  dkr[26] = 4.1000001132488250732421875e-2;
+  dkr[27] = 4.1000001132488250732421875e-2;
+  dkr[28] = 4.1000001132488250732421875e-2;
+  dkr[29] = 4.1000001132488250732421875e-2;
+  dkr[30] = 4.1000001132488250732421875e-2;
+  dkr[33] = 1.3099999725818634033203125e-1;
+  dkr[34] = 1.3099999725818634033203125e-1;
+  dkr[35] = 1.3099999725818634033203125e-1;
+  dkr[36] = 7.6999999582767486572265625e-2;
+  dkr[37] = 7.6999999582767486572265625e-2;
+  dkr[38] = 7.6999999582767486572265625e-2;
+  dkr[39] = 7.6999999582767486572265625e-2;
+  dkr[40] = 7.6999999582767486572265625e-2;
+  dkr[41] = 7.6999999582767486572265625e-2;
+  j = 1;
+  while (1)
+    {
+      {
+        logical(kind=4) TEMP0;
+
+        TEMP0 = j > 4;
+        if (TEMP0) goto L.2;
+        dkr[(integer(kind=8)) j * 11 + -2] = 5.0e-1;
+        dkr[(integer(kind=8)) j * 11 + -1] = 2.00000009499490261077880859375e-3;
+        L.1:;
+        j = j + 1;
+      }
+    }
+  L.2:;
+  i = 1;
+  while (1)
+    {
+      {
+        logical(kind=4) TEMP1;
+
+        TEMP1 = i > 11;
+        if (TEMP1) goto L.4;
+        j = 1;
+        while (1)
+          {
+            {
+              logical(kind=4) TEMP2;
+
+              TEMP2 = j > 4;
+              if (TEMP2) goto L.6;
+              prduff[((integer(kind=8)) j * 11 + (integer(kind=8)) i) + -12] = 1.99999995529651641845703125e-2;
+              toduff[((integer(kind=8)) j * 11 + (integer(kind=8)) i) + -12] = dkr[((integer(kind=8)) j * 11 + (integer(kind=8)) i) + -12] * prduff[((integer(kind=8)) j * 11 + (integer(kind=8)) i) + -12];
+              L.5:;
+              j = j + 1;
+            }
+          }
+        L.6:;
+        L.3:;
+        i = i + 1;
+      }
+    }
+  L.4:;
+  nzero = 9.99999977648258209228515625e-3;
+  limbrk = 9.99999977648258209228515625e-3;
+  htxsft = 1.0e+0;
+  i = 1;
+  while (1)
+    {
+      {
+        logical(kind=4) TEMP3;
+
+        TEMP3 = i > 39;
+        if (TEMP3) goto L.8;
+        psoft[(integer(kind=8)) i + -1] = 0.0;
+        L.7:;
+        i = i + 1;
+      }
+    }
+  L.8:;
+  htr1 = 3.4060001373291015625e-2;
+  htr2 = 9.99999977648258209228515625e-3;
+  i = 1;
+  while (1)
+    {
+      {
+        logical(kind=4) TEMP4;
+
+        TEMP4 = i > 39;
+        if (TEMP4) goto L.10;
+        switch (i)
+          {
+            case 1:;
+            v2t[(integer(kind=8)) i + -1] = 2.48999996185302734375e+1;
+            leaflf[(integer(kind=8)) i + -1] = 7.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 2.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 77] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 116] = 1.5e+1;
+            alldwn[(integer(kind=8)) i + -1] = 3.0e+1;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP5;
+
+                  TEMP5 = j > 4;
+                  if (TEMP5) goto L.15;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.14:;
+                  j = j + 1;
+                }
+              }
+            L.15:;
+            lsw[(integer(kind=8)) i + -1] = 1;
+            goto L.12;
+            case 2:;
+            v2t[(integer(kind=8)) i + -1] = 2.31000003814697265625e+1;
+            leaflf[(integer(kind=8)) i + -1] = 7.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 2.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 77] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 116] = 1.5e+1;
+            alldwn[(integer(kind=8)) i + -1] = 9.0e+1;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP6;
+
+                  TEMP6 = j > 4;
+                  if (TEMP6) goto L.18;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.17:;
+                  j = j + 1;
+                }
+              }
+            L.18:;
+            lsw[(integer(kind=8)) i + -1] = 1;
+            goto L.12;
+            case 3:;
+            v2t[(integer(kind=8)) i + -1] = 2.1799999237060546875e+1;
+            leaflf[(integer(kind=8)) i + -1] = 7.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 2.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 77] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 116] = 1.5e+1;
+            alldwn[(integer(kind=8)) i + -1] = 9.0e+1;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP7;
+
+                  TEMP7 = j > 4;
+                  if (TEMP7) goto L.21;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.20:;
+                  j = j + 1;
+                }
+              }
+            L.21:;
+            lsw[(integer(kind=8)) i + -1] = 1;
+            goto L.12;
+            case 4:;
+            v2t[(integer(kind=8)) i + -1] = 1.9299999237060546875e+1;
+            leaflf[(integer(kind=8)) i + -1] = 7.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 2.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 77] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 116] = 1.5e+1;
+            alldwn[(integer(kind=8)) i + -1] = 9.0e+1;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP8;
+
+                  TEMP8 = j > 4;
+                  if (TEMP8) goto L.24;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.23:;
+                  j = j + 1;
+                }
+              }
+            L.24:;
+            lsw[(integer(kind=8)) i + -1] = 1;
+            goto L.12;
+            case 5:;
+            v2t[(integer(kind=8)) i + -1] = 2.25e+1;
+            leaflf[(integer(kind=8)) i + -1] = 7.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 2.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 77] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 116] = 1.5e+1;
+            alldwn[(integer(kind=8)) i + -1] = 9.0e+1;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP9;
+
+                  TEMP9 = j > 4;
+                  if (TEMP9) goto L.27;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.26:;
+                  j = j + 1;
+                }
+              }
+            L.27:;
+            lsw[(integer(kind=8)) i + -1] = 1;
+            goto L.12;
+            case 6:;
+            v2t[(integer(kind=8)) i + -1] = 2.06000003814697265625e+1;
+            L.29:;
+            leaflf[(integer(kind=8)) i + -1] = 5.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 2.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 77] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 116] = 1.5e+1;
+            alldwn[(integer(kind=8)) i + -1] = 1.1e+2;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP10;
+
+                  TEMP10 = j > 4;
+                  if (TEMP10) goto L.31;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.30:;
+                  j = j + 1;
+                }
+              }
+            L.31:;
+            lsw[(integer(kind=8)) i + -1] = 1;
+            goto L.12;
+            case 7:;
+            v2t[(integer(kind=8)) i + -1] = 2.31000003814697265625e+1;
+            leaflf[(integer(kind=8)) i + -1] = 7.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 2.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 77] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 116] = 1.5e+1;
+            alldwn[(integer(kind=8)) i + -1] = 9.0e+1;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP11;
+
+                  TEMP11 = j > 4;
+                  if (TEMP11) goto L.34;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.33:;
+                  j = j + 1;
+                }
+              }
+            L.34:;
+            lsw[(integer(kind=8)) i + -1] = 1;
+            goto L.12;
+            case 8:;
+            v2t[(integer(kind=8)) i + -1] = 2.6200000762939453125e+1;
+            leaflf[(integer(kind=8)) i + -1] = 5.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 2.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 77] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 116] = 2.0e+1;
+            alldwn[(integer(kind=8)) i + -1] = 3.0e+2;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP12;
+
+                  TEMP12 = j > 4;
+                  if (TEMP12) goto L.37;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.36:;
+                  j = j + 1;
+                }
+              }
+            L.37:;
+            lsw[(integer(kind=8)) i + -1] = 1;
+            goto L.12;
+            case 9:;
+            v2t[(integer(kind=8)) i + -1] = 2.1799999237060546875e+1;
+            leaflf[(integer(kind=8)) i + -1] = 5.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 1.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 77] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 116] = 2.0e+1;
+            alldwn[(integer(kind=8)) i + -1] = 9.0e+1;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP13;
+
+                  TEMP13 = j > 4;
+                  if (TEMP13) goto L.40;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.39:;
+                  j = j + 1;
+                }
+              }
+            L.40:;
+            lsw[(integer(kind=8)) i + -1] = 1;
+            goto L.12;
+            case 10:;
+            v2t[(integer(kind=8)) i + -1] = 2.06000003814697265625e+1;
+            leaflf[(integer(kind=8)) i + -1] = 6.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 2.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 77] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 116] = 1.0e+1;
+            alldwn[(integer(kind=8)) i + -1] = 9.0e+1;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP14;
+
+                  TEMP14 = j > 4;
+                  if (TEMP14) goto L.43;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.42:;
+                  j = j + 1;
+                }
+              }
+            L.43:;
+            lsw[(integer(kind=8)) i + -1] = 1;
+            goto L.12;
+            case 11:;
+            v2t[(integer(kind=8)) i + -1] = 2.3700000762939453125e+1;
+            leaflf[(integer(kind=8)) i + -1] = 3.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 2.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 77] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 116] = 1.5e+1;
+            alldwn[(integer(kind=8)) i + -1] = 9.0e+1;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP15;
+
+                  TEMP15 = j > 4;
+                  if (TEMP15) goto L.46;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.45:;
+                  j = j + 1;
+                }
+              }
+            L.46:;
+            lsw[(integer(kind=8)) i + -1] = 1;
+            goto L.12;
+            case 12:;
+            v2t[(integer(kind=8)) i + -1] = 2.1200000762939453125e+1;
+            leaflf[(integer(kind=8)) i + -1] = 3.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 2.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 3.0e+0;
+            tfall[(integer(kind=8)) i + 77] = 1.0e+1;
+            tfall[(integer(kind=8)) i + 116] = 1.5e+1;
+            alldwn[(integer(kind=8)) i + -1] = 1.0e+2;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP16;
+
+                  TEMP16 = j > 4;
+                  if (TEMP16) goto L.49;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.48:;
+                  j = j + 1;
+                }
+              }
+            L.49:;
+            lsw[(integer(kind=8)) i + -1] = 1;
+            goto L.12;
+            case 13:;
+            v2t[(integer(kind=8)) i + -1] = 2.1200000762939453125e+1;
+            leaflf[(integer(kind=8)) i + -1] = 3.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 2.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 77] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 116] = 1.5e+1;
+            alldwn[(integer(kind=8)) i + -1] = 1.1e+2;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP17;
+
+                  TEMP17 = j > 4;
+                  if (TEMP17) goto L.52;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.51:;
+                  j = j + 1;
+                }
+              }
+            L.52:;
+            lsw[(integer(kind=8)) i + -1] = 1;
+            goto L.12;
+            case 14:;
+            v2t[(integer(kind=8)) i + -1] = 2.25e+1;
+            leaflf[(integer(kind=8)) i + -1] = 4.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 2.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 77] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 116] = 1.5e+1;
+            alldwn[(integer(kind=8)) i + -1] = 1.1e+2;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP18;
+
+                  TEMP18 = j > 4;
+                  if (TEMP18) goto L.55;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.54:;
+                  j = j + 1;
+                }
+              }
+            L.55:;
+            lsw[(integer(kind=8)) i + -1] = 1;
+            goto L.12;
+            case 15:;
+            v2t[(integer(kind=8)) i + -1] = 2.3700000762939453125e+1;
+            leaflf[(integer(kind=8)) i + -1] = 4.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 2.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 77] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 116] = 1.5e+1;
+            alldwn[(integer(kind=8)) i + -1] = 1.0e+2;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP19;
+
+                  TEMP19 = j > 4;
+                  if (TEMP19) goto L.58;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.57:;
+                  j = j + 1;
+                }
+              }
+            L.58:;
+            lsw[(integer(kind=8)) i + -1] = 1;
+            goto L.12;
+            case 16:;
+            case 38:;
+            v2t[(integer(kind=8)) i + -1] = 2.81000003814697265625e+1;
+            leaflf[(integer(kind=8)) i + -1] = 5.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 2.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 77] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 116] = 1.5e+1;
+            alldwn[(integer(kind=8)) i + -1] = 1.1e+2;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP20;
+
+                  TEMP20 = j > 4;
+                  if (TEMP20) goto L.62;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.61:;
+                  j = j + 1;
+                }
+              }
+            L.62:;
+            lsw[(integer(kind=8)) i + -1] = 1;
+            goto L.12;
+            case 17:;
+            v2t[(integer(kind=8)) i + -1] = 2.1200000762939453125e+1;
+            leaflf[(integer(kind=8)) i + -1] = 5.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 3.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 1.0e+1;
+            tfall[(integer(kind=8)) i + 77] = 1.5e+1;
+            tfall[(integer(kind=8)) i + 116] = 2.0e+1;
+            alldwn[(integer(kind=8)) i + -1] = 1.5e+2;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP21;
+
+                  TEMP21 = j > 4;
+                  if (TEMP21) goto L.65;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.64:;
+                  j = j + 1;
+                }
+              }
+            L.65:;
+            lsw[(integer(kind=8)) i + -1] = 1;
+            goto L.12;
+            case 18:;
+            v2t[(integer(kind=8)) i + -1] = 1.9299999237060546875e+1;
+            leaflf[(integer(kind=8)) i + -1] = 5.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 2.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 77] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 116] = 2.0e+1;
+            alldwn[(integer(kind=8)) i + -1] = 3.0e+2;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP22;
+
+                  TEMP22 = j > 4;
+                  if (TEMP22) goto L.68;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.67:;
+                  j = j + 1;
+                }
+              }
+            L.68:;
+            lsw[(integer(kind=8)) i + -1] = 1;
+            goto L.12;
+            case 19:;
+            v2t[(integer(kind=8)) i + -1] = 2.6200000762939453125e+1;
+            leaflf[(integer(kind=8)) i + -1] = 5.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 3.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 1.0e+1;
+            tfall[(integer(kind=8)) i + 77] = 1.5e+1;
+            tfall[(integer(kind=8)) i + 116] = 1.5e+1;
+            alldwn[(integer(kind=8)) i + -1] = 1.0e+2;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP23;
+
+                  TEMP23 = j > 4;
+                  if (TEMP23) goto L.71;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.70:;
+                  j = j + 1;
+                }
+              }
+            L.71:;
+            lsw[(integer(kind=8)) i + -1] = 1;
+            goto L.12;
+            case 20:;
+            v2t[(integer(kind=8)) i + -1] = 2.6200000762939453125e+1;
+            leaflf[(integer(kind=8)) i + -1] = 4.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 2.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 77] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 116] = 1.5e+1;
+            alldwn[(integer(kind=8)) i + -1] = 9.0e+1;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP24;
+
+                  TEMP24 = j > 4;
+                  if (TEMP24) goto L.74;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.73:;
+                  j = j + 1;
+                }
+              }
+            L.74:;
+            lsw[(integer(kind=8)) i + -1] = 1;
+            goto L.12;
+            case 21:;
+            v2t[(integer(kind=8)) i + -1] = 2.73999996185302734375e+1;
+            leaflf[(integer(kind=8)) i + -1] = 1.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 1.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 1.0e+1;
+            tfall[(integer(kind=8)) i + 77] = 1.5e+1;
+            tfall[(integer(kind=8)) i + 116] = 1.5e+1;
+            alldwn[(integer(kind=8)) i + -1] = 5.0e+1;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP25;
+
+                  TEMP25 = j > 4;
+                  if (TEMP25) goto L.77;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.76:;
+                  j = j + 1;
+                }
+              }
+            L.77:;
+            lsw[(integer(kind=8)) i + -1] = 0;
+            goto L.12;
+            case 22:;
+            v2t[(integer(kind=8)) i + -1] = 2.31000003814697265625e+1;
+            leaflf[(integer(kind=8)) i + -1] = 1.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 1.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 1.0e+1;
+            tfall[(integer(kind=8)) i + 77] = 1.5e+1;
+            tfall[(integer(kind=8)) i + 116] = 1.5e+1;
+            alldwn[(integer(kind=8)) i + -1] = 5.0e+1;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP26;
+
+                  TEMP26 = j > 4;
+                  if (TEMP26) goto L.80;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.79:;
+                  j = j + 1;
+                }
+              }
+            L.80:;
+            lsw[(integer(kind=8)) i + -1] = 0;
+            goto L.12;
+            case 23:;
+            v2t[(integer(kind=8)) i + -1] = 3.6200000762939453125e+1;
+            leaflf[(integer(kind=8)) i + -1] = 1.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 1.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 1.0e+1;
+            tfall[(integer(kind=8)) i + 77] = 1.5e+1;
+            tfall[(integer(kind=8)) i + 116] = 1.5e+1;
+            alldwn[(integer(kind=8)) i + -1] = 5.0e+1;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP27;
+
+                  TEMP27 = j > 4;
+                  if (TEMP27) goto L.83;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.82:;
+                  j = j + 1;
+                }
+              }
+            L.83:;
+            lsw[(integer(kind=8)) i + -1] = 0;
+            goto L.12;
+            case 24:;
+            case 39:;
+            v2t[(integer(kind=8)) i + -1] = 2.98999996185302734375e+1;
+            leaflf[(integer(kind=8)) i + -1] = 1.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 1.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 1.0e+1;
+            tfall[(integer(kind=8)) i + 77] = 1.5e+1;
+            tfall[(integer(kind=8)) i + 116] = 1.5e+1;
+            alldwn[(integer(kind=8)) i + -1] = 5.0e+1;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP28;
+
+                  TEMP28 = j > 4;
+                  if (TEMP28) goto L.87;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.86:;
+                  j = j + 1;
+                }
+              }
+            L.87:;
+            lsw[(integer(kind=8)) i + -1] = 0;
+            goto L.12;
+            case 25:;
+            v2t[(integer(kind=8)) i + -1] = 3.6200000762939453125e+1;
+            leaflf[(integer(kind=8)) i + -1] = 1.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 1.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 1.0e+1;
+            tfall[(integer(kind=8)) i + 77] = 1.5e+1;
+            tfall[(integer(kind=8)) i + 116] = 1.5e+1;
+            alldwn[(integer(kind=8)) i + -1] = 5.0e+1;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP29;
+
+                  TEMP29 = j > 4;
+                  if (TEMP29) goto L.90;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.89:;
+                  j = j + 1;
+                }
+              }
+            L.90:;
+            lsw[(integer(kind=8)) i + -1] = 0;
+            goto L.12;
+            case 26:;
+            v2t[(integer(kind=8)) i + -1] = 2.1799999237060546875e+1;
+            leaflf[(integer(kind=8)) i + -1] = 1.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 1.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 1.0e+1;
+            tfall[(integer(kind=8)) i + 77] = 1.5e+1;
+            tfall[(integer(kind=8)) i + 116] = 1.5e+1;
+            alldwn[(integer(kind=8)) i + -1] = 5.0e+1;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP30;
+
+                  TEMP30 = j > 4;
+                  if (TEMP30) goto L.93;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.92:;
+                  j = j + 1;
+                }
+              }
+            L.93:;
+            lsw[(integer(kind=8)) i + -1] = 0;
+            goto L.12;
+            case 27:;
+            v2t[(integer(kind=8)) i + -1] = 1.9299999237060546875e+1;
+            leaflf[(integer(kind=8)) i + -1] = 1.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 1.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 1.0e+1;
+            tfall[(integer(kind=8)) i + 77] = 1.5e+1;
+            tfall[(integer(kind=8)) i + 116] = 1.5e+1;
+            alldwn[(integer(kind=8)) i + -1] = 5.0e+1;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP31;
+
+                  TEMP31 = j > 4;
+                  if (TEMP31) goto L.96;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.95:;
+                  j = j + 1;
+                }
+              }
+            L.96:;
+            lsw[(integer(kind=8)) i + -1] = 0;
+            goto L.12;
+            case 28:;
+            v2t[(integer(kind=8)) i + -1] = 3.740000152587890625e+1;
+            leaflf[(integer(kind=8)) i + -1] = 1.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 1.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 1.0e+1;
+            tfall[(integer(kind=8)) i + 77] = 1.5e+1;
+            tfall[(integer(kind=8)) i + 116] = 1.5e+1;
+            alldwn[(integer(kind=8)) i + -1] = 5.0e+1;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP32;
+
+                  TEMP32 = j > 4;
+                  if (TEMP32) goto L.99;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.98:;
+                  j = j + 1;
+                }
+              }
+            L.99:;
+            lsw[(integer(kind=8)) i + -1] = 0;
+            goto L.12;
+            case 29:;
+            v2t[(integer(kind=8)) i + -1] = 3.490000152587890625e+1;
+            leaflf[(integer(kind=8)) i + -1] = 4.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 2.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 77] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 116] = 1.5e+1;
+            alldwn[(integer(kind=8)) i + -1] = 1.0e+2;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP33;
+
+                  TEMP33 = j > 4;
+                  if (TEMP33) goto L.102;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.101:;
+                  j = j + 1;
+                }
+              }
+            L.102:;
+            lsw[(integer(kind=8)) i + -1] = 1;
+            goto L.12;
+            case 30:;
+            v2t[(integer(kind=8)) i + -1] = 2.98999996185302734375e+1;
+            leaflf[(integer(kind=8)) i + -1] = 1.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 1.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 77] = 5.0e+0;
+            tfall[(integer(kind=8)) i + 116] = 1.5e+1;
+            alldwn[(integer(kind=8)) i + -1] = 1.5e+2;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP34;
+
+                  TEMP34 = j > 4;
+                  if (TEMP34) goto L.105;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.104:;
+                  j = j + 1;
+                }
+              }
+            L.105:;
+            lsw[(integer(kind=8)) i + -1] = 1;
+            goto L.12;
+            case 31:;
+            v2t[(integer(kind=8)) i + -1] = 2.25e+1;
+            leaflf[(integer(kind=8)) i + -1] = 3.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 3.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 1.0e+1;
+            tfall[(integer(kind=8)) i + 77] = 1.5e+1;
+            tfall[(integer(kind=8)) i + 116] = 1.5e+1;
+            alldwn[(integer(kind=8)) i + -1] = 1.0e+2;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP35;
+
+                  TEMP35 = j > 4;
+                  if (TEMP35) goto L.108;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.107:;
+                  j = j + 1;
+                }
+              }
+            L.108:;
+            lsw[(integer(kind=8)) i + -1] = 1;
+            goto L.12;
+            case 32:;
+            v2t[(integer(kind=8)) i + -1] = 2.3700000762939453125e+1;
+            leaflf[(integer(kind=8)) i + -1] = 4.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 3.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 1.0e+1;
+            tfall[(integer(kind=8)) i + 77] = 1.5e+1;
+            tfall[(integer(kind=8)) i + 116] = 1.5e+1;
+            alldwn[(integer(kind=8)) i + -1] = 1.0e+2;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP36;
+
+                  TEMP36 = j > 4;
+                  if (TEMP36) goto L.111;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.110:;
+                  j = j + 1;
+                }
+              }
+            L.111:;
+            lsw[(integer(kind=8)) i + -1] = 1;
+            goto L.12;
+            case 33:;
+            v2t[(integer(kind=8)) i + -1] = 2.6200000762939453125e+1;
+            leaflf[(integer(kind=8)) i + -1] = 7.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 3.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 1.0e+1;
+            tfall[(integer(kind=8)) i + 77] = 1.5e+1;
+            tfall[(integer(kind=8)) i + 116] = 2.0e+1;
+            alldwn[(integer(kind=8)) i + -1] = 1.0e+2;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP37;
+
+                  TEMP37 = j > 4;
+                  if (TEMP37) goto L.114;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.113:;
+                  j = j + 1;
+                }
+              }
+            L.114:;
+            lsw[(integer(kind=8)) i + -1] = 1;
+            goto L.12;
+            case 34:;
+            v2t[(integer(kind=8)) i + -1] = 2.73999996185302734375e+1;
+            leaflf[(integer(kind=8)) i + -1] = 1.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 1.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 1.0e+1;
+            tfall[(integer(kind=8)) i + 77] = 1.5e+1;
+            tfall[(integer(kind=8)) i + 116] = 1.5e+1;
+            alldwn[(integer(kind=8)) i + -1] = 5.0e+1;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP38;
+
+                  TEMP38 = j > 4;
+                  if (TEMP38) goto L.117;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.116:;
+                  j = j + 1;
+                }
+              }
+            L.117:;
+            lsw[(integer(kind=8)) i + -1] = 0;
+            goto L.12;
+            case 35:;
+            v2t[(integer(kind=8)) i + -1] = 2.73999996185302734375e+1;
+            leaflf[(integer(kind=8)) i + -1] = 1.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 1.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 1.0e+1;
+            tfall[(integer(kind=8)) i + 77] = 1.5e+1;
+            tfall[(integer(kind=8)) i + 116] = 1.5e+1;
+            alldwn[(integer(kind=8)) i + -1] = 5.0e+1;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP39;
+
+                  TEMP39 = j > 4;
+                  if (TEMP39) goto L.120;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.119:;
+                  j = j + 1;
+                }
+              }
+            L.120:;
+            lsw[(integer(kind=8)) i + -1] = 0;
+            goto L.12;
+            case 36:;
+            v2t[(integer(kind=8)) i + -1] = 2.9299999237060546875e+1;
+            leaflf[(integer(kind=8)) i + -1] = 1.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 1.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 1.0e+1;
+            tfall[(integer(kind=8)) i + 77] = 1.5e+1;
+            tfall[(integer(kind=8)) i + 116] = 1.5e+1;
+            alldwn[(integer(kind=8)) i + -1] = 5.0e+1;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP40;
+
+                  TEMP40 = j > 4;
+                  if (TEMP40) goto L.123;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.122:;
+                  j = j + 1;
+                }
+              }
+            L.123:;
+            lsw[(integer(kind=8)) i + -1] = 0;
+            goto L.12;
+            case 37:;
+            v2t[(integer(kind=8)) i + -1] = 2.25e+1;
+            leaflf[(integer(kind=8)) i + -1] = 1.0e+0;
+            tfall[(integer(kind=8)) i + -1] = 1.0e+0;
+            tfall[(integer(kind=8)) i + 38] = 1.0e+1;
+            tfall[(integer(kind=8)) i + 77] = 1.5e+1;
+            tfall[(integer(kind=8)) i + 116] = 1.5e+1;
+            alldwn[(integer(kind=8)) i + -1] = 5.0e+1;
+            decayx[(integer(kind=8)) i + -1] = 1.0e+0;
+            fallx[(integer(kind=8)) i + -1] = 1.0e+0;
+            j = 1;
+            while (1)
+              {
+                {
+                  logical(kind=4) TEMP41;
+
+                  TEMP41 = j > 4;
+                  if (TEMP41) goto L.126;
+                  htx[((integer(kind=8)) j * 39 + (integer(kind=8)) i) + -40] = 1.0e+0;
+                  L.125:;
+                  j = j + 1;
+                }
+              }
+            L.126:;
+            lsw[(integer(kind=8)) i + -1] = 0;
+            goto L.12;
+          }
+        L.12:;
+        L.11:;
+        tfall[(integer(kind=8)) i + 155] = tfall[(integer(kind=8)) i + 116];
+        tfall[(integer(kind=8)) i + 194] = tfall[(integer(kind=8)) i + 116];
+        {
+          real(kind=4) TEMP42;
+          real(kind=4) M.0;
+          real(kind=4) TEMP43;
+
+          TEMP42 = tfall[(integer(kind=8)) i + -1];
+          M.0 = TEMP42;
+          TEMP43 = leaflf[(integer(kind=8)) i + -1];
+          M.0 = MIN_EXPR <TEMP43, M.0>;
+          tfall[(integer(kind=8)) i + -1] = M.0;
+        }
+        if (tfall[(integer(kind=8)) i + 77] > tfall[(integer(kind=8)) i + 116])
+          {
+            tfall[(integer(kind=8)) i + 77] = tfall[(integer(kind=8)) i + 116];
+          }
+        L.127:;
+        v2t[(integer(kind=8)) i + -1] = v2t[(integer(kind=8)) i + -1] / 2.0e+3;
+        switch (i)
+          {
+            case 8:;
+            case 9:;
+            case 13:;
+            case 14:;
+            case 16 ... 18:;
+            case 29 ... 31:;
+            case 33:;
+            dkrcls[(integer(kind=8)) i + -1] = 1;
+            goto L.129;
+            case 6:;
+            case 10:;
+            case 11:;
+            case 19:;
+            case 20:;
+            case 32:;
+            dkrcls[(integer(kind=8)) i + -1] = 2;
+            goto L.129;
+            case 1 ... 5:;
+            case 7:;
+            case 12:;
+            case 15:;
+            case 25:;
+            case 28:;
+            dkrcls[(integer(kind=8)) i + -1] = 3;
+            goto L.129;
+            case 21 ... 24:;
+            case 26:;
+            case 27:;
+            case 34 ... 39:;
+            dkrcls[(integer(kind=8)) i + -1] = 4;
+            goto L.129;
+          }
+        L.129:;
+        L.128:;
+        L.9:;
+        i = i + 1;
+      }
+    }
+  L.10:;
+  pbscor = 0.0;
+  pbsoft = 0.0;
+  pbsmal = 0.0;
+  pbsize = 1.2e+1;
+  pbtime = 7.0e+0;
+  oldict = 2;
+  oldict2 = 0;
+  oldictwt[0] = 1.0e+0;
+  oldictwt[1] = 0.0;
+  idryb = 0;
+  idrye = 0;
+  slcrit = 1.0e+1;
+  cccrit = 1.0e+1;
+  return;
+}
+
+

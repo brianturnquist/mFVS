@@ -1,6 +1,6 @@
 # Found Bugs
 
-The five confirmed defects below were found during the 2026-11 consolidation of duplicated routines. Every one is already present in the pre-modernization source (commit `c2105365`), so none was introduced by the conversion to free-form Fortran or by the consolidation. They are **deliberately left unfixed** for now so that model outputs stay identical to `c2105365` while modernization is finished. Each fix below will change outputs for the variants listed, so each should be made as its own commit with a before/after comparison. Sections 6 and 7 separately record an unconfirmed historical numerical concern and a historical documentation discrepancy.
+The five confirmed defects below were found during the 2026-11 consolidation of duplicated routines. Every one is already present in the pre-modernization source (commit `c2105365`), so none was introduced by the conversion to free-form Fortran or by the consolidation. They are **deliberately left unfixed** for now so that model outputs stay identical to `c2105365` while modernization is finished. Each fix below will change outputs for the variants listed, so each should be made as its own commit with a before/after comparison. Sections 6–8 separately record an unconfirmed historical numerical concern, a historical documentation discrepancy, and ESADDT data-flow concerns requiring follow-up.
 
 File and line references are to the tree at commit `b5657da3` plus the uncommitted `VARIANTCD` change. Bugs 1 and 2 have the same root cause: FVS calls external procedures with no explicit interface, so gfortran cannot check argument lists across files. Moving these routines into modules would let the compiler catch this class of bug.
 
@@ -60,7 +60,7 @@ P03 source tracing on 13 November 2026 confirmed 33 versus 30 arguments in both 
 
 ## 3. `ESADDT` bins seedlings by hard-coded species indices that are wrong for several variants
 
-**Variants:** AK, CI, EM, IE, KT (every variant that compiles `estb/esaddt.f90`)
+**Variants:** AK, CI, EM, IE, KT (the former ESTB source profile)
 
 When ADDTREES uses an external establishment model, `ESADDT` writes the stand to a `.es1` file for that program. Fields 13–20 hold trees per acre of seedlings (DBH ≤ 1 in.) for eight species. The species are chosen by fixed variant species indices in `estb/esaddt.f90:151–168`. Those indices follow the IE/CI/KT species order, which other variants don't share, and the Douglas-fir index is wrong even in IE order.
 
@@ -76,6 +76,8 @@ When ADDTREES uses an external establishment model, `ESADDT` writes the stand to
 | 20 | PSME (Douglas-fir) | 5 | **WH** | **LL** | WS |
 
 Douglas-fir is index 3 in IE, CI, KT and EM. In all of them, the PSME field therefore reports another species (western hemlock or subalpine larch) and Douglas-fir seedlings are not reported at all. In EM, the ABGR and PIMO fields also report the wrong species, and in AK every field does. Only runs that use the external-model form of ADDTREES are affected, through the trees the external model returns.
+
+C10 centralizes all 24 variants in `estb/esaddt.f90`. Compile-time `IDF` preserves index 5 for the five variants above and index 3 for former STRP consumers; every other hard-coded bin is unchanged. Actual original/current/candidate `.es1` exports match for all variants. This relocation does not extend the confirmed scope above to every new consumer of the shared filename, or establish that the former STRP indices are scientifically correct. No species-bin correction was applied.
 
 **Suggested fix:** select species by code (`JSP` or `FIAJSP`) rather than by index, and decide whether the external model applies to AK at all.
 
@@ -174,3 +176,18 @@ The [D04–D13 report](tests/parity/evidence/2026-11-13-d04-d13/README.md), D11 
 The old `fire/nc/fmcrow.f90` comment says coast redwood maps to equation 3, but the twelfth `ISPMAP` value is 19. Original F77 `c2105365:fire/nc/fmcrow.f` has the same comment and value (lines 71–74). `fire/base/fmcroww.f90` identifies equation 3 as Douglas-fir and equation 19 as giant sequoia/coast redwood, which supports treating the old comment as stale rather than changing the table.
 
 C04 preserves mapping **19**, along with every other KT/NC table entry, in shared `fire/base/fmcrow.f90`. Its comment makes the historical discrepancy explicit. Direct original/current/candidate tests exercise every species with the actual crown equations. No numerical correction is proposed or applied. Revisit the equation assignment only if a separate scientific review supplies evidence that the table itself is wrong.
+
+---
+
+## 8. Deferred ESADDT investigation: locals on short-option/error paths
+
+**Status:** source-level data-flow concerns found during C10 on 14 November 2026. Reachability from valid keyword input and numerical impact have not been demonstrated.
+**Potential scope:** every ESADDT consumer; all current variants select the shared implementation after C10.
+
+`estb/esaddt.f90` assigns `IPYR` only when `IABS(NP) >= 2`, but otherwise defaults `IMETH` to 1 and can reach the export that writes `IPYR`. Determine whether OPGET can return fewer than two parameters for a valid ADDTREES request before treating this as a demonstrated input-path bug.
+
+`IKEEP` is assigned by the `.es2` READ, but a blank external command, an open/write failure, or end-of-file can branch to label 101 and then reach `IF (IKEEP .NE. 1)` at label 202 without that READ succeeding. The subsequent CLOSE can also target a unit that was not successfully opened. No initialization or error-path guard was added during consolidation.
+
+Both patterns are already present in original F77 `c2105365:estb/esaddt.f` (IPYR assignment/use around lines 58–59/129; IKEEP READ/cleanup around 184/190–194) and its STRP twin. C10's tests cover configured two-parameter exports, successful local regeneration responses, no pending requests and the unsupported-method branch. They do not establish safe error recovery. The entire executable body remains identical after resolving the preserved species-index parameter; see the [C07–C12 report](tests/parity/evidence/2026-11-14-c07-c12/README.md).
+
+Later work should trace OPGET's parameter-count contract and the unit/IKEEP lifecycle, reproduce a reachable case, and measure the effect before selecting defaults or cleanup changes. Keep any correction separate from original-F77 parity work. Bug 3's species-bin defects also remain unfixed.

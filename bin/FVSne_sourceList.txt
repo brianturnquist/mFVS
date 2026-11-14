@@ -51,7 +51,7 @@
 ../ne/badist.f90
 ../ne/balmod.f90
 ../ne/blkdat.f90
-../ne/cratet.f90
+../vbase/cratet.f90
 ../ne/crown.f90
 ../ne/cubrds.f90
 ../ne/cutstk.f90
@@ -378,7 +378,7 @@
 
 ../vstrp/essprt.f90
 
-../strp/esaddt.f90
+../estb/esaddt.f90
 ../strp/esblkd.f90
 ../estb/escprs.f90
 ../estb/esetpr.f90

@@ -1,0 +1,57 @@
+{
+  "method": "Remove only the newly added CS/SN conditional block after proving its compile-time condition false for each existing shared consumer; compare the complete executable body from IDANUW assignment through END, ignoring comments, continuation markers and whitespace/case. Existing CI branch retained unchanged.",
+  "rows": [
+    {
+      "variant": "bc",
+      "VARIANTCD": "BC",
+      "added_branch_is_compile_time_false": true,
+      "resolved_executable_body_identical_to_immediate_baseline": true
+    },
+    {
+      "variant": "ca",
+      "VARIANTCD": "CA",
+      "added_branch_is_compile_time_false": true,
+      "resolved_executable_body_identical_to_immediate_baseline": true
+    },
+    {
+      "variant": "ci",
+      "VARIANTCD": "CI",
+      "added_branch_is_compile_time_false": true,
+      "resolved_executable_body_identical_to_immediate_baseline": true
+    },
+    {
+      "variant": "ie",
+      "VARIANTCD": "IE",
+      "added_branch_is_compile_time_false": true,
+      "resolved_executable_body_identical_to_immediate_baseline": true
+    },
+    {
+      "variant": "kt",
+      "VARIANTCD": "KT",
+      "added_branch_is_compile_time_false": true,
+      "resolved_executable_body_identical_to_immediate_baseline": true
+    },
+    {
+      "variant": "nc",
+      "VARIANTCD": "NC",
+      "added_branch_is_compile_time_false": true,
+      "resolved_executable_body_identical_to_immediate_baseline": true
+    },
+    {
+      "variant": "oc",
+      "VARIANTCD": "OC",
+      "added_branch_is_compile_time_false": true,
+      "resolved_executable_body_identical_to_immediate_baseline": true
+    },
+    {
+      "variant": "ws",
+      "VARIANTCD": "WS",
+      "added_branch_is_compile_time_false": true,
+      "resolved_executable_body_identical_to_immediate_baseline": true
+    }
+  ],
+  "executable_body_sha256": "2ae60d75e1b1526badd87c1d0dc1875e4bdcfa089e12db90144b78cbfe3d9235",
+  "added_local": "MODRATE, referenced only in the excluded CS/SN branch",
+  "runtime_objects_identical_claimed": false,
+  "passed": true
+}

@@ -1,0 +1,20 @@
+! Capture all fire initialization fields and species, including untouched tails.
+program CHECK_FIRE_INITIALIZATION
+  implicit none
+@MODEL_INCLUDES@
+  integer :: TESTITER
+  open(31,file='state.bin',access='stream',form='unformatted')
+  VARACD = '@VARIANT@'
+  do TESTITER = 1,2
+     call FMVINIT
+@STATE_WRITES@
+     write(31) TESTITER
+     V2T = -1.0
+     LEAFLF = -2.0
+     TFALL = -3.0
+     HTX = -4.0
+     FALLX = -5.0
+  end do
+  close(31)
+  write(*,*) 'FMVINIT cases:',2
+end program CHECK_FIRE_INITIALIZATION

@@ -50,7 +50,7 @@
 
 ../cs/balmod.f90
 ../cs/blkdat.f90
-../cs/cratet.f90
+../vbase/cratet.f90
 ../cs/crown.f90
 ../cs/cubrds.f90
 ../cs/cutstk.f90
@@ -377,7 +377,7 @@
 
 ../vstrp/essprt.f90
 
-../strp/esaddt.f90
+../estb/esaddt.f90
 ../strp/esblkd.f90
 ../estb/escprs.f90
 ../estb/esetpr.f90
@@ -576,7 +576,7 @@
 ../fire/cs/fmcfmd.f90
 ../fire/cs/fmcrow.f90
 ../fire/cs/fmcsft.f90
-../fire/cs/fmsfall.f90
+../fire/base/fmsfall.f90
 ../fire/cs/fmvinit.f90
 ../fire/ie/fmcons.f90
 ../fire/base/fmmois.f90

@@ -1,0 +1,62 @@
+--- before/pn/grinit.f90
++++ canonical/vbase/grinit.f90
+@@ -1,7 +1,7 @@
+ !=======================================!
+ !   Initialize growth model variables   !
+ !=======================================!
+-! PN $Id$
++! VBASE $Id$
+ subroutine GRINIT
+   implicit none
+ 
+@@ -33,7 +33,10 @@
+   data DBLK/'                          '/
+   data none/'NONE'/
+ 
+-  VARACD = 'PN'
++  !     PN/WC SHARE INITIALIZATION. SELECT THEIR FOUR ORIGINAL DEFAULTS
++  !     FROM THE PARAMETER THAT IS AVAILABLE BEFORE GRINIT HAS RUN.
++
++  VARACD = VARIANTCD
+   ECOREG = ''
+   CFCTYPE = 'F'
+   BFCTYPE = 'F'
+@@ -138,7 +141,11 @@
+   BRK = 5.0
+   DGSD = 1.7
+   EFF = 1.0
+-  ELEV = 7.
++  if (VARIANTCD.eq.'WC') then
++     ELEV = 35.
++  else
++     ELEV = 7.
++  end if
+   FINT = 10.
+   FINTH = 5.
+   FINTM = 5.0
+@@ -156,7 +163,11 @@
+   IDG = 0
+   IFINT = 10
+   IFINTH = 5
+-  IFOR = 2
++  if (VARIANTCD.eq.'WC') then
++     IFOR = 6
++  else
++     IFOR = 2
++  end if
+   KODFOR = 0
+   IFST = 1
+   IGL = 1
+@@ -193,7 +204,11 @@
+   SAMWT = -1E25
+   SLOPE = 5.0
+   TLAT = 46.
+-  TLONG = 123.
++  if (VARIANTCD.eq.'WC') then
++     TLONG = 122.
++  else
++     TLONG = 123.
++  end if
+   ISTATE = 0
+   ICNTY = 0
+   TFPA = 0.0

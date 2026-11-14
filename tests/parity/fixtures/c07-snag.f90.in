@@ -1,0 +1,51 @@
+! Test CS/SN's 12-inch/species-1 split, rate cap, and prior shared consumers.
+program CHECK_SNAG
+  implicit none
+  include 'PRGPRM.f90'
+  include 'FMPARM.f90'
+  include 'CONTRL.f90'
+  include 'FMCOM.f90'
+  integer :: TESTS,TESTD,TESTN,TESTP,TESTYEAR,TESTDOWN,TESTSW,TESTCOUNT
+  integer :: TESTSPEC(5),TESTYR,TESTRATE
+  real :: TESTDBH(8),TESTDEN(9),TESTPBS(3),TESTSOFT,TESTSMAL,TESTFALL
+  data TESTDBH /1.0,11.999999,12.0,12.000001,17.999998,18.0,18.000002,40.0/
+  data TESTDEN /-1.0,0.0,0.1,4.9999995,5.0,5.0000005,6.0,50.0,100.0/
+  data TESTPBS /0.0,0.9,1.0/
+  open(31,file='state.bin',access='stream',form='unformatted')
+  TESTSPEC = [1,2,3,8,MAXSP]
+  FALLX = 1.0
+  NZERO = 0.001
+  PBTIME = 7.0
+  BURNYR = 1990
+  TESTCOUNT = 0
+  do TESTRATE = 1,2
+     FALLX = 1.0
+     if (TESTRATE.eq.2) FALLX = 100.0
+  do TESTS = 1,5
+     do TESTD = 1,8
+        do TESTN = 1,9
+           do TESTP = 1,3
+              PBSOFT = TESTPBS(TESTP)
+              PBSMAL = TESTPBS(4-TESTP)
+              do TESTYEAR = 0,1
+                 TESTYR = 1990+7*TESTYEAR
+                 do TESTDOWN = 1,2
+                    ALLDWN = 20.0
+                    if (TESTDOWN.eq.2) ALLDWN = 100.0
+                    do TESTSW = 1,2
+                       call FMSFALL(TESTYR,TESTSPEC(TESTS),TESTDBH(TESTD),&
+                            &100.0,TESTDEN(TESTN),TESTSW,TESTSOFT,TESTSMAL,TESTFALL)
+                       write(31) TESTRATE,TESTS,TESTD,TESTN,TESTP,TESTYEAR,TESTDOWN,TESTSW
+                       write(31) TESTSOFT,TESTSMAL,TESTFALL
+                       TESTCOUNT = TESTCOUNT+1
+                    end do
+                 end do
+              end do
+           end do
+        end do
+     end do
+  end do
+  end do
+  close(31)
+  write(*,*) 'FMSFALL cases:',TESTCOUNT
+end program CHECK_SNAG

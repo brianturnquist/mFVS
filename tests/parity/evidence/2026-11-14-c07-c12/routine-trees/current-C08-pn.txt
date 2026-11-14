@@ -1,0 +1,987 @@
+__attribute__((fn spec (". ")))
+void grinit ()
+{
+  static real(kind=4) abirth[3000] [value-expr: arrays.abirth];
+  static real(kind=4) bfv[3000] [value-expr: arrays.bfv];
+  static real(kind=4) cfv[3000] [value-expr: arrays.cfv];
+  static real(kind=4) crwdth[3000] [value-expr: arrays.crwdth];
+  static integer(kind=4) damsev[18000] [value-expr: arrays.damsev];
+  static real(kind=4) dbh[3000] [value-expr: arrays.dbh];
+  static integer(kind=4) defect[3000] [value-expr: arrays.defect];
+  static real(kind=4) dg[3000] [value-expr: arrays.dg];
+  static real(kind=4) ht[3000] [value-expr: arrays.ht];
+  static real(kind=4) ht2td[6000] [value-expr: arrays.ht2td];
+  static real(kind=4) htg[3000] [value-expr: arrays.htg];
+  static integer(kind=4) icr[3000] [value-expr: arrays.icr];
+  static integer(kind=4) idtree[3000] [value-expr: arrays.idtree];
+  static integer(kind=4) imc[3000] [value-expr: arrays.imc];
+  static integer(kind=4) ind[3000] [value-expr: arrays.ind];
+  static integer(kind=4) ind1[3000] [value-expr: arrays.ind1];
+  static integer(kind=4) ind2[3000] [value-expr: arrays.ind2];
+  static integer(kind=4) isp[3000] [value-expr: arrays.isp];
+  static integer(kind=4) ispecl[3000] [value-expr: arrays.ispecl];
+  static integer(kind=4) itre[3000] [value-expr: arrays.itre];
+  static integer(kind=4) itrunc[3000] [value-expr: arrays.itrunc];
+  static integer(kind=4) kutkod[3000] [value-expr: arrays.kutkod];
+  static logical(kind=4) lbirth[3000] [value-expr: arrays.lbirth];
+  static integer(kind=4) normht[3000] [value-expr: arrays.normht];
+  static real(kind=4) oldpct[3000] [value-expr: arrays.oldpct];
+  static real(kind=4) oldrn[3000] [value-expr: arrays.oldrn];
+  static real(kind=4) pct[3000] [value-expr: arrays.pct];
+  static real(kind=4) pltsiz[3000] [value-expr: arrays.pltsiz];
+  static real(kind=4) prob[3000] [value-expr: arrays.prob];
+  static real(kind=4) wk1[3000] [value-expr: arrays.wk1];
+  static real(kind=4) wk2[3000] [value-expr: arrays.wk2];
+  static real(kind=4) wk3[3000] [value-expr: arrays.wk3];
+  static real(kind=4) wk4[3000] [value-expr: arrays.wk4];
+  static real(kind=4) wk5[3000] [value-expr: arrays.wk5];
+  static real(kind=4) wk6[3000] [value-expr: arrays.wk6];
+  static real(kind=4) yrdlos[3000] [value-expr: arrays.yrdlos];
+  static real(kind=4) zrand[3000] [value-expr: arrays.zrand];
+  static real(kind=4) mcfv[3000] [value-expr: arrays.mcfv];
+  static real(kind=4) scfv[3000] [value-expr: arrays.scfv];
+  static real(kind=4) wk7[3000] [value-expr: arrays.wk7];
+  static real(kind=4) cull[3000] [value-expr: arrays.cull];
+  static integer(kind=4) decaycd[3000] [value-expr: arrays.decaycd];
+  static integer(kind=4) wdldstem[3000] [value-expr: arrays.wdldstem];
+  static real(kind=4) abvgrd_bio[3000] [value-expr: arrays.abvgrd_bio];
+  static real(kind=4) merch_bio[3000] [value-expr: arrays.merch_bio];
+  static real(kind=4) cubsaw_bio[3000] [value-expr: arrays.cubsaw_bio];
+  static real(kind=4) abvgrd_carb[3000] [value-expr: arrays.abvgrd_carb];
+  static real(kind=4) merch_carb[3000] [value-expr: arrays.merch_carb];
+  static real(kind=4) cubsaw_carb[3000] [value-expr: arrays.cubsaw_carb];
+  static real(kind=4) carb_frac[3000] [value-expr: arrays.carb_frac];
+  static real(kind=4) foli_bio[3000] [value-expr: arrays.foli_bio];
+  static real(kind=4) foli_carb[3000] [value-expr: arrays.foli_carb];
+  static real(kind=4) wk8[3000] [value-expr: arrays.wk8];
+  static real(kind=4) wk9[3000] [value-expr: arrays.wk9];
+  static real(kind=4) wk10[3000] [value-expr: arrays.wk10];
+  static real(kind=4) wk11[3000] [value-expr: arrays.wk11];
+  static real(kind=4) wk12[3000] [value-expr: arrays.wk12];
+  static real(kind=4) wk13[3000] [value-expr: arrays.wk13];
+  static real(kind=4) wk14[3000] [value-expr: arrays.wk14];
+  static real(kind=4) wk15[3000] [value-expr: arrays.wk15];
+  static real(kind=4) fnmin [value-expr: calcom.fnmin];
+  static real(kind=4) gmult[2] [value-expr: calcom.gmult];
+  static real(kind=4) hghch [value-expr: calcom.hghch];
+  static integer(kind=4) icrhab [value-expr: calcom.icrhab];
+  static integer(kind=4) irhhab [value-expr: calcom.irhhab];
+  static integer(kind=4) ispccf [value-expr: calcom.ispccf];
+  static integer(kind=4) ispdsq [value-expr: calcom.ispdsq];
+  static integer(kind=4) ispfor [value-expr: calcom.ispfor];
+  static integer(kind=4) isphab [value-expr: calcom.isphab];
+  static integer(kind=4) ncalht [value-expr: calcom.ncalht];
+  static real(kind=4) poten [value-expr: calcom.poten];
+  static real(kind=4) regch [value-expr: calcom.regch];
+  static real(kind=4) rein[2] [value-expr: calcom.rein];
+  static real(kind=4) ahat [value-expr: coeffs.ahat];
+  static real(kind=4) atten[39] [value-expr: coeffs.atten];
+  static real(kind=4) bfdeft[351] [value-expr: coeffs.bfdeft];
+  static real(kind=4) bfla0[39] [value-expr: coeffs.bfla0];
+  static real(kind=4) bfla1[39] [value-expr: coeffs.bfla1];
+  static real(kind=4) bhat [value-expr: coeffs.bhat];
+  static real(kind=4) bjphi [value-expr: coeffs.bjphi];
+  static real(kind=4) bjrho[40] [value-expr: coeffs.bjrho];
+  static real(kind=4) bjthet [value-expr: coeffs.bjthet];
+  static real(kind=4) bkrat[39] [value-expr: coeffs.bkrat];
+  static real(kind=4) cfdeft[351] [value-expr: coeffs.cfdeft];
+  static real(kind=4) cfla0[39] [value-expr: coeffs.cfla0];
+  static real(kind=4) cfla1[39] [value-expr: coeffs.cfla1];
+  static real(kind=4) cor[39] [value-expr: coeffs.cor];
+  static real(kind=4) cor2[39] [value-expr: coeffs.cor2];
+  static real(kind=4) crcon[39] [value-expr: coeffs.crcon];
+  static real(kind=4) dgccf[39] [value-expr: coeffs.dgccf];
+  static real(kind=4) dgcon[39] [value-expr: coeffs.dgcon];
+  static real(kind=4) dgdsq[39] [value-expr: coeffs.dgdsq];
+  static real(kind=4) difh[39] [value-expr: coeffs.difh];
+  static real(kind=4) fl[39] [value-expr: coeffs.fl];
+  static real(kind=4) fm[39] [value-expr: coeffs.fm];
+  static real(kind=4) fu[39] [value-expr: coeffs.fu];
+  static real(kind=4) h2cof [value-expr: coeffs.h2cof];
+  static real(kind=4) hdgcof [value-expr: coeffs.hdgcof];
+  static real(kind=4) ht1[39] [value-expr: coeffs.ht1];
+  static real(kind=4) ht2[39] [value-expr: coeffs.ht2];
+  static real(kind=4) htcon[39] [value-expr: coeffs.htcon];
+  static integer(kind=4) iorder[39] [value-expr: coeffs.iorder];
+  static real(kind=4) rhcon[39] [value-expr: coeffs.rhcon];
+  static real(kind=4) sigma[39] [value-expr: coeffs.sigma];
+  static real(kind=4) sigmar[39] [value-expr: coeffs.sigmar];
+  static real(kind=4) smcon[39] [value-expr: coeffs.smcon];
+  static real(kind=4) vardg[39] [value-expr: coeffs.vardg];
+  static real(kind=4) wci[39] [value-expr: coeffs.wci];
+  static character(kind=1) calcsdi[1:7] [value-expr: conchr.calcsdi];
+  static character(kind=1) iused[39][1:4] [value-expr: conchr.iused];
+  static character(kind=1) kwdfil[1:250] [value-expr: conchr.kwdfil];
+  static character(kind=1) namgrp[30][1:10] [value-expr: conchr.namgrp];
+  static character(kind=1) ptgname[30][1:10] [value-expr: conchr.ptgname];
+  static character(kind=1) trefmt[1:160] [value-expr: conchr.trefmt];
+  static character(kind=1) varacd[1:2] [value-expr: conchr.varacd];
+  static character(kind=1) cfctype[1:1] [value-expr: conchr.cfctype];
+  static character(kind=1) bfctype[1:1] [value-expr: conchr.bfctype];
+  static real(kind=4) auteff [value-expr: contrl.auteff];
+  static real(kind=4) autmax [value-expr: contrl.autmax];
+  static real(kind=4) autmin [value-expr: contrl.autmin];
+  static real(kind=4) bamax [value-expr: contrl.bamax];
+  static real(kind=4) bamin [value-expr: contrl.bamin];
+  static real(kind=4) bfmin [value-expr: contrl.bfmin];
+  static real(kind=4) cccoef [value-expr: contrl.cccoef];
+  static real(kind=4) cccoef2 [value-expr: contrl.cccoef2];
+  static real(kind=4) cfmin [value-expr: contrl.cfmin];
+  static real(kind=4) dbhmin[39] [value-expr: contrl.dbhmin];
+  static real(kind=4) dbhsdi [value-expr: contrl.dbhsdi];
+  static real(kind=4) dbhstage [value-expr: contrl.dbhstage];
+  static real(kind=4) dbhzeide [value-expr: contrl.dbhzeide];
+  static real(kind=4) dgsd [value-expr: contrl.dgsd];
+  static real(kind=4) dr016 [value-expr: contrl.dr016];
+  static real(kind=4) eff [value-expr: contrl.eff];
+  static real(kind=4) fintm [value-expr: contrl.fintm];
+  static real(kind=4) frmcls[39] [value-expr: contrl.frmcls];
+  static integer(kind=4) ibegin[39] [value-expr: contrl.ibegin];
+  static integer(kind=4) iccode [value-expr: contrl.iccode];
+  static integer(kind=4) icflag [value-expr: contrl.icflag];
+  static integer(kind=4) icl1 [value-expr: contrl.icl1];
+  static integer(kind=4) icl2 [value-expr: contrl.icl2];
+  static integer(kind=4) icl3 [value-expr: contrl.icl3];
+  static integer(kind=4) icl4 [value-expr: contrl.icl4];
+  static integer(kind=4) icl5 [value-expr: contrl.icl5];
+  static integer(kind=4) icl6 [value-expr: contrl.icl6];
+  static integer(kind=4) icyc [value-expr: contrl.icyc];
+  static integer(kind=4) idg [value-expr: contrl.idg];
+  static integer(kind=4) ifst [value-expr: contrl.ifst];
+  static integer(kind=4) ins[6] [value-expr: contrl.ins];
+  static integer(kind=4) iptgrp[1560] [value-expr: contrl.iptgrp];
+  static integer(kind=4) iread [value-expr: contrl.iread];
+  static integer(kind=4) irec1 [value-expr: contrl.irec1];
+  static integer(kind=4) irec2 [value-expr: contrl.irec2];
+  static integer(kind=4) irecnt [value-expr: contrl.irecnt];
+  static integer(kind=4) irecrd [value-expr: contrl.irecrd];
+  static integer(kind=4) iref[39] [value-expr: contrl.iref];
+  static integer(kind=4) isct[78] [value-expr: contrl.isct];
+  static integer(kind=4) ispgrp[2760] [value-expr: contrl.ispgrp];
+  static integer(kind=4) istdat [value-expr: contrl.istdat];
+  static integer(kind=4) itable[7] [value-expr: contrl.itable];
+  static integer(kind=4) ithnpa [value-expr: contrl.ithnpa];
+  static integer(kind=4) ithnpi [value-expr: contrl.ithnpi];
+  static integer(kind=4) ithnpn [value-expr: contrl.ithnpn];
+  static integer(kind=4) itrn [value-expr: contrl.itrn];
+  static integer(kind=4) iy[41] [value-expr: contrl.iy];
+  static integer(kind=4) jocalb [value-expr: contrl.jocalb];
+  static integer(kind=4) jolist [value-expr: contrl.jolist];
+  static integer(kind=4) jostnd [value-expr: contrl.jostnd];
+  static integer(kind=4) josum [value-expr: contrl.josum];
+  static integer(kind=4) jotree [value-expr: contrl.jotree];
+  static integer(kind=4) kount[39] [value-expr: contrl.kount];
+  static integer(kind=4) kptr[39] [value-expr: contrl.kptr];
+  static logical(kind=4) lauton [value-expr: contrl.lauton];
+  static logical(kind=4) lbkden [value-expr: contrl.lbkden];
+  static logical(kind=4) lbvols [value-expr: contrl.lbvols];
+  static logical(kind=4) lcvols [value-expr: contrl.lcvols];
+  static logical(kind=4) ldcor2 [value-expr: contrl.ldcor2];
+  static logical(kind=4) ldgcal[39] [value-expr: contrl.ldgcal];
+  static logical(kind=4) ldubdg [value-expr: contrl.ldubdg];
+  static logical(kind=4) leavesp[39] [value-expr: contrl.leavesp];
+  static logical(kind=4) lfia [value-expr: contrl.lfia];
+  static logical(kind=4) lfire [value-expr: contrl.lfire];
+  static logical(kind=4) lflag [value-expr: contrl.lflag];
+  static logical(kind=4) lhtdrg[39] [value-expr: contrl.lhtdrg];
+  static logical(kind=4) lmort [value-expr: contrl.lmort];
+  static logical(kind=4) lperm [value-expr: contrl.lperm];
+  static logical(kind=4) lrcor2 [value-expr: contrl.lrcor2];
+  static logical(kind=4) lsite [value-expr: contrl.lsite];
+  static logical(kind=4) lstart [value-expr: contrl.lstart];
+  static integer(kind=4) lstknt [value-expr: contrl.lstknt];
+  static logical(kind=4) lsumry [value-expr: contrl.lsumry];
+  static logical(kind=4) ltrip [value-expr: contrl.ltrip];
+  static logical(kind=4) lzeide [value-expr: contrl.lzeide];
+  static integer(kind=4) methb[39] [value-expr: contrl.methb];
+  static integer(kind=4) methc[39] [value-expr: contrl.methc];
+  static logical(kind=4) mordat [value-expr: contrl.mordat];
+  static integer(kind=4) ncyc [value-expr: contrl.ncyc];
+  static logical(kind=4) notrip [value-expr: contrl.notrip];
+  static integer(kind=4) nptgrp [value-expr: contrl.nptgrp];
+  static integer(kind=4) nspgrp [value-expr: contrl.nspgrp];
+  static integer(kind=4) nstknt [value-expr: contrl.nstknt];
+  static integer(kind=4) numsp [value-expr: contrl.numsp];
+  static real(kind=4) pbawt [value-expr: contrl.pbawt];
+  static real(kind=4) pccfwt [value-expr: contrl.pccfwt];
+  static real(kind=4) ptpawt [value-expr: contrl.ptpawt];
+  static real(kind=4) rcor2[39] [value-expr: contrl.rcor2];
+  static real(kind=4) sizcap[156] [value-expr: contrl.sizcap];
+  static real(kind=4) spclwt [value-expr: contrl.spclwt];
+  static real(kind=4) stmp[39] [value-expr: contrl.stmp];
+  static real(kind=4) tcfmin [value-expr: contrl.tcfmin];
+  static real(kind=4) tcwt [value-expr: contrl.tcwt];
+  static real(kind=4) topd[39] [value-expr: contrl.topd];
+  static real(kind=4) trm [value-expr: contrl.trm];
+  static real(kind=4) yr [value-expr: contrl.yr];
+  static real(kind=4) scfmind[39] [value-expr: contrl.scfmind];
+  static real(kind=4) scftopd[39] [value-expr: contrl.scftopd];
+  static logical(kind=4) lfianvb [value-expr: contrl.lfianvb];
+  static real(kind=4) scfstmp[39] [value-expr: contrl.scfstmp];
+  static real(kind=4) scfmin [value-expr: contrl.scfmin];
+  static real(kind=4) atdr016 [value-expr: contrl.atdr016];
+  static real(kind=4) odr016 [value-expr: contrl.odr016];
+  static real(kind=4) cwdl0[39] [value-expr: cwdcom.cwdl0];
+  static real(kind=4) cwdl1[39] [value-expr: cwdcom.cwdl1];
+  static real(kind=4) cwdl2[39] [value-expr: cwdcom.cwdl2];
+  static real(kind=4) cwdl3[39] [value-expr: cwdcom.cwdl3];
+  static real(kind=4) cwds0[39] [value-expr: cwdcom.cwds0];
+  static real(kind=4) cwds1[39] [value-expr: cwdcom.cwds1];
+  static real(kind=4) cwds2[39] [value-expr: cwdcom.cwds2];
+  static real(kind=4) cwds3[39] [value-expr: cwdcom.cwds3];
+  static real(kind=4) cwtdbh[39] [value-expr: cwdcom.cwtdbh];
+  static logical(kind=4) lspcwe[39] [value-expr: cwdcom.lspcwe];
+  static integer(kind=4) josume [value-expr: econ.josume];
+  static logical(kind=4) lecbug [value-expr: econ.lecbug];
+  static logical(kind=4) lecon [value-expr: econ.lecon];
+  static real(kind=4) finth [value-expr: htcal.finth];
+  static real(kind=4) hcor2[39] [value-expr: htcal.hcor2];
+  static real(kind=4) hsig[39] [value-expr: htcal.hsig];
+  static integer(kind=4) ifinth [value-expr: htcal.ifinth];
+  static integer(kind=4) ihtg [value-expr: htcal.ihtg];
+  static logical(kind=4) lhcor2 [value-expr: htcal.lhcor2];
+  static logical(kind=4) lhtcal[39] [value-expr: htcal.lhtcal];
+  static real(kind=4) xdmult[39] [value-expr: multcm.xdmult];
+  static real(kind=4) xhmult[39] [value-expr: multcm.xhmult];
+  static real(kind=4) xmdia1[39] [value-expr: multcm.xmdia1];
+  static real(kind=4) xmdia2[39] [value-expr: multcm.xmdia2];
+  static real(kind=4) xmmult[39] [value-expr: multcm.xmmult];
+  static real(kind=4) xrdmlt[39] [value-expr: multcm.xrdmlt];
+  static real(kind=4) xrhmlt[39] [value-expr: multcm.xrhmlt];
+  static character(kind=1) aglset[160][1:250] [value-expr: opchr.aglset];
+  static character(kind=1) cact[10000][1:1] [value-expr: opchr.cact];
+  static character(kind=1) cexprs[2000][1:1] [value-expr: opchr.cexprs];
+  static character(kind=1) ctstv5[399][1:8] [value-expr: opchr.ctstv5];
+  static character(kind=1) slset[1:250] [value-expr: opchr.slset];
+  static character(kind=1) wkstr1[1:250] [value-expr: opchr.wkstr1];
+  static character(kind=1) wkstr2[1:250] [value-expr: opchr.wkstr2];
+  static character(kind=1) wkstr3[1:250] [value-expr: opchr.wkstr3];
+  static real(kind=4) accfsp[39] [value-expr: opcom.accfsp];
+  static real(kind=4) bccfsp[39] [value-expr: opcom.bccfsp];
+  static integer(kind=4) iact[20000] [value-expr: opcom.iact];
+  static integer(kind=4) icact [value-expr: opcom.icact];
+  static integer(kind=4) icod [value-expr: opcom.icod];
+  static integer(kind=4) idate[4000] [value-expr: opcom.idate];
+  static integer(kind=4) iept [value-expr: opcom.iept];
+  static integer(kind=4) ieva [value-expr: opcom.ieva];
+  static integer(kind=4) ievact[960] [value-expr: opcom.ievact];
+  static integer(kind=4) ievcod[6000] [value-expr: opcom.ievcod];
+  static integer(kind=4) ievnts[450] [value-expr: opcom.ievnts];
+  static integer(kind=4) ievt [value-expr: opcom.ievt];
+  static integer(kind=4) ilgnum [value-expr: opcom.ilgnum];
+  static integer(kind=4) img1 [value-expr: opcom.img1];
+  static integer(kind=4) img2 [value-expr: opcom.img2];
+  static integer(kind=4) imgl [value-expr: opcom.imgl];
+  static integer(kind=4) imgpts[80] [value-expr: opcom.imgpts];
+  static integer(kind=4) impl [value-expr: opcom.impl];
+  static integer(kind=4) iopcyc[4000] [value-expr: opcom.iopcyc];
+  static integer(kind=4) iopsrt[4000] [value-expr: opcom.iopsrt];
+  static integer(kind=4) iphase [value-expr: opcom.iphase];
+  static integer(kind=4) iptodo[500] [value-expr: opcom.iptodo];
+  static integer(kind=4) iseq[4000] [value-expr: opcom.iseq];
+  static integer(kind=4) iseqdn [value-expr: opcom.iseqdn];
+  static integer(kind=4) itoprm [value-expr: opcom.itoprm];
+  static integer(kind=4) itst5 [value-expr: opcom.itst5];
+  static integer(kind=4) ktodo [value-expr: opcom.ktodo];
+  static logical(kind=4) lbsets [value-expr: opcom.lbsets];
+  static integer(kind=4) lenagl[160] [value-expr: opcom.lenagl];
+  static integer(kind=4) lensls [value-expr: opcom.lensls];
+  static logical(kind=4) levuse [value-expr: opcom.levuse];
+  static logical(kind=4) lopevn [value-expr: opcom.lopevn];
+  static logical(kind=4) lreg[400] [value-expr: opcom.lreg];
+  static logical(kind=4) ltstv4[50] [value-expr: opcom.ltstv4];
+  static logical(kind=4) ltstv5[399] [value-expr: opcom.ltstv5];
+  static real(kind=4) parms[7999] [value-expr: opcom.parms];
+  static real(kind=4) tstv1[80] [value-expr: opcom.tstv1];
+  static real(kind=4) tstv2[50] [value-expr: opcom.tstv2];
+  static real(kind=4) tstv3[50] [value-expr: opcom.tstv3];
+  static real(kind=4) tstv4[50] [value-expr: opcom.tstv4];
+  static real(kind=4) tstv5[399] [value-expr: opcom.tstv5];
+  static real(kind=4) xreg[400] [value-expr: opcom.xreg];
+  static real(kind=4) aspect [value-expr: plot.aspect];
+  static real(kind=4) atavd [value-expr: plot.atavd];
+  static real(kind=4) atavh [value-expr: plot.atavh];
+  static real(kind=4) atba [value-expr: plot.atba];
+  static real(kind=4) atccf [value-expr: plot.atccf];
+  static real(kind=4) atsdix [value-expr: plot.atsdix];
+  static real(kind=4) attpa [value-expr: plot.attpa];
+  static real(kind=4) avh [value-expr: plot.avh];
+  static real(kind=4) ba [value-expr: plot.ba];
+  static real(kind=4) baf [value-expr: plot.baf];
+  static real(kind=4) barank[39] [value-expr: plot.barank];
+  static real(kind=4) brk [value-expr: plot.brk];
+  static real(kind=4) btsdix [value-expr: plot.btsdix];
+  static real(kind=4) covmlt [value-expr: plot.covmlt];
+  static real(kind=4) covyr [value-expr: plot.covyr];
+  static real(kind=4) elev [value-expr: plot.elev];
+  static real(kind=4) fint [value-expr: plot.fint];
+  static real(kind=4) fpa [value-expr: plot.fpa];
+  static real(kind=4) grospc [value-expr: plot.grospc];
+  static integer(kind=4) iage [value-expr: plot.iage];
+  static integer(kind=4) iaspec [value-expr: plot.iaspec];
+  static integer(kind=4) icage [value-expr: plot.icage];
+  static integer(kind=4) icnty [value-expr: plot.icnty];
+  static integer(kind=4) ifint [value-expr: plot.ifint];
+  static integer(kind=4) ifor [value-expr: plot.ifor];
+  static integer(kind=4) ifortp [value-expr: plot.ifortp];
+  static integer(kind=4) igl [value-expr: plot.igl];
+  static integer(kind=4) iifortp [value-expr: plot.iifortp];
+  static integer(kind=4) imodty [value-expr: plot.imodty];
+  static integer(kind=4) iphreg [value-expr: plot.iphreg];
+  static integer(kind=4) iptinv [value-expr: plot.iptinv];
+  static integer(kind=4) ipvec[500] [value-expr: plot.ipvec];
+  static integer(kind=4) isisp [value-expr: plot.isisp];
+  static integer(kind=4) islop [value-expr: plot.islop];
+  static integer(kind=4) ismall [value-expr: plot.ismall];
+  static integer(kind=4) istate [value-expr: plot.istate];
+  static integer(kind=4) istcl [value-expr: plot.istcl];
+  static integer(kind=4) iszcl [value-expr: plot.iszcl];
+  static integer(kind=4) itype [value-expr: plot.itype];
+  static integer(kind=4) jspin[39] [value-expr: plot.jspin];
+  static integer(kind=4) jspindef [value-expr: plot.jspindef];
+  static integer(kind=4) jtype[122] [value-expr: plot.jtype];
+  static integer(kind=4) kodfor [value-expr: plot.kodfor];
+  static integer(kind=4) kodtyp [value-expr: plot.kodtyp];
+  static integer(kind=4) managd [value-expr: plot.managd];
+  static integer(kind=4) nonstk [value-expr: plot.nonstk];
+  static integer(kind=4) nsitet [value-expr: plot.nsitet];
+  static real(kind=4) oldavh [value-expr: plot.oldavh];
+  static real(kind=4) oldba [value-expr: plot.oldba];
+  static real(kind=4) oldtpa [value-expr: plot.oldtpa];
+  static real(kind=4) ormsqd [value-expr: plot.ormsqd];
+  static real(kind=4) pi [value-expr: plot.pi];
+  static real(kind=4) pmsdil [value-expr: plot.pmsdil];
+  static real(kind=4) pmsdiu [value-expr: plot.pmsdiu];
+  static real(kind=4) relden [value-expr: plot.relden];
+  static real(kind=4) reldm1 [value-expr: plot.reldm1];
+  static real(kind=4) reldsp[39] [value-expr: plot.reldsp];
+  static real(kind=4) rmai [value-expr: plot.rmai];
+  static real(kind=4) rmsqd [value-expr: plot.rmsqd];
+  static real(kind=4) samwt [value-expr: plot.samwt];
+  static real(kind=4) sdiac [value-expr: plot.sdiac];
+  static real(kind=4) sdiac2 [value-expr: plot.sdiac2];
+  static real(kind=4) sdibc [value-expr: plot.sdibc];
+  static real(kind=4) sdibc2 [value-expr: plot.sdibc2];
+  static real(kind=4) sdidef[39] [value-expr: plot.sdidef];
+  static real(kind=4) sdimax [value-expr: plot.sdimax];
+  static real(kind=4) sitear[39] [value-expr: plot.sitear];
+  static real(kind=4) sitetr[120] [value-expr: plot.sitetr];
+  static real(kind=4) slope [value-expr: plot.slope];
+  static real(kind=4) stndsi [value-expr: plot.stndsi];
+  static real(kind=4) tfpa [value-expr: plot.tfpa];
+  static real(kind=4) tlat [value-expr: plot.tlat];
+  static real(kind=4) tlong [value-expr: plot.tlong];
+  static real(kind=4) tprob [value-expr: plot.tprob];
+  static real(kind=4) vmlt [value-expr: plot.vmlt];
+  static real(kind=4) vmltyr [value-expr: plot.vmltyr];
+  static integer(kind=4) istdorg [value-expr: plot.istdorg];
+  static character(kind=1) cpvref[1:10] [value-expr: pltchr.cpvref];
+  static character(kind=1) dbcn[1:40] [value-expr: pltchr.dbcn];
+  static character(kind=1) ecoreg[1:4] [value-expr: pltchr.ecoreg];
+  static character(kind=1) fiajsp[39][1:4] [value-expr: pltchr.fiajsp];
+  static character(kind=1) jsp[39][1:4] [value-expr: pltchr.jsp];
+  static character(kind=1) mgmid[1:4] [value-expr: pltchr.mgmid];
+  static character(kind=1) nplt[1:26] [value-expr: pltchr.nplt];
+  static character(kind=1) nsp[117][1:4] [value-expr: pltchr.nsp];
+  static character(kind=1) plnjsp[39][1:6] [value-expr: pltchr.plnjsp];
+  static real(kind=4) agelst [value-expr: sumtab.agelst];
+  static real(kind=4) bcymai[41] [value-expr: sumtab.bcymai];
+  static integer(kind=4) ibtavh[41] [value-expr: sumtab.ibtavh];
+  static integer(kind=4) ibtccf[41] [value-expr: sumtab.ibtccf];
+  static integer(kind=4) ioldba[41] [value-expr: sumtab.ioldba];
+  static integer(kind=4) isdi[41] [value-expr: sumtab.isdi];
+  static integer(kind=4) isdiat[41] [value-expr: sumtab.isdiat];
+  static integer(kind=4) maiflg [value-expr: sumtab.maiflg];
+  static integer(kind=4) newstd [value-expr: sumtab.newstd];
+  static real(kind=4) qdbhat[41] [value-expr: sumtab.qdbhat];
+  static real(kind=4) qsdbt[41] [value-expr: sumtab.qsdbt];
+  static real(kind=4) totrem [value-expr: sumtab.totrem];
+  static character(kind=1) pcom[1:8] [value-expr: varchr.pcom];
+  static character(kind=1) pcomx[1:8] [value-expr: varchr.pcomx];
+  static real(kind=4) aa[39] [value-expr: varcom.aa];
+  static real(kind=4) b0accf[39] [value-expr: varcom.b0accf];
+  static real(kind=4) b0astd[39] [value-expr: varcom.b0astd];
+  static real(kind=4) b0bccf[39] [value-expr: varcom.b0bccf];
+  static real(kind=4) b1accf[39] [value-expr: varcom.b1accf];
+  static real(kind=4) b1bccf[39] [value-expr: varcom.b1bccf];
+  static real(kind=4) b1bstd[39] [value-expr: varcom.b1bstd];
+  static real(kind=4) bb[39] [value-expr: varcom.bb];
+  static real(kind=4) cepmrt [value-expr: varcom.cepmrt];
+  static real(kind=4) cepmsb [value-expr: varcom.cepmsb];
+  static real(kind=4) dhimsb [value-expr: varcom.dhimsb];
+  static real(kind=4) dlomsb [value-expr: varcom.dlomsb];
+  static real(kind=4) effmsb [value-expr: varcom.effmsb];
+  static real(kind=4) htt1[351] [value-expr: varcom.htt1];
+  static real(kind=4) htt2[351] [value-expr: varcom.htt2];
+  static integer(kind=4) iabflg[39] [value-expr: varcom.iabflg];
+  static integer(kind=4) ibasp [value-expr: varcom.ibasp];
+  static integer(kind=4) isilft [value-expr: varcom.isilft];
+  static integer(kind=4) istagf[39] [value-expr: varcom.istagf];
+  static logical(kind=4) lbamax [value-expr: varcom.lbamax];
+  static logical(kind=4) lfixsd [value-expr: varcom.lfixsd];
+  static logical(kind=4) lflagv [value-expr: varcom.lflagv];
+  static integer(kind=4) maxsdi[39] [value-expr: varcom.maxsdi];
+  static integer(kind=4) mflmsb [value-expr: varcom.mflmsb];
+  static real(kind=4) ptbaa[500] [value-expr: varcom.ptbaa];
+  static real(kind=4) ptbalt[3000] [value-expr: varcom.ptbalt];
+  static real(kind=4) qmdmsb [value-expr: varcom.qmdmsb];
+  static real(kind=4) slpmrt [value-expr: varcom.slpmrt];
+  static real(kind=4) slpmsb [value-expr: varcom.slpmsb];
+  static real(kind=4) tpamrt [value-expr: varcom.tpamrt];
+  static real(kind=4) htt11[39] [value-expr: varcom.htt11];
+  static real(kind=4) htt12[39] [value-expr: varcom.htt12];
+  static real(kind=4) htt13[39] [value-expr: varcom.htt13];
+  static real(kind=4) xmaxpt[500] [value-expr: varcom.xmaxpt];
+  static character(kind=1) veqnnb[39][1:11] [value-expr: volchr.veqnnb];
+  static character(kind=1) veqnnc[39][1:11] [value-expr: volchr.veqnnc];
+  static real(kind=4) alpha [value-expr: volstd.alpha];
+  static real(kind=4) bfmind[39] [value-expr: volstd.bfmind];
+  static real(kind=4) bfstmp[39] [value-expr: volstd.bfstmp];
+  static real(kind=4) bftopd[39] [value-expr: volstd.bftopd];
+  static real(kind=4) bfveql[273] [value-expr: volstd.bfveql];
+  static real(kind=4) bfveqs[273] [value-expr: volstd.bfveqs];
+  static real(kind=4) btran[39] [value-expr: volstd.btran];
+  static real(kind=4) cfveql[273] [value-expr: volstd.cfveql];
+  static real(kind=4) cfveqs[273] [value-expr: volstd.cfveqs];
+  static real(kind=4) ctran[39] [value-expr: volstd.ctran];
+  static integer(kind=4) ibtran[39] [value-expr: volstd.ibtran];
+  static integer(kind=4) ictran[39] [value-expr: volstd.ictran];
+  static real(kind=4) logdia[63] [value-expr: volstd.logdia];
+  static real(kind=4) logvol[140] [value-expr: volstd.logvol];
+  static logical(kind=4) lstats [value-expr: volstd.lstats];
+  static real(kind=4) cfldia[63] [value-expr: volstd.cfldia];
+  static real(kind=4) cflvol[140] [value-expr: volstd.cflvol];
+  static real(kind=4) bfldia[63] [value-expr: volstd.bfldia];
+  static real(kind=4) bflvol[140] [value-expr: volstd.bflvol];
+  static integer(kind=4) iwork1[3000] [value-expr: workcm.iwork1];
+  static real(kind=4) work1[3000] [value-expr: workcm.work1];
+  static real(kind=4) work2[39] [value-expr: workcm.work2];
+  static real(kind=4) work3[3000] [value-expr: workcm.work3];
+  character(kind=1) anindex[1:2];
+  static character(kind=1) dblk[1:26] = "                          ";
+  integer(kind=4) i;
+  integer(kind=4) j;
+  integer(kind=4) k;
+  static character(kind=1) none[1:4] = "NONE";
+
+  __builtin_memmove ((void *) &varacd, (void *) &"PN"[1]{lb: 1 sz: 1}, 2);
+  __builtin_memmove ((void *) &ecoreg, (void *) &""[1]{lb: 1 sz: 1}, 0);
+  __builtin_memset ((void *) &ecoreg, 32, 4);
+  cfctype[1]{lb: 1 sz: 1} = 70;
+  bfctype[1]{lb: 1 sz: 1} = 70;
+  lnkint ();
+  i = 1;
+  while (1)
+    {
+      {
+        logical(kind=4) TEMP0;
+
+        TEMP0 = i > 39;
+        if (TEMP0) goto L.2;
+        sdidef[(integer(kind=8)) i + -1] = 0.0;
+        iorder[(integer(kind=8)) i + -1] = 0;
+        cor[(integer(kind=8)) i + -1] = 0.0;
+        xdmult[(integer(kind=8)) i + -1] = 1.0e+0;
+        xhmult[(integer(kind=8)) i + -1] = 1.0e+0;
+        xrdmlt[(integer(kind=8)) i + -1] = 1.0e+0;
+        xrhmlt[(integer(kind=8)) i + -1] = 1.0e+0;
+        xmmult[(integer(kind=8)) i + -1] = 1.0e+0;
+        xmdia1[(integer(kind=8)) i + -1] = 0.0;
+        xmdia2[(integer(kind=8)) i + -1] = 9.9999e+4;
+        __builtin_memmove ((void *) &veqnnb[(integer(kind=8)) i + -1], (void *) &"           "[1]{lb: 1 sz: 1}, 11);
+        __builtin_memmove ((void *) &veqnnc[(integer(kind=8)) i + -1], (void *) &"           "[1]{lb: 1 sz: 1}, 11);
+        stmp[(integer(kind=8)) i + -1] = 1.0e+0;
+        topd[(integer(kind=8)) i + -1] = 0.0;
+        dbhmin[(integer(kind=8)) i + -1] = 0.0;
+        frmcls[(integer(kind=8)) i + -1] = 0.0;
+        methb[(integer(kind=8)) i + -1] = 6;
+        methc[(integer(kind=8)) i + -1] = 6;
+        bfstmp[(integer(kind=8)) i + -1] = 1.0e+0;
+        bftopd[(integer(kind=8)) i + -1] = 0.0;
+        bfmind[(integer(kind=8)) i + -1] = 0.0;
+        scfstmp[(integer(kind=8)) i + -1] = 1.0e+0;
+        scftopd[(integer(kind=8)) i + -1] = 0.0;
+        scfmind[(integer(kind=8)) i + -1] = 0.0;
+        bfla0[(integer(kind=8)) i + -1] = 0.0;
+        bfla1[(integer(kind=8)) i + -1] = 1.0e+0;
+        cfla0[(integer(kind=8)) i + -1] = 0.0;
+        cfla1[(integer(kind=8)) i + -1] = 1.0e+0;
+        ldgcal[(integer(kind=8)) i + -1] = 1;
+        lhtcal[(integer(kind=8)) i + -1] = 1;
+        lhtdrg[(integer(kind=8)) i + -1] = 0;
+        barank[(integer(kind=8)) i + -1] = 0.0;
+        maxsdi[(integer(kind=8)) i + -1] = 0;
+        sitear[(integer(kind=8)) i + -1] = 0.0;
+        iabflg[(integer(kind=8)) i + -1] = 1;
+        lspcwe[(integer(kind=8)) i + -1] = 0;
+        cwds0[(integer(kind=8)) i + -1] = 0.0;
+        cwds1[(integer(kind=8)) i + -1] = 0.0;
+        cwds2[(integer(kind=8)) i + -1] = 0.0;
+        cwds3[(integer(kind=8)) i + -1] = 2.0e+0;
+        cwdl0[(integer(kind=8)) i + -1] = 0.0;
+        cwdl1[(integer(kind=8)) i + -1] = 0.0;
+        cwdl2[(integer(kind=8)) i + -1] = 0.0;
+        cwdl3[(integer(kind=8)) i + -1] = 2.0e+0;
+        cwtdbh[(integer(kind=8)) i + -1] = 0.0;
+        sizcap[(integer(kind=8)) i + -1] = 9.99e+2;
+        sizcap[(integer(kind=8)) i + 38] = 1.0e+0;
+        sizcap[(integer(kind=8)) i + 77] = 0.0;
+        sizcap[(integer(kind=8)) i + 116] = 9.99e+2;
+        jspin[(integer(kind=8)) i + -1] = 3;
+        leavesp[(integer(kind=8)) i + -1] = 0;
+        __label_000005:;
+        L.1:;
+        i = i + 1;
+      }
+    }
+  L.2:;
+  lflagv = 0;
+  lbamax = 0;
+  lzeide = 0;
+  __builtin_memmove ((void *) &calcsdi, (void *) &" "[1]{lb: 1 sz: 1}, 1);
+  __builtin_memset ((void *) &calcsdi + 1, 32, 6);
+  cfmin = 0.0;
+  scfmin = 0.0;
+  tcfmin = 0.0;
+  bfmin = 0.0;
+  bamin = 0.0;
+  tcwt = 0.0;
+  spclwt = 0.0;
+  pbawt = 0.0;
+  pccfwt = 0.0;
+  ptpawt = 0.0;
+  irec1 = 0;
+  rmai = 5.0e+1;
+  irec2 = 3001;
+  ithnpi = 1;
+  ithnpn = -1;
+  ithnpa = 0;
+  i = 1;
+  while (1)
+    {
+      {
+        logical(kind=4) TEMP1;
+
+        TEMP1 = i > 40;
+        if (TEMP1) goto L.4;
+        iy[(integer(kind=8)) i + -1] = -1;
+        __label_000010:;
+        L.3:;
+        i = i + 1;
+      }
+    }
+  L.4:;
+  k = 1;
+  while (1)
+    {
+      {
+        logical(kind=4) TEMP2;
+
+        TEMP2 = k > 7;
+        if (TEMP2) goto L.6;
+        itable[(integer(kind=8)) k + -1] = 0;
+        __label_000011:;
+        L.5:;
+        k = k + 1;
+      }
+    }
+  L.6:;
+  managd = 0;
+  istdorg = 0;
+  alpha = 5.00000007450580596923828125e-2;
+  bjphi = 7.400000095367431640625e-1;
+  bjthet = 4.199999868869781494140625e-1;
+  aspect = 0.0;
+  lauton = 0;
+  lfia = 0;
+  lfianvb = 0;
+  autmax = 6.0e+1;
+  autmin = 4.5e+1;
+  baf = 4.0e+1;
+  bamax = 0.0;
+  brk = 5.0e+0;
+  dgsd = 1.7000000476837158203125e+0;
+  eff = 1.0e+0;
+  elev = 7.0e+0;
+  fint = 1.0e+1;
+  finth = 5.0e+0;
+  fintm = 5.0e+0;
+  fpa = 3.0e+2;
+  iage = 0;
+  iwork1[0] = 0;
+  icl4 = 2;
+  icl5 = 999;
+  icl6 = 0;
+  idg = 0;
+  ifint = 10;
+  ifinth = 5;
+  ifor = 2;
+  kodfor = 0;
+  ifst = 1;
+  igl = 1;
+  ihtg = 0;
+  iptinv = -9999;
+  itype = 0;
+  kodtyp = 0;
+  __builtin_memmove ((void *) &cpvref, (void *) &"          "[1]{lb: 1 sz: 1}, 10);
+  __builtin_memmove ((void *) &pcomx, (void *) &"        "[1]{lb: 1 sz: 1}, 8);
+  iy[0] = 0;
+  iy[40] = -1;
+  ldcor2 = 0;
+  ldubdg = 0;
+  levuse = 1;
+  lfixsd = 0;
+  lhcor2 = 0;
+  lrcor2 = 0;
+  lsumry = 0;
+  __builtin_memmove ((void *) &mgmid, (void *) &none, 4);
+  mordat = 0;
+  lstats = 0;
+  lmort = 0;
+  lbvols = 0;
+  lcvols = 0;
+  lfire = 0;
+  lsite = 0;
+  jocalb = 0;
+  grospc = -1.0e+0;
+  ncyc = 0;
+  nonstk = -9999;
+  notrip = 0;
+  __builtin_memmove ((void *) &nplt, (void *) &dblk, 26);
+  __builtin_memmove ((void *) &dbcn, (void *) &" "[1]{lb: 1 sz: 1}, 1);
+  __builtin_memset ((void *) &dbcn + 1, 32, 39);
+  samwt = -9.999999562023526247432192e+24;
+  slope = 5.0e+0;
+  tlat = 4.6e+1;
+  tlong = 1.23e+2;
+  istate = 0;
+  icnty = 0;
+  tfpa = 0.0;
+  trm = 1.0e+0;
+  lbkden = 0;
+  reldm1 = 0.0;
+  oldba = 0.0;
+  atavh = 0.0;
+  atba = 0.0;
+  atccf = 0.0;
+  ormsqd = 0.0;
+  sdimax = 0.0;
+  sdibc = 0.0;
+  sdiac = 0.0;
+  isisp = 0;
+  pmsdil = 5.5e+1;
+  pmsdiu = 8.5e+1;
+  slpmrt = 0.0;
+  cepmrt = 0.0;
+  ibasp = 0;
+  imodty = 0;
+  iphreg = 0;
+  ifortp = 0;
+  fnmin = 5.0e+0;
+  ncalht = 5;
+  isilft = 0;
+  qmdmsb = 9.99e+2;
+  slpmsb = 0.0;
+  cepmsb = 0.0;
+  effmsb = 8.9999997615814208984375e-1;
+  dlomsb = 0.0;
+  dhimsb = 9.99e+2;
+  mflmsb = 1;
+  dbhzeide = 0.0;
+  dbhstage = 0.0;
+  dr016 = 0.0;
+  odr016 = 0.0;
+  atdr016 = 0.0;
+  dbhsdi = 0.0;
+  jspindef = 0;
+  cccoef = 1.0e+0;
+  cccoef2 = 1.0e+0;
+  j = 1;
+  while (1)
+    {
+      {
+        logical(kind=4) TEMP3;
+
+        TEMP3 = j > 9;
+        if (TEMP3) goto L.8;
+        k = 1;
+        while (1)
+          {
+            {
+              logical(kind=4) TEMP4;
+
+              TEMP4 = k > 39;
+              if (TEMP4) goto L.10;
+              bfdeft[((integer(kind=8)) k * 9 + (integer(kind=8)) j) + -10] = 0.0;
+              cfdeft[((integer(kind=8)) k * 9 + (integer(kind=8)) j) + -10] = 0.0;
+              __label_000020:;
+              L.9:;
+              k = k + 1;
+            }
+          }
+        L.10:;
+        __label_000030:;
+        L.7:;
+        j = j + 1;
+      }
+    }
+  L.8:;
+  i = 1;
+  while (1)
+    {
+      {
+        logical(kind=4) TEMP5;
+
+        TEMP5 = i > 21;
+        if (TEMP5) goto L.12;
+        j = 1;
+        while (1)
+          {
+            {
+              logical(kind=4) TEMP6;
+
+              TEMP6 = j > 3;
+              if (TEMP6) goto L.14;
+              logdia[((integer(kind=8)) j * 21 + (integer(kind=8)) i) + -22] = 0.0;
+              __label_000035:;
+              L.13:;
+              j = j + 1;
+            }
+          }
+        L.14:;
+        __label_000040:;
+        L.11:;
+        i = i + 1;
+      }
+    }
+  L.12:;
+  i = 1;
+  while (1)
+    {
+      {
+        logical(kind=4) TEMP7;
+
+        TEMP7 = i > 7;
+        if (TEMP7) goto L.16;
+        j = 1;
+        while (1)
+          {
+            {
+              logical(kind=4) TEMP8;
+
+              TEMP8 = j > 20;
+              if (TEMP8) goto L.18;
+              logvol[((integer(kind=8)) j * 7 + (integer(kind=8)) i) + -8] = 0.0;
+              __label_000045:;
+              L.17:;
+              j = j + 1;
+            }
+          }
+        L.18:;
+        __label_000050:;
+        L.15:;
+        i = i + 1;
+      }
+    }
+  L.16:;
+  lecbug = 0;
+  lecon = 0;
+  dbinit ();
+  maiflg = 0;
+  newstd = 0;
+  totrem = 0.0;
+  agelst = 0.0;
+  i = 1;
+  while (1)
+    {
+      {
+        logical(kind=4) TEMP9;
+
+        TEMP9 = i > 41;
+        if (TEMP9) goto L.20;
+        bcymai[(integer(kind=8)) i + -1] = 0.0;
+        __label_000060:;
+        L.19:;
+        i = i + 1;
+      }
+    }
+  L.20:;
+  nptgrp = 0;
+  nspgrp = 0;
+  i = 1;
+  while (1)
+    {
+      {
+        logical(kind=4) TEMP10;
+
+        TEMP10 = i > 30;
+        if (TEMP10) goto L.22;
+        j = 1;
+        while (1)
+          {
+            {
+              logical(kind=4) TEMP11;
+
+              TEMP11 = j > 52;
+              if (TEMP11) goto L.24;
+              ispgrp[((integer(kind=8)) j * 30 + (integer(kind=8)) i) + -31] = 0;
+              iptgrp[((integer(kind=8)) j * 30 + (integer(kind=8)) i) + -31] = 0;
+              __label_000065:;
+              L.23:;
+              j = j + 1;
+            }
+          }
+        L.24:;
+        __label_000070:;
+        L.21:;
+        i = i + 1;
+      }
+    }
+  L.22:;
+  i = 1;
+  while (1)
+    {
+      {
+        logical(kind=4) TEMP12;
+
+        TEMP12 = i > 30;
+        if (TEMP12) goto L.26;
+        {
+          struct __st_parameter_dt dt_parm.0;
+
+          dt_parm.0.common.filename = &"/private/tmp/mfvs-c07-c12-20261114/current/pn/grinit.f90"[1]{lb: 1 sz: 1};
+          dt_parm.0.common.line = 296;
+          dt_parm.0.internal_unit = (character(kind=1) *) &anindex;
+          dt_parm.0.internal_unit_len = 2;
+          dt_parm.0.internal_unit_desc = 0B;
+          dt_parm.0.common.unit = -1;
+          dt_parm.0.format = &"(I2)"[1]{lb: 1 sz: 1};
+          dt_parm.0.format_len = 4;
+          dt_parm.0.common.flags = 134238208;
+          _gfortran_st_write (&dt_parm.0);
+          _gfortran_transfer_integer_write (&dt_parm.0, &i, 4);
+          _gfortran_st_write_done (&dt_parm.0);
+        }
+        {
+          character(kind=1) * pstr.1;
+          integer(kind=8) len.2;
+          character(kind=1) str.3[2];
+          character(kind=1)[1:] * pstr.4;
+          void * restrict TEMP13;
+          integer(kind=8) TEMP14;
+          integer(kind=8) TEMP15;
+          void * TEMP16;
+          void * TEMP17;
+
+          _gfortran_adjustl ((character(kind=1)[1:2] *) &str.3, 2, &anindex);
+          _gfortran_string_trim (&len.2, (void * *) &pstr.1, 2, (character(kind=1)[1:2] *) &str.3);
+          TEMP13 = (void * restrict) __builtin_malloc (MAX_EXPR <(unsigned long) (len.2 + 5), 1>);
+          pstr.4 = (character(kind=1)[1:] *) TEMP13;
+          _gfortran_concat_string (len.2 + 5, pstr.4, 5, &"GROUP"[1]{lb: 1 sz: 1}, len.2, pstr.1);
+          if (len.2 > 0)
+            {
+              __builtin_free ((void *) pstr.1);
+            }
+          TEMP14 = len.2 + 5;
+          TEMP15 = len.2 + 5;
+          TEMP16 = (void *) &namgrp[(integer(kind=8)) i + -1];
+          TEMP17 = (void *) pstr.4;
+          if (NON_LVALUE_EXPR <TEMP15> <= 9)
+            {
+              __builtin_memmove (TEMP16, TEMP17, (unsigned long) NON_LVALUE_EXPR <TEMP15>);
+              __builtin_memset (TEMP16 + (sizetype) NON_LVALUE_EXPR <TEMP15>, 32, (unsigned long) (10 - NON_LVALUE_EXPR <TEMP15>));
+            }
+          else
+            {
+              __builtin_memmove (TEMP16, TEMP17, 10);
+            }
+          __builtin_free ((void *) pstr.4);
+        }
+        {
+          character(kind=1) * pstr.5;
+          integer(kind=8) len.6;
+          character(kind=1) str.7[2];
+          character(kind=1)[1:] * pstr.8;
+          void * restrict TEMP18;
+          integer(kind=8) TEMP19;
+          integer(kind=8) TEMP20;
+          void * TEMP21;
+          void * TEMP22;
+
+          _gfortran_adjustl ((character(kind=1)[1:2] *) &str.7, 2, &anindex);
+          _gfortran_string_trim (&len.6, (void * *) &pstr.5, 2, (character(kind=1)[1:2] *) &str.7);
+          TEMP18 = (void * restrict) __builtin_malloc (MAX_EXPR <(unsigned long) (len.6 + 7), 1>);
+          pstr.8 = (character(kind=1)[1:] *) TEMP18;
+          _gfortran_concat_string (len.6 + 7, pstr.8, 7, &"PTGROUP"[1]{lb: 1 sz: 1}, len.6, pstr.5);
+          if (len.6 > 0)
+            {
+              __builtin_free ((void *) pstr.5);
+            }
+          TEMP19 = len.6 + 7;
+          TEMP20 = len.6 + 7;
+          TEMP21 = (void *) &ptgname[(integer(kind=8)) i + -1];
+          TEMP22 = (void *) pstr.8;
+          if (NON_LVALUE_EXPR <TEMP20> <= 9)
+            {
+              __builtin_memmove (TEMP21, TEMP22, (unsigned long) NON_LVALUE_EXPR <TEMP20>);
+              __builtin_memset (TEMP21 + (sizetype) NON_LVALUE_EXPR <TEMP20>, 32, (unsigned long) (10 - NON_LVALUE_EXPR <TEMP20>));
+            }
+          else
+            {
+              __builtin_memmove (TEMP21, TEMP22, 10);
+            }
+          __builtin_free ((void *) pstr.8);
+        }
+        L.25:;
+        i = i + 1;
+      }
+    }
+  L.26:;
+  nsitet = 0;
+  i = 1;
+  while (1)
+    {
+      {
+        logical(kind=4) TEMP23;
+
+        TEMP23 = i > 20;
+        if (TEMP23) goto L.28;
+        j = 1;
+        while (1)
+          {
+            {
+              logical(kind=4) TEMP24;
+
+              TEMP24 = j > 6;
+              if (TEMP24) goto L.30;
+              sitetr[((integer(kind=8)) j * 20 + (integer(kind=8)) i) + -21] = 0.0;
+              __label_000074:;
+              L.29:;
+              j = j + 1;
+            }
+          }
+        L.30:;
+        __label_000075:;
+        L.27:;
+        i = i + 1;
+      }
+    }
+  L.28:;
+  i = 1;
+  while (1)
+    {
+      {
+        logical(kind=4) TEMP25;
+
+        TEMP25 = i > 39;
+        if (TEMP25) goto L.32;
+        istagf[(integer(kind=8)) i + -1] = 0;
+        L.31:;
+        i = i + 1;
+      }
+    }
+  L.32:;
+  return;
+}
+
+

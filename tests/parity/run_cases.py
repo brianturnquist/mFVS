@@ -33,6 +33,10 @@ for variant in ("ak", "bm", "ca", "ci", "cr", "cs", "ec", "em", "kt", "ls",
     CASES[f"{variant}-{deck}"] = (variant, deck, [f"{deck}.key", f"{deck}.tre"])
 DEFAULT_CASES = ["ie-iet01", "bc-StandStructure", "bc-YSM-SkyRanch", "on-Hardwood"]
 SN_FORESTS = {"sn-nc03": 81103, "sn-nc05": 81105}
+CRATET_DEBUG = {"cs-cratet-debug": "cs", "ne-cratet-debug": "ne"}
+for case, variant in CRATET_DEBUG.items():
+    deck = f"{variant}t01"
+    CASES[case] = (variant, deck, [f"{deck}.key", f"{deck}.tre"])
 
 
 def sha256(path: Path) -> str:
@@ -89,6 +93,11 @@ def main() -> int:
             data = paths[0].read_bytes()
             if case in SN_FORESTS and name == "snt01.key":
                 data = derived_sn_input(data, SN_FORESTS[case])
+            if case in CRATET_DEBUG and name.endswith(".key"):
+                # DEBUG field 2 requests a following routine-name record.
+                # Add only to the isolated copy; retain the repository deck.
+                prefix = f"{'DEBUG':<10}{0:10.1f}{1:10.1f}\nCRATET\n".encode("ascii")
+                data = prefix + data
             payloads[name] = data
             inputs[name] = hashlib.sha256(data).hexdigest()
         case_identity = {"variant": variant, "deck": deck, "inputs": inputs,
@@ -102,6 +111,11 @@ def main() -> int:
             receipt["cases"][case]["derivation"] = {
                 "source": "sn-snt01", "first_stand_only": True,
                 "stdinfo_field_1": SN_FORESTS[case], "appended_keyword": "STOP",
+            }
+        if case in CRATET_DEBUG:
+            receipt["cases"][case]["derivation"] = {
+                "source": f"{variant}-{deck}", "prefix": "DEBUG field1=0, field2=1; next record CRATET",
+                "first_stand_debug": True, "repository_deck_unchanged": True,
             }
         # Canadian cases establish the existing input-failure boundary; the
         # simulation decks compare all three identities in separate processes.

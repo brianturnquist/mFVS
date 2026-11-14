@@ -1,0 +1,65 @@
+{
+  "runs": [
+    {
+      "case": "cs-cratet-debug",
+      "state": "original",
+      "diagnostic_records": 5,
+      "intercept_present": false,
+      "sample": [
+        "HEIGHT-DIAMETER COEFFICIENTS FOR SPECIES  8:  SLOPE= -5.612300  FLAG=  1 (9005 CRATET)",
+        "HEIGHT-DIAMETER COEFFICIENTS FOR SPECIES 19:  SLOPE= -4.991800  FLAG=  1 (9005 CRATET)"
+      ]
+    },
+    {
+      "case": "cs-cratet-debug",
+      "state": "current",
+      "diagnostic_records": 5,
+      "intercept_present": false,
+      "sample": [
+        "HEIGHT-DIAMETER COEFFICIENTS FOR SPECIES  8:  SLOPE= -5.612300  FLAG=  1 (9005 CRATET)",
+        "HEIGHT-DIAMETER COEFFICIENTS FOR SPECIES 19:  SLOPE= -4.991800  FLAG=  1 (9005 CRATET)"
+      ]
+    },
+    {
+      "case": "cs-cratet-debug",
+      "state": "candidate",
+      "diagnostic_records": 5,
+      "intercept_present": false,
+      "sample": [
+        "HEIGHT-DIAMETER COEFFICIENTS FOR SPECIES  8:  SLOPE= -5.612300  FLAG=  1 (9005 CRATET)",
+        "HEIGHT-DIAMETER COEFFICIENTS FOR SPECIES 19:  SLOPE= -4.991800  FLAG=  1 (9005 CRATET)"
+      ]
+    },
+    {
+      "case": "ne-cratet-debug",
+      "state": "original",
+      "diagnostic_records": 6,
+      "intercept_present": true,
+      "sample": [
+        "HEIGHT-DIAMETER COEFFICIENTS FOR SPECIES  9:  INTERCEPT=  4.609000  SLOPE= -6.189600  FLAG=  1 (9005 CRATET)",
+        "HEIGHT-DIAMETER COEFFICIENTS FOR SPECIES 19:  INTERCEPT=  4.508400  SLOPE= -6.011600  FLAG=  1 (9005 CRATET)"
+      ]
+    },
+    {
+      "case": "ne-cratet-debug",
+      "state": "current",
+      "diagnostic_records": 6,
+      "intercept_present": true,
+      "sample": [
+        "HEIGHT-DIAMETER COEFFICIENTS FOR SPECIES  9:  INTERCEPT=  4.609000  SLOPE= -6.189600  FLAG=  1 (9005 CRATET)",
+        "HEIGHT-DIAMETER COEFFICIENTS FOR SPECIES 19:  INTERCEPT=  4.508400  SLOPE= -6.011600  FLAG=  1 (9005 CRATET)"
+      ]
+    },
+    {
+      "case": "ne-cratet-debug",
+      "state": "candidate",
+      "diagnostic_records": 6,
+      "intercept_present": true,
+      "sample": [
+        "HEIGHT-DIAMETER COEFFICIENTS FOR SPECIES  9:  INTERCEPT=  4.609000  SLOPE= -6.189600  FLAG=  1 (9005 CRATET)",
+        "HEIGHT-DIAMETER COEFFICIENTS FOR SPECIES 19:  INTERCEPT=  4.508400  SLOPE= -6.011600  FLAG=  1 (9005 CRATET)"
+      ]
+    }
+  ],
+  "passed": true
+}

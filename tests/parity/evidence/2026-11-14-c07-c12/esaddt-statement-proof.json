@@ -1,0 +1,201 @@
+{
+  "method": "Join actual fixed/free continuations, preserve labels and string literals, ignore whitespace/case outside literals, and resolve compile-time CASE(IDF) to the former selected index. Compare the entire executable body from IDANUW=ICALL through END. No source edit or equation change.",
+  "rows": [
+    {
+      "variant": "ak",
+      "former_source": "estb/esaddt.f90",
+      "IDF": 5,
+      "original_current_resolved_candidate_executable_statements_identical": true,
+      "statement_count": 130,
+      "sha256": "cbdb4060a5cce293f6f63073b44e5cfa0a07e63fed62bb98d907f6616b81be23"
+    },
+    {
+      "variant": "bc",
+      "former_source": "strp/esaddt.f90",
+      "IDF": 3,
+      "original_current_resolved_candidate_executable_statements_identical": true,
+      "statement_count": 130,
+      "sha256": "7b1d34debb4f94628924d5add4b16b3b255c581b8cda4a88d69096171a628bc0"
+    },
+    {
+      "variant": "bm",
+      "former_source": "strp/esaddt.f90",
+      "IDF": 3,
+      "original_current_resolved_candidate_executable_statements_identical": true,
+      "statement_count": 130,
+      "sha256": "7b1d34debb4f94628924d5add4b16b3b255c581b8cda4a88d69096171a628bc0"
+    },
+    {
+      "variant": "ca",
+      "former_source": "strp/esaddt.f90",
+      "IDF": 3,
+      "original_current_resolved_candidate_executable_statements_identical": true,
+      "statement_count": 130,
+      "sha256": "7b1d34debb4f94628924d5add4b16b3b255c581b8cda4a88d69096171a628bc0"
+    },
+    {
+      "variant": "ci",
+      "former_source": "estb/esaddt.f90",
+      "IDF": 5,
+      "original_current_resolved_candidate_executable_statements_identical": true,
+      "statement_count": 130,
+      "sha256": "cbdb4060a5cce293f6f63073b44e5cfa0a07e63fed62bb98d907f6616b81be23"
+    },
+    {
+      "variant": "cr",
+      "former_source": "strp/esaddt.f90",
+      "IDF": 3,
+      "original_current_resolved_candidate_executable_statements_identical": true,
+      "statement_count": 130,
+      "sha256": "7b1d34debb4f94628924d5add4b16b3b255c581b8cda4a88d69096171a628bc0"
+    },
+    {
+      "variant": "cs",
+      "former_source": "strp/esaddt.f90",
+      "IDF": 3,
+      "original_current_resolved_candidate_executable_statements_identical": true,
+      "statement_count": 130,
+      "sha256": "7b1d34debb4f94628924d5add4b16b3b255c581b8cda4a88d69096171a628bc0"
+    },
+    {
+      "variant": "ec",
+      "former_source": "strp/esaddt.f90",
+      "IDF": 3,
+      "original_current_resolved_candidate_executable_statements_identical": true,
+      "statement_count": 130,
+      "sha256": "7b1d34debb4f94628924d5add4b16b3b255c581b8cda4a88d69096171a628bc0"
+    },
+    {
+      "variant": "em",
+      "former_source": "estb/esaddt.f90",
+      "IDF": 5,
+      "original_current_resolved_candidate_executable_statements_identical": true,
+      "statement_count": 130,
+      "sha256": "cbdb4060a5cce293f6f63073b44e5cfa0a07e63fed62bb98d907f6616b81be23"
+    },
+    {
+      "variant": "ie",
+      "former_source": "estb/esaddt.f90",
+      "IDF": 5,
+      "original_current_resolved_candidate_executable_statements_identical": true,
+      "statement_count": 130,
+      "sha256": "cbdb4060a5cce293f6f63073b44e5cfa0a07e63fed62bb98d907f6616b81be23"
+    },
+    {
+      "variant": "kt",
+      "former_source": "estb/esaddt.f90",
+      "IDF": 5,
+      "original_current_resolved_candidate_executable_statements_identical": true,
+      "statement_count": 130,
+      "sha256": "cbdb4060a5cce293f6f63073b44e5cfa0a07e63fed62bb98d907f6616b81be23"
+    },
+    {
+      "variant": "ls",
+      "former_source": "strp/esaddt.f90",
+      "IDF": 3,
+      "original_current_resolved_candidate_executable_statements_identical": true,
+      "statement_count": 130,
+      "sha256": "7b1d34debb4f94628924d5add4b16b3b255c581b8cda4a88d69096171a628bc0"
+    },
+    {
+      "variant": "nc",
+      "former_source": "strp/esaddt.f90",
+      "IDF": 3,
+      "original_current_resolved_candidate_executable_statements_identical": true,
+      "statement_count": 130,
+      "sha256": "7b1d34debb4f94628924d5add4b16b3b255c581b8cda4a88d69096171a628bc0"
+    },
+    {
+      "variant": "ne",
+      "former_source": "strp/esaddt.f90",
+      "IDF": 3,
+      "original_current_resolved_candidate_executable_statements_identical": true,
+      "statement_count": 130,
+      "sha256": "7b1d34debb4f94628924d5add4b16b3b255c581b8cda4a88d69096171a628bc0"
+    },
+    {
+      "variant": "oc",
+      "former_source": "strp/esaddt.f90",
+      "IDF": 3,
+      "original_current_resolved_candidate_executable_statements_identical": true,
+      "statement_count": 130,
+      "sha256": "7b1d34debb4f94628924d5add4b16b3b255c581b8cda4a88d69096171a628bc0"
+    },
+    {
+      "variant": "on",
+      "former_source": "strp/esaddt.f90",
+      "IDF": 3,
+      "original_current_resolved_candidate_executable_statements_identical": true,
+      "statement_count": 130,
+      "sha256": "7b1d34debb4f94628924d5add4b16b3b255c581b8cda4a88d69096171a628bc0"
+    },
+    {
+      "variant": "op",
+      "former_source": "strp/esaddt.f90",
+      "IDF": 3,
+      "original_current_resolved_candidate_executable_statements_identical": true,
+      "statement_count": 130,
+      "sha256": "7b1d34debb4f94628924d5add4b16b3b255c581b8cda4a88d69096171a628bc0"
+    },
+    {
+      "variant": "pn",
+      "former_source": "strp/esaddt.f90",
+      "IDF": 3,
+      "original_current_resolved_candidate_executable_statements_identical": true,
+      "statement_count": 130,
+      "sha256": "7b1d34debb4f94628924d5add4b16b3b255c581b8cda4a88d69096171a628bc0"
+    },
+    {
+      "variant": "sn",
+      "former_source": "strp/esaddt.f90",
+      "IDF": 3,
+      "original_current_resolved_candidate_executable_statements_identical": true,
+      "statement_count": 130,
+      "sha256": "7b1d34debb4f94628924d5add4b16b3b255c581b8cda4a88d69096171a628bc0"
+    },
+    {
+      "variant": "so",
+      "former_source": "strp/esaddt.f90",
+      "IDF": 3,
+      "original_current_resolved_candidate_executable_statements_identical": true,
+      "statement_count": 130,
+      "sha256": "7b1d34debb4f94628924d5add4b16b3b255c581b8cda4a88d69096171a628bc0"
+    },
+    {
+      "variant": "tt",
+      "former_source": "strp/esaddt.f90",
+      "IDF": 3,
+      "original_current_resolved_candidate_executable_statements_identical": true,
+      "statement_count": 130,
+      "sha256": "7b1d34debb4f94628924d5add4b16b3b255c581b8cda4a88d69096171a628bc0"
+    },
+    {
+      "variant": "ut",
+      "former_source": "strp/esaddt.f90",
+      "IDF": 3,
+      "original_current_resolved_candidate_executable_statements_identical": true,
+      "statement_count": 130,
+      "sha256": "7b1d34debb4f94628924d5add4b16b3b255c581b8cda4a88d69096171a628bc0"
+    },
+    {
+      "variant": "wc",
+      "former_source": "strp/esaddt.f90",
+      "IDF": 3,
+      "original_current_resolved_candidate_executable_statements_identical": true,
+      "statement_count": 130,
+      "sha256": "7b1d34debb4f94628924d5add4b16b3b255c581b8cda4a88d69096171a628bc0"
+    },
+    {
+      "variant": "ws",
+      "former_source": "strp/esaddt.f90",
+      "IDF": 3,
+      "original_current_resolved_candidate_executable_statements_identical": true,
+      "statement_count": 130,
+      "sha256": "7b1d34debb4f94628924d5add4b16b3b255c581b8cda4a88d69096171a628bc0"
+    }
+  ],
+  "declarations": "All former declarations/DATA and COMMON includes retained; only the compile-time IDF parameter is added.",
+  "known_bug_3_preserved": true,
+  "runtime_error_locations_not_compared": true,
+  "passed": true
+}

@@ -1,0 +1,335 @@
+{
+  "archive_sha256_verified": true,
+  "integrated": [
+    {
+      "file": "comparisons/ak-akt01-current-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/ak-akt01-original-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/ak-akt01-original-current.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/bc-StandStructure-current-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/bc-StandStructure-original-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/bc-StandStructure-original-current.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/bc-YSM-SkyRanch-current-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/bc-YSM-SkyRanch-original-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/bc-YSM-SkyRanch-original-current.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/bm-bmt01-current-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/bm-bmt01-original-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/bm-bmt01-original-current.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/ca-cat01-current-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/ca-cat01-original-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/ca-cat01-original-current.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/ci-cit01-current-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/ci-cit01-original-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/ci-cit01-original-current.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/cr-crt01-current-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/cr-crt01-original-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/cr-crt01-original-current.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/cs-cratet-debug-current-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/cs-cratet-debug-original-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/cs-cratet-debug-original-current.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/cs-cst01-current-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/cs-cst01-original-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/cs-cst01-original-current.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/ec-ect01-current-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/ec-ect01-original-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/ec-ect01-original-current.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/em-emt01-current-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/em-emt01-original-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/em-emt01-original-current.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/ie-iet01-current-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/ie-iet01-original-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/ie-iet01-original-current.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/kt-ktt01-current-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/kt-ktt01-original-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/kt-ktt01-original-current.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/ls-lst01-current-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/ls-lst01-original-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/ls-lst01-original-current.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/nc-nct01-current-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/nc-nct01-original-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/nc-nct01-original-current.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/ne-cratet-debug-current-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/ne-cratet-debug-original-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/ne-cratet-debug-original-current.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/ne-net01-current-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/ne-net01-original-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/ne-net01-original-current.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/oc-oct01-current-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/oc-oct01-original-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/oc-oct01-original-current.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/on-Hardwood-current-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/on-Hardwood-original-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/on-Hardwood-original-current.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/op-opt01-current-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/op-opt01-original-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/op-opt01-original-current.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/pn-pnt01-current-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/pn-pnt01-original-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/pn-pnt01-original-current.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/sn-snt01-current-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/sn-snt01-original-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/sn-snt01-original-current.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/so-sot01-current-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/so-sot01-original-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/so-sot01-original-current.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/tt-ttt01-current-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/tt-ttt01-original-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/tt-ttt01-original-current.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/ut-utt01-current-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/ut-utt01-original-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/ut-utt01-original-current.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/wc-wct01-current-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/wc-wct01-original-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/wc-wct01-original-current.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/ws-wst01-current-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/ws-wst01-original-candidate.json",
+      "identical": true
+    },
+    {
+      "file": "comparisons/ws-wst01-original-current.json",
+      "identical": true
+    }
+  ],
+  "integrated_comparisons": 81,
+  "targeted_captures_verified": 120,
+  "targeted_comparisons_exact": 120,
+  "raw_inputs_drivers_context_and_regeneration_script_verified": true,
+  "actual_ES1_ES2_files_compared": true,
+  "passed": true
+}

@@ -223,3 +223,27 @@ retaining a completed run and adding requested cases. Use
 inputs and its known failure boundary must also be recorded. That option adds
 a candidate execution; matching the input failure still is not simulation
 verification.
+
+## Additional C07–C12 coverage
+
+The same consolidation tools accept C07–C12 plans. Direct fixtures cover the
+12-inch CS/SN snag rule and earlier shared consumers, all 210 GRINIT/helper
+assigned variables before growth, real ESADDT exports for every variant, all
+37 assigned FMVINIT variables and every species, and all OC/OP mapping entries.
+C09 uses `cs-cratet-debug` and `ne-cratet-debug` full-engine decks instead of
+mocking CRATET's calibration dependencies. Their isolated keyword copies add
+only `DEBUG` fields 1=0/2=1 and the following `CRATET` record; repository decks
+are unchanged.
+
+`prepare_builds.py --reuse-evidence PATH` can reuse a retained build only when
+the prior builds.json checksum, complete selected inputs, compiler/tool
+versions, flags, platform and binary SHA256 all agree. The new receipt names
+the prior evidence/state and binary hash explicitly. Missing cached binaries
+are rebuilt; a changed binary or settings mismatch is rejected. Every reused
+state still runs independently. This is a build reuse, not a fresh compilation.
+
+C10's fixtures supply a controlled option table and a local Python regeneration
+response, while calling the real ESADDT and MYOPEN routines. Raw `.es1`/`.es2`
+files and the response script are retained and compared. These fixtures cover
+the export bridge; they do not claim to validate every external-model import
+or error-recovery path. Existing and newly recorded bugs remain unfixed.
