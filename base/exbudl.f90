@@ -10,11 +10,9 @@ subroutine EXBUDL
 
   ! Variables
   logical :: L,LKECHO
-  integer :: I1,I2,I3,KEY
-  real    :: R1
+  integer :: KEY
   character(len=8) :: KEYWRD
   character(len=8) :: NOKEY
-  real    :: RDANUW
   integer :: IDANUW
   logical :: LDANUW
 
@@ -62,36 +60,5 @@ subroutine EXBUDL
   IDANUW = KEY
   return
 
-  !  ENTRY BWEPPATV
-
-  entry BWEPPATV (L)
-  L = .false.
-  return
-
-  !  ENTRY BWEPPGT
-
-  entry BWEPPGT (R1,I1,I2,I3)
-
-  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
-
-  if (.true.)return
-  RDANUW = R1
-  IDANUW = I1
-  IDANUW = I2
-  IDANUW = I3
-  return
-
-  !  ENTRY BWEPPPT
-
-  entry BWEPPPT (R1,I1,I2,I3)
-
-  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
-
-  if (.true.)return
-  RDANUW = R1
-  IDANUW = I1
-  IDANUW = I2
-  IDANUW = I3
-  return
 
 end subroutine EXBUDL

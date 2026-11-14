@@ -1,6 +1,6 @@
 # Found Bugs
 
-The five confirmed model defects below were found during the 2026-11 consolidation of duplicated routines. Every one is already present in the pre-modernization source (commit `c2105365`), so none was introduced by the conversion to free-form Fortran or by the consolidation. They are **deliberately left unfixed** for now so that model outputs stay identical to `c2105365` while modernization is finished. Each fix below will change outputs for the variants listed, so each should be made as its own commit with a before/after comparison. Sections 6–8 separately record an unconfirmed historical numerical concern, a historical documentation discrepancy, and ESADDT data-flow concerns requiring follow-up. Section 9 records a reproduced SQLite resource defect with scientific-output impact still unmeasured. Section 10 records a restart-file difference that modernization itself introduced, now corrected. Sections 11 and 12 record two original defects that read undefined values and so make restart files vary between runs.
+The five confirmed model defects below were found during the 2026-11 consolidation of duplicated routines. Every one is already present in the pre-modernization source (commit `c2105365`), so none was introduced by the conversion to free-form Fortran or by the consolidation. They are **deliberately left unfixed** for now so that model outputs stay identical to `c2105365` while modernization is finished. Each fix below will change outputs for the variants listed, so each should be made as its own commit with a before/after comparison. Sections 6–8 separately record an unconfirmed historical numerical concern, a historical documentation discrepancy, and ESADDT data-flow concerns requiring follow-up. Section 9 records a reproduced SQLite resource defect with scientific-output impact still unmeasured. Section 10 records a restart-file difference that modernization itself introduced, now corrected. Sections 11 and 12 record two original defects that read undefined values and so make restart files vary between runs. Sections 13 and 14 record an invalid stub diagnostic and a fuel-model fallback defect found during the safe reapplication; neither was fixed.
 
 File and line references are to the tree at commit `b5657da3` plus the uncommitted `VARIANTCD` change. Bugs 1 and 2 have the same root cause: FVS calls external procedures with no explicit interface, so gfortran cannot check argument lists across files. Moving these routines into modules would let the compiler catch this class of bug.
 
@@ -243,3 +243,27 @@ The effects:
 The metric copy `metric/base/intree.f90` has no such correction at all (see bug 2).
 
 **Suggested fix:** move the correction to after the record has been read, for both input paths. Then remove the decay-code exception from `check_suite.py`.
+
+---
+
+## 13. BMIN uses dummy arguments belonging to a different ENTRY
+
+**Status:** confirmed by source inspection on 14 November 2026; present in original F77 `c2105365:base/exbm.f`. Runtime impact has not been measured. Deliberately unfixed.
+**Variants:** all 24 select `base/exbm.f90`; the unsupported pine-beetle keyword path calls BMIN when keyword echo is enabled.
+
+`BMIN(LKECHO)` writes using `JOPPRT` and `IRECNT`, which are dummy arguments of `BMPPIN(IREAD,IRECNT,JOPPRT)`, not BMIN. They are undefined when BMIN is called. Its format also expects an A8 field before I6, while the supplied values are `IRECNT,NOBM`. Source inspection of the pinned F77 and current stub confirms both defects; no integrated failure or numerical effect is claimed.
+
+The proposed BMPPIN deletion would turn the two arguments into uninitialized local integers and change this already-invalid diagnostic path. BMPPIN and its declarations were retained during cleanup. A later, separate fix should obtain the correct output unit and record count explicitly and align the format with the argument list, with an unsupported-keyword fixture against a deliberately corrected reference.
+
+---
+
+## 14. Fuel-model failsafe leaves the dominant-model result at -1
+
+**Status:** reproduced at block level on 14 November 2026 in original F77 `c2105365:fire/base/fmdyn.f` and extracted `fire/base/fmmodsel.f90`. Reachability from valid full-model inputs and model-output impact have not been demonstrated. Deliberately unfixed.
+**Variants:** all 24 select FMDYN; the same tail is used by FMSHRUB for CA, NC, OC and WS.
+
+The failsafe sets `FMOD(1)=8`, its weight to 1 and the warning flag when no dominant model is available, but leaves the return value `FMD=-1`. The later static-model branch then overwrites `FMOD(1)` with that -1. The same statements occur in the original FMDYN and FMSHRUB copies.
+
+A temporary fixture compiled the original F77 tail without changing its statements and compared it with FMMODSEL. Fourteen cases, including ordinary weights, truncation, the 1e-6 threshold and zero weights in both dynamic/static modes, matched exactly. With all weights zero, both return FMD=-1; FMOD(1) is 8 in dynamic mode and -1 in static mode, with one warning request. This isolates the fallback behavior and does not establish a reachable valid-input simulation failure.
+
+A later investigation should reproduce the fallback from a full model run before assigning impact. Any correction should set the dominant result consistently with the intended fallback and be verified separately from F77-preserving consolidation.

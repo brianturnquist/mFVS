@@ -1,7 +1,6 @@
 ../fiavbc/nvbeqdef.f90
 ../fiavbc/nvb_region_check.f90
 
-../so/common/ESPARM.f90
 ../so/common/PRGPRM.f90
 
 ../common/ARRAYS.f90
@@ -195,6 +194,9 @@
 ../base/htgstp.f90
 ../base/iapsrt.f90
 ../base/intree.f90
+../base/intrdead.f90
+../base/intrfin.f90
+../base/intrscrn.f90
 ../base/iqrsrt.f90
 ../base/isstag.f90
 ../base/istfnb.f90
@@ -579,6 +581,7 @@
 
 ../vcovr/cvbrow.f90
 ../vcovr/cvcbms.f90
+../vcovr/cvmapsp.f90
 ../vcovr/cvshap.f90
 
 ../covr/cvbcal.f90
@@ -644,6 +647,7 @@
 ../fire/base/fmcwd.f90
 ../fire/base/fmdout.f90
 ../fire/base/fmdyn.f90
+../fire/base/fmmodsel.f90
 ../fire/base/fmevmon.f90
 ../fire/base/fmfint.f90
 ../fire/base/fmgfmv.f90

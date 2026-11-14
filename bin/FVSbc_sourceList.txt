@@ -1,6 +1,5 @@
 ../canada/bc/BCPLOT.f90
 ../canada/bc/ESHAP.f90
-../canada/bc/ESPARM.f90
 ../canada/bc/PRGPRM.f90
 ../common/ARRAYS.f90
 ../common/CALCOM.f90
@@ -174,7 +173,6 @@
 ../base/exfert.f90
 ../base/exmpb.f90
 ../base/exorganon.f90
-../base/exppe.f90
 ../base/extree.f90
 ../base/fndkey.f90
 ../base/fvs.f90
@@ -443,6 +441,7 @@
 ../fire/base/fmcrbout.f90
 ../fire/base/fmcwd.f90
 ../fire/base/fmdyn.f90
+../fire/base/fmmodsel.f90
 ../fire/base/fmevmon.f90
 ../fire/base/fmfint.f90
 ../fire/base/fmgfmv.f90

@@ -9,7 +9,6 @@ subroutine ESIN (PASKEY,ARRAY,LNOTBK,KARD,LKECHO)
 
   ! Common blocks
   include 'PRGPRM.f90'
-  include 'ESPARM.f90'
   include 'ESCOMN.f90'
   include 'ESHAP.f90'
   include 'CONTRL.f90'

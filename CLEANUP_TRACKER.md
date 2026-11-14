@@ -6,9 +6,9 @@ Audit baseline: main repository `776491e8850b447e638f7b267b8bcaab641584f4`,
 with NVEL submodule `a73e697e220ffd0f792aa7ac10d84c911edb7ad7`.
 
 This checklist stores the redundancy and dormant-code findings before cleanup.
-P01–P03, D01–D15, C01–C18 and the unbuilt-directory removal (R01–R08, R10–R10d)
-are complete. R09 and the remaining blocks are pending: 75 completed and
-46 pending items. BC/ON simulation parity remains blocked by the existing bugs
+P01–P03, D01–D15, C01–C19, B01–B03 and the unbuilt-directory removal (R01–R08, R10–R10d)
+are complete. Six stub tasks are also complete; the checklist now records
+85 completed and 37 pending items, including R09. BC/ON simulation parity remains blocked by the existing bugs
 in [FOUND_BUGS.md](FOUND_BUGS.md).
 
 Run the necessary comparisons against original F77 and the immediate baseline,
@@ -277,6 +277,14 @@ the named variants below are starting points, not a substitute for that check.
 - [x] **C18 — WS mortality caller migration.** Completed 14 November 2026
   as a separate WS VARMRT migration. WS's efficiency scale/crown correction
   remains in place; direct and integrated outputs match both baselines.
+
+- [x] **C19 — Shared helper extractions.** Completed 14 November 2026:
+  INTRDEAD/INTRFIN/INTRSCRN, CI/IE ESFIXH, FMMODSEL, CS/SN FMSNFT and CVMAPSP.
+  All eight sources are selected by every consumer (112 manifest entries).
+  FMMODSEL includes BC/ON by explicit maintainer direction; metric twins,
+  common-block merges, the newer FIA binding helper and MORTALLOC are untouched.
+  `PASS 24/24 variants`, subject to P03. Focused original-F77 checks also match:
+  14 fuel-selection cases and 29,772 CS/SN forest-type cases. Bug 14 is unfixed.
 
 The mortality opportunity crosses routine names: `VARMRT`, `NWCMRT`, `SCOMRT`,
 `TTMRT`, and `UTMRT` repeat allocation logic. The three FIA writers likewise
@@ -561,38 +569,48 @@ before calling a statement unreachable. Preserve signatures, entry points,
 default output flags, and unsupported-keyword behavior. Record whether the
 outcome is removal or deliberate retention of the suppression idiom.
 
+The six checked stub tasks below were completed together on 14 November 2026:
+`PASS 24/24 variants`, subject to P03. Live ENTRY signatures, default flags and
+suppression idioms are retained; the other nine stub tasks remain pending.
+
 - [ ] **U01 — `base/exdfb.f90`.** Review suppression assignments only.
-- [ ] **U02 — `base/exdftm.f90`.** Review suppression assignments only.
-- [ ] **U03 — `base/exmpb.f90`.** Review suppression assignments only.
+- [x] **U02 — `base/exdftm.f90`.** Removed unused TMHED and its
+  suppression declarations.
+- [x] **U03 — `base/exmpb.f90`.** Removed unused MPBHED and its
+  suppression declarations.
 - [ ] **U04 — `base/exbrus.f90`.** Review suppression assignments only.
-- [ ] **U05 — `base/exrd.f90`.** Review suppression assignments only.
+- [x] **U05 — `base/exrd.f90`.** Removed unused RDROUT/RDPPATV and their
+  dead declarations.
 - [ ] **U06 — `base/exmist.f90`.** Review suppression assignments only.
-- [ ] **U07 — `base/exbm.f90`.** Review suppression assignments only.
+- [x] **U07 — `base/exbm.f90`.** Removed unused PPE/RR entries; retained
+  BMPPIN because BMIN references its dummy arguments (bug 13).
 - [ ] **U08 — `base/execon.f90`.** Review suppression assignments only.
-- [ ] **U09 — `base/exppe.f90`.** Review suppression assignments only.
+- [x] **U09 — `base/exppe.f90`.** Removed the uncalled stub and BC/ON
+  manifest entries; no selected source references its routines.
 - [ ] **U10 — `base/exclim.f90`.** Review suppression assignments only.
 - [ ] **U11 — `base/excov.f90`.** Review suppression assignments only.
 - [ ] **U12 — `base/exorganon.f90`.** Review suppression assignments only.
-- [ ] **U13 — `base/exbudl.f90`.** Review suppression assignments only.
+- [x] **U13 — `base/exbudl.f90`.** Removed unused BWEPPATV/BWEPPGT/BWEPPPT
+  and their suppression declarations.
 - [ ] **U14 — `base/exbgc.f90`.** Review suppression assignments only.
 - [ ] **U15 — `base/exfert.f90`.** Review suppression assignments only.
 
 ## B — Build and declaration cleanup
 
-- [ ] **B01 — CMake source form (build change).** `bin/CMakeLists.txt` still
-  defaults Fortran to fixed form and explicitly marks only `main.f90` and
-  `version.f90` as free form. Audit and correct this stale configuration
-  separately. CMake was not executed during the audit, so a resulting build
-  failure is not claimed as reproduced evidence.
-- [ ] **B02 — Repeated make setup rules (build change).** Consolidate only
-  the nearly identical setup rules for 24 variants in `bin/makefile`. Compare
-  expanded commands and dependencies before and after, then verify affected
-  builds and outputs. Do not redesign source manifests in the same task.
-- [ ] **B03 — First identical ESPARM pair (implementation).** The 24 selected
-  `ESPARM.f90` files have 16 normalized statement forms. Start with identical
-  CA/OC declarations and a shared home in `common/`. Preserve parameter
-  values, dimensions, include order, and common-block layouts. Schedule other
-  groups separately after this first verified pair.
+- [x] **B01 — CMake source form (build change).** Completed 14 November
+  2026 with B02: use the free-form suffix for all selected Fortran sources.
+  All 24 CMake configurations generated successfully in a temporary copy;
+  integrated output verification uses the GNU make parity suite.
+- [x] **B02 — Repeated make setup rules (build change).** Completed
+  14 November 2026: one generated rule replaces 24 copies, with identical
+  expanded prerequisites/recipes for all 48 Unix and 48 Windows targets.
+  CMake accepts a variant list or `all`; existing source manifests are retained.
+  `PASS 24/24 variants`; BC/ON retain the P03 keyword-input limitation.
+- [x] **B03 — ESPARM folded into PRGPRM (implementation).** Completed
+  14 November 2026 for all 25 existing files (24 built variants plus ACD).
+  Parameter statements and scientific commentary are preserved; removed 102
+  redundant includes and updated manifests/include classification. AK ESCOMN
+  and BC ESHAP layouts remain distinct. `PASS 24/24 variants`; P03 still applies.
 
 ## L — Larger families: first bounded comparison only
 

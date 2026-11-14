@@ -9,7 +9,6 @@ subroutine ESPREP (ISER,PNONE,PMECH,PBURN)
 
   ! Common blocks
   include 'PRGPRM.f90'
-  include 'ESPARM.f90'
   include 'ESCOMN.f90'
   include 'PLOT.f90'
 

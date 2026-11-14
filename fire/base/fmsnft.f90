@@ -1,8 +1,8 @@
-!======================!
-!   fire/cs : fmcsft   !
-!======================!
-! FIRE-CS $Id$
-subroutine FMCSFT(IFFEFT)
+!========================!
+!   fire/base : fmsnft   !
+!========================!
+! FIRE-BASE $Id$
+subroutine FMSNFT(IFFEFT)
   implicit none
 
   !  SINGLE-STAND VERSION
@@ -11,6 +11,8 @@ subroutine FMCSFT(IFFEFT)
   !     THIS SUBROUTINES CALCULATES A CATEGORICAL FOREST TYPE BASED ON
   !     SN WORKSHOP INPUT.  THIS FOREST TYPE IS USED IN SETTING DEFAULT
   !     SURFACE FUEL LEVELS AND IN THE FUEL MODEL LOGIC
+  !     USED BY THE SN AND CS VARIANTS (CS FORMERLY HAD ITS OWN COPY,
+  !     FMCSFT).
 
   ! Common blocks
   include 'PRGPRM.f90'
@@ -26,6 +28,11 @@ subroutine FMCSFT(IFFEFT)
   integer :: IFFEFT,I
   real    :: PINEBA,NPINEBA,X
 
+  !  SPECIES INDICES COUNTED AS PINE: 4-14 IN SN, 3-7 IN CS. THE CS
+  !  RANGE IS PRESERVED DELIBERATELY FROM THE FORMER CS COPY (FMCSFT).
+  integer, parameter :: IPINE1 = merge(3, 4, VARIANTCD .eq. 'CS')
+  integer, parameter :: IPINE2 = merge(7, 14, VARIANTCD .eq. 'CS')
+
   !  ROUTINE BEGINS.
   !  DETERMINE FFE FOREST TYPE (1 OF 9 CATEGORIES) FROM FIA FOR. TYPE
 
@@ -39,7 +46,7 @@ subroutine FMCSFT(IFFEFT)
      do I = 1,ITRN
         X = FMPROB(I) * DBH(I) * DBH(I) * 0.0054542
         select case (ISP(I))
-        case (3:7) ! pine
+        case (IPINE1:IPINE2) ! pine
            PINEBA = PINEBA + X
         case default ! non-pine
            NPINEBA = NPINEBA + X

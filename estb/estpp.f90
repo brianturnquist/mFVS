@@ -7,7 +7,6 @@ subroutine ESTPP (VAL,TPP)
 
   ! Common blocks
   include 'PRGPRM.f90'
-  include 'ESPARM.f90'
   include 'ESCOMN.f90'
   include 'ESCOM2.f90'
 

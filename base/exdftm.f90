@@ -8,14 +8,12 @@ subroutine EXDFTM
   !     EXTRA EXTERNAL REFERENCES FOR DFTM CALLS
 
   ! Variables
-  integer :: II,MGMID,KEY
+  integer :: II,KEY
   integer :: ICODES(6)
   logical :: L,LKECHO
   character(len=8) :: KEYWRD
   character(len=8) :: NODFTM
-  character(len=26) :: NPLT
   integer :: IDANUW
-  character(len=8) :: CDANUW
   logical :: LDANUW
 
   data NODFTM/'*NO DFTM'/
@@ -68,16 +66,6 @@ subroutine EXDFTM
   entry TMBMAS
   return
 
-  !  ENTRY TMHED
-
-  entry TMHED (NPLT,MGMID)
-
-  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
-
-  if (.true.)return
-  CDANUW(1:8) = NPLT(1:8)
-  IDANUW = MGMID
-  return
 
   !  ENTRY TMOUT
 
