@@ -2,9 +2,9 @@
 
 Snapshots have no git metadata and are never built in the working checkout.
 The original snapshot receives only the documented BC/ON source-list additions.
-All source inputs, commands, compiler versions, and binary hashes are retained.
-Candidate builds can reuse a current binary only when the complete selected
-build inputs and compiler flags are identical; that reuse is recorded explicitly.
+Run metadata is temporary input to the comparison tools. Discard it with the
+build directory when finished. Candidate builds can reuse an identical current
+binary within this run; no historical results cache is required.
 """
 
 from __future__ import annotations
@@ -44,7 +44,13 @@ def archive(repo: Path, revision: str, target: Path, tar_path: Path) -> None:
             ["git", "-C", str(repo), "archive", revision], stdout=stream, check=True
         )
     with tarfile.open(tar_path) as stream:
-        stream.extractall(target, filter="data")
+        # Older commits contain generated results. They are not build inputs
+        # and must not be copied into another verification workspace.
+        members = (entry for entry in stream
+                   if entry.name != "tests/parity/evidence"
+                   and not entry.name.startswith("tests/parity/evidence/"))
+        stream.extractall(target, members=members, filter="data")
+    tar_path.unlink()
 
 
 def copy_working_tree(repo: Path, target: Path) -> None:
@@ -120,11 +126,11 @@ def main() -> int:
     parser.add_argument("--jobs", type=int, default=4)
     parser.add_argument("--build-workers", type=int, default=1,
                         help="Independent variant builds; each uses --jobs compiler processes")
-    parser.add_argument("--reuse-evidence", type=Path, action="append", default=[],
-                        help="Reuse retained binaries only after exact input/tool/flag/hash checks")
     args = parser.parse_args()
     work = args.work_dir.resolve()
     evidence = args.evidence_dir.resolve()
+    if work.is_relative_to(ROOT) or evidence.is_relative_to(ROOT):
+        parser.error("Use temporary build and result directories outside the repository")
     work.mkdir(parents=True, exist_ok=False)
     evidence.mkdir(parents=True, exist_ok=True)
     current = git(ROOT, "rev-parse", args.current_revision)
@@ -200,34 +206,6 @@ def main() -> int:
         env.pop(name, None)
     env.update({"LC_ALL": "C", "TZ": "UTC", "TMPDIR": str(work)})
     successful = {}
-    retained = {}
-    receipt["retained_build_sources"] = []
-    for previous_dir in args.reuse_evidence:
-        previous_dir = previous_dir.resolve()
-        previous_path = previous_dir / "builds.json"
-        recorded_hashes = dict(line.split("  ", 1)[::-1]
-                               for line in (previous_dir / "checksums.sha256").read_text().splitlines())
-        if sha256(previous_path) != recorded_hashes.get("builds.json"):
-            raise RuntimeError(f"Retained build receipt failed its checksum: {previous_dir}")
-        previous = json.loads(previous_path.read_text())
-        for key in ("fflags", "cflags", "platform", "machine", "tools"):
-            if previous[key] != receipt[key]:
-                raise RuntimeError(f"Retained build settings differ ({key}): {previous_dir}")
-        receipt["retained_build_sources"].append({"evidence_dir": str(previous_dir),
-            "builds_sha256": sha256(previous_path), "settings_match": True})
-        for entry in previous["builds"]:
-            if entry["returncode"]:
-                continue
-            old_binary = Path(previous["states"][entry["state"]]["snapshot"]) / "bin" / f"FVS{entry['variant']}"
-            if not old_binary.is_file():
-                continue
-            if sha256(old_binary) != entry["binary_sha256"]:
-                raise RuntimeError(f"Retained binary changed: {old_binary}")
-            input_hash = hashlib.sha256(json.dumps(entry["inputs"], sort_keys=True).encode()).hexdigest()
-            retained[(entry["variant"], input_hash)] = (old_binary, {
-                "evidence_dir": str(previous_dir), "state": entry["state"],
-                "builds_sha256": sha256(previous_path), "binary_sha256": entry["binary_sha256"]})
-
     def build_one(state: str, identity: dict, variant: str) -> dict:
         """Build in the variant's own flat directory; return one complete receipt.
 
@@ -240,16 +218,6 @@ def main() -> int:
         signature = hashlib.sha256(json.dumps(inputs, sort_keys=True).encode()).hexdigest()
         binary = snapshot / "bin" / f"FVS{variant}"
         prior = successful.get((variant, signature))
-        saved = retained.get((variant, signature))
-        if saved:
-            old_binary, provenance = saved
-            binary.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(old_binary, binary)
-            entry.update({"returncode": 0, "reused_binary": str(old_binary),
-                          "binary_sha256": sha256(binary), "retained_build": provenance})
-            successful[(variant, signature)] = binary
-            print(f"Reused retained exact inputs for {state} {variant}", flush=True)
-            return entry
         if state == "candidate" and prior:
             # Identical source/build input identity is stronger than merely
             # observing equal outputs. Record reuse, never a new compilation.

@@ -1,249 +1,53 @@
-# Original-upstream comparison tools
+# Temporary original-F77 comparisons
 
-These standard-library Python tools support the small modernization tasks in
-[CLEANUP_TRACKER.md](../../CLEANUP_TRACKER.md). They prepare isolated snapshots,
-run a bounded set of decks, and compare every generated artifact. They do not
-repair model bugs, edit model source, or replace the existing regression tests.
+These reusable tools build isolated original/current/candidate versions and
+compare their outputs. Test results and build copies are disposable. Keep the
+cleanup checklist and bug descriptions; do not commit generated reports,
+archives, logs, compiler dumps or run metadata.
 
-The first retained run is documented in the
-[P01–P03 report](evidence/2026-11-13-p01-p03/README.md). Its results cover IE
-`iet01` and the Canadian input-failure boundary, not all variants or all model
-branches.
+The original reference is main revision
+`c210536536d81fd9b46dccb9a571f0de1e55e944` with NVEL revision
+`38548071d5aa652bb90c7f111f86b427f798a1c9`. Set the immediate pre-change main
+revision explicitly. Both references must already be available locally.
+Use Python 3.12+, GNU Fortran, a GNU C compiler, GNU make and Git.
 
-## Requirements and scope
+## Run a comparison
 
-Use Python 3.12 or newer, git, GNU Fortran, a GNU C compiler, GNU make, `patch`,
-and SQLite. Both pinned main-repository and NVEL objects must already be
-available locally. No network access or package installation is performed.
-The retained run used macOS arm64 and GCC/GFortran 15.2.0. Other platforms have
-not been validated by that receipt.
-
-The original main revision is fixed at
-`c210536536d81fd9b46dccb9a571f0de1e55e944`, with original NVEL
-`38548071d5aa652bb90c7f111f86b427f798a1c9`. Supply the immediate pre-cleanup
-main revision explicitly. The candidate is a separate snapshot of the current
-working files, including new untracked source files. Both submodule identity
-and dirty status are recorded.
-
-The build tool accepts all 24 root-manifest variants; its default remains IE,
-BC and ON. The case runner includes each variant's standard `xxt01` deck,
-plus the named Canadian and targeted SN cases. Request consumers explicitly;
-the default case list is unchanged. Do not assume one standard deck reaches
-every changed branch.
-
-The [D01–D03 retirement report](evidence/2026-11-13-d01-d03/README.md) adds SN
-coverage and a proof that all 24 variants' selected build inputs are unchanged.
-The P01–P03 default case list remains unchanged.
-
-## Fresh verification
-
-Run from the repository root. Choose a fresh work directory and evidence
-directory for each attempt. Keep receipts from earlier accepted changes.
-The example below pins the pre-P01–P03 commit; choose the appropriate immediate
-pre-cleanup commit for later tasks.
+From the repository root, choose temporary paths outside the repository:
 
 ```sh
 python3 tests/parity/prepare_builds.py \
-  --work-dir /private/tmp/mfvs-parity-NEXT \
-  --evidence-dir /private/tmp/mfvs-parity-NEXT-evidence \
-  --current-revision 42d1d2504dbc6162adf8cf4cd8071fa3b0d332f8 \
-  --jobs 4
+  --work-dir /private/tmp/mfvs-check-build \
+  --evidence-dir /private/tmp/mfvs-check-results \
+  --current-revision PRE_CHANGE_COMMIT --variants ie --jobs 4
 
 python3 tests/parity/run_cases.py \
-  --evidence-dir /private/tmp/mfvs-parity-NEXT-evidence
+  --evidence-dir /private/tmp/mfvs-check-results --cases ie-iet01
 
 python3 tests/parity/compare_outputs.py \
-  --runs /private/tmp/mfvs-parity-NEXT-evidence/runs.json \
-  --left original --right current --case ie-iet01 \
-  --report /private/tmp/mfvs-parity-NEXT-evidence/ie-original-current.json
+  --runs /private/tmp/mfvs-check-results/runs.json \
+  --left original --right candidate --case ie-iet01 \
+  --report /private/tmp/mfvs-check-results/comparison.json
 ```
 
-Repeat the comparison for original/candidate and current/candidate. For P03,
-compare original/current for `bc-StandStructure`, `bc-YSM-SkyRanch`, and
-`on-Hardwood`. A comparison exit code of 0 means the recorded artifacts match
-under the contract below. It does not establish that a model run succeeded;
-inspect the recorded exit status, errors, and evidence of simulation progress.
+Request every affected variant and its cases. Compare all three pairs:
+original/current, original/candidate and current/candidate. Add focused cases
+when the standard deck does not reach the changed branch. The existing
+`--evidence-dir` option names the temporary result directory; it does not
+require retaining those files.
 
-```sh
-python3 tests/parity/check_comparator.py \
-  --runs /private/tmp/mfvs-parity-NEXT-evidence/runs.json \
-  --evidence-dir /private/tmp/mfvs-parity-NEXT-evidence
+The comparator checks output inventory, exit status, text and every SQLite
+schema/typed row. It normalizes only recognized version/date/time headers and
+known CaseID UUIDs; REAL values are compared exactly. Review program errors
+and simulation progress as well as the comparison result. BC/ON currently
+stop during keyword input, so matching those failures does not demonstrate
+simulation parity. Leave model bug fixes for separate work.
 
-python3 tests/parity/record_evidence.py \
-  --evidence-dir /private/tmp/mfvs-parity-NEXT-evidence
-```
+`check_comparator.py` can check the comparator against deliberately changed
+IE outputs using the same temporary paths. Source snapshots omit historical
+generated evidence, and the build preparer rejects output paths inside this
+repository.
 
-The final recording step is specific to P01–P03: it asserts the known original
-Canadian interfaces and expected input-failure boundary. If future bug repairs
-are separately authorized, revise those assertions in their own documented
-change. Never weaken a failed assertion to pass a consolidation.
-
-For the D01–D03 retirement, prepare `--variants ie sn`, then run
-`run_cases.py --cases ie-iet01 sn-snt01 sn-nc03 sn-nc05` against that evidence
-directory. The two NC cases derive only the first stand of `snt01.key`, replace
-STDINFO field 1 with 81103 or 81105, and append STOP. Their exact input bytes,
-source hashes, and derivation are retained; repository test decks stay intact.
-Compare original/current, original/candidate, and current/candidate for each
-case. The task-specific `verify_retirement.py` in that evidence directory
-records all-variant input identity and the retired files' recovery references.
-Do not run the Canadian-boundary-specific `record_evidence.py` on this IE/SN
-receipt; retain the task's raw artifacts and report as described there.
-
-Move or copy a completed evidence directory into the repository before checking
-off a task. Include its human-readable scope/results report and retain all
-receipts and raw artifacts. That later verification task controls which files
-are stored; the tools do not commit or publish them.
-
-## Build provenance
-
-`prepare_builds.py` uses git archives for original/current and a working-file
-copy for the candidate. Compilation occurs entirely outside the checkout.
-The only original source edits are the documented missing BC/ON link inputs in
-the source manifests. Their exact patch is stored as `reference-build.patch`.
-No original Fortran or C source is modified.
-
-All states use the same explicit flags, retaining the existing numerical/trap
-settings. Legacy-language switches let the modern compiler accept the original
-source. `-Dunix` selects the Unix C interface; `-fPIC` permits the shared build.
-No optimization, precision promotion, bounds repair, or model-changing patch
-is introduced. Exact commands, versions, selected-input hashes, compiler logs,
-and binary hashes are in `builds.json` and compressed build logs.
-
-Archive snapshots contain no git metadata. Version/revision macros therefore
-use their source defaults (`unknown` in this run); the true identities are
-retained independently in the receipts. A candidate binary is reused only when
-its complete selected source/build inputs and common compiler flags match an
-already built state exactly. Reuse is explicit in `builds.json`; it is not
-reported as a separate compilation.
-
-## Exact comparison contract
-
-- Compare the complete generated-file inventory, raw capture hashes, process
-  exit status, text whitespace, and all nonmetadata values.
-- Normalize only the version/revision/date/time fields in recognized GROHED
-  headers and the date/time/revision fields in recognized `-999` summary
-  headers. Keep the rest of each header, including species/variant titles,
-  stand identity, weights, and record counts. Timestamp-like model text outside
-  those contexts is significant.
-- Map only known CaseID UUIDs using stable FVS_Cases descriptors and repeated
-  occurrence order. Keep the mapped identity in every child row, preserving
-  case relationships and row multiplicity.
-- Compare every SQLite schema object and table, column names, NULLs, value
-  types, and complete rows. Only `FVS_Cases.Version`, `RV`, and `RunDateTime`
-  values are metadata. Schema and metadata value types remain significant.
-- Ignore SQLite physical row order and storage layout. Sort canonical typed
-  rows while retaining duplicates; encode REAL values with exact `float.hex()`
-  representations. Apply no numerical tolerance, rounding, or row filtering.
-- Record normalization counts and per-table row counts/hashes in each
-  comparison report. Unsupported or unresolved identities fail rather than
-  being silently dropped.
-
-The negative controls mutate real copies of the recorded IE outputs and update
-their capture hashes. They require CLI exit status 1 for changed model text,
-summary-header counts, whitespace, timestamp-like model text, a one-ULP REAL,
-schema, CaseID relationships, row multiplicity, missing outputs, and exit status.
-Positive metadata controls cover both IE and Ontario header layouts while
-confirming that changed titles/variant codes are still rejected.
-
-## Replay retained artifacts
-
-`artifacts.tar.gz` contains raw inputs and outputs under `runs/STATE/CASE/`.
-Verify its SHA256 against `artifacts.json`, then extract into a fresh directory.
-The `--artifacts-root` option replaces the original temporary paths without
-altering the retained run receipt:
-
-```sh
-python3 tests/parity/compare_outputs.py \
-  --runs tests/parity/evidence/2026-11-13-p01-p03/runs.json \
-  --left original --right current --case ie-iet01 \
-  --artifacts-root /private/tmp/mfvs-parity-replay/runs \
-  --report /private/tmp/mfvs-parity-replay/ie-comparison.json
-```
-
-Raw simulator binaries and build directories remain temporary. Their hashes,
-exact source identities, input hashes, build patch, logs, and replayable run
-artifacts are retained in the repository.
-
-## Bounded retirement verification
-
-For a retirement batch, store a separate `plan.json` entry for each file before
-removal. Name its pre-change commit, selected replacement, historical purpose,
-and meaningful scientific or platform differences. After preparing the three
-snapshots, run the shared verifier:
-
-```sh
-python3 tests/parity/verify_retirement.py \
-  --evidence-dir tests/parity/evidence/2026-11-13-d04-d13
-```
-
-This requires unchanged complete build inputs for all 24 variants, checks every
-other tracked model source/include, verifies original/current and live NVEL
-archive integrity, and records each retired Git blob, SHA256, recovery command,
-DATA statement, and full replacement diff. Historical Canadian source-list
-references are reported separately with their missing-input counts and recipe
-consumers. Output comparisons and their raw replay artifacts remain separate
-evidence; unchanged build selection does not imply coverage of every model
-branch.
-
-`record_evidence.py` accepts the absence of the retired, unselected D07 metric
-reader when inspecting later snapshots. Its live shared callee and metric
-caller signature checks remain strict. A missing selected reader still fails.
-
-## Shared-routine comparisons
-
-For C01–C06, [check_consolidation.py](check_consolidation.py) builds fixtures
-that call each affected routine selected from original/current/candidate
-manifests. The fixtures in `fixtures/` exercise timing histories, species-array
-tails, every KT/NC crown mapping, OP/PN/WC fuel groups, and snag-fall boundaries.
-They compare raw state bytes and diagnostics exactly, with supplemental bounds
-checking in all three states. Original model files and fixed-form includes are
-unchanged; only the generated original driver uses fixed form.
-
-```sh
-python3 tests/parity/check_consolidation.py \
-  --evidence-dir tests/parity/evidence/2026-11-14-c01-c06
-python3 tests/parity/verify_consolidation.py \
-  --evidence-dir tests/parity/evidence/2026-11-14-c01-c06
-```
-
-These commands need the recorded snapshots, or newly prepared equivalents, and
-a fresh targeted-run directory. Direct routine fixtures provide branch evidence;
-they do not claim integrated BC/ON simulation parity. The source verifier
-requires exactly the planned canonical definitions and source-list rewrites,
-with every other model source/include unchanged.
-
-For a larger matrix, `prepare_builds.py --build-workers 3 --jobs 2` runs three
-independent variants at a time, each with two compiler processes. State batches
-remain ordered; one main thread writes completed build receipts. All numerical
-flags remain identical across states.
-
-`run_cases.py --resume` verifies recorded output and binary hashes before
-retaining a completed run and adding requested cases. Use
-`--include-canadian-candidate` when a candidate actually changes Canadian build
-inputs and its known failure boundary must also be recorded. That option adds
-a candidate execution; matching the input failure still is not simulation
-verification.
-
-## Additional C07–C12 coverage
-
-The same consolidation tools accept C07–C12 plans. Direct fixtures cover the
-12-inch CS/SN snag rule and earlier shared consumers, all 210 GRINIT/helper
-assigned variables before growth, real ESADDT exports for every variant, all
-37 assigned FMVINIT variables and every species, and all OC/OP mapping entries.
-C09 uses `cs-cratet-debug` and `ne-cratet-debug` full-engine decks instead of
-mocking CRATET's calibration dependencies. Their isolated keyword copies add
-only `DEBUG` fields 1=0/2=1 and the following `CRATET` record; repository decks
-are unchanged.
-
-`prepare_builds.py --reuse-evidence PATH` can reuse a retained build only when
-the prior builds.json checksum, complete selected inputs, compiler/tool
-versions, flags, platform and binary SHA256 all agree. The new receipt names
-the prior evidence/state and binary hash explicitly. Missing cached binaries
-are rebuilt; a changed binary or settings mismatch is rejected. Every reused
-state still runs independently. This is a build reuse, not a fresh compilation.
-
-C10's fixtures supply a controlled option table and a local Python regeneration
-response, while calling the real ESADDT and MYOPEN routines. Raw `.es1`/`.es2`
-files and the response script are retained and compared. These fixtures cover
-the export bridge; they do not claim to validate every external-model import
-or error-recovery path. Existing and newly recorded bugs remain unfixed.
+When finished, discard both temporary directories. Update the checklist and
+record newly found bugs in [FOUND_BUGS.md](../../FOUND_BUGS.md). Do not create
+another results archive or completion report.

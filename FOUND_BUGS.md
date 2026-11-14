@@ -30,7 +30,7 @@ Here the callee reads the crown ratio as the merchantable-volume switch, the `'L
 
 The behavior is undefined in both cases. The most likely visible effect is that snag and down-wood volumes switch between merchantable and total volume according to an unrelated value. Because the BC and ON test decks never get past keyword input (see bug 5), no test has exercised these paths.
 
-A third copy of the eight-argument call, formerly in `canada/fire/on/fmcrowe.f90:277`, was not compiled by any variant and was retired under D08 on 13 November 2026. Its exact recovery identity and replacement diff are in the [D04–D13 report](tests/parity/evidence/2026-11-13-d04-d13/README.md). The live mismatched calls above remain unchanged.
+A third copy of the eight-argument call, formerly in `canada/fire/on/fmcrowe.f90:277`, was not compiled by any variant and was retired under D08 on 13 November 2026. Its original source is available with `git show 9bc35a16:canada/fire/on/fmcrowe.f90`. The live mismatched calls above remain unchanged.
 
 **Suggested fix:**
 1. Give the BC `FMSVL2` the ten-argument interface; it can accept `CRWNRTO` and `LIVEDEAD` and ignore them.
@@ -50,9 +50,9 @@ Merging `fmdout` before this fix is a compile error, because one file cannot cal
 
 `DBSTREESIN` sets all three to zero unconditionally (lines 78–80) and reads them from the `Cull`, `DecayCd` and `WdldStem` columns when present (lines 217–225). In BC and ON those writes go through addresses that were never passed. A scratch build confirmed the effect. With bug 5 fixed, ON crashed with a segmentation fault while reading tree records from the database. When the three arguments were also passed, the ON test ran to completion.
 
-The metric copy also lacks the decay-code correction that `base/intree.f90:141–146` applies after the call. `metric/dbsqlite/dbstreesin.f90`, an older 30-argument version, was not compiled by any variant and was retired under D07 on 13 November 2026. Its exact recovery identity and replacement diff are in the [D04–D13 report](tests/parity/evidence/2026-11-13-d04-d13/README.md). The live caller and shared callee remain unchanged.
+The metric copy also lacks the decay-code correction that `base/intree.f90:141–146` applies after the call. `metric/dbsqlite/dbstreesin.f90`, an older 30-argument version, was not compiled by any variant and was retired under D07 on 13 November 2026. Its original source is available with `git show 9bc35a16:metric/dbsqlite/dbstreesin.f90`. The live caller and shared callee remain unchanged.
 
-P03 source tracing on 13 November 2026 confirmed 33 versus 30 arguments in both the original `c2105365` source and current mFVS. Earlier documentation counted 31 versus 28, omitting `ABIRTH` and `LBIRTH` from both totals. This is a documentation correction only; the missing trailing arguments and the model code are unchanged. See the [P01–P03 verification report](tests/parity/evidence/2026-11-13-p01-p03/README.md).
+P03 source tracing on 13 November 2026 confirmed 33 versus 30 arguments in both the original `c2105365` source and current mFVS. Earlier documentation counted 31 versus 28, omitting `ABIRTH` and `LBIRTH` from both totals. This is a documentation correction only; the missing trailing arguments and the model code are unchanged.
 
 **Suggested fix:** pass `CULL(I)`, `DECAYCD(I)` and `WDLDSTEM(I)`, and port the decay-code correction. Then merge the `intree` twin, which was attempted during consolidation and reverted for this reason.
 
@@ -164,7 +164,7 @@ The local workaround entered build selection in `a19c41b4` (4 March 2024); ON se
 
 Before proposing a fix, reproduce a reachable valid-input case, measure any exception or output effect, and establish why the library selection changed. A small positive power base and large exponent can motivate an underflow investigation, but this cleanup does not establish a model bug or a safe replacement threshold. Keep any eventual correction separate from original-F77 parity work.
 
-The [D04–D13 report](tests/parity/evidence/2026-11-13-d04-d13/README.md), D11 replacement diff, historical selection receipt, and exact pre-deletion Git recovery command preserve the workaround. No guard was added to NVEL and no active model code changed.
+The workaround remains available with `git show 9bc35a16:volume/r9clark_fvsMod.f90`. No guard was added to NVEL and no active model code changed.
 
 ---
 
@@ -188,7 +188,7 @@ C04 preserves mapping **19**, along with every other KT/NC table entry, in share
 
 `IKEEP` is assigned by the `.es2` READ, but a blank external command, an open/write failure, or end-of-file can branch to label 101 and then reach `IF (IKEEP .NE. 1)` at label 202 without that READ succeeding. The subsequent CLOSE can also target a unit that was not successfully opened. No initialization or error-path guard was added during consolidation.
 
-Both patterns are already present in original F77 `c2105365:estb/esaddt.f` (IPYR assignment/use around lines 58–59/129; IKEEP READ/cleanup around 184/190–194) and its STRP twin. C10's tests cover configured two-parameter exports, successful local regeneration responses, no pending requests and the unsupported-method branch. They do not establish safe error recovery. The entire executable body remains identical after resolving the preserved species-index parameter; see the [C07–C12 report](tests/parity/evidence/2026-11-14-c07-c12/README.md).
+Both patterns are already present in original F77 `c2105365:estb/esaddt.f` (IPYR assignment/use around lines 58–59/129; IKEEP READ/cleanup around 184/190–194) and its STRP twin. C10's tests cover configured two-parameter exports, successful local regeneration responses, no pending requests and the unsupported-method branch. They do not establish safe error recovery. The executable body was preserved after resolving the species-index parameter.
 
 Later work should trace OPGET's parameter-count contract and the unit/IKEEP lifecycle, reproduce a reachable case, and measure the effect before selecting defaults or cleanup changes. Keep any correction separate from original-F77 parity work. Bug 3's species-bin defects also remain unfixed.
 
@@ -203,4 +203,4 @@ Later work should trace OPGET's parameter-count contract and the unit/IKEEP life
 
 The controlled IE fixture calls the actual writers in this order with real repository SQLite and an already established CaseID. It supplies case-number/error-reporting context only. SQLite reports **two** outstanding statements after the pair, **one** after normal `fsql3_finalize`, and `SQLITE_BUSY` (5) from direct close attempts at both points. All three source states produce these same observations. The test finalizes the orphan through separate harness teardown so it can release its test database; no model source is repaired. Single-writer retention alone is not the demonstrated defect, because the existing close routine can finalize the last tracked statement.
 
-See [retained observations and source hashes](tests/parity/evidence/2026-11-14-c13-c18/sqlite-lifecycle.json), [reproduction tool](tests/parity/check_sqlite_lifecycle.py), and the raw drivers/outputs in the C13–C18 artifact archive. The original writer sequence and C wrapper already contain this behavior; the binding helper preserves it. Later work should measure repeated-report resource growth and review statement ownership across prepare/finalize/close before choosing a fix. Do not combine that correction with F77-preserving cleanup.
+To reproduce, call both writers on one open output database with both reports enabled and an established CaseID. Count statements with `sqlite3_next_stmt`, finalize the tracked statement through `fsql3_finalize`, count again, and try closing the connection. The original writer sequence and C wrapper already contain the leak; the binding helper preserves it. Later work should measure repeated-report resource growth and review statement ownership across prepare/finalize/close before choosing a fix. Do not combine that correction with F77-preserving cleanup.

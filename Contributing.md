@@ -36,6 +36,8 @@ The `.save` files in `tests/` contain results from upstream FVS releases, and so
 
 The BC and ON test decks currently stop while reading their keyword files, in both the reference and current code (bug 5 in [FOUND_BUGS.md](FOUND_BUGS.md)). Matching output for those two variants therefore does not show that a change is safe. Review changes that affect BC or ON with extra care.
 
+Run comparisons in temporary directories and discard generated outputs and build copies when finished. Update the cleanup checklist and record newly found bugs in `FOUND_BUGS.md`. Do not keep test-result archives, logs, compiler dumps, receipts or separate completion reports in the repository. The reusable comparison commands are in [tests/parity/README.md](tests/parity/README.md).
+
 ## How the build works
 
 Each variant is built from the files listed in `bin/FVSxx_sourceList.txt`. The makefile copies all of them into one flat directory, `bin/FVSxx_buildDir`, before compiling. This has a few consequences:

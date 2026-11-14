@@ -5,30 +5,19 @@ Created: 13 November 2026.
 Audit baseline: main repository `776491e8850b447e638f7b267b8bcaab641584f4`,
 with NVEL submodule `a73e697e220ffd0f792aa7ac10d84c911edb7ad7`.
 
-This document stores the redundancy and dormant-code findings before cleanup
-begins. The audit was read-only. No builds or simulations were run during the
-audit, and no source, build configuration, source list, test input, or reference
-output was changed. Creating this tracker was a documentation-only step.
-P01–P03 verification preparation and D01–D13 retirement are now complete; see
-the [verification report](tests/parity/evidence/2026-11-13-p01-p03/README.md) and
-the retirement reports for [D01–D03](tests/parity/evidence/2026-11-13-d01-d03/README.md)
-and [D04–D13](tests/parity/evidence/2026-11-13-d04-d13/README.md).
-D14 remains pending. C01–C06 are now complete; the user accepted the exact
-routine and runtime-object evidence for C01/C06 while leaving BC/ON simulation
-parity blocked. See the [C01–C06 report](tests/parity/evidence/2026-11-14-c01-c06/README.md).
-C07–C12 are now complete; the user accepted the routine/file-output and
-executable-statement evidence for C07/C10 while leaving BC/ON simulation parity
-blocked. See the
-[C07–C12 report](tests/parity/evidence/2026-11-14-c07-c12/README.md).
-C13–C18 are complete and verified against both baselines; the user accepted
-the direct SQLite/executable evidence for C13/C14 while leaving BC/ON
-simulation parity blocked. There are 53 completed and 67 pending checkbox
-items. See the
-[C13–C18 report](tests/parity/evidence/2026-11-14-c13-c18/README.md).
+This checklist stores the redundancy and dormant-code findings before cleanup.
+P01–P03, D01–D13 and C01–C18 are complete. D14 and the remaining blocks are
+pending: 53 completed and 67 pending items. BC/ON simulation parity remains
+blocked by the existing bugs in [FOUND_BUGS.md](FOUND_BUGS.md).
 
-The findings combine repository-wide source-list inventory, targeted source
-comparisons, call/ENTRY inspection, and historical notes. They are not an
-exhaustive equivalence proof for every routine or a blanket deletion list.
+Run the necessary comparisons against original F77 and the immediate baseline,
+then discard generated results and temporary builds. Keep this checklist and
+bug descriptions; do not retain test-result archives, logs, receipts, compiler
+dumps or separate completion reports.
+
+The findings combine source-list inventory, source comparisons, call/ENTRY
+inspection and historical notes. They are not blanket permission to delete
+scientific alternatives or entire dormant features.
 
 ## Using this tracker
 
@@ -40,7 +29,8 @@ exhaustive equivalence proof for every routine or a blanket deletion list.
 - A completed audit or retention decision does not mean implementation or
   deletion is complete. The task type states what its checkbox covers.
 - For implementation, deletion, and build changes, check the item only after
-  the applicable verification below passes and its evidence is recorded.
+  the applicable verification below passes; update the checkbox and note any
+  unresolved coverage briefly.
 - Match the existing coding style. Preserve useful scientific commentary and
   explain variant-specific choices where future debugging will require it.
 - Keep bug fixes that change model results separate from modernization.
@@ -84,17 +74,16 @@ distinguishes inherited differences from cleanup regressions. If a difference
 already exists, record it; do not redefine the baseline to conceal it.
 
 Follow [Contributing.md](Contributing.md), including its documented linkage-only
-accommodations for building the original BC/ON reference. Record every such
-accommodation separately from scientific changes. Keep the pristine reference
-identity and the exact reference-build patch available with the evidence.
+accommodations for building the original BC/ON reference. Keep scientific
+changes separate. The pinned revisions above identify the original sources;
+generated patches and build records are temporary.
 
 For each implementation task:
 
 - Derive all affected variants from the source lists, including consumers that
   use another variant's implementation.
 - Use the same compiler versions, relevant flags, platform, and inputs for
-  reference and candidate comparisons. Record these details and both submodule
-  revisions.
+  reference and candidate comparisons. Check both submodule revisions.
 - Compare listings, summaries, tree lists, database schemas and contents, and
   other generated model outputs. Normalize only identified run metadata such as
   UUIDs, dates, times, and version strings. Do not discard model values, use a
@@ -112,8 +101,8 @@ For each implementation task:
 
 For an unbuilt-file deletion, establish that no current source list, selected
 include dependency, generated source, or supported auxiliary target needs the
-file. Verify that the compiled input set remains unchanged and record the
-applicable build/parity evidence. A missing direct caller alone is insufficient.
+file. Verify that the compiled input set remains unchanged and check the
+applicable builds and outputs. A missing direct caller alone is insufficient.
 
 The README reports original-reference agreement for 22 variants. That result
 was not rerun in this audit. BC and ON currently stop during keyword input in
@@ -122,41 +111,17 @@ recorded defects must be handled separately. A deliberately corrected reference
 can help diagnose those defects, but it must remain distinct from the original
 upstream reference and cannot be reported as pristine-original parity.
 
-- [x] **P01 — Identify and prepare the original reference (audit/build).**
-  Pin both original revisions, record compiler settings and any linkage-only
-  accommodations, and retain reference-build provenance. Do not fix model bugs
-  in the reference as part of this task. Completed 13 November 2026: original
-  and current IE/BC/ON builds and source integrity are recorded in the retained report.
-- [x] **P02 — Establish one exact IE comparison (verification).** Start with
-  one IE test deck. Compare original, current, and candidate outputs with narrow
-  metadata normalization, and demonstrate that a real mismatch fails the
-  comparison before using it to accept cleanup. Completed 13 November 2026:
-  all seven IE artifacts match across original/current/candidate, and ten
-  deliberately introduced mismatches are rejected. This covers `iet01` only.
-- [x] **P03 — Establish the BC/ON verification boundary (audit; blocked for
-  simulation parity).** Reproduce and record the keyword-input limitation and
-  its relation to bugs 1, 2, and 5 in `FOUND_BUGS.md`. This task records the
-  boundary; repairs and restored simulation verification require their own
-  tasks. Do not check off an affected consolidation as verified while its
-  required BC/ON simulation coverage remains blocked. The boundary audit was
-  completed 13 November 2026: both BC decks and the ON deck reproduce input
-  failures in original and current code. Model bugs remain unfixed, and
-  simulation parity remains blocked.
-
-  **Limited acceptance exception, 14 November 2026:** the user accepted exact
-  routine and runtime-object comparisons for completion of C01 and C06 only,
-  while leaving BC/ON simulation parity blocked. This does not relax the gate
-  for other tasks. See the [acceptance record](tests/parity/evidence/2026-11-14-c01-c06/acceptance.json).
-
-  **Additional limited acceptance, 14 November 2026:** the user accepted exact
-  routine/file-output comparisons and executable-statement evidence for C07
-  and C10. BC/ON simulation parity remains blocked, and this grants no general
-  exception for other tasks. See the [acceptance record](tests/parity/evidence/2026-11-14-c07-c12/acceptance.json).
-
-  **C13/C14 limited acceptance, 14 November 2026:** the user accepted exact
-  SQLite schema/row comparisons and executable-statement evidence for these
-  two tasks. Canadian integrated simulation parity remains blocked; no other
-  task gate is waived. See the [acceptance record](tests/parity/evidence/2026-11-14-c13-c18/acceptance.json).
+- [x] **P01 — Prepare the original reference.** Completed 13 November 2026.
+  Pinned the original main/NVEL revisions and checked IE/BC/ON builds with
+  identical settings; Canadian linkage-only additions are in Contributing.md.
+- [x] **P02 — Establish exact comparison.** Completed 13 November 2026.
+  IE `iet01` matched original/current/candidate; controls rejected changed
+  model values, database rows, identities and output inventory.
+- [x] **P03 — Establish the BC/ON boundary.** Completed 13 November 2026.
+  Both versions stop during keyword input; bugs 1, 2 and 5 remain unfixed.
+  Matching these failures does not establish Canadian simulation parity.
+  The user accepted direct routine/SQLite and statement comparisons for
+  C01/C06, C07/C10 and C13/C14 while leaving this limitation in place.
 
 ## Centralized definitions
 
@@ -376,13 +341,10 @@ differences and an exact historical recovery reference before deciding to
 retire it. Unknown historical intent is not evidence of abandoned research.
 
 - [x] **D01 — `sn/sitsetOld.f90`.** Its header says it was replaced in Q2
-  2023 and should be deleted after testing. This is the strongest apparently
-  forgotten cleanup. Confirm the replacement's testing record and retain the
-  historical implementation reference. Completed 13 November 2026: removed
-  the unselected old implementation, retained exact recovery references and
-  its differences from the selected implementation, and verified standard SN
-  plus targeted NC comparisons. No separate historical 2023 test receipt was
-  found; the present verification and its limits are in the retirement report.
+  2023 and should be deleted after testing: apparently forgotten cleanup.
+  Removed the unselected old implementation on 13 November 2026 after SN
+  and targeted NC comparisons. No separate historical 2023 test record was
+  found. The original source remains available in Git.
 - [x] **D02 — `rd/rdrout.f90`.** Its header explicitly declares it obsolete
   after General Report Writer implementation in 2015. The old call is commented
   out in `base/fvs.f90`. Completed 13 November 2026: removed only the unselected
@@ -393,10 +355,11 @@ retire it. Unknown historical intent is not evidence of abandoned research.
   keep `canada/bc/natcrz.f90`, which BC and ON still select. Completed
   13 November 2026: removed only the retired US implementation. The selected
   Canadian stub and historical notes are unchanged. Dormant Canadian source
-  lists still contain stale references, documented in the retirement report.
+  lists still contain stale references; current recipes do not select them.
 - [x] **D04 — `canada/on/findag_for.f90`.** Completed 13 November 2026:
   retired the unselected FINDAG alternative. ON keeps `canada/on/findag.f90`;
-  HTCALC argument and initialization differences are preserved in the report.
+  The retired HTCALC call omitted basal area, DBH and diameter percentile;
+  selected FINDAG also initializes AGET and HTMAX.
 - [x] **D05 — `canada/on/unblnk.f90`.** Completed 13 November 2026:
   retired the unselected ON clone. Preserved its embedded-space semantics and
   historical purpose; original and current builds select `base/unblnk.f90`.
@@ -406,7 +369,7 @@ retire it. Unknown historical intent is not evidence of abandoned research.
 - [x] **D07 — `metric/dbsqlite/dbstreesin.f90`.** Completed 13 November 2026:
   retired the older 30-argument reader. Shared DBSTREESIN remains selected;
   the live 33/30 mismatch stays open in `FOUND_BUGS.md`. Verification tracing
-  now explicitly records this absent unselected historical source.
+  distinguishes the retired reader from the live mismatched interface.
 - [x] **D08 — `canada/fire/on/fmcrowe.f90`.** Completed 13 November 2026:
   retired the unselected ON alternative; preserved species mapping and
   interface differences. The live FMSVL2 mismatch remains unfixed.
@@ -422,9 +385,9 @@ retire it. Unknown historical intent is not evidence of abandoned research.
   NVEL in 2025. Preserved its power guards and exact diff; a separate,
   unconfirmed numerical concern is logged for later investigation.
 
-The [D04–D13 report](tests/parity/evidence/2026-11-13-d04-d13/README.md)
-contains an individual record, replacement diff, Git blob and recovery command
-for every completed file below as well as D04–D11.
+Original sources remain in Git: use `git show 3b26bc36:<path>` for D01–D03
+and `git show 9bc35a16:<path>` for D04–D13. Review the original implementation
+before reintroducing any historical scientific alternative.
 
 ### D12 — Five separate ESTUMP copies
 
@@ -434,20 +397,20 @@ preserve individual scientific differences and keep that shared implementation.
 - [x] **D12a — `ca/estump.f90`.** Retired 13 November 2026; preserved aspen
   index 44 and bookkeeping differences against shared ESTUMP.
 - [x] **D12b — `cr/estump.f90`.** Retired 13 November 2026; preserved aspen
-  index 20 and its separate replacement diff.
+  index 20 in its original Git version.
 - [x] **D12c — `tt/estump.f90`.** Retired 13 November 2026; preserved aspen
-  index 6 and its separate replacement diff.
+  index 6 in its original Git version.
 - [x] **D12d — `ut/estump.f90`.** Retired 13 November 2026; preserved aspen
-  index 6 and its separate replacement diff.
+  index 6 in its original Git version.
 - [x] **D12e — `wc/estump.f90`.** Retired 13 November 2026; preserved aspen
-  index 26 and its separate replacement diff.
+  index 26 in its original Git version.
 
 ### D13 — DMCW alternatives, one file per task
 
 These retired files defined unselected DMCW implementations. Selected
 `canada/newmist/dmcw.f90` still uses `CRWDTH`; the BC mistletoe pathway remains
-active. Each file's equations, DATA tables, replacement diff and recovery
-identity were recorded separately. No explicit abandonment decision was found
+active. Each file's equations and DATA tables remain available in its original
+Git version. No explicit abandonment decision was found
 for these historical regional alternatives. D13 retains the original audit's
 ID for Alaska. All fifteen retirements completed 13 November 2026.
 
@@ -636,276 +599,3 @@ do not consolidate the whole family in one run.
 4. C02, C03, then C05: small active consolidations with explicit differences
    and targeted original-reference comparisons.
 5. Select the next individual item based on available coverage and dependencies.
-
-## Completion evidence
-
-Append a record whenever a task is completed, retained, deferred, or blocked.
-Keep its checkbox state consistent with the task's stated type. A retention
-decision can complete a decision task without deleting code. An audit that
-finds a blocker can complete its investigation while its implementation
-follow-up remains open under a new ID.
-
-For code changes, retain comparison results outside transient terminal output
-and record a stable path or committed report. Use a compact record such as:
-
-```text
-Task ID:
-Date:
-Task type and outcome:
-Commit or patch identity:
-Files changed / canonical shared home:
-Affected variants and source-list evidence:
-Original main and NVEL revisions:
-Immediate pre-change main and NVEL revisions:
-Candidate identity / working-tree patch identity:
-Compiler versions, flags, platform, and reference-build accommodations:
-Test decks and targeted branches exercised:
-Original/current/candidate comparisons and allowed metadata normalization:
-Results, receipt/report paths, and unresolved coverage:
-For retirement: historical purpose, replacement, support decision, recovery ref:
-Follow-up task IDs:
-```
-
-### Initial record
-
-**A00, 13 November 2026 — completed documentation.** Stored the audit findings
-and tracker before cleanup. No cleanup task was implemented and no new parity
-claim was made. All cleanup and prerequisite checkboxes remain open. Existing
-README verification claims are historical context pending task evidence here.
-
-### P01–P03 record — 13 November 2026
-
-**P01 completed:** prepared isolated original/current snapshots, pinned both
-NVEL revisions, built IE/BC/ON with the same recorded settings, and checked
-archive integrity. Only the two original Canadian link manifests changed,
-exactly as retained in `reference-build.patch`; original model sources did not.
-
-**P02 completed for `iet01`:** original, current, and the verification-only
-candidate agree on all seven generated artifacts, including all 17 SQLite
-tables and 14,178 rows. The candidate's complete selected build inputs equal
-current mFVS, so its binary reuse is explicit; it ran in its own process and
-directory. Ten negative controls reject real output changes, including a
-one-ULP REAL change and an incorrect CaseID relationship. The shared STOP 20,
-one FVS04 error, and four FVS09 warnings are preserved rather than suppressed.
-
-**P03 boundary audit completed:** both BC decks and ON reproduce invalid
-keywords and STOP 20 before producing simulation summaries or output
-databases. Source tracing confirms bugs 1, 2, and 5 are still present. Bug 2's
-documented totals were corrected to 33/30 (previously 31/28); no interface or
-model bug was fixed. BC/ON simulation verification remains blocked.
-
-Evidence, exact scope, flags, artifact replay, and known limitations are in the
-[P01–P03 report](tests/parity/evidence/2026-11-13-p01-p03/README.md) and
-[verification tool instructions](tests/parity/README.md). At completion of
-P01–P03, every C, M, D, R, U, B, and L item remained unchecked. That work does
-not establish parity for all
-variants or all input branches.
-
-### D01–D03 record — 13 November 2026
-
-**D01, D02, D03 completed:** removed `sn/sitsetOld.f90`, `rd/rdrout.f90`, and
-`vbase/natcrz.f90` only. These unselected sources total 1,115 lines / 32,464
-bytes. Exact blobs, SHA256 values, and recovery commands are retained against
-pre-deletion commit `3b26bc3621dffb53a64dd9ebd6dcca84a2fbf784`.
-
-The complete selected build inputs for all 24 variants are unchanged. All
-other 2,145 main-repository model source/include files checked are unchanged,
-as is NVEL. The active SN SITSET, General Report Writer, root-disease stub
-ENTRY, and Canadian NATCRZ stub remain intact. Two unused, already incomplete
-Canadian source lists retain historical references; no current recipe selects
-those lists. Their disposition remains separate from these three removals.
-
-Fresh original/pre-deletion IE and SN builds succeeded. Four cases, each run
-in original/current/candidate processes, pass all twelve pairwise comparisons:
-`ie-iet01`, `sn-snt01`, and two first-stand SN cases for NC locations 81103 and
-81105. All artifacts, database rows, baseline warnings/errors, and exit codes
-are compared using the existing contract. Candidate binaries are explicitly
-reused because selected inputs match; no recompilation is implied. Existing
-repository test decks were not edited.
-
-See the [retirement report](tests/parity/evidence/2026-11-13-d01-d03/README.md)
-for historical purpose, preservation decisions, exact verification scope,
-source identities, and replayable receipts. No model bug was fixed. BC/ON
-simulation parity remains blocked as recorded by P03. Every other cleanup
-checkbox remains open.
-
-### D04–D13 record — 13 November 2026
-
-**D04–D11, D12a–e, D13 and D13-02–15 completed:** independently reviewed and
-removed 28 unselected files, totaling 6,145 lines / 189,493 bytes. Each file has
-its own historical-purpose assessment, scientific/platform differences,
-selected replacement, exact Git blob/SHA256, DATA literals, replacement diff
-and recovery command. The pre-deletion revision is
-`9bc35a16d6dec5fc79f513ae524297077e5298e3`; NVEL remains
-`a73e697e220ffd0f792aa7ac10d84c911edb7ad7`. The per-file plan was stored before
-deletion. All 28 alternatives were also unselected in original F77 `c2105365`.
-
-Every variant's complete selected build input set is unchanged. The other
-2,117 tracked main-repository model source/include files, all current NVEL
-files and 34 checked build recipes are unchanged. Existing shared model homes
-remain selected; no new model definitions or wrappers were introduced. Two
-unused, already incomplete Canadian manifests retain their historical
-references, with their path resolution and missing-input counts documented.
-
-Eight fresh original/pre-deletion IE, SN, BC and ON builds succeeded. Four
-candidate binaries were explicitly reused because complete selected input
-hashes and flags match. Separate original/current/candidate IE and SN runs pass
-all six pairwise comparisons, including all generated artifacts and SQLite
-schemas/typed rows. Three Canadian original/current comparisons also pass at
-the known invalid-keyword/STOP 20 boundary. These are not BC/ON simulation
-parity claims; candidate Canadian execution is not claimed. The nine reports
-replay identically from the retained raw artifact archive.
-
-The retirement verifier rejects selected-source changes, unselected-model
-changes and reintroduced retired files. The signature tracer was adapted only
-to recognize the absent, unselected D07 source and identify Canadian runs by
-variant. Its live-interface checks and all output comparison rules remain
-strict. No model bug was fixed. D07/D08 bug-tracker references now describe
-completed retirements; all five confirmed defects remain open. D11's formerly
-active numerical guard is recoverable and logged separately as an unconfirmed
-concern requiring later reachability/impact investigation.
-
-See the [per-file findings and verification report](tests/parity/evidence/2026-11-13-d04-d13/README.md)
-for scientific differences, history, scope limits, source identities, exact
-commands and replay instructions. Prior P01–P03 and D01–D03 evidence bytes are
-unchanged. D14 and every C/M/R/U/B/L task remain pending. The tracker now has
-35 completed and 85 pending items.
-
-### C01–C06 record — 14 November 2026
-
-**All six implementations are complete and checked off.** The user accepted
-the alternative Canadian evidence for C01/C06 on 14 November 2026.
-The fourteen selected definitions now use six canonical definitions in `estb/`
-and `fire/base/`, reducing model source by 1,484 lines (2,652 to 1,168).
-The pre-cleanup revision is `1a8aef8b210ebf532d8c94291fea511f11a6a19a`;
-NVEL remains `a73e697e220ffd0f792aa7ac10d84c911edb7ad7`.
-The per-task plan was stored before edits. Each task retains its consumer map,
-public signature, old-source hashes/blobs, replacement diffs and recovery
-commands in the [C01–C06 report](tests/parity/evidence/2026-11-14-c01-c06/README.md).
-
-All 23 affected variants build in original, pre-cleanup and candidate states:
-69 fresh builds, with no candidate reuse. All 72 pairwise comparisons across
-24 integrated decks pass. Those comprise 63 comparisons for 21 US consumers'
-simulation outputs and nine Canadian input-failure boundary comparisons.
-All 126 additional direct comparisons pass across 42 routine/variant fixtures.
-Raw artifacts replay exactly. Ten deliberate model/output mismatches remain
-rejected, including one-ULP REAL changes and wrong CaseID relationships.
-
-C01 removes only the unused ESCOM2 declaration from shared ESTIME and the STRP
-twin. C02/C03 preserve all equations and dimensioned tails for CI/IE/KT.
-C04 preserves the complete 11/12-element mapping tables. C05 preserves OP-only
-species-24 grouping, PN/WC defaults and arithmetic order. C06 preserves the
-CI-only species-2/8 adjustment at DBH >= 18 for all eight consumers.
-The other 2,103 model source/include files, all COMMON declarations, current
-NVEL, test decks and historical evidence are unchanged. All 24 source sets
-have exactly the planned definitions and filename selection.
-
-The comparator's metadata recognizer was extended for source-verified CA/CR/TT
-GROHED layouts: old title characters survive between metadata fields. Both
-gaps are retained byte-for-byte; only version/revision/date/time are masked.
-Controls reject changed title characters in either gap. No model/header code
-was fixed. A stale NC mapping comment is recorded in `FOUND_BUGS.md`; numeric
-mapping 19 and all confirmed model defects remain unchanged.
-
-**C01/C06 acceptance, 14 November 2026:** Canadian simulations still stop on
-existing input bugs. Direct tests and full runtime-object
-sections/constants/relocations/common sizes match original/current/candidate
-for BC/ON ESTIME and BC FMSFALL, but no Canadian integrated simulation result
-is claimed. The user explicitly answered “Accept this evidence for C01/C06”,
-authorizing completion of these two checkboxes using that evidence. The
-[acceptance record](tests/parity/evidence/2026-11-14-c01-c06/acceptance.json)
-retains the scope and response. The P03 simulation boundary remains blocked;
-the exception applies only to C01/C06. No model bug was fixed and no later
-cleanup task was implemented. There are now 41 completed and 79 pending items.
-
-
-### C07–C12 record — 14 November 2026
-
-**All six implementations are complete and checked off.** The user accepted
-the alternative Canadian evidence for C07/C10 on 14 November 2026.
-The thirteen selected definitions now use six shared definitions, reducing
-model source by 2,229 lines (4,587 to 2,358). Eleven former copies are removed.
-The pre-cleanup revision is `92b1deeb7554b50af60e271dddcd6c7413cbb70e`;
-NVEL remains `a73e697e220ffd0f792aa7ac10d84c911edb7ad7`.
-The plan was stored before edits. All source hashes/blobs, public signatures,
-consumer rewrites, scientific differences and recovery commands are retained
-in the [C07–C12 report](tests/parity/evidence/2026-11-14-c07-c12/README.md).
-
-All 72 state/variant build identities succeeded: 26 fresh compilations and
-46 retained binaries with exact selected input, compiler/flag/platform and
-binary-hash matches. Reuse is explicit in the receipt. All 24 candidates are
-fresh builds, and every state runs independently. All 81 integrated pairwise
-comparisons pass: 66 standard US output comparisons, six CS/NE calibration
-debug comparisons and nine Canadian failure-boundary comparisons. All 120
-direct comparisons across 40 routine/variant fixtures also pass. Raw artifacts,
-including actual ESADDT export/response files, replay exactly. The comparator
-is unchanged and remains bound to its retained mismatch/header controls.
-
-C07 preserves the CS/SN species-1 distinction and the eight earlier shared
-consumers' executable body. C08 captures all 210 assigned initialization/helper
-variables before growth. C09 exercises actual intercept/slope diagnostics
-through complete engine runs. C10 preserves both seedling-bin profiles and
-matches the entire original executable body after resolving its constant
-species index. C11 captures all 37 initialized variables/species, including the
-original final unit conversion. C12 preserves and calls all 89 mapping entries.
-All 2,096 other model source/include files, COMMON declarations, NVEL, repository
-input decks and earlier evidence remain unchanged. No model bug is fixed.
-ESADDT data-flow concerns are recorded for later reachability/impact review.
-
-**C07/C10 acceptance, 14 November 2026:** existing bugs still prevent BC/ON
-integrated simulation. Their direct and executable-statement evidence is
-recorded separately; C07's generated code has different local stack offsets,
-so no runtime-object equality is claimed. The user explicitly answered
-“Accept this evidence for C07/C10”, authorizing completion using the exact
-routine/file-output and executable-statement evidence. The
-[acceptance record](tests/parity/evidence/2026-11-14-c07-c12/acceptance.json)
-retains the response and scope. The P03 simulation boundary remains blocked;
-this additional exception applies only to C07/C10. No model bug was fixed and
-no C13+ or D14 cleanup was implemented. The tracker has 47 completed and
-73 pending items.
-
-
-### C13–C18 record — 14 November 2026
-
-**All six extractions are complete and checked off.** The user accepted the
-alternative Canadian evidence for C13/C14 on 14 November 2026. The pre-cleanup revision is
-`fb27261e7dc91100d98509218b14686d64efa085`; NVEL remains
-`a73e697e220ffd0f792aa7ac10d84c911edb7ad7`. The plan was stored before edits,
-and each migration has its own replayable patch and source/hash receipt.
-See the [C13–C18 report](tests/parity/evidence/2026-11-14-c13-c18/README.md).
-
-The three FIA writers share nine contiguous numeric field bindings in
-`dbsqlite/dbs_fiavbc_bindtree.f90`. Selection, IDs, probability and report
-construction stay in their callers. Six mortality routines share their
-allocation tail in `vbase/mortalloc.f90`; species tables, efficiencies,
-crown corrections, background mortality and initialization remain in place.
-The affected sources total 2,349 lines before and 1,830 after, including the
-two helpers: 519 fewer lines. Public signatures remain unchanged. No caller
-file was deleted, and no later cleanup block was implemented.
-
-All 72 build identities succeeded: 48 retained exact original/baseline builds
-and 24 fresh candidates. All 75 integrated pairwise comparisons pass: 66 US
-simulation comparisons and nine unchanged Canadian failure-boundary
-comparisons. All 396 direct comparisons pass, including actual SQLite schemas,
-typed rows and REAL conversion boundaries in every variant, and mortality
-saturation/redistribution in all seven consumers. Expanding the helper calls
-matches both original F77 and baseline executable statements, with only the
-previously completed labeled-DO conversion normalized. All six source patches
-replay and all raw comparison artifacts replay exactly. No machine-code
-identity or Canadian integrated simulation parity is claimed.
-
-All 2,085 other tracked model source/include/C files, COMMON declarations,
-build recipes, repository inputs, current NVEL and 933 earlier evidence files
-are unchanged. Existing defects remain unfixed. A prepared-statement leak in
-the normal FIA CUTLST/ATRTLS sequence reproduces in all three source states
-and is recorded as item 9 in `FOUND_BUGS.md`; scientific-output impact remains
-unmeasured.
-
-**C13/C14 acceptance, 14 November 2026:** the user explicitly answered
-“Accept this evidence for C13/C14”, authorizing completion using exact SQLite
-schema/row comparisons and executable-statement evidence while leaving
-Canadian integrated simulation parity blocked. The
-[acceptance record](tests/parity/evidence/2026-11-14-c13-c18/acceptance.json)
-retains the response, evidence hashes and scope. No other P03 gate is waived.
-All C01–C18 items are now complete; the tracker has 53 completed and 67 pending
-items. No model bug was fixed.

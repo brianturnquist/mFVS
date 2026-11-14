@@ -6,3 +6,6 @@ bin/FVS??.dylib
 bin/FVS??_buildDir
 bin/BuildAll_MinGW.bat
 bin/BuildAll_VS10.bat
+
+# Generated comparison results are temporary, not repository content.
+/tests/parity/evidence/
