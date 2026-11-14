@@ -6,9 +6,9 @@ Audit baseline: main repository `776491e8850b447e638f7b267b8bcaab641584f4`,
 with NVEL submodule `a73e697e220ffd0f792aa7ac10d84c911edb7ad7`.
 
 This checklist stores the redundancy and dormant-code findings before cleanup.
-P01–P03, D01–D13, C01–C18 and the unbuilt-directory removal (R01–R08, R10–R10d)
-are complete. D14, R09 and the remaining blocks are pending: 65 completed and
-55 pending items. BC/ON simulation parity remains blocked by the existing bugs
+P01–P03, D01–D15, C01–C18 and the unbuilt-directory removal (R01–R08, R10–R10d)
+are complete. R09 and the remaining blocks are pending: 75 completed and
+46 pending items. BC/ON simulation parity remains blocked by the existing bugs
 in [FOUND_BUGS.md](FOUND_BUGS.md).
 
 Run the necessary comparisons against original F77 and the immediate baseline,
@@ -178,12 +178,9 @@ real statement differences, including species tables, defaults, diagnostics,
 and control flow. The 568 unlisted files are dormant inventory, not 568 proven
 safe deletions.
 
-After the section R removal on 14 November 2026 there are 1,545 tracked
-Fortran files, of which 45 are outside all 24 source lists: `acd/` (27, R09),
-the nine D14 `esuckr` copies, `organon/orgfert.f` (kept on purpose), and eight
-others not yet reviewed: `rd/RDPARMCA.f90`, `rd/rdblk1ca.f90`, `rd/rdinca.f90`,
-`rd/rdinitca.f90`, and `canada/bc/bcspp.f90`, `esetpr.f90`, `esinit.f90`,
-`estab.f90`.
+After the section R, D14 and D15 removals on 14 November 2026 there are
+1,528 tracked Fortran files, of which 28 are outside all 24 source lists:
+`acd/` (27, R09) and `organon/orgfert.f` (kept on purpose).
 
 The historical source lists under `canada/bin/` were removed with section R.
 Trace the selected implementation, not just the routine name: many old files
@@ -445,22 +442,57 @@ ID for Alaska. All fifteen retirements completed 13 November 2026.
 - [x] **D13-14 — `canada/newmist/dmcwwc.f90`.** Retired; WC tables preserved separately.
 - [x] **D13-15 — `canada/newmist/dmcwws.f90`.** Retired; WS tables preserved separately.
 
-### D14 — Dormant ESUCKR copies, one file per task
+### D14 — Dormant ESUCKR copies: removed
 
-Current builds select `estb/esuckr.f90`, `strp/esuckr.f90`, or
-`metric/strp/esuckr.f90`, according to the variant. Record which replacement
-applies and any scientific differences before retiring each dormant copy.
-D14 retains the original audit's ID for CI.
+Removed 14 November 2026 from the tree at `7eef343f` (recover with
+`git show 7eef343f:<path>`). None of the nine was in a source list here or in
+upstream at `c2105365`. Each is an older version of the routine its variant
+now builds: it computes aspen sucker density and sprout counts in line, with
+that variant's species numbers written into the code, where the built routine
+calls the shared `ESASID`, `ASSPTN`, `NSPREC` and `ESSPRT`. The two Canadian
+copies call `NSPREC` and `ESSPRT` with argument lists those routines no longer
+accept. The seven US copies were last edited upstream by the FIA change of
+2025-08-28 (`08e833b2`).
 
-- [ ] **D14 — `ci/esuckr.f90`.** Compare with CI's selected implementation.
-- [ ] **D14-02 — `ca/esuckr.f90`.** Separate replacement comparison.
-- [ ] **D14-03 — `cr/esuckr.f90`.** Separate replacement comparison.
-- [ ] **D14-04 — `em/esuckr.f90`.** Separate replacement comparison.
-- [ ] **D14-05 — `tt/esuckr.f90`.** Separate replacement comparison.
-- [ ] **D14-06 — `ut/esuckr.f90`.** Separate replacement comparison.
-- [ ] **D14-07 — `wc/esuckr.f90`.** Separate replacement comparison.
-- [ ] **D14-08 — `canada/bc/esuckr.f90`.** Separate replacement comparison.
-- [ ] **D14-09 — `canada/on/esuckr.f90`.** Separate replacement comparison.
+| Removed copy | Routine the variant builds | Variant detail kept only in Git |
+|---|---|---|
+| `ci/esuckr.f90` | `estb/esuckr.f90` | Aspen as species 13 |
+| `em/esuckr.f90` | `estb/esuckr.f90` | Site-based sprout height for species 11–17 |
+| `ca/esuckr.f90` | `strp/esuckr.f90` | Aspen as species 44 |
+| `cr/esuckr.f90` | `strp/esuckr.f90` | Aspen as species 20; multipliers for species 23–28 |
+| `tt/esuckr.f90` | `strp/esuckr.f90` | Aspen as species 6 |
+| `ut/esuckr.f90` | `strp/esuckr.f90` | Aspen as species 6 |
+| `wc/esuckr.f90` | `strp/esuckr.f90` | Aspen as species 26 |
+| `canada/bc/esuckr.f90` | `metric/strp/esuckr.f90` | Metric height–diameter dubbing |
+| `canada/on/esuckr.f90` | `metric/strp/esuckr.f90` | 15 cm stump limit; random management code; `ONHTDBH` diameters |
+
+- [x] **D14 — `ci/esuckr.f90`.** Removed.
+- [x] **D14-02 — `ca/esuckr.f90`.** Removed.
+- [x] **D14-03 — `cr/esuckr.f90`.** Removed.
+- [x] **D14-04 — `em/esuckr.f90`.** Removed.
+- [x] **D14-05 — `tt/esuckr.f90`.** Removed.
+- [x] **D14-06 — `ut/esuckr.f90`.** Removed.
+- [x] **D14-07 — `wc/esuckr.f90`.** Removed.
+- [x] **D14-08 — `canada/bc/esuckr.f90`.** Removed.
+- [x] **D14-09 — `canada/on/esuckr.f90`.** Removed.
+
+### D15 — Remaining unbuilt single files: removed
+
+- [x] **D15 — Eight files in no source list.** Removed 14 November 2026 from
+  the tree at `7eef343f`. None is in a source list here or in upstream at
+  `c2105365`.
+
+| Removed | Lines | Why it was dead |
+|---|---:|---|
+| `rd/rdinca.f90`, `rd/rdinitca.f90`, `rd/rdblk1ca.f90`, `rd/RDPARMCA.f90` | 4,106 | Root disease routines sized for the 49-species CA variant. CA does not link the root disease model; the variants that do build `rd/rdin.f90`, `rd/rdinit.f90`, their own `rd/rdblk1xx.f90` and `rd/RDPARM.f90` |
+| `canada/bc/estab.f90` | 812 | BC builds `strp/estab.f90` |
+| `canada/bc/esinit.f90` | 71 | BC builds `strp/esinit.f90` |
+| `canada/bc/esetpr.f90` | 133 | Every variant builds `estb/esetpr.f90` |
+| `canada/bc/bcspp.f90` | 331 | Species-code lookup `BCSPP`; nothing calls it |
+
+Checks for D14 and D15: all 24 source lists are byte-identical, the one
+matching entry in `bin/fortran_includes.txt` was removed, and
+`tests/parity/check_suite.py` passes for all 24 variants.
 
 ## R — Unbuilt directories: removed
 

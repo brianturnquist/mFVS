@@ -105,7 +105,6 @@ rd/RDARRY.f90
 rd/RDCOM.f90
 rd/RDCRY.f90
 rd/RDPARM.f90
-rd/RDPARMCA.f90
 sn/common/ESPARM.f90
 sn/common/PRGPRM.f90
 so/common/ESPARM.f90
