@@ -1,0 +1,185 @@
+[
+  {
+    "name": "model_text_value",
+    "mutation": {
+      "file": "iet01.sum",
+      "mutation": "model_text_value"
+    },
+    "returncode": 1,
+    "rejected": true,
+    "errors": [
+      {
+        "kind": "bytes/text",
+        "file": "iet01.sum",
+        "first_differing_line": 2
+      }
+    ],
+    "stdout": "FAIL ie-iet01: original vs current; 7 artifacts\n",
+    "stderr": ""
+  },
+  {
+    "name": "summary_header_count",
+    "mutation": {
+      "file": "iet01.sum",
+      "mutation": "summary_header_count"
+    },
+    "returncode": 1,
+    "rejected": true,
+    "errors": [
+      {
+        "kind": "bytes/text",
+        "file": "iet01.sum",
+        "first_differing_line": 1
+      }
+    ],
+    "stdout": "FAIL ie-iet01: original vs current; 7 artifacts\n",
+    "stderr": ""
+  },
+  {
+    "name": "text_whitespace",
+    "mutation": {
+      "file": "iet01.sum",
+      "mutation": "text_whitespace"
+    },
+    "returncode": 1,
+    "rejected": true,
+    "errors": [
+      {
+        "kind": "bytes/text",
+        "file": "iet01.sum",
+        "first_differing_line": 2
+      }
+    ],
+    "stdout": "FAIL ie-iet01: original vs current; 7 artifacts\n",
+    "stderr": ""
+  },
+  {
+    "name": "model_date_text",
+    "mutation": {
+      "file": "iet01.sum",
+      "mutation": "model_date_text"
+    },
+    "returncode": 1,
+    "rejected": true,
+    "errors": [
+      {
+        "kind": "bytes/text",
+        "file": "iet01.sum",
+        "first_differing_line": 55
+      }
+    ],
+    "stdout": "FAIL ie-iet01: original vs current; 7 artifacts\n",
+    "stderr": ""
+  },
+  {
+    "name": "database_value_one_ulp",
+    "mutation": {
+      "file": "iet01_Out.db",
+      "column": "FVS_Summary.QMD",
+      "old": "0x1.49472a0000000p+2",
+      "new": "0x1.49472a0000001p+2"
+    },
+    "returncode": 1,
+    "rejected": true,
+    "errors": [
+      {
+        "kind": "sqlite",
+        "file": "iet01_Out.db"
+      }
+    ],
+    "stdout": "FAIL ie-iet01: original vs current; 7 artifacts\n",
+    "stderr": ""
+  },
+  {
+    "name": "database_schema",
+    "mutation": {
+      "file": "iet01_Out.db",
+      "mutation": "database_schema"
+    },
+    "returncode": 1,
+    "rejected": true,
+    "errors": [
+      {
+        "kind": "sqlite",
+        "file": "iet01_Out.db"
+      }
+    ],
+    "stdout": "FAIL ie-iet01: original vs current; 7 artifacts\n",
+    "stderr": ""
+  },
+  {
+    "name": "database_case_link",
+    "mutation": {
+      "file": "iet01_Out.db",
+      "mutation": "database_case_link"
+    },
+    "returncode": 1,
+    "rejected": true,
+    "errors": [
+      {
+        "kind": "sqlite",
+        "file": "iet01_Out.db"
+      }
+    ],
+    "stdout": "FAIL ie-iet01: original vs current; 7 artifacts\n",
+    "stderr": ""
+  },
+  {
+    "name": "database_row_multiplicity",
+    "mutation": {
+      "file": "iet01_Out.db",
+      "mutation": "database_row_multiplicity"
+    },
+    "returncode": 1,
+    "rejected": true,
+    "errors": [
+      {
+        "kind": "sqlite",
+        "file": "iet01_Out.db"
+      }
+    ],
+    "stdout": "FAIL ie-iet01: original vs current; 7 artifacts\n",
+    "stderr": ""
+  },
+  {
+    "name": "missing_output",
+    "mutation": {
+      "file": "iet01.trl",
+      "mutation": "removed"
+    },
+    "returncode": 1,
+    "rejected": true,
+    "errors": [
+      {
+        "kind": "inventory",
+        "left_only": [
+          "iet01.trl"
+        ],
+        "right_only": []
+      }
+    ],
+    "stdout": "FAIL ie-iet01: original vs current; 6 artifacts\n",
+    "stderr": ""
+  },
+  {
+    "name": "exit_status",
+    "mutation": {
+      "old": 20,
+      "new": 21
+    },
+    "returncode": 1,
+    "rejected": true,
+    "errors": [
+      {
+        "kind": "bytes/text",
+        "file": "returncode.txt",
+        "first_differing_line": 1
+      },
+      {
+        "kind": "returncode"
+      }
+    ],
+    "stdout": "FAIL ie-iet01: original vs current; 7 artifacts\n",
+    "stderr": ""
+  }
+]

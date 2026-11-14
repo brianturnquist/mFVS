@@ -1,0 +1,6 @@
+{
+  "file": "artifacts.tar.gz",
+  "sha256": "222c623a77377a14c2c9c310c0bb32eeac7b495d70d81019d633b517145f68e6",
+  "bytes": 4442731,
+  "contents": "Raw run inputs, all generated outputs, stdout, stderr, and exit codes"
+}

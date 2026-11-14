@@ -1,0 +1,14 @@
+[
+  {
+    "case": "ie-iet01",
+    "passed": true,
+    "metadata_changes_accepted": true,
+    "title_or_variant_change_rejected": true
+  },
+  {
+    "case": "on-Hardwood",
+    "passed": true,
+    "metadata_changes_accepted": true,
+    "title_or_variant_change_rejected": true
+  }
+]

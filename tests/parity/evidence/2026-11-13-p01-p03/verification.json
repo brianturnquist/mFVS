@@ -1,0 +1,14 @@
+{
+  "python": "3.14.4 (main, Apr  7 2026, 13:13:20) [Clang 21.0.0 (clang-2100.0.123.102)]",
+  "python_executable": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+  "sqlite_reader_version": "3.54.1",
+  "tool_sha256": {
+    "tests/parity/check_comparator.py": "84f59ae08a9e45e40499ce5606abd147572d804a2c9799ac5b4bc13e69c47c62",
+    "tests/parity/compare_outputs.py": "faff9728470d90aee388c08f4115d310924d0b0e528e350dd229b56e1f84b626",
+    "tests/parity/prepare_builds.py": "b1b8b0b3a9ec7ec3b203e5cba43163a91af35a207da1a997263a822b9fcd1999",
+    "tests/parity/record_evidence.py": "4df0de5b5609fd002958481d9b8b826e1e20041d2b784c0e934429fd8cedbf91",
+    "tests/parity/run_cases.py": "3c946a2ecd6f67bc66d358e1a58f0357d5e95b0963c62d3f82f48ae09a42208c"
+  },
+  "model_changes": "none",
+  "scope": "P01-P03 only"
+}

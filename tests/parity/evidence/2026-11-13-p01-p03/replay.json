@@ -1,0 +1,54 @@
+{
+  "archive_sha256": "222c623a77377a14c2c9c310c0bb32eeac7b495d70d81019d633b517145f68e6",
+  "comparisons": [
+    {
+      "left": "original",
+      "right": "current",
+      "case": "ie-iet01",
+      "returncode": 0,
+      "report": "compare-ie-original-current.json",
+      "stdout": "PASS ie-iet01: original vs current; 7 artifacts\n"
+    },
+    {
+      "left": "original",
+      "right": "candidate",
+      "case": "ie-iet01",
+      "returncode": 0,
+      "report": "compare-ie-iet01-original-candidate.json",
+      "stdout": "PASS ie-iet01: original vs candidate; 7 artifacts\n"
+    },
+    {
+      "left": "current",
+      "right": "candidate",
+      "case": "ie-iet01",
+      "returncode": 0,
+      "report": "compare-ie-iet01-current-candidate.json",
+      "stdout": "PASS ie-iet01: current vs candidate; 7 artifacts\n"
+    },
+    {
+      "left": "original",
+      "right": "current",
+      "case": "bc-StandStructure",
+      "returncode": 0,
+      "report": "compare-bc-StandStructure-original-current.json",
+      "stdout": "PASS bc-StandStructure: original vs current; 4 artifacts\n"
+    },
+    {
+      "left": "original",
+      "right": "current",
+      "case": "bc-YSM-SkyRanch",
+      "returncode": 0,
+      "report": "compare-bc-YSM-SkyRanch-original-current.json",
+      "stdout": "PASS bc-YSM-SkyRanch: original vs current; 4 artifacts\n"
+    },
+    {
+      "left": "original",
+      "right": "current",
+      "case": "on-Hardwood",
+      "returncode": 0,
+      "report": "compare-on-Hardwood-original-current.json",
+      "stdout": "PASS on-Hardwood: original vs current; 4 artifacts\n"
+    }
+  ],
+  "passed": true
+}

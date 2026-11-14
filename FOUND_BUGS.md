@@ -41,16 +41,18 @@ Merging `fmdout` before this fix is a compile error, because one file cannot cal
 
 ---
 
-## 2. Metric `INTREE` calls `DBSTREESIN` with 28 of its 31 arguments
+## 2. Metric `INTREE` calls `DBSTREESIN` with 30 of its 33 arguments
 
 **Variants:** BC, ON
 **Blocks consolidation of:** `metric/base/intree.f90` (left as a twin of `base/intree.f90`)
 
-`dbsqlite/dbstreesin.f90:5` gained three trailing arguments for cull, decay code and woodland stems: `RCULL`, `IDECAY`, `IWDLDSTMS`. `base/intree.f90:135` passes them as `CULL(I)`, `DECAYCD(I)`, `WDLDSTEM(I)`, but the metric copy at `metric/base/intree.f90:136` still passes only the original 28.
+`dbsqlite/dbstreesin.f90:5` gained three trailing arguments for cull, decay code and woodland stems: `RCULL`, `IDECAY`, `IWDLDSTMS`. `base/intree.f90:135` passes them as `CULL(I)`, `DECAYCD(I)`, `WDLDSTEM(I)`, but the metric copy at `metric/base/intree.f90:136` still passes only the original 30.
 
 `DBSTREESIN` sets all three to zero unconditionally (lines 78–80) and reads them from the `Cull`, `DecayCd` and `WdldStem` columns when present (lines 217–225). In BC and ON those writes go through addresses that were never passed. A scratch build confirmed the effect. With bug 5 fixed, ON crashed with a segmentation fault while reading tree records from the database. When the three arguments were also passed, the ON test ran to completion.
 
-The metric copy also lacks the decay-code correction that `base/intree.f90:141–146` applies after the call. `metric/dbsqlite/dbstreesin.f90`, an older 28-argument version, is not compiled by any variant and can be deleted.
+The metric copy also lacks the decay-code correction that `base/intree.f90:141–146` applies after the call. `metric/dbsqlite/dbstreesin.f90`, an older 30-argument version, is not compiled by any variant and can be deleted.
+
+P03 source tracing on 13 November 2026 confirmed 33 versus 30 arguments in both the original `c2105365` source and current mFVS. Earlier documentation counted 31 versus 28, omitting `ABIRTH` and `LBIRTH` from both totals. This is a documentation correction only; the missing trailing arguments and the model code are unchanged. See the [P01–P03 verification report](tests/parity/evidence/2026-11-13-p01-p03/README.md).
 
 **Suggested fix:** pass `CULL(I)`, `DECAYCD(I)` and `WDLDSTEM(I)`, and port the decay-code correction. Then merge the `intree` twin, which was attempted during consolidation and reverted for this reason.
 

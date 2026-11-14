@@ -9,7 +9,8 @@ This document stores the redundancy and dormant-code findings before cleanup
 begins. The audit was read-only. No builds or simulations were run during the
 audit, and no source, build configuration, source list, test input, or reference
 output was changed. Creating this tracker is a documentation-only step; the
-cleanup tasks below have not begun.
+model cleanup tasks below have not begun. P01–P03 verification preparation is
+now complete; see the [retained report](tests/parity/evidence/2026-11-13-p01-p03/README.md).
 
 The findings combine repository-wide source-list inventory, targeted source
 comparisons, call/ENTRY inspection, and historical notes. They are not an
@@ -107,20 +108,26 @@ recorded defects must be handled separately. A deliberately corrected reference
 can help diagnose those defects, but it must remain distinct from the original
 upstream reference and cannot be reported as pristine-original parity.
 
-- [ ] **P01 — Identify and prepare the original reference (audit/build).**
+- [x] **P01 — Identify and prepare the original reference (audit/build).**
   Pin both original revisions, record compiler settings and any linkage-only
   accommodations, and retain reference-build provenance. Do not fix model bugs
-  in the reference as part of this task.
-- [ ] **P02 — Establish one exact IE comparison (verification).** Start with
+  in the reference as part of this task. Completed 13 November 2026: original
+  and current IE/BC/ON builds and source integrity are recorded in the retained report.
+- [x] **P02 — Establish one exact IE comparison (verification).** Start with
   one IE test deck. Compare original, current, and candidate outputs with narrow
   metadata normalization, and demonstrate that a real mismatch fails the
-  comparison before using it to accept cleanup.
-- [ ] **P03 — Establish the BC/ON verification boundary (audit; blocked for
+  comparison before using it to accept cleanup. Completed 13 November 2026:
+  all seven IE artifacts match across original/current/candidate, and ten
+  deliberately introduced mismatches are rejected. This covers `iet01` only.
+- [x] **P03 — Establish the BC/ON verification boundary (audit; blocked for
   simulation parity).** Reproduce and record the keyword-input limitation and
   its relation to bugs 1, 2, and 5 in `FOUND_BUGS.md`. This task records the
   boundary; repairs and restored simulation verification require their own
   tasks. Do not check off an affected consolidation as verified while its
-  required BC/ON simulation coverage remains blocked.
+  required BC/ON simulation coverage remains blocked. The boundary audit was
+  completed 13 November 2026: both BC decks and the ON deck reproduce input
+  failures in original and current code. Model bugs remain unfixed, and
+  simulation parity remains blocked.
 
 ## Centralized definitions
 
@@ -251,7 +258,7 @@ Split further if a block is still too large. BC/ON parity remains subject to P03
 - [ ] **M01 — `metric/base/evldx.f90`.** Compare one event-variable family
   and its unit conversions with `base/evldx.f90`.
 - [ ] **M02 — `metric/base/intree.f90`.** Trace the database-input call and
-  decay handling against `base/intree.f90`. The documented 28-versus-31
+  decay handling against `base/intree.f90`. The verified 30-versus-33
   argument defect blocks consolidation until separately resolved.
 - [ ] **M03 — `metric/base/oplist.f90`.** Compare one activity-output record
   with `base/oplist.f90`.
@@ -328,7 +335,7 @@ retire it. Unknown historical intent is not evidence of abandoned research.
 - [ ] **D06 — `canada/bc/unblnk.f90`.** Review independently of D05; the
   shared utility remains active.
 - [ ] **D07 — `metric/dbsqlite/dbstreesin.f90`.** Unselected older
-  28-argument implementation. The selected shared implementation has the
+  30-argument implementation. The selected shared implementation has the
   newer interface; its relationship to the stale caller is documented in
   `FOUND_BUGS.md`.
 - [ ] **D08 — `canada/fire/on/fmcrowe.f90`.** Unselected ON implementation
@@ -582,3 +589,30 @@ Follow-up task IDs:
 and tracker before cleanup. No cleanup task was implemented and no new parity
 claim was made. All cleanup and prerequisite checkboxes remain open. Existing
 README verification claims are historical context pending task evidence here.
+
+### P01–P03 record — 13 November 2026
+
+**P01 completed:** prepared isolated original/current snapshots, pinned both
+NVEL revisions, built IE/BC/ON with the same recorded settings, and checked
+archive integrity. Only the two original Canadian link manifests changed,
+exactly as retained in `reference-build.patch`; original model sources did not.
+
+**P02 completed for `iet01`:** original, current, and the verification-only
+candidate agree on all seven generated artifacts, including all 17 SQLite
+tables and 14,178 rows. The candidate's complete selected build inputs equal
+current mFVS, so its binary reuse is explicit; it ran in its own process and
+directory. Ten negative controls reject real output changes, including a
+one-ULP REAL change and an incorrect CaseID relationship. The shared STOP 20,
+one FVS04 error, and four FVS09 warnings are preserved rather than suppressed.
+
+**P03 boundary audit completed:** both BC decks and ON reproduce invalid
+keywords and STOP 20 before producing simulation summaries or output
+databases. Source tracing confirms bugs 1, 2, and 5 are still present. Bug 2's
+documented totals were corrected to 33/30 (previously 31/28); no interface or
+model bug was fixed. BC/ON simulation verification remains blocked.
+
+Evidence, exact scope, flags, artifact replay, and known limitations are in the
+[P01–P03 report](tests/parity/evidence/2026-11-13-p01-p03/README.md) and
+[verification tool instructions](tests/parity/README.md). Every C, M, D, R, U,
+B, and L item remains unchecked. This work does not establish parity for all
+variants or all input branches.

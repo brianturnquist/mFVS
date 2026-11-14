@@ -1,0 +1,1207 @@
+{
+  "equal": true,
+  "errors": [],
+  "files": {
+    "iet01.out": {
+      "kind": "bytes/text",
+      "equal": true,
+      "left_sha256": "39a9d2324c23ab209e732b5cead834241226c02fa6d130fa1686c87b44c61717",
+      "right_sha256": "39a9d2324c23ab209e732b5cead834241226c02fa6d130fa1686c87b44c61717",
+      "left_normalizations": {
+        "grohed_metadata": 18
+      },
+      "right_normalizations": {
+        "grohed_metadata": 18
+      }
+    },
+    "iet01.sum": {
+      "kind": "bytes/text",
+      "equal": true,
+      "left_sha256": "cbb614f6e2519f92ef766ac3a8748d6da19ed70f210edd8091981f8d27b6c4cf",
+      "right_sha256": "cbb614f6e2519f92ef766ac3a8748d6da19ed70f210edd8091981f8d27b6c4cf",
+      "left_normalizations": {
+        "summary_metadata": 4
+      },
+      "right_normalizations": {
+        "summary_metadata": 4
+      }
+    },
+    "iet01.trl": {
+      "kind": "bytes/text",
+      "equal": true,
+      "left_sha256": "33873ddeb8416918e3faa9ea90bbea12233514a5fedf91ec1b9675116f48c90a",
+      "right_sha256": "33873ddeb8416918e3faa9ea90bbea12233514a5fedf91ec1b9675116f48c90a",
+      "left_normalizations": {
+        "grohed_metadata": 302
+      },
+      "right_normalizations": {
+        "grohed_metadata": 302
+      }
+    },
+    "iet01_Out.db": {
+      "kind": "sqlite",
+      "equal": true,
+      "left": {
+        "schema": [
+          [
+            "index",
+            "sqlite_autoindex_FVS_Cases_1",
+            "FVS_Cases",
+            null
+          ],
+          [
+            "table",
+            "FVS_ATRTList",
+            "FVS_ATRTList",
+            "CREATE TABLE FVS_ATRTList (CaseID text not null,StandID text not null,Year int null,PrdLen int null,TreeId text null,TreeIndex int null,SpeciesFVS text null,SpeciesPLANTS text null,SpeciesFIA text null,TreeVal int null,SSCD int null,PtIndex int null,TPA real null,MortPA real null,DBH real null,DG real null,Ht real null,HtG real null,PctCr int null,CrWidth real null,MistCD int null,BAPctile real null,PtBAL real null,TCuFt real null,MCuFt real null,SCuFt real null,BdFt  real null,MDefect int null,BDefect int null,TruncHt int null,EstHt real null,ActPt int null,Ht2TDCF  real null,Ht2TDBF  real null,TreeAge real null)"
+          ],
+          [
+            "table",
+            "FVS_Cases",
+            "FVS_Cases",
+            "CREATE TABLE FVS_Cases (CaseID text primary key,Stand_CN text not null,StandID text not null,MgmtID text,RunTitle text,KeywordFile text,SamplingWt real,Variant text,Version text,RV text,Groups text,RunDateTime text)"
+          ],
+          [
+            "table",
+            "FVS_CutList",
+            "FVS_CutList",
+            "CREATE TABLE FVS_CutList (CaseID text not null,StandID text not null,Year int null,PrdLen int null,TreeId text null,TreeIndex int null,SpeciesFVS text null,SpeciesPLANTS text null,SpeciesFIA text null,TreeVal int null,SSCD int null,PtIndex int null,TPA real null,MortPA real null,DBH real null,DG real null,Ht real null,HtG real null,PctCr int null,CrWidth real null,MistCD int null,BAPctile real null,PtBAL real null,TCuFt real null,MCuFt real null,SCuFt real null,BdFt  real null,MDefect int null,BDefect int null,TruncHt int null,EstHt real null,ActPt int null,Ht2TDCF  real null,Ht2TDBF  real null,TreeAge real null)"
+          ],
+          [
+            "table",
+            "FVS_DM_Spp_Sum",
+            "FVS_DM_Spp_Sum",
+            "CREATE TABLE FVS_DM_Spp_Sum (CaseID text not null,StandID text not null,Year Int null,SpeciesFVS text null,SpeciesPLANTS text null,SpeciesFIA text null,Mean_DMR real null,Mean_DMI real null,Inf_TPA int null,Mort_TPA int  null,Inf_TPA_Pct int null,Mort_TPA_Pct int null,Stnd_TPA_Pct int null)"
+          ],
+          [
+            "table",
+            "FVS_DM_Stnd_Sum",
+            "FVS_DM_Stnd_Sum",
+            "CREATE TABLE FVS_DM_Stnd_Sum (CaseID text not null,StandID text not null,Year int null,Age int null,Stnd_TPA int null,Stnd_BA int null,Stnd_Vol int null,Inf_TPA int null,Inf_BA int null,Inf_Vol int null,Mort_TPA int null,Mort_BA int null,Mort_Vol int null,Inf_TPA_Pct int null,Inf_Vol_Pct int null,Mort_TPA_Pct int null,Mort_Vol_Pct int null,Mean_DMR real null,Mean_DMI real null)"
+          ],
+          [
+            "table",
+            "FVS_DM_Sz_Sum",
+            "FVS_DM_Sz_Sum",
+            "CREATE TABLE FVS_DM_Sz_Sum (CaseID text not null,StandID text not null,Year int null,Type text not null,'0-3in' real null,'3-5in' real null,'5-7in' real null,'7-9in' real null,'9-11in' real null,'11-13in' real null,'13-15in' real null,'15-17in' real null,'17-19in' real null,'gt19in' real null)"
+          ],
+          [
+            "table",
+            "FVS_Error",
+            "FVS_Error",
+            "CREATE TABLE FVS_Error(CaseID text not null,StandID text not null,Message text)"
+          ],
+          [
+            "table",
+            "FVS_InvReference",
+            "FVS_InvReference",
+            "CREATE TABLE FVS_InvReference (CaseID text not null, StandID text not null, LocationCode int, SpeciesNum int, SpeciesFVS text, SpeciesPlants text, SpeciesFIA text, SDIType text,SDIMax int, SiteIndex int, CFCruiseType text,CFVolEq text, CFMinDBH real, CFTopDia real, CFStump real, CFSawMinDBH real, CFSawTopDia real, CFSawStump real, BFVolEq text, BFMinDBH real, BFTopDia real, BFStump real)"
+          ],
+          [
+            "table",
+            "FVS_Regen_HabType",
+            "FVS_Regen_HabType",
+            "CREATE TABLE FVS_Regen_HabType(CaseID text not null,StandID text not null,Series text null,GroupNum int null,HabitatType text null,NumPlots int null)"
+          ],
+          [
+            "table",
+            "FVS_Regen_Ingrow",
+            "FVS_Regen_Ingrow",
+            "CREATE TABLE FVS_Regen_Ingrow(CaseID           text not null,StandID          text not null,Year             int  null,IngrowthTotalTpa real null,SpeciesFVS       text null,SpeciesPLANTS    text null,SpeciesFIA       text null,IngrowthTpa      int  null)"
+          ],
+          [
+            "table",
+            "FVS_Regen_SitePrep",
+            "FVS_Regen_SitePrep",
+            "CREATE TABLE FVS_Regen_SitePrep(CaseID text not null,StandID text not null,YearNone int null,YearMech int null,YearBurn int null,PcntNone int null,PcntMech int null,PcntBurn int null)"
+          ],
+          [
+            "table",
+            "FVS_Regen_Tally",
+            "FVS_Regen_Tally",
+            "CREATE TABLE FVS_Regen_Tally(CaseID          text not null,StandID         text not null,Year            int  null,ProbStock       real null,TallyNumber     int  null,SpeciesFVS      text null,SpeciesPLANTS   text null,SpeciesFIA      text null,TpaAll          int  null,PctOfTotalAll   int  null,TpaBest         int  null,PctOfTotalBest  int  null,AverageHt       real null,TpaSmall        int  null,PctOfTotalSmall int  null)"
+          ],
+          [
+            "table",
+            "FVS_Stats_Species",
+            "FVS_Stats_Species",
+            "CREATE TABLE FVS_Stats_Species(CaseID text not null,StandID text not null,Year int null,SpeciesFVS    text null,SpeciesPLANTS text null,SpeciesFIA    text null,TreesPerAcre real,BasalArea real,CubicFeet real,BoardFeet real,FIA_AbvGrdBio real,FIA_AbvGrdCarb real)"
+          ],
+          [
+            "table",
+            "FVS_Stats_Stand",
+            "FVS_Stats_Stand",
+            "CREATE TABLE FVS_Stats_Stand(CaseID text not null,StandID text not null,Year int null,Characteristic text null,Average real,Standard_Dev real,Coeff_of_Var real,Sample_Size int,Conf_Level_Percent int,CI_LB real,CI_UB real,Samp_Error_Percent real,Samp_Error_Units real)"
+          ],
+          [
+            "table",
+            "FVS_StrClass",
+            "FVS_StrClass",
+            "CREATE TABLE FVS_StrClass (CaseID text not null,StandID text not null,Year int null,Removal_Code int null,Stratum_1_DBH real null,Stratum_1_Nom_Ht int null,Stratum_1_Lg_Ht int null,Stratum_1_Sm_Ht int null,Stratum_1_Crown_Base int null,Stratum_1_Crown_Cover int null,Stratum_1_SpeciesFVS_1    text null,Stratum_1_SpeciesFVS_2    text null,Stratum_1_SpeciesPLANTS_1 text null,Stratum_1_SpeciesPLANTS_2 text null,Stratum_1_SpeciesFIA_1    text null,Stratum_1_SpeciesFIA_2    text null,Stratum_1_Status_Code int null,Stratum_2_DBH real null,Stratum_2_Nom_Ht int null,Stratum_2_Lg_Ht int null,Stratum_2_Sm_Ht int null,Stratum_2_Crown_Base int null,Stratum_2_Crown_Cover int null,Stratum_2_SpeciesFVS_1    text null,Stratum_2_SpeciesFVS_2    text null,Stratum_2_SpeciesPLANTS_1 text null,Stratum_2_SpeciesPLANTS_2 text null,Stratum_2_SpeciesFIA_1    text null,Stratum_2_SpeciesFIA_2    text null,Stratum_2_Status_Code int null,Stratum_3_DBH real null,Stratum_3_Nom_Ht int null,Stratum_3_Lg_Ht int null,Stratum_3_Sm_Ht int null,Stratum_3_Crown_Base int null,Stratum_3_Crown_Cover int null,Stratum_3_SpeciesFVS_1    text null,Stratum_3_SpeciesFVS_2    text null,Stratum_3_SpeciesPLANTS_1 text null,Stratum_3_SpeciesPLANTS_2 text null,Stratum_3_SpeciesFIA_1    text null,Stratum_3_SpeciesFIA_2    text null,Stratum_3_Status_Code int null,Number_of_Strata int null,Total_Cover int null,Structure_Class text null)"
+          ],
+          [
+            "table",
+            "FVS_Summary",
+            "FVS_Summary",
+            "CREATE TABLE FVS_Summary(CaseID text not null,StandID text not null,Year int,Age int,Tpa int,BA int,SDI int,CCF int,TopHt int,QMD real,TCuFt int,MCuFt int,SCuFt int,BdFt int,RTpa int,RTCuFt int,RMCuFt int,RSCuFt int,RBdFt int,ATBA int,ATSDI int,ATCCF int,ATTopHt int,ATQMD real,PrdLen int,Acc int,Mort int,MAI real,ForTyp int,SizeCls int,StkCls int)"
+          ],
+          [
+            "table",
+            "FVS_TreeList",
+            "FVS_TreeList",
+            "CREATE TABLE FVS_TreeList (CaseID text not null,StandID text not null,Year int null,PrdLen int null,TreeId text null,TreeIndex int null,SpeciesFVS text null,SpeciesPLANTS text null,SpeciesFIA text null,TreeVal int null,SSCD int null,PtIndex int null,TPA real null,MortPA real null,DBH real null,DG real null,Ht real null,HtG real null,PctCr int null,CrWidth real null,MistCD int null,BAPctile real null,PtBAL real null,TCuFt real null,MCuFt real null,SCuFt real null,BdFt real null,MDefect int null,BDefect int null,TruncHt int null,EstHt real null,ActPt int null,Ht2TDCF real null,Ht2TDBF real null,TreeAge real null)"
+          ]
+        ],
+        "user_version": 0,
+        "tables": {
+          "FVS_ATRTList": {
+            "columns": [
+              "CaseID",
+              "StandID",
+              "Year",
+              "PrdLen",
+              "TreeId",
+              "TreeIndex",
+              "SpeciesFVS",
+              "SpeciesPLANTS",
+              "SpeciesFIA",
+              "TreeVal",
+              "SSCD",
+              "PtIndex",
+              "TPA",
+              "MortPA",
+              "DBH",
+              "DG",
+              "Ht",
+              "HtG",
+              "PctCr",
+              "CrWidth",
+              "MistCD",
+              "BAPctile",
+              "PtBAL",
+              "TCuFt",
+              "MCuFt",
+              "SCuFt",
+              "BdFt",
+              "MDefect",
+              "BDefect",
+              "TruncHt",
+              "EstHt",
+              "ActPt",
+              "Ht2TDCF",
+              "Ht2TDBF",
+              "TreeAge"
+            ],
+            "rows": 1154,
+            "sha256": "06eb2ad2dd51ad8279b1010514d2bb18f85552ba3658e9c74ec6bba2abd16ead",
+            "metadata": {}
+          },
+          "FVS_Cases": {
+            "columns": [
+              "CaseID",
+              "Stand_CN",
+              "StandID",
+              "MgmtID",
+              "RunTitle",
+              "KeywordFile",
+              "SamplingWt",
+              "Variant",
+              "Version",
+              "RV",
+              "Groups",
+              "RunDateTime"
+            ],
+            "rows": 4,
+            "sha256": "b9935fd5220fc7929b6119359f2e676744e9d2f6e5a45b843de013a28a5d3acf",
+            "metadata": {
+              "Version": 4,
+              "RV": 4,
+              "RunDateTime": 4
+            }
+          },
+          "FVS_CutList": {
+            "columns": [
+              "CaseID",
+              "StandID",
+              "Year",
+              "PrdLen",
+              "TreeId",
+              "TreeIndex",
+              "SpeciesFVS",
+              "SpeciesPLANTS",
+              "SpeciesFIA",
+              "TreeVal",
+              "SSCD",
+              "PtIndex",
+              "TPA",
+              "MortPA",
+              "DBH",
+              "DG",
+              "Ht",
+              "HtG",
+              "PctCr",
+              "CrWidth",
+              "MistCD",
+              "BAPctile",
+              "PtBAL",
+              "TCuFt",
+              "MCuFt",
+              "SCuFt",
+              "BdFt",
+              "MDefect",
+              "BDefect",
+              "TruncHt",
+              "EstHt",
+              "ActPt",
+              "Ht2TDCF",
+              "Ht2TDBF",
+              "TreeAge"
+            ],
+            "rows": 1649,
+            "sha256": "bf755cf8292a41254e9cc4ddd54b5279f37987409a2dcec24c11a8a836e49093",
+            "metadata": {}
+          },
+          "FVS_DM_Spp_Sum": {
+            "columns": [
+              "CaseID",
+              "StandID",
+              "Year",
+              "SpeciesFVS",
+              "SpeciesPLANTS",
+              "SpeciesFIA",
+              "Mean_DMR",
+              "Mean_DMI",
+              "Inf_TPA",
+              "Mort_TPA",
+              "Inf_TPA_Pct",
+              "Mort_TPA_Pct",
+              "Stnd_TPA_Pct"
+            ],
+            "rows": 42,
+            "sha256": "683cfefa861f4b37f70587f07a74e560d42e03efd4bab4309dee68f7cb7baa54",
+            "metadata": {}
+          },
+          "FVS_DM_Stnd_Sum": {
+            "columns": [
+              "CaseID",
+              "StandID",
+              "Year",
+              "Age",
+              "Stnd_TPA",
+              "Stnd_BA",
+              "Stnd_Vol",
+              "Inf_TPA",
+              "Inf_BA",
+              "Inf_Vol",
+              "Mort_TPA",
+              "Mort_BA",
+              "Mort_Vol",
+              "Inf_TPA_Pct",
+              "Inf_Vol_Pct",
+              "Mort_TPA_Pct",
+              "Mort_Vol_Pct",
+              "Mean_DMR",
+              "Mean_DMI"
+            ],
+            "rows": 42,
+            "sha256": "895bf3464e7a8f6643cefc1943cd984e38863eed644f3da2e29a47960ef85518",
+            "metadata": {}
+          },
+          "FVS_DM_Sz_Sum": {
+            "columns": [
+              "CaseID",
+              "StandID",
+              "Year",
+              "Type",
+              "0-3in",
+              "3-5in",
+              "5-7in",
+              "7-9in",
+              "9-11in",
+              "11-13in",
+              "13-15in",
+              "15-17in",
+              "17-19in",
+              "gt19in"
+            ],
+            "rows": 210,
+            "sha256": "e1f69f414a12f6e3bd89d24bcabc16abd39a5e7653acfce757e943b8c02c4191",
+            "metadata": {}
+          },
+          "FVS_Error": {
+            "columns": [
+              "CaseID",
+              "StandID",
+              "Message"
+            ],
+            "rows": 5,
+            "sha256": "eb5559cb3146e3001579ecd8633662202e0ef9ce23085fb279c25a53b331aa71",
+            "metadata": {}
+          },
+          "FVS_InvReference": {
+            "columns": [
+              "CaseID",
+              "StandID",
+              "LocationCode",
+              "SpeciesNum",
+              "SpeciesFVS",
+              "SpeciesPlants",
+              "SpeciesFIA",
+              "SDIType",
+              "SDIMax",
+              "SiteIndex",
+              "CFCruiseType",
+              "CFVolEq",
+              "CFMinDBH",
+              "CFTopDia",
+              "CFStump",
+              "CFSawMinDBH",
+              "CFSawTopDia",
+              "CFSawStump",
+              "BFVolEq",
+              "BFMinDBH",
+              "BFTopDia",
+              "BFStump"
+            ],
+            "rows": 92,
+            "sha256": "3a64be3c1bbc773f67568cf854bf1419085edf34640c2c6123f5a6d486fcda0c",
+            "metadata": {}
+          },
+          "FVS_Regen_HabType": {
+            "columns": [
+              "CaseID",
+              "StandID",
+              "Series",
+              "GroupNum",
+              "HabitatType",
+              "NumPlots"
+            ],
+            "rows": 2,
+            "sha256": "4a9b7311328ee469f9bf6bece4df72eaf6768c9bdc116f21d6c429698568aa28",
+            "metadata": {}
+          },
+          "FVS_Regen_Ingrow": {
+            "columns": [
+              "CaseID",
+              "StandID",
+              "Year",
+              "IngrowthTotalTpa",
+              "SpeciesFVS",
+              "SpeciesPLANTS",
+              "SpeciesFIA",
+              "IngrowthTpa"
+            ],
+            "rows": 15,
+            "sha256": "837d748b1de37ffc49e471a96375cd787de60cbd4b8966064f6afcd04ef1d71f",
+            "metadata": {}
+          },
+          "FVS_Regen_SitePrep": {
+            "columns": [
+              "CaseID",
+              "StandID",
+              "YearNone",
+              "YearMech",
+              "YearBurn",
+              "PcntNone",
+              "PcntMech",
+              "PcntBurn"
+            ],
+            "rows": 2,
+            "sha256": "2d94ae6d5adddf1c1df0ded538278d86387f86c4587b0704b46243fd90cbb47f",
+            "metadata": {}
+          },
+          "FVS_Regen_Tally": {
+            "columns": [
+              "CaseID",
+              "StandID",
+              "Year",
+              "ProbStock",
+              "TallyNumber",
+              "SpeciesFVS",
+              "SpeciesPLANTS",
+              "SpeciesFIA",
+              "TpaAll",
+              "PctOfTotalAll",
+              "TpaBest",
+              "PctOfTotalBest",
+              "AverageHt",
+              "TpaSmall",
+              "PctOfTotalSmall"
+            ],
+            "rows": 36,
+            "sha256": "4719c5ec8d5d317ce58fddd8cb754931c4f2f3b2569679255375078fcb496a62",
+            "metadata": {}
+          },
+          "FVS_Stats_Species": {
+            "columns": [
+              "CaseID",
+              "StandID",
+              "Year",
+              "SpeciesFVS",
+              "SpeciesPLANTS",
+              "SpeciesFIA",
+              "TreesPerAcre",
+              "BasalArea",
+              "CubicFeet",
+              "BoardFeet",
+              "FIA_AbvGrdBio",
+              "FIA_AbvGrdCarb"
+            ],
+            "rows": 28,
+            "sha256": "d20a9f494038ae1e27fb6896541107d9cb794178e8c36dfcaf0ad59a695a6fe1",
+            "metadata": {}
+          },
+          "FVS_Stats_Stand": {
+            "columns": [
+              "CaseID",
+              "StandID",
+              "Year",
+              "Characteristic",
+              "Average",
+              "Standard_Dev",
+              "Coeff_of_Var",
+              "Sample_Size",
+              "Conf_Level_Percent",
+              "CI_LB",
+              "CI_UB",
+              "Samp_Error_Percent",
+              "Samp_Error_Units"
+            ],
+            "rows": 24,
+            "sha256": "1ce5f4bf802484ec0829b0d26bb86aceb7b12c0901e8441fb8fd207dd660c23f",
+            "metadata": {}
+          },
+          "FVS_StrClass": {
+            "columns": [
+              "CaseID",
+              "StandID",
+              "Year",
+              "Removal_Code",
+              "Stratum_1_DBH",
+              "Stratum_1_Nom_Ht",
+              "Stratum_1_Lg_Ht",
+              "Stratum_1_Sm_Ht",
+              "Stratum_1_Crown_Base",
+              "Stratum_1_Crown_Cover",
+              "Stratum_1_SpeciesFVS_1",
+              "Stratum_1_SpeciesFVS_2",
+              "Stratum_1_SpeciesPLANTS_1",
+              "Stratum_1_SpeciesPLANTS_2",
+              "Stratum_1_SpeciesFIA_1",
+              "Stratum_1_SpeciesFIA_2",
+              "Stratum_1_Status_Code",
+              "Stratum_2_DBH",
+              "Stratum_2_Nom_Ht",
+              "Stratum_2_Lg_Ht",
+              "Stratum_2_Sm_Ht",
+              "Stratum_2_Crown_Base",
+              "Stratum_2_Crown_Cover",
+              "Stratum_2_SpeciesFVS_1",
+              "Stratum_2_SpeciesFVS_2",
+              "Stratum_2_SpeciesPLANTS_1",
+              "Stratum_2_SpeciesPLANTS_2",
+              "Stratum_2_SpeciesFIA_1",
+              "Stratum_2_SpeciesFIA_2",
+              "Stratum_2_Status_Code",
+              "Stratum_3_DBH",
+              "Stratum_3_Nom_Ht",
+              "Stratum_3_Lg_Ht",
+              "Stratum_3_Sm_Ht",
+              "Stratum_3_Crown_Base",
+              "Stratum_3_Crown_Cover",
+              "Stratum_3_SpeciesFVS_1",
+              "Stratum_3_SpeciesFVS_2",
+              "Stratum_3_SpeciesPLANTS_1",
+              "Stratum_3_SpeciesPLANTS_2",
+              "Stratum_3_SpeciesFIA_1",
+              "Stratum_3_SpeciesFIA_2",
+              "Stratum_3_Status_Code",
+              "Number_of_Strata",
+              "Total_Cover",
+              "Structure_Class"
+            ],
+            "rows": 96,
+            "sha256": "bfbad49788b39a7300b460a35b2ed5a50e88f5318d5530897e79ddfaa3abfe7a",
+            "metadata": {}
+          },
+          "FVS_Summary": {
+            "columns": [
+              "CaseID",
+              "StandID",
+              "Year",
+              "Age",
+              "Tpa",
+              "BA",
+              "SDI",
+              "CCF",
+              "TopHt",
+              "QMD",
+              "TCuFt",
+              "MCuFt",
+              "SCuFt",
+              "BdFt",
+              "RTpa",
+              "RTCuFt",
+              "RMCuFt",
+              "RSCuFt",
+              "RBdFt",
+              "ATBA",
+              "ATSDI",
+              "ATCCF",
+              "ATTopHt",
+              "ATQMD",
+              "PrdLen",
+              "Acc",
+              "Mort",
+              "MAI",
+              "ForTyp",
+              "SizeCls",
+              "StkCls"
+            ],
+            "rows": 50,
+            "sha256": "a2754df31124581657770f511b8a80011a42f4bdea04a1bf9ee132b24a0b3690",
+            "metadata": {}
+          },
+          "FVS_TreeList": {
+            "columns": [
+              "CaseID",
+              "StandID",
+              "Year",
+              "PrdLen",
+              "TreeId",
+              "TreeIndex",
+              "SpeciesFVS",
+              "SpeciesPLANTS",
+              "SpeciesFIA",
+              "TreeVal",
+              "SSCD",
+              "PtIndex",
+              "TPA",
+              "MortPA",
+              "DBH",
+              "DG",
+              "Ht",
+              "HtG",
+              "PctCr",
+              "CrWidth",
+              "MistCD",
+              "BAPctile",
+              "PtBAL",
+              "TCuFt",
+              "MCuFt",
+              "SCuFt",
+              "BdFt",
+              "MDefect",
+              "BDefect",
+              "TruncHt",
+              "EstHt",
+              "ActPt",
+              "Ht2TDCF",
+              "Ht2TDBF",
+              "TreeAge"
+            ],
+            "rows": 10727,
+            "sha256": "ce27ac9607c6160523c477dc0f602dce8f95f0fb0a5e462ac1f400e355c83644",
+            "metadata": {}
+          }
+        }
+      },
+      "right": {
+        "schema": [
+          [
+            "index",
+            "sqlite_autoindex_FVS_Cases_1",
+            "FVS_Cases",
+            null
+          ],
+          [
+            "table",
+            "FVS_ATRTList",
+            "FVS_ATRTList",
+            "CREATE TABLE FVS_ATRTList (CaseID text not null,StandID text not null,Year int null,PrdLen int null,TreeId text null,TreeIndex int null,SpeciesFVS text null,SpeciesPLANTS text null,SpeciesFIA text null,TreeVal int null,SSCD int null,PtIndex int null,TPA real null,MortPA real null,DBH real null,DG real null,Ht real null,HtG real null,PctCr int null,CrWidth real null,MistCD int null,BAPctile real null,PtBAL real null,TCuFt real null,MCuFt real null,SCuFt real null,BdFt  real null,MDefect int null,BDefect int null,TruncHt int null,EstHt real null,ActPt int null,Ht2TDCF  real null,Ht2TDBF  real null,TreeAge real null)"
+          ],
+          [
+            "table",
+            "FVS_Cases",
+            "FVS_Cases",
+            "CREATE TABLE FVS_Cases (CaseID text primary key,Stand_CN text not null,StandID text not null,MgmtID text,RunTitle text,KeywordFile text,SamplingWt real,Variant text,Version text,RV text,Groups text,RunDateTime text)"
+          ],
+          [
+            "table",
+            "FVS_CutList",
+            "FVS_CutList",
+            "CREATE TABLE FVS_CutList (CaseID text not null,StandID text not null,Year int null,PrdLen int null,TreeId text null,TreeIndex int null,SpeciesFVS text null,SpeciesPLANTS text null,SpeciesFIA text null,TreeVal int null,SSCD int null,PtIndex int null,TPA real null,MortPA real null,DBH real null,DG real null,Ht real null,HtG real null,PctCr int null,CrWidth real null,MistCD int null,BAPctile real null,PtBAL real null,TCuFt real null,MCuFt real null,SCuFt real null,BdFt  real null,MDefect int null,BDefect int null,TruncHt int null,EstHt real null,ActPt int null,Ht2TDCF  real null,Ht2TDBF  real null,TreeAge real null)"
+          ],
+          [
+            "table",
+            "FVS_DM_Spp_Sum",
+            "FVS_DM_Spp_Sum",
+            "CREATE TABLE FVS_DM_Spp_Sum (CaseID text not null,StandID text not null,Year Int null,SpeciesFVS text null,SpeciesPLANTS text null,SpeciesFIA text null,Mean_DMR real null,Mean_DMI real null,Inf_TPA int null,Mort_TPA int  null,Inf_TPA_Pct int null,Mort_TPA_Pct int null,Stnd_TPA_Pct int null)"
+          ],
+          [
+            "table",
+            "FVS_DM_Stnd_Sum",
+            "FVS_DM_Stnd_Sum",
+            "CREATE TABLE FVS_DM_Stnd_Sum (CaseID text not null,StandID text not null,Year int null,Age int null,Stnd_TPA int null,Stnd_BA int null,Stnd_Vol int null,Inf_TPA int null,Inf_BA int null,Inf_Vol int null,Mort_TPA int null,Mort_BA int null,Mort_Vol int null,Inf_TPA_Pct int null,Inf_Vol_Pct int null,Mort_TPA_Pct int null,Mort_Vol_Pct int null,Mean_DMR real null,Mean_DMI real null)"
+          ],
+          [
+            "table",
+            "FVS_DM_Sz_Sum",
+            "FVS_DM_Sz_Sum",
+            "CREATE TABLE FVS_DM_Sz_Sum (CaseID text not null,StandID text not null,Year int null,Type text not null,'0-3in' real null,'3-5in' real null,'5-7in' real null,'7-9in' real null,'9-11in' real null,'11-13in' real null,'13-15in' real null,'15-17in' real null,'17-19in' real null,'gt19in' real null)"
+          ],
+          [
+            "table",
+            "FVS_Error",
+            "FVS_Error",
+            "CREATE TABLE FVS_Error(CaseID text not null,StandID text not null,Message text)"
+          ],
+          [
+            "table",
+            "FVS_InvReference",
+            "FVS_InvReference",
+            "CREATE TABLE FVS_InvReference (CaseID text not null, StandID text not null, LocationCode int, SpeciesNum int, SpeciesFVS text, SpeciesPlants text, SpeciesFIA text, SDIType text,SDIMax int, SiteIndex int, CFCruiseType text,CFVolEq text, CFMinDBH real, CFTopDia real, CFStump real, CFSawMinDBH real, CFSawTopDia real, CFSawStump real, BFVolEq text, BFMinDBH real, BFTopDia real, BFStump real)"
+          ],
+          [
+            "table",
+            "FVS_Regen_HabType",
+            "FVS_Regen_HabType",
+            "CREATE TABLE FVS_Regen_HabType(CaseID text not null,StandID text not null,Series text null,GroupNum int null,HabitatType text null,NumPlots int null)"
+          ],
+          [
+            "table",
+            "FVS_Regen_Ingrow",
+            "FVS_Regen_Ingrow",
+            "CREATE TABLE FVS_Regen_Ingrow(CaseID           text not null,StandID          text not null,Year             int  null,IngrowthTotalTpa real null,SpeciesFVS       text null,SpeciesPLANTS    text null,SpeciesFIA       text null,IngrowthTpa      int  null)"
+          ],
+          [
+            "table",
+            "FVS_Regen_SitePrep",
+            "FVS_Regen_SitePrep",
+            "CREATE TABLE FVS_Regen_SitePrep(CaseID text not null,StandID text not null,YearNone int null,YearMech int null,YearBurn int null,PcntNone int null,PcntMech int null,PcntBurn int null)"
+          ],
+          [
+            "table",
+            "FVS_Regen_Tally",
+            "FVS_Regen_Tally",
+            "CREATE TABLE FVS_Regen_Tally(CaseID          text not null,StandID         text not null,Year            int  null,ProbStock       real null,TallyNumber     int  null,SpeciesFVS      text null,SpeciesPLANTS   text null,SpeciesFIA      text null,TpaAll          int  null,PctOfTotalAll   int  null,TpaBest         int  null,PctOfTotalBest  int  null,AverageHt       real null,TpaSmall        int  null,PctOfTotalSmall int  null)"
+          ],
+          [
+            "table",
+            "FVS_Stats_Species",
+            "FVS_Stats_Species",
+            "CREATE TABLE FVS_Stats_Species(CaseID text not null,StandID text not null,Year int null,SpeciesFVS    text null,SpeciesPLANTS text null,SpeciesFIA    text null,TreesPerAcre real,BasalArea real,CubicFeet real,BoardFeet real,FIA_AbvGrdBio real,FIA_AbvGrdCarb real)"
+          ],
+          [
+            "table",
+            "FVS_Stats_Stand",
+            "FVS_Stats_Stand",
+            "CREATE TABLE FVS_Stats_Stand(CaseID text not null,StandID text not null,Year int null,Characteristic text null,Average real,Standard_Dev real,Coeff_of_Var real,Sample_Size int,Conf_Level_Percent int,CI_LB real,CI_UB real,Samp_Error_Percent real,Samp_Error_Units real)"
+          ],
+          [
+            "table",
+            "FVS_StrClass",
+            "FVS_StrClass",
+            "CREATE TABLE FVS_StrClass (CaseID text not null,StandID text not null,Year int null,Removal_Code int null,Stratum_1_DBH real null,Stratum_1_Nom_Ht int null,Stratum_1_Lg_Ht int null,Stratum_1_Sm_Ht int null,Stratum_1_Crown_Base int null,Stratum_1_Crown_Cover int null,Stratum_1_SpeciesFVS_1    text null,Stratum_1_SpeciesFVS_2    text null,Stratum_1_SpeciesPLANTS_1 text null,Stratum_1_SpeciesPLANTS_2 text null,Stratum_1_SpeciesFIA_1    text null,Stratum_1_SpeciesFIA_2    text null,Stratum_1_Status_Code int null,Stratum_2_DBH real null,Stratum_2_Nom_Ht int null,Stratum_2_Lg_Ht int null,Stratum_2_Sm_Ht int null,Stratum_2_Crown_Base int null,Stratum_2_Crown_Cover int null,Stratum_2_SpeciesFVS_1    text null,Stratum_2_SpeciesFVS_2    text null,Stratum_2_SpeciesPLANTS_1 text null,Stratum_2_SpeciesPLANTS_2 text null,Stratum_2_SpeciesFIA_1    text null,Stratum_2_SpeciesFIA_2    text null,Stratum_2_Status_Code int null,Stratum_3_DBH real null,Stratum_3_Nom_Ht int null,Stratum_3_Lg_Ht int null,Stratum_3_Sm_Ht int null,Stratum_3_Crown_Base int null,Stratum_3_Crown_Cover int null,Stratum_3_SpeciesFVS_1    text null,Stratum_3_SpeciesFVS_2    text null,Stratum_3_SpeciesPLANTS_1 text null,Stratum_3_SpeciesPLANTS_2 text null,Stratum_3_SpeciesFIA_1    text null,Stratum_3_SpeciesFIA_2    text null,Stratum_3_Status_Code int null,Number_of_Strata int null,Total_Cover int null,Structure_Class text null)"
+          ],
+          [
+            "table",
+            "FVS_Summary",
+            "FVS_Summary",
+            "CREATE TABLE FVS_Summary(CaseID text not null,StandID text not null,Year int,Age int,Tpa int,BA int,SDI int,CCF int,TopHt int,QMD real,TCuFt int,MCuFt int,SCuFt int,BdFt int,RTpa int,RTCuFt int,RMCuFt int,RSCuFt int,RBdFt int,ATBA int,ATSDI int,ATCCF int,ATTopHt int,ATQMD real,PrdLen int,Acc int,Mort int,MAI real,ForTyp int,SizeCls int,StkCls int)"
+          ],
+          [
+            "table",
+            "FVS_TreeList",
+            "FVS_TreeList",
+            "CREATE TABLE FVS_TreeList (CaseID text not null,StandID text not null,Year int null,PrdLen int null,TreeId text null,TreeIndex int null,SpeciesFVS text null,SpeciesPLANTS text null,SpeciesFIA text null,TreeVal int null,SSCD int null,PtIndex int null,TPA real null,MortPA real null,DBH real null,DG real null,Ht real null,HtG real null,PctCr int null,CrWidth real null,MistCD int null,BAPctile real null,PtBAL real null,TCuFt real null,MCuFt real null,SCuFt real null,BdFt real null,MDefect int null,BDefect int null,TruncHt int null,EstHt real null,ActPt int null,Ht2TDCF real null,Ht2TDBF real null,TreeAge real null)"
+          ]
+        ],
+        "user_version": 0,
+        "tables": {
+          "FVS_ATRTList": {
+            "columns": [
+              "CaseID",
+              "StandID",
+              "Year",
+              "PrdLen",
+              "TreeId",
+              "TreeIndex",
+              "SpeciesFVS",
+              "SpeciesPLANTS",
+              "SpeciesFIA",
+              "TreeVal",
+              "SSCD",
+              "PtIndex",
+              "TPA",
+              "MortPA",
+              "DBH",
+              "DG",
+              "Ht",
+              "HtG",
+              "PctCr",
+              "CrWidth",
+              "MistCD",
+              "BAPctile",
+              "PtBAL",
+              "TCuFt",
+              "MCuFt",
+              "SCuFt",
+              "BdFt",
+              "MDefect",
+              "BDefect",
+              "TruncHt",
+              "EstHt",
+              "ActPt",
+              "Ht2TDCF",
+              "Ht2TDBF",
+              "TreeAge"
+            ],
+            "rows": 1154,
+            "sha256": "06eb2ad2dd51ad8279b1010514d2bb18f85552ba3658e9c74ec6bba2abd16ead",
+            "metadata": {}
+          },
+          "FVS_Cases": {
+            "columns": [
+              "CaseID",
+              "Stand_CN",
+              "StandID",
+              "MgmtID",
+              "RunTitle",
+              "KeywordFile",
+              "SamplingWt",
+              "Variant",
+              "Version",
+              "RV",
+              "Groups",
+              "RunDateTime"
+            ],
+            "rows": 4,
+            "sha256": "b9935fd5220fc7929b6119359f2e676744e9d2f6e5a45b843de013a28a5d3acf",
+            "metadata": {
+              "Version": 4,
+              "RV": 4,
+              "RunDateTime": 4
+            }
+          },
+          "FVS_CutList": {
+            "columns": [
+              "CaseID",
+              "StandID",
+              "Year",
+              "PrdLen",
+              "TreeId",
+              "TreeIndex",
+              "SpeciesFVS",
+              "SpeciesPLANTS",
+              "SpeciesFIA",
+              "TreeVal",
+              "SSCD",
+              "PtIndex",
+              "TPA",
+              "MortPA",
+              "DBH",
+              "DG",
+              "Ht",
+              "HtG",
+              "PctCr",
+              "CrWidth",
+              "MistCD",
+              "BAPctile",
+              "PtBAL",
+              "TCuFt",
+              "MCuFt",
+              "SCuFt",
+              "BdFt",
+              "MDefect",
+              "BDefect",
+              "TruncHt",
+              "EstHt",
+              "ActPt",
+              "Ht2TDCF",
+              "Ht2TDBF",
+              "TreeAge"
+            ],
+            "rows": 1649,
+            "sha256": "bf755cf8292a41254e9cc4ddd54b5279f37987409a2dcec24c11a8a836e49093",
+            "metadata": {}
+          },
+          "FVS_DM_Spp_Sum": {
+            "columns": [
+              "CaseID",
+              "StandID",
+              "Year",
+              "SpeciesFVS",
+              "SpeciesPLANTS",
+              "SpeciesFIA",
+              "Mean_DMR",
+              "Mean_DMI",
+              "Inf_TPA",
+              "Mort_TPA",
+              "Inf_TPA_Pct",
+              "Mort_TPA_Pct",
+              "Stnd_TPA_Pct"
+            ],
+            "rows": 42,
+            "sha256": "683cfefa861f4b37f70587f07a74e560d42e03efd4bab4309dee68f7cb7baa54",
+            "metadata": {}
+          },
+          "FVS_DM_Stnd_Sum": {
+            "columns": [
+              "CaseID",
+              "StandID",
+              "Year",
+              "Age",
+              "Stnd_TPA",
+              "Stnd_BA",
+              "Stnd_Vol",
+              "Inf_TPA",
+              "Inf_BA",
+              "Inf_Vol",
+              "Mort_TPA",
+              "Mort_BA",
+              "Mort_Vol",
+              "Inf_TPA_Pct",
+              "Inf_Vol_Pct",
+              "Mort_TPA_Pct",
+              "Mort_Vol_Pct",
+              "Mean_DMR",
+              "Mean_DMI"
+            ],
+            "rows": 42,
+            "sha256": "895bf3464e7a8f6643cefc1943cd984e38863eed644f3da2e29a47960ef85518",
+            "metadata": {}
+          },
+          "FVS_DM_Sz_Sum": {
+            "columns": [
+              "CaseID",
+              "StandID",
+              "Year",
+              "Type",
+              "0-3in",
+              "3-5in",
+              "5-7in",
+              "7-9in",
+              "9-11in",
+              "11-13in",
+              "13-15in",
+              "15-17in",
+              "17-19in",
+              "gt19in"
+            ],
+            "rows": 210,
+            "sha256": "e1f69f414a12f6e3bd89d24bcabc16abd39a5e7653acfce757e943b8c02c4191",
+            "metadata": {}
+          },
+          "FVS_Error": {
+            "columns": [
+              "CaseID",
+              "StandID",
+              "Message"
+            ],
+            "rows": 5,
+            "sha256": "eb5559cb3146e3001579ecd8633662202e0ef9ce23085fb279c25a53b331aa71",
+            "metadata": {}
+          },
+          "FVS_InvReference": {
+            "columns": [
+              "CaseID",
+              "StandID",
+              "LocationCode",
+              "SpeciesNum",
+              "SpeciesFVS",
+              "SpeciesPlants",
+              "SpeciesFIA",
+              "SDIType",
+              "SDIMax",
+              "SiteIndex",
+              "CFCruiseType",
+              "CFVolEq",
+              "CFMinDBH",
+              "CFTopDia",
+              "CFStump",
+              "CFSawMinDBH",
+              "CFSawTopDia",
+              "CFSawStump",
+              "BFVolEq",
+              "BFMinDBH",
+              "BFTopDia",
+              "BFStump"
+            ],
+            "rows": 92,
+            "sha256": "3a64be3c1bbc773f67568cf854bf1419085edf34640c2c6123f5a6d486fcda0c",
+            "metadata": {}
+          },
+          "FVS_Regen_HabType": {
+            "columns": [
+              "CaseID",
+              "StandID",
+              "Series",
+              "GroupNum",
+              "HabitatType",
+              "NumPlots"
+            ],
+            "rows": 2,
+            "sha256": "4a9b7311328ee469f9bf6bece4df72eaf6768c9bdc116f21d6c429698568aa28",
+            "metadata": {}
+          },
+          "FVS_Regen_Ingrow": {
+            "columns": [
+              "CaseID",
+              "StandID",
+              "Year",
+              "IngrowthTotalTpa",
+              "SpeciesFVS",
+              "SpeciesPLANTS",
+              "SpeciesFIA",
+              "IngrowthTpa"
+            ],
+            "rows": 15,
+            "sha256": "837d748b1de37ffc49e471a96375cd787de60cbd4b8966064f6afcd04ef1d71f",
+            "metadata": {}
+          },
+          "FVS_Regen_SitePrep": {
+            "columns": [
+              "CaseID",
+              "StandID",
+              "YearNone",
+              "YearMech",
+              "YearBurn",
+              "PcntNone",
+              "PcntMech",
+              "PcntBurn"
+            ],
+            "rows": 2,
+            "sha256": "2d94ae6d5adddf1c1df0ded538278d86387f86c4587b0704b46243fd90cbb47f",
+            "metadata": {}
+          },
+          "FVS_Regen_Tally": {
+            "columns": [
+              "CaseID",
+              "StandID",
+              "Year",
+              "ProbStock",
+              "TallyNumber",
+              "SpeciesFVS",
+              "SpeciesPLANTS",
+              "SpeciesFIA",
+              "TpaAll",
+              "PctOfTotalAll",
+              "TpaBest",
+              "PctOfTotalBest",
+              "AverageHt",
+              "TpaSmall",
+              "PctOfTotalSmall"
+            ],
+            "rows": 36,
+            "sha256": "4719c5ec8d5d317ce58fddd8cb754931c4f2f3b2569679255375078fcb496a62",
+            "metadata": {}
+          },
+          "FVS_Stats_Species": {
+            "columns": [
+              "CaseID",
+              "StandID",
+              "Year",
+              "SpeciesFVS",
+              "SpeciesPLANTS",
+              "SpeciesFIA",
+              "TreesPerAcre",
+              "BasalArea",
+              "CubicFeet",
+              "BoardFeet",
+              "FIA_AbvGrdBio",
+              "FIA_AbvGrdCarb"
+            ],
+            "rows": 28,
+            "sha256": "d20a9f494038ae1e27fb6896541107d9cb794178e8c36dfcaf0ad59a695a6fe1",
+            "metadata": {}
+          },
+          "FVS_Stats_Stand": {
+            "columns": [
+              "CaseID",
+              "StandID",
+              "Year",
+              "Characteristic",
+              "Average",
+              "Standard_Dev",
+              "Coeff_of_Var",
+              "Sample_Size",
+              "Conf_Level_Percent",
+              "CI_LB",
+              "CI_UB",
+              "Samp_Error_Percent",
+              "Samp_Error_Units"
+            ],
+            "rows": 24,
+            "sha256": "1ce5f4bf802484ec0829b0d26bb86aceb7b12c0901e8441fb8fd207dd660c23f",
+            "metadata": {}
+          },
+          "FVS_StrClass": {
+            "columns": [
+              "CaseID",
+              "StandID",
+              "Year",
+              "Removal_Code",
+              "Stratum_1_DBH",
+              "Stratum_1_Nom_Ht",
+              "Stratum_1_Lg_Ht",
+              "Stratum_1_Sm_Ht",
+              "Stratum_1_Crown_Base",
+              "Stratum_1_Crown_Cover",
+              "Stratum_1_SpeciesFVS_1",
+              "Stratum_1_SpeciesFVS_2",
+              "Stratum_1_SpeciesPLANTS_1",
+              "Stratum_1_SpeciesPLANTS_2",
+              "Stratum_1_SpeciesFIA_1",
+              "Stratum_1_SpeciesFIA_2",
+              "Stratum_1_Status_Code",
+              "Stratum_2_DBH",
+              "Stratum_2_Nom_Ht",
+              "Stratum_2_Lg_Ht",
+              "Stratum_2_Sm_Ht",
+              "Stratum_2_Crown_Base",
+              "Stratum_2_Crown_Cover",
+              "Stratum_2_SpeciesFVS_1",
+              "Stratum_2_SpeciesFVS_2",
+              "Stratum_2_SpeciesPLANTS_1",
+              "Stratum_2_SpeciesPLANTS_2",
+              "Stratum_2_SpeciesFIA_1",
+              "Stratum_2_SpeciesFIA_2",
+              "Stratum_2_Status_Code",
+              "Stratum_3_DBH",
+              "Stratum_3_Nom_Ht",
+              "Stratum_3_Lg_Ht",
+              "Stratum_3_Sm_Ht",
+              "Stratum_3_Crown_Base",
+              "Stratum_3_Crown_Cover",
+              "Stratum_3_SpeciesFVS_1",
+              "Stratum_3_SpeciesFVS_2",
+              "Stratum_3_SpeciesPLANTS_1",
+              "Stratum_3_SpeciesPLANTS_2",
+              "Stratum_3_SpeciesFIA_1",
+              "Stratum_3_SpeciesFIA_2",
+              "Stratum_3_Status_Code",
+              "Number_of_Strata",
+              "Total_Cover",
+              "Structure_Class"
+            ],
+            "rows": 96,
+            "sha256": "bfbad49788b39a7300b460a35b2ed5a50e88f5318d5530897e79ddfaa3abfe7a",
+            "metadata": {}
+          },
+          "FVS_Summary": {
+            "columns": [
+              "CaseID",
+              "StandID",
+              "Year",
+              "Age",
+              "Tpa",
+              "BA",
+              "SDI",
+              "CCF",
+              "TopHt",
+              "QMD",
+              "TCuFt",
+              "MCuFt",
+              "SCuFt",
+              "BdFt",
+              "RTpa",
+              "RTCuFt",
+              "RMCuFt",
+              "RSCuFt",
+              "RBdFt",
+              "ATBA",
+              "ATSDI",
+              "ATCCF",
+              "ATTopHt",
+              "ATQMD",
+              "PrdLen",
+              "Acc",
+              "Mort",
+              "MAI",
+              "ForTyp",
+              "SizeCls",
+              "StkCls"
+            ],
+            "rows": 50,
+            "sha256": "a2754df31124581657770f511b8a80011a42f4bdea04a1bf9ee132b24a0b3690",
+            "metadata": {}
+          },
+          "FVS_TreeList": {
+            "columns": [
+              "CaseID",
+              "StandID",
+              "Year",
+              "PrdLen",
+              "TreeId",
+              "TreeIndex",
+              "SpeciesFVS",
+              "SpeciesPLANTS",
+              "SpeciesFIA",
+              "TreeVal",
+              "SSCD",
+              "PtIndex",
+              "TPA",
+              "MortPA",
+              "DBH",
+              "DG",
+              "Ht",
+              "HtG",
+              "PctCr",
+              "CrWidth",
+              "MistCD",
+              "BAPctile",
+              "PtBAL",
+              "TCuFt",
+              "MCuFt",
+              "SCuFt",
+              "BdFt",
+              "MDefect",
+              "BDefect",
+              "TruncHt",
+              "EstHt",
+              "ActPt",
+              "Ht2TDCF",
+              "Ht2TDBF",
+              "TreeAge"
+            ],
+            "rows": 10727,
+            "sha256": "ce27ac9607c6160523c477dc0f602dce8f95f0fb0a5e462ac1f400e355c83644",
+            "metadata": {}
+          }
+        }
+      }
+    },
+    "returncode.txt": {
+      "kind": "bytes/text",
+      "equal": true,
+      "left_sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3",
+      "right_sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3",
+      "left_normalizations": {},
+      "right_normalizations": {}
+    },
+    "stderr.txt": {
+      "kind": "bytes/text",
+      "equal": true,
+      "left_sha256": "d14dade1b367a6f37b0687de096971e2ddefc68fce70cd01054baffa82141c1a",
+      "right_sha256": "d14dade1b367a6f37b0687de096971e2ddefc68fce70cd01054baffa82141c1a",
+      "left_normalizations": {},
+      "right_normalizations": {}
+    },
+    "stdout.txt": {
+      "kind": "bytes/text",
+      "equal": true,
+      "left_sha256": "3de1a09d2ba60a2621fd83c60d78a1bb57aa72d422cea008fd39c88a2116a6dd",
+      "right_sha256": "3de1a09d2ba60a2621fd83c60d78a1bb57aa72d422cea008fd39c88a2116a6dd",
+      "left_normalizations": {},
+      "right_normalizations": {}
+    }
+  },
+  "case": "ie-iet01",
+  "left": "original",
+  "right": "candidate",
+  "returncodes": [
+    20,
+    20
+  ]
+}

@@ -1,0 +1,353 @@
+{
+  "cases": {
+    "ie-iet01": {
+      "variant": "ie",
+      "deck": "iet01",
+      "inputs": {
+        "iet01.key": "da901f73d99a81dab8d50eb9d7d77eaf4ae958691fa69e90987d0a99bcc573a1",
+        "iet01.tre": "dbf3e8f3c665e4f20c44417fb4b4ab56c19e3f79398db1e2b91bbfb1ff218530"
+      }
+    },
+    "bc-StandStructure": {
+      "variant": "bc",
+      "deck": "StandStructure",
+      "inputs": {
+        "StandStructure.key": "55af80b62b90f69918468fdf711a4be4682443c973acd6d934e88eef800036fd",
+        "FVS-BC.Stand.Structure.Data.db": "86c91f2fc7c2b876fa9f7e9b77cf90adaf0c773d3067704e437c93fe81ce9668"
+      }
+    },
+    "bc-YSM-SkyRanch": {
+      "variant": "bc",
+      "deck": "YSM-SkyRanch",
+      "inputs": {
+        "YSM-SkyRanch.key": "93e9169bd6605c828196137d2d1bcc6f6b3654e8f62f8a4f6920837b973316e3",
+        "FVS-BC.YSM-SkyRanch.db": "d91ed285bf0505f0dd6de80f65e00c3f25bd449497384b53d72738c81bc35d09"
+      }
+    },
+    "on-Hardwood": {
+      "variant": "on",
+      "deck": "Hardwood",
+      "inputs": {
+        "Hardwood.key": "12ec3f4911390ac2c839b86c3f472cf019fb99c827a8de645380d49372a23fc1",
+        "FVSDataHardwood.db": "8d0db1656d0bb0069bc09f882d4ff3e65d3dbe9d51125041e94bd4e4fcf5bb11"
+      }
+    }
+  },
+  "runs": [
+    {
+      "state": "original",
+      "case": "ie-iet01",
+      "directory": "/private/tmp/mfvs-parity-p01-p03-20261113/runs/original/ie-iet01",
+      "command": [
+        "/private/tmp/mfvs-parity-p01-p03-20261113/original/bin/FVSie",
+        "--keywordfile=iet01.key"
+      ],
+      "returncode": 20,
+      "seconds": 0.948,
+      "binary_sha256": "095ce32bcf89d7ab704991f92134d8bfc35796476d6b3e407baf681fc84bc130",
+      "outputs": {
+        "iet01.out": {
+          "sha256": "a308fc17cb4c8d088d3d4ca871a7bbe99860d7e35da024d5ed9c720c731b5bae",
+          "bytes": 393508
+        },
+        "iet01.sum": {
+          "sha256": "666c78224e4355499607b25dfad499d0ec8fd637af9df75de6057a1d6f84ac79",
+          "bytes": 7774
+        },
+        "iet01.trl": {
+          "sha256": "431269b536e4c7b8834bbecbc1ac046c2bb795e0ba267ea1d10089620cf50d16",
+          "bytes": 2014152
+        },
+        "iet01_Out.db": {
+          "sha256": "1214008d7c16d1405890c078b76ba06d24b849c3d6b8623aad27b31fb41e35fe",
+          "bytes": 2887680
+        },
+        "returncode.txt": {
+          "sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "d14dade1b367a6f37b0687de096971e2ddefc68fce70cd01054baffa82141c1a",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "3de1a09d2ba60a2621fd83c60d78a1bb57aa72d422cea008fd39c88a2116a6dd",
+          "bytes": 6648
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "current",
+      "case": "ie-iet01",
+      "directory": "/private/tmp/mfvs-parity-p01-p03-20261113/runs/current/ie-iet01",
+      "command": [
+        "/private/tmp/mfvs-parity-p01-p03-20261113/current/bin/FVSie",
+        "--keywordfile=iet01.key"
+      ],
+      "returncode": 20,
+      "seconds": 0.894,
+      "binary_sha256": "f0cb613073b90234b20387aa9fdc5a88df8fe205c6ff3608092fc81aaedb1c7f",
+      "outputs": {
+        "iet01.out": {
+          "sha256": "4e676467adf801c5255e7f479a4df0e6d3b0028a33cd0a503f810e60092cb95d",
+          "bytes": 393508
+        },
+        "iet01.sum": {
+          "sha256": "0705281b00b48a987e874e9c9d75dde224927d082ad1f50dd9c3bff807e6cb29",
+          "bytes": 7774
+        },
+        "iet01.trl": {
+          "sha256": "58d0ef1633f4e1889cc2a373d53e032047605e64227375cdbd038470ddb61b53",
+          "bytes": 2014152
+        },
+        "iet01_Out.db": {
+          "sha256": "7270329b87a3222b204fd4344dd821fe8f1e4d3c0e36e1ec19b1e49013e35ea5",
+          "bytes": 2887680
+        },
+        "returncode.txt": {
+          "sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "d14dade1b367a6f37b0687de096971e2ddefc68fce70cd01054baffa82141c1a",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "3de1a09d2ba60a2621fd83c60d78a1bb57aa72d422cea008fd39c88a2116a6dd",
+          "bytes": 6648
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "candidate",
+      "case": "ie-iet01",
+      "directory": "/private/tmp/mfvs-parity-p01-p03-20261113/runs/candidate/ie-iet01",
+      "command": [
+        "/private/tmp/mfvs-parity-p01-p03-20261113/candidate/bin/FVSie",
+        "--keywordfile=iet01.key"
+      ],
+      "returncode": 20,
+      "seconds": 0.786,
+      "binary_sha256": "f0cb613073b90234b20387aa9fdc5a88df8fe205c6ff3608092fc81aaedb1c7f",
+      "outputs": {
+        "iet01.out": {
+          "sha256": "29b20e1ae05f20d3db9ddc72cddbc6e602f8614ee3ceb580906efda9e056e131",
+          "bytes": 393508
+        },
+        "iet01.sum": {
+          "sha256": "db422ace091083ef354fd05bafcafc32feb7439b2ffb771fdba8934e4113bc8d",
+          "bytes": 7774
+        },
+        "iet01.trl": {
+          "sha256": "9e2109728e2dbed1fc84e072db435a355b56e8f1c974e9e30b5ded01dad769cb",
+          "bytes": 2014152
+        },
+        "iet01_Out.db": {
+          "sha256": "f9849fa7167252fd82502983f4222b01818937df08650db1f3271d8a64a650b4",
+          "bytes": 2887680
+        },
+        "returncode.txt": {
+          "sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "d14dade1b367a6f37b0687de096971e2ddefc68fce70cd01054baffa82141c1a",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "3de1a09d2ba60a2621fd83c60d78a1bb57aa72d422cea008fd39c88a2116a6dd",
+          "bytes": 6648
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "original",
+      "case": "bc-StandStructure",
+      "directory": "/private/tmp/mfvs-parity-p01-p03-20261113/runs/original/bc-StandStructure",
+      "command": [
+        "/private/tmp/mfvs-parity-p01-p03-20261113/original/bin/FVSbc",
+        "--keywordfile=StandStructure.key"
+      ],
+      "returncode": 20,
+      "seconds": 0.289,
+      "binary_sha256": "fdcb5d6eb28c3a454fa499d37c00808cc16518f531de7bf778b3b8fe7c0258d8",
+      "outputs": {
+        "StandStructure.out": {
+          "sha256": "93245bca68d489fd3567049a749bc5a898405be9fa3778dce58707fa1c5ddba6",
+          "bytes": 42743
+        },
+        "returncode.txt": {
+          "sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "d14dade1b367a6f37b0687de096971e2ddefc68fce70cd01054baffa82141c1a",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "current",
+      "case": "bc-StandStructure",
+      "directory": "/private/tmp/mfvs-parity-p01-p03-20261113/runs/current/bc-StandStructure",
+      "command": [
+        "/private/tmp/mfvs-parity-p01-p03-20261113/current/bin/FVSbc",
+        "--keywordfile=StandStructure.key"
+      ],
+      "returncode": 20,
+      "seconds": 0.284,
+      "binary_sha256": "327609d613994039d5551dfba8a1ab4ed5049f6a09a2c2fea0ab4fe9c41d30dd",
+      "outputs": {
+        "StandStructure.out": {
+          "sha256": "e04e6921d905a4317755916e9b0feec412c8b961d19122671a2e436ab738ff7e",
+          "bytes": 42743
+        },
+        "returncode.txt": {
+          "sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "d14dade1b367a6f37b0687de096971e2ddefc68fce70cd01054baffa82141c1a",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "original",
+      "case": "bc-YSM-SkyRanch",
+      "directory": "/private/tmp/mfvs-parity-p01-p03-20261113/runs/original/bc-YSM-SkyRanch",
+      "command": [
+        "/private/tmp/mfvs-parity-p01-p03-20261113/original/bin/FVSbc",
+        "--keywordfile=YSM-SkyRanch.key"
+      ],
+      "returncode": 20,
+      "seconds": 0.011,
+      "binary_sha256": "fdcb5d6eb28c3a454fa499d37c00808cc16518f531de7bf778b3b8fe7c0258d8",
+      "outputs": {
+        "YSM-SkyRanch.out": {
+          "sha256": "76cdb9415c0ea80b2847b4ed3317a65ad0ba1a01ce938445f46c7d86ddc84cac",
+          "bytes": 55137
+        },
+        "returncode.txt": {
+          "sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "d14dade1b367a6f37b0687de096971e2ddefc68fce70cd01054baffa82141c1a",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "current",
+      "case": "bc-YSM-SkyRanch",
+      "directory": "/private/tmp/mfvs-parity-p01-p03-20261113/runs/current/bc-YSM-SkyRanch",
+      "command": [
+        "/private/tmp/mfvs-parity-p01-p03-20261113/current/bin/FVSbc",
+        "--keywordfile=YSM-SkyRanch.key"
+      ],
+      "returncode": 20,
+      "seconds": 0.011,
+      "binary_sha256": "327609d613994039d5551dfba8a1ab4ed5049f6a09a2c2fea0ab4fe9c41d30dd",
+      "outputs": {
+        "YSM-SkyRanch.out": {
+          "sha256": "76cdb9415c0ea80b2847b4ed3317a65ad0ba1a01ce938445f46c7d86ddc84cac",
+          "bytes": 55137
+        },
+        "returncode.txt": {
+          "sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "d14dade1b367a6f37b0687de096971e2ddefc68fce70cd01054baffa82141c1a",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "original",
+      "case": "on-Hardwood",
+      "directory": "/private/tmp/mfvs-parity-p01-p03-20261113/runs/original/on-Hardwood",
+      "command": [
+        "/private/tmp/mfvs-parity-p01-p03-20261113/original/bin/FVSon",
+        "--keywordfile=Hardwood.key"
+      ],
+      "returncode": 20,
+      "seconds": 0.298,
+      "binary_sha256": "46e146de366369b51e2d032f943d427b9cdbcb3dd9286e89877464dcbb752943",
+      "outputs": {
+        "Hardwood.out": {
+          "sha256": "a0cdbc4db96fde73dae58b2f782ebe0186ade1e5922afd0b4a266c4c25f0c10a",
+          "bytes": 4087
+        },
+        "returncode.txt": {
+          "sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "d14dade1b367a6f37b0687de096971e2ddefc68fce70cd01054baffa82141c1a",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "current",
+      "case": "on-Hardwood",
+      "directory": "/private/tmp/mfvs-parity-p01-p03-20261113/runs/current/on-Hardwood",
+      "command": [
+        "/private/tmp/mfvs-parity-p01-p03-20261113/current/bin/FVSon",
+        "--keywordfile=Hardwood.key"
+      ],
+      "returncode": 20,
+      "seconds": 0.288,
+      "binary_sha256": "e3e654159a020bfab2b3d40bcb0a2c51844c05d982b7de1cf7529df030668ca5",
+      "outputs": {
+        "Hardwood.out": {
+          "sha256": "a0cdbc4db96fde73dae58b2f782ebe0186ade1e5922afd0b4a266c4c25f0c10a",
+          "bytes": 4087
+        },
+        "returncode.txt": {
+          "sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "d14dade1b367a6f37b0687de096971e2ddefc68fce70cd01054baffa82141c1a",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      },
+      "modified_inputs": []
+    }
+  ]
+}
