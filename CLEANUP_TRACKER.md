@@ -72,11 +72,11 @@ suite:
 python3 tests/parity/check_suite.py --cache-dir /private/tmp/mfvs-suite
 ```
 
-It compares three versions: the original upstream reference with its original
-NVEL revision, the baseline commit before the change, and the working tree. It
-runs every `tests/FVSxx` makefile for each and requires every generated file to
-match the original, except restart files, which must match the baseline (bug
-10 in [FOUND_BUGS.md](FOUND_BUGS.md)). It first checks that every source-list
+It compares the original upstream reference, with its original NVEL revision,
+against the working tree. It runs every `tests/FVSxx` makefile for each and
+requires every generated file to match the original, restart files included
+(apart from two undefined original values; see bugs 11 and 12 in
+[FOUND_BUGS.md](FOUND_BUGS.md)). It first checks that every source-list
 entry exists and that every new source file is in a source list. A task is
 done when the final line says `PASS` for all variants the change can affect;
 put that line in the commit message. If a difference already exists, record

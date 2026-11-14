@@ -26,10 +26,18 @@ subroutine ESFLTR
   integer :: I,N,KODE,NPS,IDT,IFLAG,IBGIN,NNN,III,NUM,J,IDENT,IS,KT
   integer :: IHOLD
   real    :: PIX,D,ZPROB,CHEK,HEIGHT
+  logical :: LTPAINV
+  parameter (LTPAINV = VARIANTCD.eq.'AK'.or.VARIANTCD.eq.'CI'.or.&
+       &VARIANTCD.eq.'EM'.or.VARIANTCD.eq.'IE'.or.VARIANTCD.eq.'KT')
   equivalence (WK5,IDENWK),(WK6,IPLOT)
+
+  !     ONLY THE FORMER ESTB VERSION OF THIS ROUTINE (AK, CI, EM, IE, KT)
+  !     TALLIED TPAAINV. THE FORMER STRP VERSION LEFT IT UNTOUCHED, AND IT
+  !     IS SAVED IN RESTART FILES, SO KEEP THAT DISTINCTION.
+
   do I = 1,MAXPLT
      BAAINV(I) = 0.0
-     TPAAINV(I) = 0.0
+     if (LTPAINV) TPAAINV(I) = 0.0
      10 continue
   end do
   TPACRE = 0.0
@@ -45,7 +53,7 @@ subroutine ESFLTR
      ZPROB = PROB(I)
      if (D.lt.REGNBK) go to 20
      BAAINV(N) = BAAINV(N) + 0.005454154*D*D*ZPROB*PIX
-     TPAAINV(N) = TPAAINV(N) + ZPROB*PIX
+     if (LTPAINV) TPAAINV(N) = TPAAINV(N) + ZPROB*PIX
      go to 30
      20 continue
      TPACRE = TPACRE +ZPROB

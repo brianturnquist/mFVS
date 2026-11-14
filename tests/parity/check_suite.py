@@ -1,13 +1,8 @@
 """Check a change against original F77 using the existing regression suite.
 
-For every requested variant this builds three versions (the original F77
-reference, a baseline commit and the working tree), runs that variant's whole
-`tests/FVSxx` makefile, and compares every generated file:
-
-* everything except restart files must match the original F77 reference;
-* restart (`.stop`) files must match the baseline. They already differ from
-  the original in 17 variants (see FOUND_BUGS.md), so the original cannot
-  judge them yet.
+For every requested variant this builds the original F77 reference and the
+working tree, runs that variant's whole `tests/FVSxx` makefile in each, and
+requires every generated file to match, restart (`.stop`) files included.
 
 Results are cached by the content of each variant's build and test inputs, so
 the reference is built once, and a variant the change does not touch is not
@@ -132,24 +127,67 @@ def build_and_run(tree: Path, variant: str, tests: dict[str, str], store: Path,
 
 
 def restart_bytes(path: Path) -> bytes:
-    """Restart files are binary; only their run identifiers may differ."""
+    """Restart files are binary. Replace run identifiers, keeping every offset."""
     seen: dict[bytes, bytes] = {}
-    return UUID_BYTES.sub(lambda m: seen.setdefault(m[0], b"<UUID-%04d>" % len(seen)), path.read_bytes())
+    return UUID_BYTES.sub(lambda m: seen.setdefault(m[0], (b"<UUID-%04d>" % len(seen)).ljust(36)),
+                          path.read_bytes())
 
 
-def compare(left: Path, right: Path, restart: bool) -> list[str]:
+def restart_difference(left: Path, right: Path, variant: str) -> str | None:
+    """Compare two restart files, allowing only two documented original defects.
+
+    Both read uninitialized memory in original F77, so no two runs need agree:
+    * TT stores a location code (IGL) taken from a table that is never filled
+      (FOUND_BUGS.md, bug 11). It is the 25th integer of each stand's record.
+    * A tree's decay code is 0 or 3 depending on the previous record's history
+      code, which is undefined for the first tree (bug 12).
+    Anything else must match byte for byte.
+    """
+    a, b = restart_bytes(left), restart_bytes(right)
+    if len(a) != len(b):
+        return f"sizes differ ({len(a)} and {len(b)} bytes)"
+    positions = [i for i in range(len(a)) if a[i] != b[i]] if a != b else []
+    if not positions:
+        return None
+    allowed: set[int] = set()
+    if variant == "tt":
+        # The file starts with stop code, year, name length and name, then the
+        # first stand's integers. Every stand repeats the same undefined value.
+        first = 12 + int.from_bytes(a[8:12], "little") + 24 * 4
+        ours, theirs = a[first:first + 4], b[first:first + 4]
+        word = a.find(ours)
+        while word >= 0:
+            if b[word:word + 4] == theirs:
+                allowed.update(range(word, word + 4))
+            word = a.find(ours, word + 1)
+    remaining = []
+    for index, position in enumerate(positions):
+        if position in allowed:
+            continue
+        alone = ((index == 0 or positions[index - 1] < position - 3)
+                 and (index + 1 == len(positions) or positions[index + 1] > position + 3))
+        decay = ({a[position], b[position]} == {0, 3}
+                 and a[position + 1:position + 4] == b[position + 1:position + 4] == b"\0\0\0")
+        if not (alone and decay):
+            remaining.append(position)
+    if remaining:
+        return f"{len(remaining)} bytes differ, first at offset {remaining[0]}"
+    return None
+
+
+def compare(left: Path, right: Path, variant: str) -> list[str]:
     """Return one line per difference between two stored runs."""
-    names = [{n for n in json.loads((side / "outputs.json").read_text()) if n.endswith(".stop") == restart}
-             for side in (left, right)]
-    differences = [f"{name}: only in {'first' if name in names[0] else 'second'}"
+    names = [set(json.loads((side / "outputs.json").read_text())) for side in (left, right)]
+    differences = [f"{name}: only in {'original' if name in names[0] else 'working tree'}"
                    for name in sorted(names[0] ^ names[1])]
-    if restart:
-        for name in sorted(names[0] & names[1]):
-            if restart_bytes(left / "files" / name) != restart_bytes(right / "files" / name):
-                differences.append(f"{name}: restart contents differ")
-        return differences
+    restarts = sorted(name for name in names[0] & names[1] if name.endswith(".stop"))
+    for name in restarts:
+        message = restart_difference(left / "files" / name, right / "files" / name, variant)
+        if message:
+            differences.append(f"{name}: {message}")
+    others = [sorted(name for name in side if not name.endswith(".stop")) for side in names]
     try:
-        result = compare_directories(left / "files", right / "files", sorted(names[0]), sorted(names[1]))
+        result = compare_directories(left / "files", right / "files", others[0], others[1])
     except (ValueError, OSError) as error:
         return differences + [f"cannot compare: {error}"]
     for error in result["errors"]:
@@ -171,7 +209,8 @@ def main() -> int:
     parser.add_argument("--cache-dir", type=Path, required=True,
                         help="Temporary directory outside the repository; reuse it between runs")
     parser.add_argument("--baseline", default="HEAD",
-                        help="Commit before the change (default HEAD, for uncommitted work)")
+                        help="Commit before the change, used only to find new source files "
+                             "(default HEAD, for uncommitted work)")
     parser.add_argument("--variants", nargs="+", choices=variants_in(ROOT), default=variants_in(ROOT))
     parser.add_argument("--workers", type=int, default=4, help="Variants built and tested at once")
     parser.add_argument("--jobs", type=int, default=4, help="Compiler processes per build")
@@ -203,7 +242,7 @@ def main() -> int:
     (cache / "runs").mkdir(parents=True, exist_ok=True)
 
     stores: dict[tuple[str, str], Path] = {}
-    for state, revision in (("original", REFERENCE), ("baseline", baseline), ("candidate", None)):
+    for state, revision in (("original", REFERENCE), ("candidate", None)):
         tree = cache / "trees" / state
         print(f"Preparing {state}" + (f" {revision[:8]}" if revision else " (working tree)"), flush=True)
         snapshot(state, revision, tree)
@@ -234,12 +273,10 @@ def main() -> int:
 
     failed = []
     for variant in args.variants:
-        original, base, candidate = (stores[state, variant] for state in ("original", "baseline", "candidate"))
-        differences = [f"vs original: {line}" for line in compare(original, candidate, restart=False)]
-        differences += [f"vs baseline: {line}" for line in compare(base, candidate, restart=True)]
+        original, candidate = stores["original", variant], stores["candidate", variant]
+        differences = compare(original, candidate, variant)
         outputs = json.loads((candidate / "outputs.json").read_text())
-        restarts = sum(name.endswith(".stop") for name in outputs)
-        note = "  (stops at keyword input in every version; see FOUND_BUGS.md)" if variant in ("bc", "on") else ""
+        note = "  (stops at keyword input in both versions; see FOUND_BUGS.md)" if variant in ("bc", "on") else ""
         if differences:
             failed.append(variant)
             print(f"FAIL {variant}: {len(differences)} of {len(outputs)} files differ{note}")
@@ -248,15 +285,12 @@ def main() -> int:
             if len(differences) > 8:
                 print(f"       ... and {len(differences) - 8} more")
             print(f"       outputs to diff: original {original / 'files'}")
-            print(f"                        baseline {base / 'files'}")
-            print(f"                       candidate {candidate / 'files'}")
+            print(f"                    working tree {candidate / 'files'}")
         else:
-            print(f"PASS {variant}: {len(outputs) - restarts} files match original F77, "
-                  f"{restarts} restart files match baseline{note}")
+            print(f"PASS {variant}: {len(outputs)} files match original F77{note}")
     dirty = "+changes" if git(ROOT, "status", "--porcelain") else ""
     summary = (f"{len(args.variants) - len(failed)}/{len(args.variants)} variants; working tree "
-               f"{git(ROOT, 'rev-parse', '--short', 'HEAD')}{dirty} vs original {REFERENCE[:8]} "
-               f"and baseline {baseline[:8]}")
+               f"{git(ROOT, 'rev-parse', '--short', 'HEAD')}{dirty} vs original {REFERENCE[:8]}")
     print(("FAIL " + summary + "; failed: " + " ".join(failed)) if failed else "PASS " + summary)
     return 1 if failed else 0
 

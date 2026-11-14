@@ -1,6 +1,6 @@
 # Found Bugs
 
-The five confirmed model defects below were found during the 2026-11 consolidation of duplicated routines. Every one is already present in the pre-modernization source (commit `c2105365`), so none was introduced by the conversion to free-form Fortran or by the consolidation. They are **deliberately left unfixed** for now so that model outputs stay identical to `c2105365` while modernization is finished. Each fix below will change outputs for the variants listed, so each should be made as its own commit with a before/after comparison. Sections 6–8 separately record an unconfirmed historical numerical concern, a historical documentation discrepancy, and ESADDT data-flow concerns requiring follow-up. Section 9 records a reproduced SQLite resource defect with scientific-output impact still unmeasured. Section 10 records the one known difference from `c2105365` that modernization itself introduced, in restart files.
+The five confirmed model defects below were found during the 2026-11 consolidation of duplicated routines. Every one is already present in the pre-modernization source (commit `c2105365`), so none was introduced by the conversion to free-form Fortran or by the consolidation. They are **deliberately left unfixed** for now so that model outputs stay identical to `c2105365` while modernization is finished. Each fix below will change outputs for the variants listed, so each should be made as its own commit with a before/after comparison. Sections 6–8 separately record an unconfirmed historical numerical concern, a historical documentation discrepancy, and ESADDT data-flow concerns requiring follow-up. Section 9 records a reproduced SQLite resource defect with scientific-output impact still unmeasured. Section 10 records a restart-file difference that modernization itself introduced, now corrected. Sections 11 and 12 record two original defects that read undefined values and so make restart files vary between runs.
 
 File and line references are to the tree at commit `b5657da3` plus the uncommitted `VARIANTCD` change. Bugs 1 and 2 have the same root cause: FVS calls external procedures with no explicit interface, so gfortran cannot check argument lists across files. Moving these routines into modules would let the compiler catch this class of bug.
 
@@ -201,15 +201,45 @@ To reproduce, call both writers on one open output database with both reports en
 
 ---
 
-## 10. Restart files differ from original F77 since `b5657da3`
+## 10. Corrected: restart files differed from original F77 after `b5657da3`
 
-**Status:** found 14 November 2026 by running every `tests/FVSxx` makefile against original F77. Introduced by the consolidation, not inherited. Not yet traced to a variable. No listing, summary, tree list or database output differs in any test.
-**Variants:** the 17 US variants that use the partial establishment model (all except AK, CI, EM, IE and KT). BC and ON cannot be checked (bug 5).
+**Status:** found and corrected 14 November 2026. Introduced by the consolidation, not inherited. No listing, summary, tree list or database output was affected.
+**Variants:** the 17 US variants that use the partial establishment model (all except AK, CI, EM, IE and KT), and by the same change BC and ON.
 
-The stop/restart tests write a binary restart file (`bmt.stop`, `snt.stop`, and so on). In each stand's record, one block of eleven consecutive 4-byte reals is all zeros in original F77 and holds non-zero values now. For most variants the values are 55.45, 291.09, 490.58, 409.07, 261.08, 315.90, 0.0, 248.89, 144.73, 811.36, 168.36; CR and SO differ in one or two of them. The values are the same for every stand in a file. The TT restart file also differs in one 4-byte integer that looks like uninitialized memory in both versions.
+Original F77 has two versions of `ESFLTR`. `estb/esfltr.f` (AK, CI, EM, IE, KT) tallies `TPAAINV`, the inventory trees per acre on each plot. `strp/esfltr.f` (every other variant) is otherwise the same routine but never touches `TPAAINV`. Commit `b5657da3` removed the `strp` copy and pointed all variants at the `estb` one, so the other 19 variants began computing `TPAAINV`.
 
-For BM, commit `9258972c` still writes the original zeros and `b5657da3` ("Merged duplicated functions, part 2") writes the new values. So some state that original F77 leaves at zero for these variants is now assigned and saved. Whether a restarted run can ever read it back into a result is unknown; the restarted test runs match the original.
+`TPAAINV` is read in only one place, `ak/estab.f90`, so no result changed. But `pg/putstd.f90` saves it in restart files, where it showed up as eleven reals per stand (one per inventory plot of the test stands) that are all zero in original F77.
 
-Because of this, `tests/parity/check_suite.py` compares restart files with the baseline commit instead of with original F77. Once the cause is found and corrected, change that script to compare restart files with the original as well.
+**Fix:** `estb/esfltr.f90` now tallies `TPAAINV` only for AK, CI, EM, IE and KT, through a compile-time test on `VARIANTCD`. Restart files of all variants match original F77 again, apart from the two original defects below. The test exists only to keep that match; whether every variant should tally `TPAAINV` is a separate, model-changing question.
 
-**To trace:** compare `bmt.stop` from the two commits above, find the offset of the block, and match it against the order in which `pg/putstd.f90` and the extension `put` routines write common blocks. An eleven-element real array is the target.
+---
+
+## 11. TT takes its geographic location code from a table that is never filled
+
+**Status:** found 14 November 2026 while tracing restart files. Present in original F77 (`c2105365:tt/forkod.f`, lines 35 and 88). Deliberately unfixed.
+**Variant:** TT.
+
+`tt/forkod.f90` declares `KFOR(4)` but gives it no values, then executes `IGL = KFOR(IFOR)` (line 79) whenever a valid forest code is used. Every other variant's `FORKOD` fills `KFOR` with a DATA statement. `IGL` therefore holds whatever was in memory: for example 1798184300 in one build of the original code and 1806851564 in another build of the same code.
+
+No routine that TT compiles reads `IGL`, so results are unaffected. The value is saved in restart files (the 25th integer of each stand's record), which is why TT restart files never match between builds. `tests/parity/check_suite.py` ignores that one integer for TT.
+
+**Suggested fix:** add `data KFOR/4*1/`, which keeps the value `GRINIT` assigns (`IGL = 1`). Then remove the TT exception from `check_suite.py`.
+
+---
+
+## 12. Decay codes read from tree files are set from the previous record's history code
+
+**Status:** found 14 November 2026 while tracing restart files. Present in original F77 (`c2105365:base/intree.f`). Deliberately unfixed. Effect on results not measured.
+**Variants:** all, for stands whose tree records come from a tree file rather than a database.
+
+`base/intree.f90` calls `DBSTREESIN` for each tree record and then corrects the decay code (lines 141–146): dead trees (`ITH` above 5) without a valid code get 3, live trees get 0. When trees come from a database, `DBSTREESIN` has just read `ITH`, so this works. When they come from a tree file, the record is not read until line 170, after the correction. The correction therefore uses `ITH` from the *previous* record, and for the first record `ITH` has no value at all.
+
+The effects:
+- a tree that follows a dead tree in the file gets decay code 3, and a dead tree gets 0 unless the tree before it is also dead;
+- the first tree's code is undefined. With the same IE executable and the same input (`iet01.key` stopped in 2040), six runs gave the first tree, and the eight records later split from it, code 0 four times and code 3 twice.
+
+`ie/vols.f90` resets the code to 0 for live trees at the point where it uses it, and the regression outputs are identical between runs, so the visible effect appears limited to dead trees' codes. That has not been measured. The codes are saved in restart files; `check_suite.py` accepts a 0-versus-3 difference in a single integer there for this reason.
+
+The metric copy `metric/base/intree.f90` has no such correction at all (see bug 2).
+
+**Suggested fix:** move the correction to after the record has been read, for both input paths. Then remove the decay-code exception from `check_suite.py`.

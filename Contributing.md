@@ -22,7 +22,7 @@ The `.save` files in `tests/` contain results from upstream FVS releases, and so
 python3 tests/parity/check_suite.py --cache-dir /private/tmp/mfvs-suite
 ```
 
-It checks the source lists, builds the original code, a baseline commit and your working tree, runs every `tests/FVSxx` makefile in each, and compares every generated file. It prints one line per variant and a final `PASS` or `FAIL`; quote that final line in your commit or pull request. Results are cached, so the original code is built only once and variants your change does not touch are not rebuilt. See [tests/parity/README.md](tests/parity/README.md) for options.
+It checks the source lists, builds the original code and your working tree, runs every `tests/FVSxx` makefile in each, and compares every generated file, including restart files. It prints one line per variant and a final `PASS` or `FAIL`; quote that final line in your commit or pull request. Results are cached, so the original code is built only once and variants your change does not touch are not rebuilt. See [tests/parity/README.md](tests/parity/README.md) for options.
 
 The steps below are what the command does, in case you need to do them by hand:
 
