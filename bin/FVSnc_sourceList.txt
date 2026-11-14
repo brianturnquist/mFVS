@@ -75,6 +75,7 @@
 ../nc/logs.f90
 ../nc/morts.f90
 ../nc/nwcmrt.f90
+../vbase/mortalloc.f90
 ../ca/pvref5.f90
 ../nc/pvref6.f90
 ../nc/regent.f90
@@ -316,6 +317,7 @@
 ../dbsqlite/dbs_fiavbc_atrtls.f90
 ../dbsqlite/dbs_fiavbc_cutlst.f90
 ../dbsqlite/dbs_fiavbc_trls.f90
+../dbsqlite/dbs_fiavbc_bindtree.f90
 ../dbsqlite/dbsatrtls.f90
 ../dbsqlite/dbsblkd.f90
 ../dbsqlite/dbscalib.f90

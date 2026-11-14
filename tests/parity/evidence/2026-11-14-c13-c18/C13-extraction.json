@@ -1,0 +1,47 @@
+{
+  "task": "C13",
+  "literal_statement_proof": [
+    {
+      "source": "dbsqlite/dbs_fiavbc_trls.f90",
+      "removed_statement_sha256": "5b74aa1c5eaf64f39983b4d62d62432654b7a91c614d39ea5424c34ff3b8e421"
+    },
+    {
+      "source": "dbsqlite/dbs_fiavbc_trls.f90",
+      "removed_statement_sha256": "5b74aa1c5eaf64f39983b4d62d62432654b7a91c614d39ea5424c34ff3b8e421"
+    },
+    {
+      "source": "dbsqlite/dbs_fiavbc_atrtls.f90",
+      "removed_statement_sha256": "5b74aa1c5eaf64f39983b4d62d62432654b7a91c614d39ea5424c34ff3b8e421"
+    }
+  ],
+  "after_sources": {
+    "dbsqlite/dbs_fiavbc_trls.f90": "21a56144b1c3019e0274f056527a1210e3650127f585840df139aac2a35d99e4",
+    "dbsqlite/dbs_fiavbc_atrtls.f90": "689c51fd34949e2d8c7c4dd8a17eb736fde327576b7c842e30ab80723dadb3af",
+    "dbsqlite/dbs_fiavbc_bindtree.f90": "c309e0c1e9a855402df75f1c24668876e35cdb12a67c6861f502043245e83f63",
+    "bin/FVSak_sourceList.txt": "4ac506e06ee8cced7ccca6e497bf5f342c1ace7b3f75ff6970bbf50b1b875efa",
+    "bin/FVSbc_sourceList.txt": "1987aeb6e96c89a6eb40fde4b5ddb6a2ac5bcb4a33d0bbf7bc3f4020ab87cddf",
+    "bin/FVSbm_sourceList.txt": "07fa5ae36f235eac331029f1849e95ab8962c5093968c391ed1f0b27bd9b8fe6",
+    "bin/FVSca_sourceList.txt": "3871be02e9039868a8ef74f67ec2db8abf2e5b0b868bc08beefb3e69b6cda025",
+    "bin/FVSci_sourceList.txt": "e7724d865d82d01a032989cd16e1bdcbd6951605c7b0df5f9a030f7d0d68e7b7",
+    "bin/FVScr_sourceList.txt": "ad742a4af08e1f10f9b7a66b364670a93501209baffb84aa2e3e94862b7c2e8b",
+    "bin/FVScs_sourceList.txt": "cbf7b653c0504b96cc312d616499ec3ad60c319a213938f98941285912cb079b",
+    "bin/FVSec_sourceList.txt": "c970710a48f3a64c30914ffb0fa4d09ea70fb68fcfb7c1e25e77806c340c2369",
+    "bin/FVSem_sourceList.txt": "2a9319d9edd52be8417622cde4a1940663ef904205bedf6a9121d1174a8d6419",
+    "bin/FVSie_sourceList.txt": "02c927ded306499cba7d7096664d3cff3c53be75d36ddb9df72fdfb0c1143586",
+    "bin/FVSkt_sourceList.txt": "7a4cb0867eeab718a70c393f779c90371b630afaa938c51027d6008ae1a7b1a9",
+    "bin/FVSls_sourceList.txt": "0932c4c396dfe2f3bd0d2e34b942330b53c57379ce99d991afa112d48eae9188",
+    "bin/FVSnc_sourceList.txt": "331c335af4df57cb8868e48214b895bce947e9f130c662957e2cb7bb1060efa1",
+    "bin/FVSne_sourceList.txt": "35930800e41038fcb377cea953998a99c3e91ba98a99cca76182a31620cee0d9",
+    "bin/FVSoc_sourceList.txt": "3c92b7d77a8769305e4a36dcb6c7a56dbb71f55fbdb5b4f6883e04079da00e84",
+    "bin/FVSon_sourceList.txt": "37b4bfefb7d0d05264ca3732bc513c1b5edb37847b7446e459df466a56b2d8c7",
+    "bin/FVSop_sourceList.txt": "8418919fe7f8de41f7622bc26cb66cf0e020750f1f29600049cfb4de38527ece",
+    "bin/FVSpn_sourceList.txt": "919059116e3541d9a59183ae9e9b01a5e519ab0e3ebe24331cffa2754c73aabb",
+    "bin/FVSsn_sourceList.txt": "7fe18867994f4fad387c8ca7213120be2e6c59f3def957272091cad1d4d69a58",
+    "bin/FVSso_sourceList.txt": "6206cd6dc322a2c507900040115d4d4e7ad0bb375f7e1b67b32cb0f79d8a3587",
+    "bin/FVStt_sourceList.txt": "a233e0c7fe000091c1534d3c7edb38c793754a0bc871c6339becff0ce6c0605b",
+    "bin/FVSut_sourceList.txt": "69e05866bb043bf3e2d8435625a44b178c6b7fefbc6ee549c726cbda18db574a",
+    "bin/FVSwc_sourceList.txt": "0721e1199cacc77afabd25acef6f170d221bfc983abd0c627f3771cfc206e27f",
+    "bin/FVSws_sourceList.txt": "7ebee75aa90008423aef314a29c70b2001ea272d48cedc5d9c0f4d1835fd9e21"
+  },
+  "passed": true
+}

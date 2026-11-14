@@ -1,0 +1,453 @@
+{
+  "before_revision": "fb27261e7dc91100d98509218b14686d64efa085",
+  "tasks": [
+    {
+      "id": "C13",
+      "helper": "dbsqlite/dbs_fiavbc_bindtree.f90",
+      "callers": [
+        {
+          "source": "dbsqlite/dbs_fiavbc_trls.f90",
+          "before_sha256": "ea382e94525355abe36d4fb8e695ac09c127c23d9cb359f39bd29ba684a2a8ff",
+          "original_sha256": "a7a3d61bbd42147553eb3ce64ff1e8d890094a7658947e1bf18d0e26c19e1338",
+          "after_sha256": "21a56144b1c3019e0274f056527a1210e3650127f585840df139aac2a35d99e4",
+          "public_signature_unchanged": "SUBROUTINEDBS_FIAVBC_TRLS",
+          "expanded_executable_sha256": "75b2b0b989a034d0326a36902291cbc97d7bea01d38640db953988c6c8e354e3",
+          "original_and_baseline_executable_equal": true,
+          "original_loop_normalization": null,
+          "recovery": "git show fb27261e7dc91100d98509218b14686d64efa085:dbsqlite/dbs_fiavbc_trls.f90"
+        },
+        {
+          "source": "dbsqlite/dbs_fiavbc_atrtls.f90",
+          "before_sha256": "7fd6ac21556fe3f08b043fddbe936edba8e092eb4943a5bbea70445a12b8d883",
+          "original_sha256": "e42ad5f49fe29b5499a5cff8fbcd5510999c6c3e5b3ba2625939857f8612a18b",
+          "after_sha256": "689c51fd34949e2d8c7c4dd8a17eb736fde327576b7c842e30ab80723dadb3af",
+          "public_signature_unchanged": "SUBROUTINEDBS_FIAVBC_ATRTLS",
+          "expanded_executable_sha256": "e5b2e24f7c05d3cad26e9fe55e3e626669f5975183dddb31b6cc22426d8b10b3",
+          "original_and_baseline_executable_equal": true,
+          "original_loop_normalization": null,
+          "recovery": "git show fb27261e7dc91100d98509218b14686d64efa085:dbsqlite/dbs_fiavbc_atrtls.f90"
+        }
+      ]
+    },
+    {
+      "id": "C14",
+      "helper": "dbsqlite/dbs_fiavbc_bindtree.f90",
+      "callers": [
+        {
+          "source": "dbsqlite/dbs_fiavbc_cutlst.f90",
+          "before_sha256": "53bac65fefd0beda12728df48550f6de27eef2514dbdb182f62f103e13b16877",
+          "original_sha256": "609ffae9d50218d53a93331935cd04c163979b0990d3663e7e612bdfff744362",
+          "after_sha256": "d7e74e8d76db2cf78b5d6343e46bede6588b72d4cf0d3e130e6f10b3ad323508",
+          "public_signature_unchanged": "SUBROUTINEDBS_FIAVBC_CUTLST()",
+          "expanded_executable_sha256": "116496e9f03f037e6b63305a6746f4e6a0ee66a3aa4f71ab1c05873661899927",
+          "original_and_baseline_executable_equal": true,
+          "original_loop_normalization": null,
+          "recovery": "git show fb27261e7dc91100d98509218b14686d64efa085:dbsqlite/dbs_fiavbc_cutlst.f90"
+        }
+      ]
+    },
+    {
+      "id": "C15",
+      "helper": "vbase/mortalloc.f90",
+      "callers": [
+        {
+          "source": "ca/varmrt.f90",
+          "before_sha256": "7316ea34594783dcd23e25cdf5509446c8ce520c58353db7e0eec5bfcc8b1ee2",
+          "original_sha256": "9ca232da1c1d86a51b12ada79bb6fda0d5188e16bf1735747ab19a39b1a88d16",
+          "after_sha256": "1d83ed81197320f9854e05b90e65c4431b480a5ff2f8e4f2f1d51a4c192d5b14",
+          "public_signature_unchanged": "SUBROUTINEVARMRT(TOKILL,DEBUG,SUMKIL)",
+          "expanded_executable_sha256": "66ec0a440a2539e18fce98098d032e00a1c944ebe6a967dbd3e7aa147d3e28a7",
+          "original_and_baseline_executable_equal": true,
+          "original_loop_normalization": "DO 150 I=1,ITRN / 150 CONTINUE becomes DO I=1,ITRN / 150 CONTINUE / END DO",
+          "recovery": "git show fb27261e7dc91100d98509218b14686d64efa085:ca/varmrt.f90"
+        },
+        {
+          "source": "nc/nwcmrt.f90",
+          "before_sha256": "83aaca55e5a320e91b5f56ae6486538e8b0d31c6785ef435091b3b42a5f980a5",
+          "original_sha256": "564a3b4059a6a5edccde5eb2e9fd9583c4d2f7ffd53628041abfc89fb6d7ca37",
+          "after_sha256": "6af70300df8787be9043f93b4503e292ec07b47a4c1adfad8a7a720c6a961929",
+          "public_signature_unchanged": "SUBROUTINENWCMRT(TOKILL,DEBUG,SUMKIL)",
+          "expanded_executable_sha256": "66ec0a440a2539e18fce98098d032e00a1c944ebe6a967dbd3e7aa147d3e28a7",
+          "original_and_baseline_executable_equal": true,
+          "original_loop_normalization": "DO 150 I=1,ITRN / 150 CONTINUE becomes DO I=1,ITRN / 150 CONTINUE / END DO",
+          "recovery": "git show fb27261e7dc91100d98509218b14686d64efa085:nc/nwcmrt.f90"
+        }
+      ]
+    },
+    {
+      "id": "C16",
+      "helper": "vbase/mortalloc.f90",
+      "callers": [
+        {
+          "source": "tt/ttmrt.f90",
+          "before_sha256": "91d79b5b119c93960eb1a5a1f85a459811807cf3425474d678a48bf309bc0604",
+          "original_sha256": "e735c9e25e3f4e8049de55897e90fd58b295b4a83ed8299b857675d1fbe4f8cd",
+          "after_sha256": "50de1bbc4c96776b2c29fa6d08fe480522176d354e7c4eac3fb2a96e0e73913a",
+          "public_signature_unchanged": "SUBROUTINETTMRT(TOKILL,DEBUG,SUMKIL)",
+          "expanded_executable_sha256": "4dcca896d0aba3faa2df38cd2c16686996f41260f9ebc001bb46233b3db490fc",
+          "original_and_baseline_executable_equal": true,
+          "original_loop_normalization": "DO 150 I=1,ITRN / 150 CONTINUE becomes DO I=1,ITRN / 150 CONTINUE / END DO",
+          "recovery": "git show fb27261e7dc91100d98509218b14686d64efa085:tt/ttmrt.f90"
+        },
+        {
+          "source": "ut/utmrt.f90",
+          "before_sha256": "5d6d287dd8d9e2a518472b3eb34d1f78b3f2cacbc98c7c9a49766bd0ab7cde7d",
+          "original_sha256": "e39ccaae25d5c1ae4a07a322f3570eec6ddaac0a8e8312de14141a26f64062ef",
+          "after_sha256": "b6c3cfe8462a279708258921356527ab708fa07d033f56c2ad30c15404d37d47",
+          "public_signature_unchanged": "SUBROUTINEUTMRT(TOKILL,DEBUG,SUMKIL)",
+          "expanded_executable_sha256": "615569fafd615bf25a45e4a8e643cba0961ab915019ea6c9bb98e78d2dd22a31",
+          "original_and_baseline_executable_equal": true,
+          "original_loop_normalization": "DO 150 I=1,ITRN / 150 CONTINUE becomes DO I=1,ITRN / 150 CONTINUE / END DO",
+          "recovery": "git show fb27261e7dc91100d98509218b14686d64efa085:ut/utmrt.f90"
+        }
+      ]
+    },
+    {
+      "id": "C17",
+      "helper": "vbase/mortalloc.f90",
+      "callers": [
+        {
+          "source": "so/scomrt.f90",
+          "before_sha256": "2d1b992a50056e24a614ee734f7d0d3e37ea4cc95c271dc51026dad7280d3871",
+          "original_sha256": "338af5b74859e61cf2240354513732204cc050ed2c292b879a2ef665ee9b4edb",
+          "after_sha256": "533aa5cef607efee3b77762b0188edcef2581e1eecf80c76c12893414901381c",
+          "public_signature_unchanged": "SUBROUTINESCOMRT(TOKILL,DEBUG,SUMKIL)",
+          "expanded_executable_sha256": "282ff1b0115da2ee661c72fc7fb9cc950f9a4b3a80fa77e1e2ef630c4d6f6611",
+          "original_and_baseline_executable_equal": true,
+          "original_loop_normalization": "DO 150 I=1,ITRN / 150 CONTINUE becomes DO I=1,ITRN / 150 CONTINUE / END DO",
+          "recovery": "git show fb27261e7dc91100d98509218b14686d64efa085:so/scomrt.f90"
+        }
+      ]
+    },
+    {
+      "id": "C18",
+      "helper": "vbase/mortalloc.f90",
+      "callers": [
+        {
+          "source": "ws/varmrt.f90",
+          "before_sha256": "fd32062bf6fd9cb46ae7f4a6789a91f3ba6247b1927ef669a64d1301efe931e5",
+          "original_sha256": "ad7589a978977f4d50c210298037ed69e2f4553556e298f400de816f6d1d65e8",
+          "after_sha256": "d957e98b19e561aa805f77c21e009ab1362b0dcd1d8cdb577e8fe3518ae19281",
+          "public_signature_unchanged": "SUBROUTINEVARMRT(TOKILL,DEBUG,SUMKIL)",
+          "expanded_executable_sha256": "d35fd95fb8d00d3ccaf4e23d4b4bd0a851ab9512baa6e34a3bca6cb01f7bdbef",
+          "original_and_baseline_executable_equal": true,
+          "original_loop_normalization": "DO 150 I=1,ITRN / 150 CONTINUE becomes DO I=1,ITRN / 150 CONTINUE / END DO",
+          "recovery": "git show fb27261e7dc91100d98509218b14686d64efa085:ws/varmrt.f90"
+        }
+      ]
+    }
+  ],
+  "passed": true,
+  "baseline_selected_git_blobs_verified": 1589,
+  "other_model_sources_includes_unchanged": 2085,
+  "nvel_head": "a73e697e220ffd0f792aa7ac10d84c911edb7ad7",
+  "nvel_unchanged": true,
+  "six_stage_patch_replay": true,
+  "selection": {
+    "ak": {
+      "added_helpers": [
+        "dbsqlite/dbs_fiavbc_bindtree.f90"
+      ],
+      "changed_inputs": [
+        "bin/FVSak_sourceList.txt",
+        "dbsqlite/dbs_fiavbc_atrtls.f90",
+        "dbsqlite/dbs_fiavbc_cutlst.f90",
+        "dbsqlite/dbs_fiavbc_trls.f90"
+      ],
+      "helper_definitions_once": true
+    },
+    "bc": {
+      "added_helpers": [
+        "dbsqlite/dbs_fiavbc_bindtree.f90"
+      ],
+      "changed_inputs": [
+        "bin/FVSbc_sourceList.txt",
+        "dbsqlite/dbs_fiavbc_atrtls.f90",
+        "dbsqlite/dbs_fiavbc_cutlst.f90",
+        "dbsqlite/dbs_fiavbc_trls.f90"
+      ],
+      "helper_definitions_once": true
+    },
+    "bm": {
+      "added_helpers": [
+        "dbsqlite/dbs_fiavbc_bindtree.f90"
+      ],
+      "changed_inputs": [
+        "bin/FVSbm_sourceList.txt",
+        "dbsqlite/dbs_fiavbc_atrtls.f90",
+        "dbsqlite/dbs_fiavbc_cutlst.f90",
+        "dbsqlite/dbs_fiavbc_trls.f90"
+      ],
+      "helper_definitions_once": true
+    },
+    "ca": {
+      "added_helpers": [
+        "dbsqlite/dbs_fiavbc_bindtree.f90",
+        "vbase/mortalloc.f90"
+      ],
+      "changed_inputs": [
+        "bin/FVSca_sourceList.txt",
+        "ca/varmrt.f90",
+        "dbsqlite/dbs_fiavbc_atrtls.f90",
+        "dbsqlite/dbs_fiavbc_cutlst.f90",
+        "dbsqlite/dbs_fiavbc_trls.f90"
+      ],
+      "helper_definitions_once": true
+    },
+    "ci": {
+      "added_helpers": [
+        "dbsqlite/dbs_fiavbc_bindtree.f90"
+      ],
+      "changed_inputs": [
+        "bin/FVSci_sourceList.txt",
+        "dbsqlite/dbs_fiavbc_atrtls.f90",
+        "dbsqlite/dbs_fiavbc_cutlst.f90",
+        "dbsqlite/dbs_fiavbc_trls.f90"
+      ],
+      "helper_definitions_once": true
+    },
+    "cr": {
+      "added_helpers": [
+        "dbsqlite/dbs_fiavbc_bindtree.f90"
+      ],
+      "changed_inputs": [
+        "bin/FVScr_sourceList.txt",
+        "dbsqlite/dbs_fiavbc_atrtls.f90",
+        "dbsqlite/dbs_fiavbc_cutlst.f90",
+        "dbsqlite/dbs_fiavbc_trls.f90"
+      ],
+      "helper_definitions_once": true
+    },
+    "cs": {
+      "added_helpers": [
+        "dbsqlite/dbs_fiavbc_bindtree.f90"
+      ],
+      "changed_inputs": [
+        "bin/FVScs_sourceList.txt",
+        "dbsqlite/dbs_fiavbc_atrtls.f90",
+        "dbsqlite/dbs_fiavbc_cutlst.f90",
+        "dbsqlite/dbs_fiavbc_trls.f90"
+      ],
+      "helper_definitions_once": true
+    },
+    "ec": {
+      "added_helpers": [
+        "dbsqlite/dbs_fiavbc_bindtree.f90"
+      ],
+      "changed_inputs": [
+        "bin/FVSec_sourceList.txt",
+        "dbsqlite/dbs_fiavbc_atrtls.f90",
+        "dbsqlite/dbs_fiavbc_cutlst.f90",
+        "dbsqlite/dbs_fiavbc_trls.f90"
+      ],
+      "helper_definitions_once": true
+    },
+    "em": {
+      "added_helpers": [
+        "dbsqlite/dbs_fiavbc_bindtree.f90"
+      ],
+      "changed_inputs": [
+        "bin/FVSem_sourceList.txt",
+        "dbsqlite/dbs_fiavbc_atrtls.f90",
+        "dbsqlite/dbs_fiavbc_cutlst.f90",
+        "dbsqlite/dbs_fiavbc_trls.f90"
+      ],
+      "helper_definitions_once": true
+    },
+    "ie": {
+      "added_helpers": [
+        "dbsqlite/dbs_fiavbc_bindtree.f90"
+      ],
+      "changed_inputs": [
+        "bin/FVSie_sourceList.txt",
+        "dbsqlite/dbs_fiavbc_atrtls.f90",
+        "dbsqlite/dbs_fiavbc_cutlst.f90",
+        "dbsqlite/dbs_fiavbc_trls.f90"
+      ],
+      "helper_definitions_once": true
+    },
+    "kt": {
+      "added_helpers": [
+        "dbsqlite/dbs_fiavbc_bindtree.f90"
+      ],
+      "changed_inputs": [
+        "bin/FVSkt_sourceList.txt",
+        "dbsqlite/dbs_fiavbc_atrtls.f90",
+        "dbsqlite/dbs_fiavbc_cutlst.f90",
+        "dbsqlite/dbs_fiavbc_trls.f90"
+      ],
+      "helper_definitions_once": true
+    },
+    "ls": {
+      "added_helpers": [
+        "dbsqlite/dbs_fiavbc_bindtree.f90"
+      ],
+      "changed_inputs": [
+        "bin/FVSls_sourceList.txt",
+        "dbsqlite/dbs_fiavbc_atrtls.f90",
+        "dbsqlite/dbs_fiavbc_cutlst.f90",
+        "dbsqlite/dbs_fiavbc_trls.f90"
+      ],
+      "helper_definitions_once": true
+    },
+    "nc": {
+      "added_helpers": [
+        "dbsqlite/dbs_fiavbc_bindtree.f90",
+        "vbase/mortalloc.f90"
+      ],
+      "changed_inputs": [
+        "bin/FVSnc_sourceList.txt",
+        "dbsqlite/dbs_fiavbc_atrtls.f90",
+        "dbsqlite/dbs_fiavbc_cutlst.f90",
+        "dbsqlite/dbs_fiavbc_trls.f90",
+        "nc/nwcmrt.f90"
+      ],
+      "helper_definitions_once": true
+    },
+    "ne": {
+      "added_helpers": [
+        "dbsqlite/dbs_fiavbc_bindtree.f90"
+      ],
+      "changed_inputs": [
+        "bin/FVSne_sourceList.txt",
+        "dbsqlite/dbs_fiavbc_atrtls.f90",
+        "dbsqlite/dbs_fiavbc_cutlst.f90",
+        "dbsqlite/dbs_fiavbc_trls.f90"
+      ],
+      "helper_definitions_once": true
+    },
+    "oc": {
+      "added_helpers": [
+        "dbsqlite/dbs_fiavbc_bindtree.f90",
+        "vbase/mortalloc.f90"
+      ],
+      "changed_inputs": [
+        "bin/FVSoc_sourceList.txt",
+        "ca/varmrt.f90",
+        "dbsqlite/dbs_fiavbc_atrtls.f90",
+        "dbsqlite/dbs_fiavbc_cutlst.f90",
+        "dbsqlite/dbs_fiavbc_trls.f90"
+      ],
+      "helper_definitions_once": true
+    },
+    "on": {
+      "added_helpers": [
+        "dbsqlite/dbs_fiavbc_bindtree.f90"
+      ],
+      "changed_inputs": [
+        "bin/FVSon_sourceList.txt",
+        "dbsqlite/dbs_fiavbc_atrtls.f90",
+        "dbsqlite/dbs_fiavbc_cutlst.f90",
+        "dbsqlite/dbs_fiavbc_trls.f90"
+      ],
+      "helper_definitions_once": true
+    },
+    "op": {
+      "added_helpers": [
+        "dbsqlite/dbs_fiavbc_bindtree.f90"
+      ],
+      "changed_inputs": [
+        "bin/FVSop_sourceList.txt",
+        "dbsqlite/dbs_fiavbc_atrtls.f90",
+        "dbsqlite/dbs_fiavbc_cutlst.f90",
+        "dbsqlite/dbs_fiavbc_trls.f90"
+      ],
+      "helper_definitions_once": true
+    },
+    "pn": {
+      "added_helpers": [
+        "dbsqlite/dbs_fiavbc_bindtree.f90"
+      ],
+      "changed_inputs": [
+        "bin/FVSpn_sourceList.txt",
+        "dbsqlite/dbs_fiavbc_atrtls.f90",
+        "dbsqlite/dbs_fiavbc_cutlst.f90",
+        "dbsqlite/dbs_fiavbc_trls.f90"
+      ],
+      "helper_definitions_once": true
+    },
+    "sn": {
+      "added_helpers": [
+        "dbsqlite/dbs_fiavbc_bindtree.f90"
+      ],
+      "changed_inputs": [
+        "bin/FVSsn_sourceList.txt",
+        "dbsqlite/dbs_fiavbc_atrtls.f90",
+        "dbsqlite/dbs_fiavbc_cutlst.f90",
+        "dbsqlite/dbs_fiavbc_trls.f90"
+      ],
+      "helper_definitions_once": true
+    },
+    "so": {
+      "added_helpers": [
+        "dbsqlite/dbs_fiavbc_bindtree.f90",
+        "vbase/mortalloc.f90"
+      ],
+      "changed_inputs": [
+        "bin/FVSso_sourceList.txt",
+        "dbsqlite/dbs_fiavbc_atrtls.f90",
+        "dbsqlite/dbs_fiavbc_cutlst.f90",
+        "dbsqlite/dbs_fiavbc_trls.f90",
+        "so/scomrt.f90"
+      ],
+      "helper_definitions_once": true
+    },
+    "tt": {
+      "added_helpers": [
+        "dbsqlite/dbs_fiavbc_bindtree.f90",
+        "vbase/mortalloc.f90"
+      ],
+      "changed_inputs": [
+        "bin/FVStt_sourceList.txt",
+        "dbsqlite/dbs_fiavbc_atrtls.f90",
+        "dbsqlite/dbs_fiavbc_cutlst.f90",
+        "dbsqlite/dbs_fiavbc_trls.f90",
+        "tt/ttmrt.f90"
+      ],
+      "helper_definitions_once": true
+    },
+    "ut": {
+      "added_helpers": [
+        "dbsqlite/dbs_fiavbc_bindtree.f90",
+        "vbase/mortalloc.f90"
+      ],
+      "changed_inputs": [
+        "bin/FVSut_sourceList.txt",
+        "dbsqlite/dbs_fiavbc_atrtls.f90",
+        "dbsqlite/dbs_fiavbc_cutlst.f90",
+        "dbsqlite/dbs_fiavbc_trls.f90",
+        "ut/utmrt.f90"
+      ],
+      "helper_definitions_once": true
+    },
+    "wc": {
+      "added_helpers": [
+        "dbsqlite/dbs_fiavbc_bindtree.f90"
+      ],
+      "changed_inputs": [
+        "bin/FVSwc_sourceList.txt",
+        "dbsqlite/dbs_fiavbc_atrtls.f90",
+        "dbsqlite/dbs_fiavbc_cutlst.f90",
+        "dbsqlite/dbs_fiavbc_trls.f90"
+      ],
+      "helper_definitions_once": true
+    },
+    "ws": {
+      "added_helpers": [
+        "dbsqlite/dbs_fiavbc_bindtree.f90",
+        "vbase/mortalloc.f90"
+      ],
+      "changed_inputs": [
+        "bin/FVSws_sourceList.txt",
+        "dbsqlite/dbs_fiavbc_atrtls.f90",
+        "dbsqlite/dbs_fiavbc_cutlst.f90",
+        "dbsqlite/dbs_fiavbc_trls.f90",
+        "ws/varmrt.f90"
+      ],
+      "helper_definitions_once": true
+    }
+  },
+  "lines_before": 2349,
+  "lines_after": 1830,
+  "lines_removed_net": 519
+}

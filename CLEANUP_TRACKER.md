@@ -18,8 +18,13 @@ routine and runtime-object evidence for C01/C06 while leaving BC/ON simulation
 parity blocked. See the [C01–C06 report](tests/parity/evidence/2026-11-14-c01-c06/README.md).
 C07–C12 are now complete; the user accepted the routine/file-output and
 executable-statement evidence for C07/C10 while leaving BC/ON simulation parity
-blocked. There are 47 completed and 73 pending checkbox items. See the
+blocked. See the
 [C07–C12 report](tests/parity/evidence/2026-11-14-c07-c12/README.md).
+C13–C18 are complete and verified against both baselines; the user accepted
+the direct SQLite/executable evidence for C13/C14 while leaving BC/ON
+simulation parity blocked. There are 53 completed and 67 pending checkbox
+items. See the
+[C13–C18 report](tests/parity/evidence/2026-11-14-c13-c18/README.md).
 
 The findings combine repository-wide source-list inventory, targeted source
 comparisons, call/ENTRY inspection, and historical notes. They are not an
@@ -148,6 +153,11 @@ upstream reference and cannot be reported as pristine-original parity.
   and C10. BC/ON simulation parity remains blocked, and this grants no general
   exception for other tasks. See the [acceptance record](tests/parity/evidence/2026-11-14-c07-c12/acceptance.json).
 
+  **C13/C14 limited acceptance, 14 November 2026:** the user accepted exact
+  SQLite schema/row comparisons and executable-statement evidence for these
+  two tasks. Canadian integrated simulation parity remains blocked; no other
+  task gate is waived. See the [acceptance record](tests/parity/evidence/2026-11-14-c13-c18/acceptance.json).
+
 ## Centralized definitions
 
 Use existing shared areas for canonical routines. Avoid adding another set of
@@ -261,26 +271,35 @@ the named variants below are starting points, not a substitute for that check.
   `organon/orgspc.f90`. Preserved every value and index of the 50-entry OC and
   39-entry OP tables. All actual mapping calls and integrated outputs match
   original/baseline; old species-order commentary and recovery refs remain.
-- [ ] **C13 — First FIA database binding helper.** Extract one contiguous
-  common field group from `dbsqlite/dbs_fiavbc_trls.f90` and
-  `dbsqlite/dbs_fiavbc_atrtls.f90` into `dbsqlite/`. Preserve column order,
-  types, conversions, and writer-specific tree-ID formatting. Compare schemas
-  and rows; leave the report-selection logic in its existing callers.
-- [ ] **C14 — FIA cut-list caller migration.** After C13, migrate
-  `dbsqlite/dbs_fiavbc_cutlst.f90` to that helper. Preserve cut-list selection
-  and probability semantics. Keep this separate from the initial extraction.
-- [ ] **C15 — First mortality-allocation helper.** Extract the verified common
-  allocation tail from CA `VARMRT` and NC `NWCMRT` into `vbase/`. Keep species
-  efficiency calculations outside the first extraction. Preserve arithmetic
-  order, stopping conditions, array updates, and debug messages. Include CA,
-  OC, and NC consumers and cases reaching allocation/saturation boundaries.
-- [ ] **C16 — TT/UT mortality caller migration.** After C15, migrate `TTMRT`
-  and `UTMRT` to the helper. Preserve their distinct efficiency calculations;
-  reuse only the verified allocation portion.
-- [ ] **C17 — SO mortality caller migration.** After C15, migrate `SCOMRT` in
-  its own change and verify SO against the original and immediate baseline.
-- [ ] **C18 — WS mortality caller migration.** After C15, migrate WS `VARMRT`
-  in its own change and verify WS against both baselines.
+- [x] **C13 — First FIA database binding helper.** Completed 14 November
+  2026 in `dbsqlite/dbs_fiavbc_bindtree.f90`, called from both TRLS binding
+  sites and ATRTLS. The nine DBH-through-CarbFrac fields preserve column
+  order, types and REAL-to-REAL*8 calculations. IDs, selection and report
+  construction stay in callers. All 24 variants' actual SQLite schemas/rows
+  and expanded executable statements match F77/baseline. The user accepted
+  this evidence for completion while Canadian simulation parity stays blocked.
+- [x] **C14 — FIA cut-list caller migration.** Completed and verified
+  separately after C13 on 14 November 2026. CUTLST uses the same binding
+  helper while retaining cut selection, probability, IDs and reports. All 24
+  variants' actual SQLite schemas/rows and executable statements match both
+  baselines. The user accepted this evidence under the same limited P03
+  exception; Canadian simulation parity remains blocked.
+- [x] **C15 — First mortality-allocation helper.** Completed 14 November
+  2026 in `vbase/mortalloc.f90` for CA VARMRT and NC NWCMRT, including OC's
+  CA caller. Variant efficiencies and initialization remain in callers.
+  Arithmetic order, stopping rules, array updates and debug output are
+  preserved. Background, adjustment, saturation and redistribution cases
+  match original F77 and the immediate baseline exactly.
+- [x] **C16 — TT/UT mortality caller migration.** Completed separately after
+  C15 on 14 November 2026. TTMRT and UTMRT use MORTALLOC; their distinct
+  efficiency/crown-ratio calculations stay in place. Both variants' direct
+  saturation/redistribution cases and integrated outputs match both baselines.
+- [x] **C17 — SO mortality caller migration.** Completed 14 November 2026
+  as a separate SCOMRT migration. SO's efficiencies remain in its caller;
+  direct allocation boundaries and integrated outputs match both baselines.
+- [x] **C18 — WS mortality caller migration.** Completed 14 November 2026
+  as a separate WS VARMRT migration. WS's efficiency scale/crown correction
+  remains in place; direct and integrated outputs match both baselines.
 
 The mortality opportunity crosses routine names: `VARMRT`, `NWCMRT`, `SCOMRT`,
 `TTMRT`, and `UTMRT` repeat allocation logic. The three FIA writers likewise
@@ -844,3 +863,49 @@ retains the response and scope. The P03 simulation boundary remains blocked;
 this additional exception applies only to C07/C10. No model bug was fixed and
 no C13+ or D14 cleanup was implemented. The tracker has 47 completed and
 73 pending items.
+
+
+### C13–C18 record — 14 November 2026
+
+**All six extractions are complete and checked off.** The user accepted the
+alternative Canadian evidence for C13/C14 on 14 November 2026. The pre-cleanup revision is
+`fb27261e7dc91100d98509218b14686d64efa085`; NVEL remains
+`a73e697e220ffd0f792aa7ac10d84c911edb7ad7`. The plan was stored before edits,
+and each migration has its own replayable patch and source/hash receipt.
+See the [C13–C18 report](tests/parity/evidence/2026-11-14-c13-c18/README.md).
+
+The three FIA writers share nine contiguous numeric field bindings in
+`dbsqlite/dbs_fiavbc_bindtree.f90`. Selection, IDs, probability and report
+construction stay in their callers. Six mortality routines share their
+allocation tail in `vbase/mortalloc.f90`; species tables, efficiencies,
+crown corrections, background mortality and initialization remain in place.
+The affected sources total 2,349 lines before and 1,830 after, including the
+two helpers: 519 fewer lines. Public signatures remain unchanged. No caller
+file was deleted, and no later cleanup block was implemented.
+
+All 72 build identities succeeded: 48 retained exact original/baseline builds
+and 24 fresh candidates. All 75 integrated pairwise comparisons pass: 66 US
+simulation comparisons and nine unchanged Canadian failure-boundary
+comparisons. All 396 direct comparisons pass, including actual SQLite schemas,
+typed rows and REAL conversion boundaries in every variant, and mortality
+saturation/redistribution in all seven consumers. Expanding the helper calls
+matches both original F77 and baseline executable statements, with only the
+previously completed labeled-DO conversion normalized. All six source patches
+replay and all raw comparison artifacts replay exactly. No machine-code
+identity or Canadian integrated simulation parity is claimed.
+
+All 2,085 other tracked model source/include/C files, COMMON declarations,
+build recipes, repository inputs, current NVEL and 933 earlier evidence files
+are unchanged. Existing defects remain unfixed. A prepared-statement leak in
+the normal FIA CUTLST/ATRTLS sequence reproduces in all three source states
+and is recorded as item 9 in `FOUND_BUGS.md`; scientific-output impact remains
+unmeasured.
+
+**C13/C14 acceptance, 14 November 2026:** the user explicitly answered
+“Accept this evidence for C13/C14”, authorizing completion using exact SQLite
+schema/row comparisons and executable-statement evidence while leaving
+Canadian integrated simulation parity blocked. The
+[acceptance record](tests/parity/evidence/2026-11-14-c13-c18/acceptance.json)
+retains the response, evidence hashes and scope. No other P03 gate is waived.
+All C01–C18 items are now complete; the tracker has 53 completed and 67 pending
+items. No model bug was fixed.

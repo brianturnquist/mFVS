@@ -1,0 +1,318 @@
+{
+  "before_revision": "fb27261e7dc91100d98509218b14686d64efa085",
+  "before_nvel": "a73e697e220ffd0f792aa7ac10d84c911edb7ad7",
+  "tasks": [
+    {
+      "id": "C13",
+      "mode": "extract",
+      "sources": [
+        "dbsqlite/dbs_fiavbc_trls.f90",
+        "dbsqlite/dbs_fiavbc_atrtls.f90"
+      ],
+      "canonical": "dbsqlite/dbs_fiavbc_bindtree.f90",
+      "helper": "DBS_FIAVBC_BINDTREE",
+      "consumers": {
+        "ak": [
+          "dbsqlite/dbs_fiavbc_atrtls.f90",
+          "dbsqlite/dbs_fiavbc_trls.f90"
+        ],
+        "bc": [
+          "dbsqlite/dbs_fiavbc_atrtls.f90",
+          "dbsqlite/dbs_fiavbc_trls.f90"
+        ],
+        "bm": [
+          "dbsqlite/dbs_fiavbc_atrtls.f90",
+          "dbsqlite/dbs_fiavbc_trls.f90"
+        ],
+        "ca": [
+          "dbsqlite/dbs_fiavbc_atrtls.f90",
+          "dbsqlite/dbs_fiavbc_trls.f90"
+        ],
+        "ci": [
+          "dbsqlite/dbs_fiavbc_atrtls.f90",
+          "dbsqlite/dbs_fiavbc_trls.f90"
+        ],
+        "cr": [
+          "dbsqlite/dbs_fiavbc_atrtls.f90",
+          "dbsqlite/dbs_fiavbc_trls.f90"
+        ],
+        "cs": [
+          "dbsqlite/dbs_fiavbc_atrtls.f90",
+          "dbsqlite/dbs_fiavbc_trls.f90"
+        ],
+        "ec": [
+          "dbsqlite/dbs_fiavbc_atrtls.f90",
+          "dbsqlite/dbs_fiavbc_trls.f90"
+        ],
+        "em": [
+          "dbsqlite/dbs_fiavbc_atrtls.f90",
+          "dbsqlite/dbs_fiavbc_trls.f90"
+        ],
+        "ie": [
+          "dbsqlite/dbs_fiavbc_atrtls.f90",
+          "dbsqlite/dbs_fiavbc_trls.f90"
+        ],
+        "kt": [
+          "dbsqlite/dbs_fiavbc_atrtls.f90",
+          "dbsqlite/dbs_fiavbc_trls.f90"
+        ],
+        "ls": [
+          "dbsqlite/dbs_fiavbc_atrtls.f90",
+          "dbsqlite/dbs_fiavbc_trls.f90"
+        ],
+        "nc": [
+          "dbsqlite/dbs_fiavbc_atrtls.f90",
+          "dbsqlite/dbs_fiavbc_trls.f90"
+        ],
+        "ne": [
+          "dbsqlite/dbs_fiavbc_atrtls.f90",
+          "dbsqlite/dbs_fiavbc_trls.f90"
+        ],
+        "oc": [
+          "dbsqlite/dbs_fiavbc_atrtls.f90",
+          "dbsqlite/dbs_fiavbc_trls.f90"
+        ],
+        "on": [
+          "dbsqlite/dbs_fiavbc_atrtls.f90",
+          "dbsqlite/dbs_fiavbc_trls.f90"
+        ],
+        "op": [
+          "dbsqlite/dbs_fiavbc_atrtls.f90",
+          "dbsqlite/dbs_fiavbc_trls.f90"
+        ],
+        "pn": [
+          "dbsqlite/dbs_fiavbc_atrtls.f90",
+          "dbsqlite/dbs_fiavbc_trls.f90"
+        ],
+        "sn": [
+          "dbsqlite/dbs_fiavbc_atrtls.f90",
+          "dbsqlite/dbs_fiavbc_trls.f90"
+        ],
+        "so": [
+          "dbsqlite/dbs_fiavbc_atrtls.f90",
+          "dbsqlite/dbs_fiavbc_trls.f90"
+        ],
+        "tt": [
+          "dbsqlite/dbs_fiavbc_atrtls.f90",
+          "dbsqlite/dbs_fiavbc_trls.f90"
+        ],
+        "ut": [
+          "dbsqlite/dbs_fiavbc_atrtls.f90",
+          "dbsqlite/dbs_fiavbc_trls.f90"
+        ],
+        "wc": [
+          "dbsqlite/dbs_fiavbc_atrtls.f90",
+          "dbsqlite/dbs_fiavbc_trls.f90"
+        ],
+        "ws": [
+          "dbsqlite/dbs_fiavbc_atrtls.f90",
+          "dbsqlite/dbs_fiavbc_trls.f90"
+        ]
+      },
+      "preservation_contract": "Extract only contiguous DBH/Ht/EstHt/TruncHt/PctCr/Cull/WdldStem/DecayCd/CarbFrac bindings. Preserve status, column sequence, REAL-to-REAL8 conversions and writer-specific IDs/selection.",
+      "before_sources": {
+        "dbsqlite/dbs_fiavbc_trls.f90": "ea382e94525355abe36d4fb8e695ac09c127c23d9cb359f39bd29ba684a2a8ff",
+        "dbsqlite/dbs_fiavbc_atrtls.f90": "7fd6ac21556fe3f08b043fddbe936edba8e092eb4943a5bbea70445a12b8d883"
+      }
+    },
+    {
+      "id": "C14",
+      "mode": "extract",
+      "sources": [
+        "dbsqlite/dbs_fiavbc_cutlst.f90"
+      ],
+      "canonical": "dbsqlite/dbs_fiavbc_bindtree.f90",
+      "helper": "DBS_FIAVBC_BINDTREE",
+      "consumers": {
+        "ak": [
+          "dbsqlite/dbs_fiavbc_cutlst.f90"
+        ],
+        "bc": [
+          "dbsqlite/dbs_fiavbc_cutlst.f90"
+        ],
+        "bm": [
+          "dbsqlite/dbs_fiavbc_cutlst.f90"
+        ],
+        "ca": [
+          "dbsqlite/dbs_fiavbc_cutlst.f90"
+        ],
+        "ci": [
+          "dbsqlite/dbs_fiavbc_cutlst.f90"
+        ],
+        "cr": [
+          "dbsqlite/dbs_fiavbc_cutlst.f90"
+        ],
+        "cs": [
+          "dbsqlite/dbs_fiavbc_cutlst.f90"
+        ],
+        "ec": [
+          "dbsqlite/dbs_fiavbc_cutlst.f90"
+        ],
+        "em": [
+          "dbsqlite/dbs_fiavbc_cutlst.f90"
+        ],
+        "ie": [
+          "dbsqlite/dbs_fiavbc_cutlst.f90"
+        ],
+        "kt": [
+          "dbsqlite/dbs_fiavbc_cutlst.f90"
+        ],
+        "ls": [
+          "dbsqlite/dbs_fiavbc_cutlst.f90"
+        ],
+        "nc": [
+          "dbsqlite/dbs_fiavbc_cutlst.f90"
+        ],
+        "ne": [
+          "dbsqlite/dbs_fiavbc_cutlst.f90"
+        ],
+        "oc": [
+          "dbsqlite/dbs_fiavbc_cutlst.f90"
+        ],
+        "on": [
+          "dbsqlite/dbs_fiavbc_cutlst.f90"
+        ],
+        "op": [
+          "dbsqlite/dbs_fiavbc_cutlst.f90"
+        ],
+        "pn": [
+          "dbsqlite/dbs_fiavbc_cutlst.f90"
+        ],
+        "sn": [
+          "dbsqlite/dbs_fiavbc_cutlst.f90"
+        ],
+        "so": [
+          "dbsqlite/dbs_fiavbc_cutlst.f90"
+        ],
+        "tt": [
+          "dbsqlite/dbs_fiavbc_cutlst.f90"
+        ],
+        "ut": [
+          "dbsqlite/dbs_fiavbc_cutlst.f90"
+        ],
+        "wc": [
+          "dbsqlite/dbs_fiavbc_cutlst.f90"
+        ],
+        "ws": [
+          "dbsqlite/dbs_fiavbc_cutlst.f90"
+        ]
+      },
+      "preservation_contract": "Migrate cut-list binding group after C13; preserve cut selection, probability, IDs and reporting.",
+      "before_sources": {
+        "dbsqlite/dbs_fiavbc_cutlst.f90": "53bac65fefd0beda12728df48550f6de27eef2514dbdb182f62f103e13b16877"
+      }
+    },
+    {
+      "id": "C15",
+      "mode": "extract",
+      "sources": [
+        "ca/varmrt.f90",
+        "nc/nwcmrt.f90"
+      ],
+      "canonical": "vbase/mortalloc.f90",
+      "helper": "MORTALLOC",
+      "consumers": {
+        "ca": [
+          "ca/varmrt.f90"
+        ],
+        "nc": [
+          "nc/nwcmrt.f90"
+        ],
+        "oc": [
+          "ca/varmrt.f90"
+        ]
+      },
+      "preservation_contract": "Extract common allocation tail from CA/NC only; preserve local efficiency formulas, arithmetic order, labels, saturation and diagnostics.",
+      "before_sources": {
+        "ca/varmrt.f90": "7316ea34594783dcd23e25cdf5509446c8ce520c58353db7e0eec5bfcc8b1ee2",
+        "nc/nwcmrt.f90": "83aaca55e5a320e91b5f56ae6486538e8b0d31c6785ef435091b3b42a5f980a5"
+      }
+    },
+    {
+      "id": "C16",
+      "mode": "extract",
+      "sources": [
+        "tt/ttmrt.f90",
+        "ut/utmrt.f90"
+      ],
+      "canonical": "vbase/mortalloc.f90",
+      "helper": "MORTALLOC",
+      "consumers": {
+        "tt": [
+          "tt/ttmrt.f90"
+        ],
+        "ut": [
+          "ut/utmrt.f90"
+        ]
+      },
+      "preservation_contract": "Migrate TT and UT tails independently of initial extraction; keep their local crown-ratio and efficiency calculations.",
+      "before_sources": {
+        "tt/ttmrt.f90": "91d79b5b119c93960eb1a5a1f85a459811807cf3425474d678a48bf309bc0604",
+        "ut/utmrt.f90": "5d6d287dd8d9e2a518472b3eb34d1f78b3f2cacbc98c7c9a49766bd0ab7cde7d"
+      }
+    },
+    {
+      "id": "C17",
+      "mode": "extract",
+      "sources": [
+        "so/scomrt.f90"
+      ],
+      "canonical": "vbase/mortalloc.f90",
+      "helper": "MORTALLOC",
+      "consumers": {
+        "so": [
+          "so/scomrt.f90"
+        ]
+      },
+      "preservation_contract": "Migrate SO tail preserving its local efficiency scale.",
+      "before_sources": {
+        "so/scomrt.f90": "2d1b992a50056e24a614ee734f7d0d3e37ea4cc95c271dc51026dad7280d3871"
+      }
+    },
+    {
+      "id": "C18",
+      "mode": "extract",
+      "sources": [
+        "ws/varmrt.f90"
+      ],
+      "canonical": "vbase/mortalloc.f90",
+      "helper": "MORTALLOC",
+      "consumers": {
+        "ws": [
+          "ws/varmrt.f90"
+        ]
+      },
+      "preservation_contract": "Migrate WS tail preserving local efficiency scale/crown-ratio handling.",
+      "before_sources": {
+        "ws/varmrt.f90": "fd32062bf6fd9cb46ae7f4a6789a91f3ba6247b1927ef669a64d1301efe931e5"
+      }
+    }
+  ],
+  "affected_variants": [
+    "ak",
+    "bc",
+    "bm",
+    "ca",
+    "ci",
+    "cr",
+    "cs",
+    "ec",
+    "em",
+    "ie",
+    "kt",
+    "ls",
+    "nc",
+    "ne",
+    "oc",
+    "on",
+    "op",
+    "pn",
+    "sn",
+    "so",
+    "tt",
+    "ut",
+    "wc",
+    "ws"
+  ],
+  "constraints": "No model bug fixes. Separate C13/C14 and mortality migration steps; retain each step patch/state. Prior Canadian acceptance exceptions do not cover C13/C14."
+}

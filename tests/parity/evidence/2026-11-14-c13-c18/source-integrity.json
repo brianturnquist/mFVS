@@ -1,0 +1,42 @@
+{
+  "original": {
+    "revision": "c210536536d81fd9b46dccb9a571f0de1e55e944",
+    "blobs_checked": 3210,
+    "modified_paths": [
+      "bin/FVSbc_sourceList.txt",
+      "bin/FVSon_sourceList.txt"
+    ],
+    "allowed_modified_paths": [
+      "bin/FVSbc_sourceList.txt",
+      "bin/FVSon_sourceList.txt"
+    ],
+    "passed": true
+  },
+  "original_nvel": {
+    "revision": "38548071d5aa652bb90c7f111f86b427f798a1c9",
+    "blobs_checked": 282,
+    "modified_paths": [],
+    "allowed_modified_paths": [],
+    "passed": true
+  },
+  "current": {
+    "revision": "fb27261e7dc91100d98509218b14686d64efa085",
+    "blobs_checked": 4006,
+    "modified_paths": [],
+    "allowed_modified_paths": [],
+    "passed": true
+  },
+  "current_nvel": {
+    "revision": "a73e697e220ffd0f792aa7ac10d84c911edb7ad7",
+    "blobs_checked": 285,
+    "modified_paths": [],
+    "allowed_modified_paths": [],
+    "passed": true
+  },
+  "working_selected_inputs_still_match_candidate": true,
+  "reference_patch_replay": {
+    "passed": true,
+    "patch_sha256": "f6b1bb40b68b9b39ed1732aac2904bfa0396170fefc94b0765c8ea258fabdc9f",
+    "stdout": "patching file 'bin/FVSbc_sourceList.txt'\npatching file 'bin/FVSon_sourceList.txt'\n"
+  }
+}

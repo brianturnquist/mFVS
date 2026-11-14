@@ -1,0 +1,15 @@
+{
+  "task": "C18",
+  "literal_statement_proof": [
+    {
+      "source": "ws/varmrt.f90",
+      "removed_statement_sha256": "29c7783af608a7a6aef7759c0f4d1b9e4da0e9e784327ff8f9652dbe4ddb9231"
+    }
+  ],
+  "after_sources": {
+    "ws/varmrt.f90": "d957e98b19e561aa805f77c21e009ab1362b0dcd1d8cdb577e8fe3518ae19281",
+    "vbase/mortalloc.f90": "52b26009a58647b0eaea56156ecd05d5f749d1b0c38922d9f27cc01435f12e12",
+    "bin/FVSws_sourceList.txt": "373e5a11b2df7f810815ff7317bc6534e1e86fb89f3128400ecf779c13dad57a"
+  },
+  "passed": true
+}

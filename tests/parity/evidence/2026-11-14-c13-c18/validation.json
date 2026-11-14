@@ -1,0 +1,48 @@
+{
+  "implemented_tasks": [
+    "C13",
+    "C14",
+    "C15",
+    "C16",
+    "C17",
+    "C18"
+  ],
+  "completed_tasks": [
+    "C13",
+    "C14",
+    "C15",
+    "C16",
+    "C17",
+    "C18"
+  ],
+  "awaiting_P03_acceptance": [],
+  "build_identities": 72,
+  "fresh_candidate_builds": 24,
+  "reused_baseline_builds": 48,
+  "integrated_pairwise_comparisons": 75,
+  "US_simulation_comparisons": 66,
+  "Canadian_failure_boundary_comparisons": 9,
+  "direct_pairwise_comparisons": 396,
+  "model_lines_removed_net": 519,
+  "scientific_bug_fixes": false,
+  "BC_ON_simulation_parity": "blocked",
+  "source_proof_and_six_stage_replay_passed": true,
+  "raw_artifact_replay_passed": true,
+  "new_deferred_bug": 9,
+  "tools_sha256": {
+    "tests/parity/check_comparator.py": "06da379178fb37c67b5c703f815ed060f0aabfbcca2bf73bbcbade6fe8eb317a",
+    "tests/parity/check_consolidation.py": "5458ec03d6fd64623d5a10cf027935a18e52de6f2767dbe2762b8d71ca44da40",
+    "tests/parity/check_extractions.py": "48f7783f1844227d11036eb5bedc9a2fd6709fd4c0a047caaa28434ed1cc2ddc",
+    "tests/parity/check_sqlite_lifecycle.py": "8807ef4c3ce2026f0fbae2b4609f5e85ec72616aea83804459059ddb6e3ee196",
+    "tests/parity/compare_outputs.py": "03b71d9d4e667496c7b4bee41f8f39bd7382d0443d7699faf8723c44d28e7d0d",
+    "tests/parity/prepare_builds.py": "c67fad1f883bf61cd906e6b04572453719846002ca23eccd941285083d82085e",
+    "tests/parity/record_evidence.py": "f3b37eecffc185bf0c6b423def24140e92787f17e45f648097904e60aba6fdba",
+    "tests/parity/replay_extractions.py": "0b5564726734a4260b963644daf2347417cc9346e90f203915d944df71fe1c92",
+    "tests/parity/run_cases.py": "f030fc6c999064639c7100119133bf45bfe47e17e1c3ccb740fbdf759a1a3b20",
+    "tests/parity/verify_consolidation.py": "d4ae669d73e65ec3c254364cdcef5e432d021b58c6bfe52ce244580e5a8e6f58",
+    "tests/parity/verify_extractions.py": "62503b9cc000cbedb2fb3a12e888b4348ae1c0c07911910aa9a25076f388464f",
+    "tests/parity/verify_retirement.py": "d1ebc25afed0ba9cc9e7a8aa558d2845d1e82776ef50f36ade4ba884ef1e0561"
+  },
+  "passed_with_stated_boundary": true,
+  "C13_C14_alternative_evidence_accepted": true
+}

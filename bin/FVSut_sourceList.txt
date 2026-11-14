@@ -76,6 +76,7 @@
 ../ut/siterange.f90
 ../ut/sitset.f90
 ../ut/utmrt.f90
+../vbase/mortalloc.f90
 
 ../cr/badist.f90
 ../cr/crdecd.f90
@@ -312,6 +313,7 @@
 ../dbsqlite/dbs_fiavbc_atrtls.f90
 ../dbsqlite/dbs_fiavbc_cutlst.f90
 ../dbsqlite/dbs_fiavbc_trls.f90
+../dbsqlite/dbs_fiavbc_bindtree.f90
 ../dbsqlite/dbsatrtls.f90
 ../dbsqlite/dbsblkd.f90
 ../dbsqlite/dbscalib.f90

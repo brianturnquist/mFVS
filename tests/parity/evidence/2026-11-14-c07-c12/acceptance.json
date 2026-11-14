@@ -1,0 +1,31 @@
+{
+  "accepted_on": "2026-11-14",
+  "authority": "Explicit user response in this conversation",
+  "tasks": [
+    "C07",
+    "C10"
+  ],
+  "response": "Accept this evidence for C07/C10",
+  "question": "May I mark C07 and C10 complete using their exact routine/file-output comparisons and executable-statement evidence, while leaving BC/ON simulation parity blocked? All 72 build identities, 81 integrated comparisons and 120 direct comparisons passed; no model bugs were fixed. This decision is needed because CLEANUP_TRACKER.md\u2019s P03 gate requires Canadian simulation coverage, and your earlier exception applied only to C01/C06.",
+  "accepted_evidence": [
+    "targeted.json",
+    "esaddt-statement-proof.json",
+    "shared-snag-statement-proof.json",
+    "branch-controls.json",
+    "replay.json",
+    "consolidation.json"
+  ],
+  "evidence_sha256": {
+    "targeted.json": "6660be3db0819128a8256f724fab4585250587bbd9df4feed2e3397844125ebf",
+    "esaddt-statement-proof.json": "d68d2fea0f6783a05b974c767db4aca7a38eb55a8272998abe0e76955329772e",
+    "shared-snag-statement-proof.json": "0f24cb79aa7d29494115c800cf4d35a136b3161c976bfa2340af667b0ea1bd73",
+    "branch-controls.json": "b88215fb863e5c5ed94d9e0fbc39a82544235fa40463d4403ce81ecaaf8592f3",
+    "replay.json": "43757fb62e696941ec807a3a38f5179b383fd9e3cf29a4dd59eeb850fe325e12",
+    "consolidation.json": "c668ec0b585eb911a3b0a335ed11508fb4f2bf1e35e83ca278939f0cd050f334"
+  },
+  "scope": "Completion of C07 and C10 only using exact original/current/candidate direct routine/file-output comparisons and executable-statement evidence",
+  "BC_ON_simulation_parity": "blocked",
+  "runtime_object_equality_claimed": false,
+  "scientific_bug_fixes_authorized": false,
+  "other_task_gate_waived": false
+}

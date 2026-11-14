@@ -1,0 +1,22 @@
+{
+  "task": "C15",
+  "literal_statement_proof": [
+    {
+      "source": "ca/varmrt.f90",
+      "removed_statement_sha256": "29c7783af608a7a6aef7759c0f4d1b9e4da0e9e784327ff8f9652dbe4ddb9231"
+    },
+    {
+      "source": "nc/nwcmrt.f90",
+      "removed_statement_sha256": "29c7783af608a7a6aef7759c0f4d1b9e4da0e9e784327ff8f9652dbe4ddb9231"
+    }
+  ],
+  "after_sources": {
+    "ca/varmrt.f90": "1d83ed81197320f9854e05b90e65c4431b480a5ff2f8e4f2f1d51a4c192d5b14",
+    "nc/nwcmrt.f90": "6af70300df8787be9043f93b4503e292ec07b47a4c1adfad8a7a720c6a961929",
+    "vbase/mortalloc.f90": "52b26009a58647b0eaea56156ecd05d5f749d1b0c38922d9f27cc01435f12e12",
+    "bin/FVSca_sourceList.txt": "15ec4fb9f6076ddf3b5bc9890730708ba1b4fd757114bd790a88017e5f4554ab",
+    "bin/FVSnc_sourceList.txt": "01fd485460392aa3bd20c457f4ab29efead8ec0a8a0a6dc9a2ddc177e4a64eac",
+    "bin/FVSoc_sourceList.txt": "a7ff175adc5c568371d33d6b598448d2d098e0f1d3ba4b3b9062a4e77184da7b"
+  },
+  "passed": true
+}

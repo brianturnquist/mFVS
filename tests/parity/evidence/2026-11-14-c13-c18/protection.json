@@ -1,0 +1,16 @@
+{
+  "prior_evidence_files_verified_unchanged": 933,
+  "prior_manifest": "prior-evidence-sha256.json",
+  "prior_manifest_sha256": "b91dffa80420f593dcb2a9d6757200c9961bc10435a88f79d0e0c9481c9be417",
+  "preexisting_untracked_acceptance_sha256": "114423b1daf583a0a100a00a94d4188e0d6ad01c1b7e277d8e2637860ddca6d5",
+  "main_comparator_unchanged": true,
+  "main_comparator_sha256": "03b71d9d4e667496c7b4bee41f8f39bd7382d0443d7699faf8723c44d28e7d0d",
+  "retained_controls": {
+    "tests/parity/evidence/2026-11-14-c01-c06/comparator-controls.json": "27951900f387ef17629b4898a09e5f7536eedfa9ffe3c4fe63859e9f43350560",
+    "tests/parity/evidence/2026-11-14-c01-c06/metadata-controls.json": "e45804c184f14cd94fa8b4fbf1c77042da0101a690000bdb751aa765214900d0"
+  },
+  "negative_controls_previously_passed": 10,
+  "header_controls_previously_passed": 24,
+  "bugs_1_to_8_model_sources_unchanged": true,
+  "passed": true
+}

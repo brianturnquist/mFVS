@@ -1,0 +1,42 @@
+! Exercise the actual variant efficiency calculation and allocation tail.
+! Each case runs in a separate process so a historical failure is explicit.
+program CHECK_MORTALITY
+  implicit none
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
+  include 'CONTRL.f90'
+  integer :: I,CASEID
+  real :: TOKILL,SUMKIL,FRACTION
+  logical :: DEBUG
+  character(12) :: ARG
+  call GET_COMMAND_ARGUMENT(1,ARG)
+  read(ARG,*) CASEID
+  ITRN = 16
+  ICYC = 2
+  JOSTND = 6
+  PROB = 0.0
+  WK2 = 0.0
+  PCT = 0.0
+  ISP = 1
+  ICR = 50
+  do I = 1,ITRN
+     PROB(I) = 0.5+real(I)*1.375
+     PCT(I) = real(I-1)*100.0/15.0
+     ISP(I) = MOD(I-1,MAXSP)+1
+     ICR(I) = MOD(I*17,101)
+  end do
+  DEBUG = MOD(CASEID,2).eq.0
+  FRACTION = 0.01
+  if (CASEID.eq.1.or.CASEID.eq.2) FRACTION = 0.0
+  if (CASEID.eq.3.or.CASEID.eq.4) FRACTION = 0.01
+  if (CASEID.eq.5.or.CASEID.eq.6) FRACTION = 0.5
+  if (CASEID.eq.7.or.CASEID.eq.8) FRACTION = 0.9
+  if (CASEID.eq.9.or.CASEID.eq.10) FRACTION = 0.98
+  if (CASEID.eq.11.or.CASEID.eq.12) FRACTION = 0.999
+  TOKILL = SUM(PROB(1:ITRN))*FRACTION
+  if (CASEID.le.2) WK2(1:ITRN) = PROB(1:ITRN)*0.125
+  call @ROUTINE@(TOKILL,DEBUG,SUMKIL)
+  open(31,file='state.bin',access='stream',form='unformatted',status='replace')
+  write(31) TOKILL,SUMKIL,WK2,PROB,PCT,ISP,ICR
+  close(31)
+end

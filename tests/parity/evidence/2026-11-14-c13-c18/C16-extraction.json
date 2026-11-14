@@ -1,0 +1,21 @@
+{
+  "task": "C16",
+  "literal_statement_proof": [
+    {
+      "source": "tt/ttmrt.f90",
+      "removed_statement_sha256": "29c7783af608a7a6aef7759c0f4d1b9e4da0e9e784327ff8f9652dbe4ddb9231"
+    },
+    {
+      "source": "ut/utmrt.f90",
+      "removed_statement_sha256": "29c7783af608a7a6aef7759c0f4d1b9e4da0e9e784327ff8f9652dbe4ddb9231"
+    }
+  ],
+  "after_sources": {
+    "tt/ttmrt.f90": "50de1bbc4c96776b2c29fa6d08fe480522176d354e7c4eac3fb2a96e0e73913a",
+    "ut/utmrt.f90": "b6c3cfe8462a279708258921356527ab708fa07d033f56c2ad30c15404d37d47",
+    "vbase/mortalloc.f90": "52b26009a58647b0eaea56156ecd05d5f749d1b0c38922d9f27cc01435f12e12",
+    "bin/FVStt_sourceList.txt": "055bc2b8c00586a2f02321aff589da1ed4cacdc14e426987c56a186efbebb62f",
+    "bin/FVSut_sourceList.txt": "7654964980abf064fc8c1f068cc1b21e37b5a3349b828b040cb170c73ea2d9ab"
+  },
+  "passed": true
+}

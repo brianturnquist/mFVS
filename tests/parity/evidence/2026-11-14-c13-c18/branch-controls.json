@@ -1,0 +1,162 @@
+{
+  "mortality": {
+    "ca": {
+      "task": "C15",
+      "initial_npass": [
+        33,
+        64,
+        59,
+        1,
+        65,
+        9
+      ],
+      "minstep_1_reached": true,
+      "minstep_2_reached": true,
+      "minstep_5_reached": true,
+      "saturated_record_events": 45,
+      "adjust_up_events": 1195,
+      "adjust_down_events": 2,
+      "redistribution_events": 7,
+      "background_path": true
+    },
+    "nc": {
+      "task": "C15",
+      "initial_npass": [
+        33,
+        64,
+        59,
+        1,
+        66,
+        9
+      ],
+      "minstep_1_reached": true,
+      "minstep_2_reached": true,
+      "minstep_5_reached": true,
+      "saturated_record_events": 48,
+      "adjust_up_events": 1487,
+      "adjust_down_events": 1,
+      "redistribution_events": 7,
+      "background_path": true
+    },
+    "oc": {
+      "task": "C15",
+      "initial_npass": [
+        33,
+        64,
+        59,
+        1,
+        65,
+        9
+      ],
+      "minstep_1_reached": true,
+      "minstep_2_reached": true,
+      "minstep_5_reached": true,
+      "saturated_record_events": 45,
+      "adjust_up_events": 1195,
+      "adjust_down_events": 2,
+      "redistribution_events": 7,
+      "background_path": true
+    },
+    "tt": {
+      "task": "C16",
+      "initial_npass": [
+        313,
+        613,
+        563,
+        7,
+        625,
+        79
+      ],
+      "minstep_1_reached": true,
+      "minstep_2_reached": false,
+      "minstep_5_reached": true,
+      "saturated_record_events": 48,
+      "adjust_up_events": 9329,
+      "adjust_down_events": 0,
+      "redistribution_events": 7,
+      "background_path": true
+    },
+    "ut": {
+      "task": "C16",
+      "initial_npass": [
+        324,
+        634,
+        582,
+        7,
+        647,
+        81
+      ],
+      "minstep_1_reached": true,
+      "minstep_2_reached": false,
+      "minstep_5_reached": true,
+      "saturated_record_events": 47,
+      "adjust_up_events": 1680,
+      "adjust_down_events": 0,
+      "redistribution_events": 6,
+      "background_path": true
+    },
+    "so": {
+      "task": "C17",
+      "initial_npass": [
+        324,
+        635,
+        583,
+        7,
+        647,
+        81
+      ],
+      "minstep_1_reached": true,
+      "minstep_2_reached": false,
+      "minstep_5_reached": true,
+      "saturated_record_events": 46,
+      "adjust_up_events": 3953,
+      "adjust_down_events": 0,
+      "redistribution_events": 7,
+      "background_path": true
+    },
+    "ws": {
+      "task": "C18",
+      "initial_npass": [
+        31,
+        60,
+        55,
+        1,
+        61,
+        8
+      ],
+      "minstep_1_reached": true,
+      "minstep_2_reached": true,
+      "minstep_5_reached": true,
+      "saturated_record_events": 45,
+      "adjust_up_events": 811,
+      "adjust_down_events": 1,
+      "redistribution_events": 6,
+      "background_path": true
+    }
+  },
+  "literal_sqlite_negative_controls": [
+    {
+      "mutation": "one_ulp",
+      "rejected": true
+    },
+    {
+      "mutation": "integer_field",
+      "rejected": true
+    },
+    {
+      "mutation": "tree_id",
+      "rejected": true
+    },
+    {
+      "mutation": "drop_row",
+      "rejected": true
+    },
+    {
+      "mutation": "schema",
+      "rejected": true
+    }
+  ],
+  "comparator_sha256": "03b71d9d4e667496c7b4bee41f8f39bd7382d0443d7699faf8723c44d28e7d0d",
+  "literal_comparator_tool_sha256": "48f7783f1844227d11036eb5bedc9a2fd6709fd4c0a047caaa28434ed1cc2ddc",
+  "passed": true
+}

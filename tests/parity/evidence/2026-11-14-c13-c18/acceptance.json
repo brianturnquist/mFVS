@@ -1,0 +1,43 @@
+{
+  "accepted_on": "2026-11-14",
+  "authority": "Explicit user response in this conversation",
+  "tasks": [
+    "C13",
+    "C14"
+  ],
+  "response": "Accept this evidence for C13/C14",
+  "question": "May I mark C13/C14 complete using their exact SQLite schema/row comparisons and executable-statement evidence, while leaving BC/ON simulation parity blocked? All 72 build identities, 75 integrated comparisons and 396 direct comparisons passed; no model bugs were fixed. The reviewable results are saved in tests/parity/evidence/2026-11-14-c13-c18/README.md. This decision is required by CLEANUP_TRACKER.md\u2019s P03 gate: \u201cDo not check off an affected consolidation as verified while its required BC/ON simulation coverage remains blocked.\u201d Earlier exceptions applied only to C01/C06 and C07/C10.",
+  "accepted_evidence": [
+    "builds.json",
+    "runs.json",
+    "extractions.json",
+    "targeted-C13.json",
+    "targeted-C14.json",
+    "branch-controls.json",
+    "replay.json",
+    "source-integrity.json",
+    "canadian-boundary.json",
+    "sqlite-lifecycle.json",
+    "protection.json",
+    "validation.json"
+  ],
+  "evidence_sha256": {
+    "builds.json": "409c6759dad2f3e1adca320f30f59bbc6ccef497650f8d94a2fdb87368cd2c08",
+    "runs.json": "b7b2e9200b0238a6f09e713b2f9be897fb2e4c056ad1256a7c0881c7343a981c",
+    "extractions.json": "333cad3be9dbaeda23f848a7bbf0c6770967c9edb804a1481525c6cdabff34d3",
+    "targeted-C13.json": "32cd9e579a544f314be02f973ecff157dab7bdffd2e43dda2b300757ebca30e7",
+    "targeted-C14.json": "7235568501f515e63808041f589528593eff6b4383d9e07411c674e36688d567",
+    "branch-controls.json": "e217be461a642e39c68c87c378280f14814163085979f1d0f5b1ff1cf99f47de",
+    "replay.json": "02ea92b732ac9062e7a6b61eb01e25a2db558973884ed9f13e7a9d3b8ba35176",
+    "source-integrity.json": "ff6da50423d18fc88f78681a4b390b2ee345a3503854603d8b07c71c48d2e0d3",
+    "canadian-boundary.json": "894a48873a3ca46fc7ba65b68505371f90ae38ea516694534ea563735816db35",
+    "sqlite-lifecycle.json": "6e9915fc87ff51592e0ee2473c8eaae689178fb44502660d8407a687ab785867",
+    "protection.json": "26a785ef008921812de0cc194c192d91bc0400969fef2ece7a6a6b6abed4d737",
+    "validation.json": "22499938b6cab51927795a2ad8acd51dea3dc96ddf78a3d15d823329063cc6aa"
+  },
+  "scope": "Completion of C13/C14 only using exact original F77/immediate baseline/candidate SQLite schema and typed-row comparisons and executable-statement evidence",
+  "BC_ON_simulation_parity": "blocked",
+  "runtime_object_equality_claimed": false,
+  "scientific_bug_fixes_authorized": false,
+  "other_task_gate_waived": false
+}

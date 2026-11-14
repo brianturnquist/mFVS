@@ -1,0 +1,130 @@
+! Call the real SQLite writers with controlled model state. Only case-number
+! service and error reporting are supplied by the harness below.
+program CHECK_FIA_BINDINGS
+  implicit none
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
+  include 'CONTRL.f90'
+  include 'PLOT.f90'
+  include 'ESTREE.f90'
+  include 'VARCOM.f90'
+  include 'WORKCM.f90'
+  include 'DBSCOM.f90'
+  integer :: I,J,K,MODE,WRITER,RC,NERR
+  integer :: fsql3_open,fsql3_close,fsql3_finalize
+  character(30) :: DBNAME
+  common /TESTERR/ NERR
+
+  ITRN = 4
+  IREC2 = MAXTRE-1
+  ICYC = 0
+  IY = 2000
+  IY(1) = 2000
+  IY(2) = 2010
+  IY(3) = 2020
+  GROSPC = 2.0
+  FINT = 10.0
+  FINTM = 5.0
+  NPLT = 'BINDING TEST'
+  ISCT = 0
+  ISCT(1,1) = 1
+  ISCT(1,2) = 4
+  IND1(1:4) = (/1,2,3,4/)
+  IPVEC = 0
+  IPVEC(1) = 101
+  JSP(1) = 'TEST'
+  PLNJSP(1) = 'TESTP'
+  FIAJSP(1) = '999'
+  do J = 1,6
+     I = J
+     if (J.gt.4) I = MAXTRE-6+J
+     ISP(I) = 1
+     ITRE(I) = 1
+     IDTREE(I) = 42+J
+     PROB(I) = real(J)*1.25
+     WK2(I) = real(J)*0.125
+     WK3(I) = real(J)*0.25
+     DBH(I) = real(J)*3.14
+     HT(I) = real(J)*10.123
+     NORMHT(I) = 12346*J
+     ITRUNC(I) = 94+J
+     ICR(I) = 10*J
+     CULL(I) = real(J)*1.123
+     WDLDSTEM(I) = J
+     DECAYCD(I) = MOD(J,5)
+     CARB_FRAC(I) = 0.4+real(J)/100.0
+     CFV(I) = real(J)*2.123
+     MCFV(I) = real(J)*1.23
+     SCFV(I) = real(J)*0.123
+     ABVGRD_BIO(I) = real(J)*10.12
+     MERCH_BIO(I) = real(J)*9.12
+     CUBSAW_BIO(I) = real(J)*8.12
+     FOLI_BIO(I) = real(J)*0.12
+     ABVGRD_CARB(I) = real(J)*5.12
+     MERCH_CARB(I) = real(J)*4.12
+     CUBSAW_CARB(I) = real(J)*3.12
+     FOLI_CARB(I) = real(J)*0.06
+  end do
+  IDTREE(2) = 10000001
+  IDTREE(3) = 20000002
+  IDTREE(4) = 0
+  PROB(4) = 0.0
+  WK3(1) = 0.0
+  NORMHT(2) = 0
+  NORMHT(3) = -100
+  ! This integer crosses the default REAL exact-integer boundary. It guards
+  ! the historical REAL calculation before promotion to a SQLite double.
+  NORMHT(4) = 16777217
+
+  do MODE = 0,3
+     do WRITER = 1,3
+        ! TRLS also writes inventory-dead records at cycle zero. The other
+        ! writers report IY(ICYC) and are called after the cycle advances.
+        ICYC = 1
+        if (MODE.eq.2.and.WRITER.eq.1) ICYC = 0
+        IVBCTRELST = 1
+        IVBCATRLST = 1
+        IVBCCUTLST = 1
+        LFIANVB = .true.
+        if (MODE.eq.0) then
+           IVBCTRELST = 0
+           IVBCATRLST = 0
+           IVBCCUTLST = 0
+        end if
+        if (MODE.eq.1) LFIANVB = .false.
+        write(DBNAME,'("writer",I1,"-mode",I1,".db")') WRITER,MODE
+        RC = fsql3_open(IoutDBref,TRIM(DBNAME)//CHAR(0))
+        if (RC.ne.0) stop 91
+        NERR = 0
+        if (WRITER.eq.1) call DBS_FIAVBC_TRLS
+        if (WRITER.eq.2) call DBS_FIAVBC_ATRTLS
+        if (WRITER.eq.3) call DBS_FIAVBC_CUTLST
+        write(*,*) MODE,WRITER,NERR,IVBCTRELST,IVBCATRLST,IVBCCUTLST
+        ! Release a writer's retained statement before closing this isolated
+        ! database. This is harness teardown, after all model calls finish.
+        if (MODE.ge.2) RC = fsql3_finalize(IoutDBref)
+        RC = fsql3_close(IoutDBref)
+        if (RC.ne.0) stop 92
+     end do
+  end do
+  open(31,file='state.bin',access='stream',form='unformatted',status='replace')
+  write(31) DBH,HT,NORMHT,ITRUNC,ICR,CULL,WDLDSTEM,DECAYCD,CARB_FRAC
+  write(31) PROB,WK2,WK3,IDTREE,ITRE,ISP
+  close(31)
+end
+
+subroutine DBSCASE(MODE)
+  implicit none
+  include 'DBSCOM.f90'
+  integer :: MODE
+  CASEID = '00000000-0000-0000-0000-000000000001'
+end
+
+subroutine ERRGRO(FATAL,CODE)
+  implicit none
+  logical :: FATAL
+  integer :: CODE,NERR
+  common /TESTERR/ NERR
+  if (.not.FATAL.or.CODE.ne.52) stop 93
+  NERR = NERR+1
+end

@@ -321,6 +321,7 @@
 ../dbsqlite/dbs_fiavbc_atrtls.f90
 ../dbsqlite/dbs_fiavbc_cutlst.f90
 ../dbsqlite/dbs_fiavbc_trls.f90
+../dbsqlite/dbs_fiavbc_bindtree.f90
 ../dbsqlite/dbstrls.f90
 
 ../dbsqlite/dbsblkd.f90

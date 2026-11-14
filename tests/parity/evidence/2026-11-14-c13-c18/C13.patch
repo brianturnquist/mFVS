@@ -1,0 +1,456 @@
+--- a/dbsqlite/dbs_fiavbc_trls.f90
++++ b/dbsqlite/dbs_fiavbc_trls.f90
+@@ -28,7 +28,7 @@
+   integer :: ISPC,I1,I2,I3,ColNumber
+   integer :: IDCMP1,IDCMP2,ITRNK
+   data IDCMP1,IDCMP2/10000000,20000000/
+-  real*8  :: P,DP,DDBH,DHT,ESTHT,DCFV,DMCFV,DSCFV,DCULL,DCRBFRC,DAGBIO,DMERCHBIO,DSAWBIO,DFOLIBIO,&
++  real*8  :: P,DP,DCFV,DMCFV,DSCFV,DAGBIO,DMERCHBIO,DSAWBIO,DFOLIBIO,&
+        &DAGCARB,DMERCHCARB,DSAWCARB,DFOLICARB
+ 
+   integer :: fsql3_tableexists,fsql3_exec,fsql3_bind_int,fsql3_step,fsql3_prepare,fsql3_bind_double,&
+@@ -187,42 +187,8 @@
+            ColNumber = ColNumber+1
+            iRet = fsql3_bind_double(IoutDBref,ColNumber,DP) !MortTPA
+ 
+-           DDBH = DBH(I)
+-           ColNumber = ColNumber+1
+-           iRet = fsql3_bind_double(IoutDBref,ColNumber,DDBH) !DBH
+-
+-           DHT = HT(I)
+-           ColNumber = ColNumber+1
+-           iRet = fsql3_bind_double(IoutDBref,ColNumber,DHT) !Ht
+-
+-           if (NORMHT(I) .gt.0) then
+-              ESTHT = (real(NORMHT(I))+5)/100
+-           else
+-              ESTHT = 0
+-           end if
+-           ColNumber = ColNumber+1
+-           iRet = fsql3_bind_double(IoutDBref,ColNumber,ESTHT) !NormHt
+-
+-           ColNumber = ColNumber+1
+-           iRet = fsql3_bind_int(IoutDBref,ColNumber,ITRNK) !TruncHt
+-
+-           ColNumber = ColNumber+1
+-           iRet = fsql3_bind_int(IoutDBref,ColNumber,ICR(I)) !PctCr (Percent live crown)
+-
+-           !           Add FIA Cull, Number WoodlandStems, Decay Code, Carbon fraction
+-           ColNumber = ColNumber+1
+-           DCULL = CULL(I)
+-           iRet = fsql3_bind_double(IoutDBref,ColNumber,DCULL) !Cull
+-
+-           ColNumber = ColNumber+1
+-           iRet = fsql3_bind_int(IoutDBref,ColNumber,WDLDSTEM(I)) !WdldStem
+-
+-           ColNumber = ColNumber+1
+-           iRet = fsql3_bind_int(IoutDBref,ColNumber,DECAYCD(I)) !DecayCd
+-
+-           ColNumber = ColNumber+1
+-           DCRBFRC = CARB_FRAC(I)
+-           iRet = fsql3_bind_double(IoutDBref,ColNumber,DCRBFRC) !CarbFrac
++           ! Shared numeric fields; retain writer-specific reporting above and below.
++           call DBS_FIAVBC_BINDTREE(I,ITRNK,ColNumber,iRet)
+ 
+            !           Add cubic volume outputs
+            ColNumber = ColNumber+1
+@@ -338,42 +304,8 @@
+      ColNumber = ColNumber+1
+      iRet = fsql3_bind_double(IoutDBref,ColNumber,DP) !MortTPA
+ 
+-     DDBH = DBH(I)
+-     ColNumber = ColNumber+1
+-     iRet = fsql3_bind_double(IoutDBref,ColNumber,DDBH) !DBH
+-
+-     DHT = HT(I)
+-     ColNumber = ColNumber+1
+-     iRet = fsql3_bind_double(IoutDBref,ColNumber,DHT) !Ht
+-
+-     if (NORMHT(I) .gt.0) then
+-        ESTHT = (real(NORMHT(I))+5)/100
+-     else
+-        ESTHT = 0
+-     end if
+-     ColNumber = ColNumber+1
+-     iRet = fsql3_bind_double(IoutDBref,ColNumber,ESTHT) !NormHt
+-
+-     ColNumber = ColNumber+1
+-     iRet = fsql3_bind_int(IoutDBref,ColNumber,ITRNK) !TruncHt
+-
+-     ColNumber = ColNumber+1
+-     iRet = fsql3_bind_int(IoutDBref,ColNumber,ICR(I)) !PctCr (Percent live crown)
+-
+-     !       Add FIA Cull, Number WoodlandStems, Decay Code, Carbon fraction
+-     ColNumber = ColNumber+1
+-     DCULL = CULL(I)
+-     iRet = fsql3_bind_double(IoutDBref,ColNumber,DCULL) !Cull
+-
+-     ColNumber = ColNumber+1
+-     iRet = fsql3_bind_int(IoutDBref,ColNumber,WDLDSTEM(I)) !WdldStem
+-
+-     ColNumber = ColNumber+1
+-     iRet = fsql3_bind_int(IoutDBref,ColNumber,DECAYCD(I)) !DecayCd
+-
+-     ColNumber = ColNumber+1
+-     DCRBFRC = CARB_FRAC(I)
+-     iRet = fsql3_bind_double(IoutDBref,ColNumber,DCRBFRC) !CarbFrac
++     ! Shared numeric fields; retain writer-specific reporting above and below.
++     call DBS_FIAVBC_BINDTREE(I,ITRNK,ColNumber,iRet)
+ 
+      !       Add cubic volume outputs
+      ColNumber = ColNumber+1
+--- a/dbsqlite/dbs_fiavbc_atrtls.f90
++++ b/dbsqlite/dbs_fiavbc_atrtls.f90
+@@ -31,7 +31,7 @@
+   data IDCMP1,IDCMP2/10000000,20000000/
+ 
+   integer :: ColNumber
+-  real*8  :: P,DDBH,DP,DHT,ESTHT,DCFV,DMCFV,DSCFV,DCULL,DCRBFRC,DAGBIO,DMERCHBIO,DSAWBIO,DFOLIBIO,&
++  real*8  :: P,DP,DCFV,DMCFV,DSCFV,DAGBIO,DMERCHBIO,DSAWBIO,DFOLIBIO,&
+        &DAGCARB,DMERCHCARB,DSAWCARB,DFOLICARB
+ 
+   integer :: fsql3_tableexists,fsql3_exec,fsql3_bind_int,fsql3_step,fsql3_prepare,fsql3_bind_double,&
+@@ -207,42 +207,8 @@
+            ColNumber = ColNumber+1
+            iRet = fsql3_bind_double(IoutDBref,ColNumber,DP) !MortTPA
+ 
+-           DDBH = DBH(I)
+-           ColNumber = ColNumber+1
+-           iRet = fsql3_bind_double(IoutDBref,ColNumber,DDBH) !DBH
+-
+-           DHT = HT(I)
+-           ColNumber = ColNumber+1
+-           iRet = fsql3_bind_double(IoutDBref,ColNumber,DHT) !Ht
+-
+-           if (NORMHT(I) .gt.0) then
+-              ESTHT = (real(NORMHT(I))+5)/100
+-           else
+-              ESTHT = 0
+-           end if
+-           ColNumber = ColNumber+1
+-           iRet = fsql3_bind_double(IoutDBref,ColNumber,ESTHT) !Ht
+-
+-           ColNumber = ColNumber+1
+-           iRet = fsql3_bind_int(IoutDBref,ColNumber,ITRNK) !TruncHt
+-
+-           ColNumber = ColNumber+1
+-           iRet = fsql3_bind_int(IoutDBref,ColNumber,ICR(I)) !PctCr (Percent live crown)
+-
+-           !           Add FIA Cull, Number WoodlandStems, Decay Code, Carbon fraction
+-           ColNumber = ColNumber+1
+-           DCULL = CULL(I)
+-           iRet = fsql3_bind_double(IoutDBref,ColNumber,DCULL) !Cull
+-
+-           ColNumber = ColNumber+1
+-           iRet = fsql3_bind_int(IoutDBref,ColNumber,WDLDSTEM(I)) !WdldStem
+-
+-           ColNumber = ColNumber+1
+-           iRet = fsql3_bind_int(IoutDBref,ColNumber,DECAYCD(I)) !DecayCd
+-
+-           ColNumber = ColNumber+1
+-           DCRBFRC = CARB_FRAC(I)
+-           iRet = fsql3_bind_double(IoutDBref,ColNumber,DCRBFRC) !CarbFrac
++           ! Shared numeric fields; retain writer-specific reporting above and below.
++           call DBS_FIAVBC_BINDTREE(I,ITRNK,ColNumber,iRet)
+ 
+            !           Add cubic volume outputs
+            ColNumber = ColNumber+1
+--- a/dbsqlite/dbs_fiavbc_bindtree.f90
++++ b/dbsqlite/dbs_fiavbc_bindtree.f90
+@@ -0,0 +1,56 @@
++!====================================!
++!   dbsqlite : dbs_fiavbc_bindtree    !
++!====================================!
++subroutine DBS_FIAVBC_BINDTREE(I,ITRNK,ColNumber,iRet)
++  implicit none
++
++  ! Bind the shared DBH-through-carbon-fraction fields in FIA column order.
++  ! The writer retains row selection, IDs, probabilities and volume fields.
++  ! Keep default REAL calculations before assignment to the REAL*8 bindings.
++  include 'PRGPRM.f90'
++  include 'ARRAYS.f90'
++  include 'DBSCOM.f90'
++
++  integer :: I,ITRNK,ColNumber,iRet
++  integer :: fsql3_bind_double,fsql3_bind_int
++  real*8  :: DDBH,DHT,ESTHT,DCULL,DCRBFRC
++
++  DDBH = DBH(I)
++  ColNumber = ColNumber+1
++  iRet = fsql3_bind_double(IoutDBref,ColNumber,DDBH) !DBH
++
++  DHT = HT(I)
++  ColNumber = ColNumber+1
++  iRet = fsql3_bind_double(IoutDBref,ColNumber,DHT) !Ht
++
++  if (NORMHT(I) .gt.0) then
++     ESTHT = (real(NORMHT(I))+5)/100
++  else
++     ESTHT = 0
++  end if
++  ColNumber = ColNumber+1
++  iRet = fsql3_bind_double(IoutDBref,ColNumber,ESTHT) !NormHt
++
++  ColNumber = ColNumber+1
++  iRet = fsql3_bind_int(IoutDBref,ColNumber,ITRNK) !TruncHt
++
++  ColNumber = ColNumber+1
++  iRet = fsql3_bind_int(IoutDBref,ColNumber,ICR(I)) !PctCr (Percent live crown)
++
++  !           Add FIA Cull, Number WoodlandStems, Decay Code, Carbon fraction
++  ColNumber = ColNumber+1
++  DCULL = CULL(I)
++  iRet = fsql3_bind_double(IoutDBref,ColNumber,DCULL) !Cull
++
++  ColNumber = ColNumber+1
++  iRet = fsql3_bind_int(IoutDBref,ColNumber,WDLDSTEM(I)) !WdldStem
++
++  ColNumber = ColNumber+1
++  iRet = fsql3_bind_int(IoutDBref,ColNumber,DECAYCD(I)) !DecayCd
++
++  ColNumber = ColNumber+1
++  DCRBFRC = CARB_FRAC(I)
++  iRet = fsql3_bind_double(IoutDBref,ColNumber,DCRBFRC) !CarbFrac
++
++  return
++end
+--- a/bin/FVSak_sourceList.txt
++++ b/bin/FVSak_sourceList.txt
+@@ -313,6 +313,7 @@
+ ../dbsqlite/dbs_fiavbc_atrtls.f90
+ ../dbsqlite/dbs_fiavbc_cutlst.f90
+ ../dbsqlite/dbs_fiavbc_trls.f90
++../dbsqlite/dbs_fiavbc_bindtree.f90
+ ../dbsqlite/dbsatrtls.f90
+ ../dbsqlite/dbsblkd.f90
+ ../dbsqlite/dbscalib.f90
+--- a/bin/FVSbc_sourceList.txt
++++ b/bin/FVSbc_sourceList.txt
+@@ -321,6 +321,7 @@
+ ../dbsqlite/dbs_fiavbc_atrtls.f90
+ ../dbsqlite/dbs_fiavbc_cutlst.f90
+ ../dbsqlite/dbs_fiavbc_trls.f90
++../dbsqlite/dbs_fiavbc_bindtree.f90
+ ../dbsqlite/dbstrls.f90
+ 
+ ../dbsqlite/dbsblkd.f90
+--- a/bin/FVSbm_sourceList.txt
++++ b/bin/FVSbm_sourceList.txt
+@@ -316,6 +316,7 @@
+ ../dbsqlite/dbs_fiavbc_atrtls.f90
+ ../dbsqlite/dbs_fiavbc_cutlst.f90
+ ../dbsqlite/dbs_fiavbc_trls.f90
++../dbsqlite/dbs_fiavbc_bindtree.f90
+ ../dbsqlite/dbsatrtls.f90
+ ../dbsqlite/dbsblkd.f90
+ ../dbsqlite/dbscalib.f90
+--- a/bin/FVSca_sourceList.txt
++++ b/bin/FVSca_sourceList.txt
+@@ -317,6 +317,7 @@
+ ../dbsqlite/dbs_fiavbc_atrtls.f90
+ ../dbsqlite/dbs_fiavbc_cutlst.f90
+ ../dbsqlite/dbs_fiavbc_trls.f90
++../dbsqlite/dbs_fiavbc_bindtree.f90
+ ../dbsqlite/dbsatrtls.f90
+ ../dbsqlite/dbsblkd.f90
+ ../dbsqlite/dbscalib.f90
+--- a/bin/FVSci_sourceList.txt
++++ b/bin/FVSci_sourceList.txt
+@@ -315,6 +315,7 @@
+ ../dbsqlite/dbs_fiavbc_atrtls.f90
+ ../dbsqlite/dbs_fiavbc_cutlst.f90
+ ../dbsqlite/dbs_fiavbc_trls.f90
++../dbsqlite/dbs_fiavbc_bindtree.f90
+ ../dbsqlite/dbsatrtls.f90
+ ../dbsqlite/dbsblkd.f90
+ ../dbsqlite/dbscalib.f90
+--- a/bin/FVScr_sourceList.txt
++++ b/bin/FVScr_sourceList.txt
+@@ -318,6 +318,7 @@
+ ../dbsqlite/dbs_fiavbc_atrtls.f90
+ ../dbsqlite/dbs_fiavbc_cutlst.f90
+ ../dbsqlite/dbs_fiavbc_trls.f90
++../dbsqlite/dbs_fiavbc_bindtree.f90
+ ../dbsqlite/dbsatrtls.f90
+ ../dbsqlite/dbsblkd.f90
+ ../dbsqlite/dbscalib.f90
+--- a/bin/FVScs_sourceList.txt
++++ b/bin/FVScs_sourceList.txt
+@@ -312,6 +312,7 @@
+ ../dbsqlite/dbs_fiavbc_atrtls.f90
+ ../dbsqlite/dbs_fiavbc_cutlst.f90
+ ../dbsqlite/dbs_fiavbc_trls.f90
++../dbsqlite/dbs_fiavbc_bindtree.f90
+ ../dbsqlite/dbsatrtls.f90
+ ../dbsqlite/dbsblkd.f90
+ ../dbsqlite/dbscalib.f90
+--- a/bin/FVSec_sourceList.txt
++++ b/bin/FVSec_sourceList.txt
+@@ -314,6 +314,7 @@
+ ../dbsqlite/dbs_fiavbc_atrtls.f90
+ ../dbsqlite/dbs_fiavbc_cutlst.f90
+ ../dbsqlite/dbs_fiavbc_trls.f90
++../dbsqlite/dbs_fiavbc_bindtree.f90
+ ../dbsqlite/dbsatrtls.f90
+ ../dbsqlite/dbsblkd.f90
+ ../dbsqlite/dbscalib.f90
+--- a/bin/FVSem_sourceList.txt
++++ b/bin/FVSem_sourceList.txt
+@@ -317,6 +317,7 @@
+ ../dbsqlite/dbs_fiavbc_atrtls.f90
+ ../dbsqlite/dbs_fiavbc_cutlst.f90
+ ../dbsqlite/dbs_fiavbc_trls.f90
++../dbsqlite/dbs_fiavbc_bindtree.f90
+ ../dbsqlite/dbsatrtls.f90
+ ../dbsqlite/dbsblkd.f90
+ ../dbsqlite/dbscalib.f90
+--- a/bin/FVSie_sourceList.txt
++++ b/bin/FVSie_sourceList.txt
+@@ -310,6 +310,7 @@
+ ../dbsqlite/dbs_fiavbc_atrtls.f90
+ ../dbsqlite/dbs_fiavbc_cutlst.f90
+ ../dbsqlite/dbs_fiavbc_trls.f90
++../dbsqlite/dbs_fiavbc_bindtree.f90
+ ../dbsqlite/dbsatrtls.f90
+ ../dbsqlite/dbsblkd.f90
+ ../dbsqlite/dbscalib.f90
+--- a/bin/FVSkt_sourceList.txt
++++ b/bin/FVSkt_sourceList.txt
+@@ -313,6 +313,7 @@
+ ../dbsqlite/dbs_fiavbc_atrtls.f90
+ ../dbsqlite/dbs_fiavbc_cutlst.f90
+ ../dbsqlite/dbs_fiavbc_trls.f90
++../dbsqlite/dbs_fiavbc_bindtree.f90
+ ../dbsqlite/dbsatrtls.f90
+ ../dbsqlite/dbsblkd.f90
+ ../dbsqlite/dbscalib.f90
+--- a/bin/FVSls_sourceList.txt
++++ b/bin/FVSls_sourceList.txt
+@@ -313,6 +313,7 @@
+ ../dbsqlite/dbs_fiavbc_atrtls.f90
+ ../dbsqlite/dbs_fiavbc_cutlst.f90
+ ../dbsqlite/dbs_fiavbc_trls.f90
++../dbsqlite/dbs_fiavbc_bindtree.f90
+ ../dbsqlite/dbsatrtls.f90
+ ../dbsqlite/dbsblkd.f90
+ ../dbsqlite/dbscalib.f90
+--- a/bin/FVSnc_sourceList.txt
++++ b/bin/FVSnc_sourceList.txt
+@@ -316,6 +316,7 @@
+ ../dbsqlite/dbs_fiavbc_atrtls.f90
+ ../dbsqlite/dbs_fiavbc_cutlst.f90
+ ../dbsqlite/dbs_fiavbc_trls.f90
++../dbsqlite/dbs_fiavbc_bindtree.f90
+ ../dbsqlite/dbsatrtls.f90
+ ../dbsqlite/dbsblkd.f90
+ ../dbsqlite/dbscalib.f90
+--- a/bin/FVSne_sourceList.txt
++++ b/bin/FVSne_sourceList.txt
+@@ -314,6 +314,7 @@
+ ../dbsqlite/dbs_fiavbc_atrtls.f90
+ ../dbsqlite/dbs_fiavbc_cutlst.f90
+ ../dbsqlite/dbs_fiavbc_trls.f90
++../dbsqlite/dbs_fiavbc_bindtree.f90
+ ../dbsqlite/dbsatrtls.f90
+ ../dbsqlite/dbsblkd.f90
+ ../dbsqlite/dbscalib.f90
+--- a/bin/FVSoc_sourceList.txt
++++ b/bin/FVSoc_sourceList.txt
+@@ -317,6 +317,7 @@
+ ../dbsqlite/dbs_fiavbc_atrtls.f90
+ ../dbsqlite/dbs_fiavbc_cutlst.f90
+ ../dbsqlite/dbs_fiavbc_trls.f90
++../dbsqlite/dbs_fiavbc_bindtree.f90
+ ../dbsqlite/dbsatrtls.f90
+ ../dbsqlite/dbsblkd.f90
+ ../dbsqlite/dbscalib.f90
+--- a/bin/FVSon_sourceList.txt
++++ b/bin/FVSon_sourceList.txt
+@@ -340,6 +340,7 @@
+ ../dbsqlite/dbs_fiavbc_atrtls.f90
+ ../dbsqlite/dbs_fiavbc_cutlst.f90
+ ../dbsqlite/dbs_fiavbc_trls.f90
++../dbsqlite/dbs_fiavbc_bindtree.f90
+ ../dbsqlite/dbstrls.f90
+ 
+ ../dbsqlite/dbsblkd.f90
+--- a/bin/FVSop_sourceList.txt
++++ b/bin/FVSop_sourceList.txt
+@@ -313,6 +313,7 @@
+ ../dbsqlite/dbs_fiavbc_atrtls.f90
+ ../dbsqlite/dbs_fiavbc_cutlst.f90
+ ../dbsqlite/dbs_fiavbc_trls.f90
++../dbsqlite/dbs_fiavbc_bindtree.f90
+ ../dbsqlite/dbsatrtls.f90
+ ../dbsqlite/dbsblkd.f90
+ ../dbsqlite/dbscalib.f90
+--- a/bin/FVSpn_sourceList.txt
++++ b/bin/FVSpn_sourceList.txt
+@@ -312,6 +312,7 @@
+ ../dbsqlite/dbs_fiavbc_atrtls.f90
+ ../dbsqlite/dbs_fiavbc_cutlst.f90
+ ../dbsqlite/dbs_fiavbc_trls.f90
++../dbsqlite/dbs_fiavbc_bindtree.f90
+ ../dbsqlite/dbsatrtls.f90
+ ../dbsqlite/dbsblkd.f90
+ ../dbsqlite/dbscalib.f90
+--- a/bin/FVSsn_sourceList.txt
++++ b/bin/FVSsn_sourceList.txt
+@@ -314,6 +314,7 @@
+ ../dbsqlite/dbs_fiavbc_atrtls.f90
+ ../dbsqlite/dbs_fiavbc_cutlst.f90
+ ../dbsqlite/dbs_fiavbc_trls.f90
++../dbsqlite/dbs_fiavbc_bindtree.f90
+ ../dbsqlite/dbsatrtls.f90
+ ../dbsqlite/dbsblkd.f90
+ ../dbsqlite/dbscalib.f90
+--- a/bin/FVSso_sourceList.txt
++++ b/bin/FVSso_sourceList.txt
+@@ -319,6 +319,7 @@
+ ../dbsqlite/dbs_fiavbc_atrtls.f90
+ ../dbsqlite/dbs_fiavbc_cutlst.f90
+ ../dbsqlite/dbs_fiavbc_trls.f90
++../dbsqlite/dbs_fiavbc_bindtree.f90
+ ../dbsqlite/dbsatrtls.f90
+ ../dbsqlite/dbsblkd.f90
+ ../dbsqlite/dbscalib.f90
+--- a/bin/FVStt_sourceList.txt
++++ b/bin/FVStt_sourceList.txt
+@@ -321,6 +321,7 @@
+ ../dbsqlite/dbs_fiavbc_atrtls.f90
+ ../dbsqlite/dbs_fiavbc_cutlst.f90
+ ../dbsqlite/dbs_fiavbc_trls.f90
++../dbsqlite/dbs_fiavbc_bindtree.f90
+ ../dbsqlite/dbsatrtls.f90
+ ../dbsqlite/dbsblkd.f90
+ ../dbsqlite/dbscalib.f90
+--- a/bin/FVSut_sourceList.txt
++++ b/bin/FVSut_sourceList.txt
+@@ -312,6 +312,7 @@
+ ../dbsqlite/dbs_fiavbc_atrtls.f90
+ ../dbsqlite/dbs_fiavbc_cutlst.f90
+ ../dbsqlite/dbs_fiavbc_trls.f90
++../dbsqlite/dbs_fiavbc_bindtree.f90
+ ../dbsqlite/dbsatrtls.f90
+ ../dbsqlite/dbsblkd.f90
+ ../dbsqlite/dbscalib.f90
+--- a/bin/FVSwc_sourceList.txt
++++ b/bin/FVSwc_sourceList.txt
+@@ -312,6 +312,7 @@
+ ../dbsqlite/dbs_fiavbc_atrtls.f90
+ ../dbsqlite/dbs_fiavbc_cutlst.f90
+ ../dbsqlite/dbs_fiavbc_trls.f90
++../dbsqlite/dbs_fiavbc_bindtree.f90
+ ../dbsqlite/dbsatrtls.f90
+ ../dbsqlite/dbsblkd.f90
+ ../dbsqlite/dbscalib.f90
+--- a/bin/FVSws_sourceList.txt
++++ b/bin/FVSws_sourceList.txt
+@@ -313,6 +313,7 @@
+ ../dbsqlite/dbs_fiavbc_atrtls.f90
+ ../dbsqlite/dbs_fiavbc_cutlst.f90
+ ../dbsqlite/dbs_fiavbc_trls.f90
++../dbsqlite/dbs_fiavbc_bindtree.f90
+ ../dbsqlite/dbsatrtls.f90
+ ../dbsqlite/dbsblkd.f90
+ ../dbsqlite/dbscalib.f90

@@ -28,7 +28,7 @@ subroutine DBS_FIAVBC_TRLS
   integer :: ISPC,I1,I2,I3,ColNumber
   integer :: IDCMP1,IDCMP2,ITRNK
   data IDCMP1,IDCMP2/10000000,20000000/
-  real*8  :: P,DP,DDBH,DHT,ESTHT,DCFV,DMCFV,DSCFV,DCULL,DCRBFRC,DAGBIO,DMERCHBIO,DSAWBIO,DFOLIBIO,&
+  real*8  :: P,DP,DCFV,DMCFV,DSCFV,DAGBIO,DMERCHBIO,DSAWBIO,DFOLIBIO,&
        &DAGCARB,DMERCHCARB,DSAWCARB,DFOLICARB
 
   integer :: fsql3_tableexists,fsql3_exec,fsql3_bind_int,fsql3_step,fsql3_prepare,fsql3_bind_double,&
@@ -187,42 +187,8 @@ subroutine DBS_FIAVBC_TRLS
            ColNumber = ColNumber+1
            iRet = fsql3_bind_double(IoutDBref,ColNumber,DP) !MortTPA
 
-           DDBH = DBH(I)
-           ColNumber = ColNumber+1
-           iRet = fsql3_bind_double(IoutDBref,ColNumber,DDBH) !DBH
-
-           DHT = HT(I)
-           ColNumber = ColNumber+1
-           iRet = fsql3_bind_double(IoutDBref,ColNumber,DHT) !Ht
-
-           if (NORMHT(I) .gt.0) then
-              ESTHT = (real(NORMHT(I))+5)/100
-           else
-              ESTHT = 0
-           end if
-           ColNumber = ColNumber+1
-           iRet = fsql3_bind_double(IoutDBref,ColNumber,ESTHT) !NormHt
-
-           ColNumber = ColNumber+1
-           iRet = fsql3_bind_int(IoutDBref,ColNumber,ITRNK) !TruncHt
-
-           ColNumber = ColNumber+1
-           iRet = fsql3_bind_int(IoutDBref,ColNumber,ICR(I)) !PctCr (Percent live crown)
-
-           !           Add FIA Cull, Number WoodlandStems, Decay Code, Carbon fraction
-           ColNumber = ColNumber+1
-           DCULL = CULL(I)
-           iRet = fsql3_bind_double(IoutDBref,ColNumber,DCULL) !Cull
-
-           ColNumber = ColNumber+1
-           iRet = fsql3_bind_int(IoutDBref,ColNumber,WDLDSTEM(I)) !WdldStem
-
-           ColNumber = ColNumber+1
-           iRet = fsql3_bind_int(IoutDBref,ColNumber,DECAYCD(I)) !DecayCd
-
-           ColNumber = ColNumber+1
-           DCRBFRC = CARB_FRAC(I)
-           iRet = fsql3_bind_double(IoutDBref,ColNumber,DCRBFRC) !CarbFrac
+           ! Shared numeric fields; retain writer-specific reporting above and below.
+           call DBS_FIAVBC_BINDTREE(I,ITRNK,ColNumber,iRet)
 
            !           Add cubic volume outputs
            ColNumber = ColNumber+1
@@ -338,42 +304,8 @@ subroutine DBS_FIAVBC_TRLS
      ColNumber = ColNumber+1
      iRet = fsql3_bind_double(IoutDBref,ColNumber,DP) !MortTPA
 
-     DDBH = DBH(I)
-     ColNumber = ColNumber+1
-     iRet = fsql3_bind_double(IoutDBref,ColNumber,DDBH) !DBH
-
-     DHT = HT(I)
-     ColNumber = ColNumber+1
-     iRet = fsql3_bind_double(IoutDBref,ColNumber,DHT) !Ht
-
-     if (NORMHT(I) .gt.0) then
-        ESTHT = (real(NORMHT(I))+5)/100
-     else
-        ESTHT = 0
-     end if
-     ColNumber = ColNumber+1
-     iRet = fsql3_bind_double(IoutDBref,ColNumber,ESTHT) !NormHt
-
-     ColNumber = ColNumber+1
-     iRet = fsql3_bind_int(IoutDBref,ColNumber,ITRNK) !TruncHt
-
-     ColNumber = ColNumber+1
-     iRet = fsql3_bind_int(IoutDBref,ColNumber,ICR(I)) !PctCr (Percent live crown)
-
-     !       Add FIA Cull, Number WoodlandStems, Decay Code, Carbon fraction
-     ColNumber = ColNumber+1
-     DCULL = CULL(I)
-     iRet = fsql3_bind_double(IoutDBref,ColNumber,DCULL) !Cull
-
-     ColNumber = ColNumber+1
-     iRet = fsql3_bind_int(IoutDBref,ColNumber,WDLDSTEM(I)) !WdldStem
-
-     ColNumber = ColNumber+1
-     iRet = fsql3_bind_int(IoutDBref,ColNumber,DECAYCD(I)) !DecayCd
-
-     ColNumber = ColNumber+1
-     DCRBFRC = CARB_FRAC(I)
-     iRet = fsql3_bind_double(IoutDBref,ColNumber,DCRBFRC) !CarbFrac
+     ! Shared numeric fields; retain writer-specific reporting above and below.
+     call DBS_FIAVBC_BINDTREE(I,ITRNK,ColNumber,iRet)
 
      !       Add cubic volume outputs
      ColNumber = ColNumber+1
