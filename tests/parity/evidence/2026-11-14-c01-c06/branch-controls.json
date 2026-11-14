@@ -1,0 +1,304 @@
+{
+  "snag_and_fuel_discrimination": [
+    {
+      "species_case": "control_species",
+      "diameter_case": "below_18",
+      "CI": [
+        0.0,
+        0.8780986070632935,
+        3.4088997840881348
+      ],
+      "IE": [
+        0.0,
+        0.8780986070632935,
+        3.4088997840881348
+      ],
+      "equal": true
+    },
+    {
+      "species_case": "control_species",
+      "diameter_case": "at_18",
+      "CI": [
+        0.0,
+        0.8780986070632935,
+        3.4088997840881348
+      ],
+      "IE": [
+        0.0,
+        0.8780986070632935,
+        3.4088997840881348
+      ],
+      "equal": true
+    },
+    {
+      "species_case": "control_species",
+      "diameter_case": "above_18",
+      "CI": [
+        0.0,
+        0.8780986070632935,
+        3.4088995456695557
+      ],
+      "IE": [
+        0.0,
+        0.8780986070632935,
+        3.4088995456695557
+      ],
+      "equal": true
+    },
+    {
+      "species_case": "control_species",
+      "diameter_case": "base_floor",
+      "CI": [
+        0.0,
+        0.8780986070632935,
+        1.0
+      ],
+      "IE": [
+        0.0,
+        0.8780986070632935,
+        1.0
+      ],
+      "equal": true
+    },
+    {
+      "species_case": "larch",
+      "diameter_case": "below_18",
+      "CI": [
+        0.0,
+        0.8780986070632935,
+        3.4088997840881348
+      ],
+      "IE": [
+        0.0,
+        0.8780986070632935,
+        3.4088997840881348
+      ],
+      "equal": true
+    },
+    {
+      "species_case": "larch",
+      "diameter_case": "at_18",
+      "CI": [
+        0.0,
+        0.8780986070632935,
+        1.0908479690551758
+      ],
+      "IE": [
+        0.0,
+        0.8780986070632935,
+        3.4088997840881348
+      ],
+      "equal": false
+    },
+    {
+      "species_case": "larch",
+      "diameter_case": "above_18",
+      "CI": [
+        0.0,
+        0.8780986070632935,
+        1.0908478498458862
+      ],
+      "IE": [
+        0.0,
+        0.8780986070632935,
+        3.4088995456695557
+      ],
+      "equal": false
+    },
+    {
+      "species_case": "larch",
+      "diameter_case": "base_floor",
+      "CI": [
+        0.0,
+        0.8780986070632935,
+        1.0
+      ],
+      "IE": [
+        0.0,
+        0.8780986070632935,
+        1.0
+      ],
+      "equal": true
+    },
+    {
+      "species_case": "spruce",
+      "diameter_case": "below_18",
+      "CI": [
+        0.0,
+        0.8780986070632935,
+        3.4088997840881348
+      ],
+      "IE": [
+        0.0,
+        0.8780986070632935,
+        3.4088997840881348
+      ],
+      "equal": true
+    },
+    {
+      "species_case": "spruce",
+      "diameter_case": "at_18",
+      "CI": [
+        0.0,
+        0.8780986070632935,
+        1.0908479690551758
+      ],
+      "IE": [
+        0.0,
+        0.8780986070632935,
+        3.4088997840881348
+      ],
+      "equal": false
+    },
+    {
+      "species_case": "spruce",
+      "diameter_case": "above_18",
+      "CI": [
+        0.0,
+        0.8780986070632935,
+        1.0908478498458862
+      ],
+      "IE": [
+        0.0,
+        0.8780986070632935,
+        3.4088995456695557
+      ],
+      "equal": false
+    },
+    {
+      "species_case": "spruce",
+      "diameter_case": "base_floor",
+      "CI": [
+        0.0,
+        0.8780986070632935,
+        1.0
+      ],
+      "IE": [
+        0.0,
+        0.8780986070632935,
+        1.0
+      ],
+      "equal": true
+    },
+    {
+      "case": "C05-op",
+      "species": 24,
+      "dominant_group": 6,
+      "expected_group": 6
+    },
+    {
+      "case": "C05-pn",
+      "species": 24,
+      "dominant_group": 2,
+      "expected_group": 2
+    },
+    {
+      "case": "C05-wc",
+      "species": 24,
+      "dominant_group": 2,
+      "expected_group": 2
+    }
+  ],
+  "all_42_routine_variant_cases_present": true,
+  "all_126_three_state_comparisons_exact": true,
+  "passed": true,
+  "probability_tails_and_mapping_tables": [
+    {
+      "case": "C02-ci",
+      "MAXSP": 19,
+      "cases": 12800,
+      "zero_tail": [
+        11,
+        19
+      ],
+      "collateral_arrays_unchanged": true
+    },
+    {
+      "case": "C02-ie",
+      "MAXSP": 23,
+      "cases": 12800,
+      "zero_tail": [
+        11,
+        23
+      ],
+      "collateral_arrays_unchanged": true
+    },
+    {
+      "case": "C02-kt",
+      "MAXSP": 11,
+      "cases": 12800,
+      "zero_tail": [
+        11,
+        11
+      ],
+      "collateral_arrays_unchanged": true
+    },
+    {
+      "case": "C03-ci",
+      "MAXSP": 19,
+      "cases": 12800,
+      "zero_tail": [
+        11,
+        19
+      ],
+      "collateral_arrays_unchanged": true
+    },
+    {
+      "case": "C03-ie",
+      "MAXSP": 23,
+      "cases": 12800,
+      "zero_tail": [
+        11,
+        23
+      ],
+      "collateral_arrays_unchanged": true
+    },
+    {
+      "case": "C03-kt",
+      "MAXSP": 11,
+      "cases": 12800,
+      "zero_tail": [
+        11,
+        11
+      ],
+      "collateral_arrays_unchanged": true
+    },
+    {
+      "variant": "kt",
+      "mapping": [
+        15,
+        8,
+        3,
+        4,
+        6,
+        7,
+        11,
+        18,
+        1,
+        13,
+        24
+      ],
+      "length": 11,
+      "all_original_values_preserved": true
+    },
+    {
+      "variant": "nc",
+      "mapping": [
+        3,
+        15,
+        3,
+        4,
+        10,
+        20,
+        21,
+        17,
+        4,
+        13,
+        17,
+        19
+      ],
+      "length": 12,
+      "all_original_values_preserved": true
+    }
+  ]
+}

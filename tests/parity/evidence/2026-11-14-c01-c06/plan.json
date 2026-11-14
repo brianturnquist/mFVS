@@ -1,0 +1,174 @@
+{
+  "before_revision": "1a8aef8b210ebf532d8c94291fea511f11a6a19a",
+  "before_nvel": "a73e697e220ffd0f792aa7ac10d84c911edb7ad7",
+  "tasks": [
+    {
+      "id": "C01",
+      "routine": "ESTIME",
+      "sources": [
+        "estb/estime.f90",
+        "strp/estime.f90"
+      ],
+      "canonical": "estb/estime.f90",
+      "consumers": {
+        "bc": "strp/estime.f90",
+        "bm": "strp/estime.f90",
+        "ca": "strp/estime.f90",
+        "ci": "estb/estime.f90",
+        "cr": "strp/estime.f90",
+        "cs": "strp/estime.f90",
+        "ec": "strp/estime.f90",
+        "em": "estb/estime.f90",
+        "ie": "estb/estime.f90",
+        "kt": "estb/estime.f90",
+        "ls": "strp/estime.f90",
+        "nc": "strp/estime.f90",
+        "ne": "strp/estime.f90",
+        "oc": "strp/estime.f90",
+        "on": "strp/estime.f90",
+        "op": "strp/estime.f90",
+        "pn": "strp/estime.f90",
+        "sn": "strp/estime.f90",
+        "so": "strp/estime.f90",
+        "tt": "strp/estime.f90",
+        "ut": "strp/estime.f90",
+        "wc": "strp/estime.f90",
+        "ws": "strp/estime.f90"
+      },
+      "preservation_contract": "ESCOM2 declares only unused species probability storage; omit that unused include. Preserve all timing statements.",
+      "before_sources": {
+        "estb/estime.f90": "a33e9ad11cc379844820e31a24d5732d912628786d95c06d347e34fcf5cc7b89",
+        "strp/estime.f90": "6378a328a678d81427bfb10512949cac2bc99b1a864fbaee9c2ef41412ab46b6"
+      }
+    },
+    {
+      "id": "C02",
+      "routine": "ESPSUB",
+      "sources": [
+        "estb/espsub.f90",
+        "ci/espsub.f90",
+        "ie/espsub.f90"
+      ],
+      "canonical": "estb/espsub.f90",
+      "consumers": {
+        "ci": "ci/espsub.f90",
+        "ie": "ie/espsub.f90",
+        "kt": "estb/espsub.f90"
+      },
+      "preservation_contract": "Shared first ten probability equations; clear 11:MAXSP, preserving KT=11, CI=19 and IE=23 species bounds.",
+      "before_sources": {
+        "estb/espsub.f90": "4779f8083cb845d1ba0b1200f9a3da3d6968cb018c735ca2a21234600d0cfb42",
+        "ci/espsub.f90": "3aa2484dfe4952375e270b0711b0d7c714e573ea4f9d9eeb4593d8fb5add2d28",
+        "ie/espsub.f90": "28b1517daba9eda5ac9913f65f1227552d8b31af1008322802e0ad6617a74d6e"
+      }
+    },
+    {
+      "id": "C03",
+      "routine": "ESPXCS",
+      "sources": [
+        "estb/espxcs.f90",
+        "ci/espxcs.f90",
+        "ie/espxcs.f90"
+      ],
+      "canonical": "estb/espxcs.f90",
+      "consumers": {
+        "ci": "ci/espxcs.f90",
+        "ie": "ie/espxcs.f90",
+        "kt": "estb/espxcs.f90"
+      },
+      "preservation_contract": "Independently preserve all excess-probability equations and the dimensioned zero tail.",
+      "before_sources": {
+        "estb/espxcs.f90": "884768e1e4238a21eb2e72b0812d8cfc877f7038af8f028e504ea21176cdeeb9",
+        "ci/espxcs.f90": "330342aae4e4a4b3baa85660cfaff302fbd46561d06c6c1991601520e9425247",
+        "ie/espxcs.f90": "5f2ded6e02eea659ec5b667774e3d8d51d399cb34311eba75f4c57533e4ecaae"
+      }
+    },
+    {
+      "id": "C04",
+      "routine": "FMCROW",
+      "sources": [
+        "fire/kt/fmcrow.f90",
+        "fire/nc/fmcrow.f90"
+      ],
+      "canonical": "fire/base/fmcrow.f90",
+      "consumers": {
+        "kt": "fire/kt/fmcrow.f90",
+        "nc": "fire/nc/fmcrow.f90"
+      },
+      "preservation_contract": "Keep separate 11- and 12-element mapping tables selected by compile-time VARIANTCD. Preserve NC species 12 mapping 19 despite the historical comment saying 3.",
+      "before_sources": {
+        "fire/kt/fmcrow.f90": "eb44a3b00396d2668b0ef0bb522b2dae5f199c650e41630c9951252c2941b6a6",
+        "fire/nc/fmcrow.f90": "a2ab88b761af0723a77211f0fea738d0b3518e599faa9ac70ad3bf77d6663407"
+      }
+    },
+    {
+      "id": "C05",
+      "routine": "FMCFMD",
+      "sources": [
+        "fire/vop/fmcfmd.f90",
+        "fire/vpn/fmcfmd.f90"
+      ],
+      "canonical": "fire/base/fmcfmd.f90",
+      "consumers": {
+        "op": "fire/vop/fmcfmd.f90",
+        "pn": "fire/vpn/fmcfmd.f90",
+        "wc": "fire/vpn/fmcfmd.f90"
+      },
+      "preservation_contract": "Only OP puts non-WC species 24 in WOCT. Keep the exact original arithmetic order and WC outer branch.",
+      "before_sources": {
+        "fire/vop/fmcfmd.f90": "3396f3f569f9b0df44784771bf0b5387d8360bdb2d6c95bffefdacfede4e14a8",
+        "fire/vpn/fmcfmd.f90": "71f730579fc3a493b5f2ea39d6d5a1e785441fd4b643ee704dbf8f18f42ce398"
+      }
+    },
+    {
+      "id": "C06",
+      "routine": "FMSFALL",
+      "sources": [
+        "fire/ci/fmsfall.f90",
+        "fire/ie/fmsfall.f90"
+      ],
+      "canonical": "fire/base/fmsfall.f90",
+      "consumers": {
+        "bc": "fire/ie/fmsfall.f90",
+        "ca": "fire/ie/fmsfall.f90",
+        "ci": "fire/ci/fmsfall.f90",
+        "ie": "fire/ie/fmsfall.f90",
+        "kt": "fire/ie/fmsfall.f90",
+        "nc": "fire/ie/fmsfall.f90",
+        "oc": "fire/ie/fmsfall.f90",
+        "ws": "fire/ie/fmsfall.f90"
+      },
+      "preservation_contract": "Only CI applies the species-2/8 adjustment within D>=18; preserve all IE-file consumers including BC.",
+      "before_sources": {
+        "fire/ci/fmsfall.f90": "42eec77a6442847f5fbf5241a3896f8b19159b7e1e628da8c607462188167a53",
+        "fire/ie/fmsfall.f90": "120404a27610d113f39e49cb96e2070688dc1e0ca944f06188870348d14c7e20"
+      }
+    }
+  ],
+  "affected_variants": [
+    "bc",
+    "bm",
+    "ca",
+    "ci",
+    "cr",
+    "cs",
+    "ec",
+    "em",
+    "ie",
+    "kt",
+    "ls",
+    "nc",
+    "ne",
+    "oc",
+    "on",
+    "op",
+    "pn",
+    "sn",
+    "so",
+    "tt",
+    "ut",
+    "wc",
+    "ws"
+  ],
+  "coverage": "Build and run every consumer; directly compare affected routines and branch boundaries to original F77 and immediate baseline. BC/ON integrated simulation remains blocked; do not repair bugs."
+}

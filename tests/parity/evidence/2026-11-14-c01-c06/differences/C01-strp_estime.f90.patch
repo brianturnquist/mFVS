@@ -1,0 +1,18 @@
+--- before/strp/estime.f90
++++ canonical/estb/estime.f90
+@@ -1,11 +1,14 @@
+ !=============================!
+ !   Set regeneration timing   !
+ !=============================!
+-! STRP $Id$
++! ESTB $Id$
+ subroutine ESTIME (IEVTYR,KDT)
+   implicit none
+ 
+   !     CALLED FROM ESTAB.
++
++  !     SHARED BY THE ESTB AND STRP REGENERATION MODELS. THE SPECIES
++  !     PROBABILITY ARRAYS IN ESCOM2 ARE NOT USED BY THIS TIMING ROUTINE.
+ 
+   !     IEVTYR= A YEAR OF INTEREST.  THE DATA OF DISTURBANCE OR SITE
+   !             PREP; SOMETIMES THE BEGINNING OF THE CURRENT TALLY.

@@ -1,0 +1,437 @@
+__attribute__((fn spec (". ")))
+void fmcrow ()
+{
+  static real(kind=4) abirth[3000] [value-expr: arrays.abirth];
+  static real(kind=4) bfv[3000] [value-expr: arrays.bfv];
+  static real(kind=4) cfv[3000] [value-expr: arrays.cfv];
+  static real(kind=4) crwdth[3000] [value-expr: arrays.crwdth];
+  static integer(kind=4) damsev[18000] [value-expr: arrays.damsev];
+  static real(kind=4) dbh[3000] [value-expr: arrays.dbh];
+  static integer(kind=4) defect[3000] [value-expr: arrays.defect];
+  static real(kind=4) dg[3000] [value-expr: arrays.dg];
+  static real(kind=4) ht[3000] [value-expr: arrays.ht];
+  static real(kind=4) ht2td[6000] [value-expr: arrays.ht2td];
+  static real(kind=4) htg[3000] [value-expr: arrays.htg];
+  static integer(kind=4) icr[3000] [value-expr: arrays.icr];
+  static integer(kind=4) idtree[3000] [value-expr: arrays.idtree];
+  static integer(kind=4) imc[3000] [value-expr: arrays.imc];
+  static integer(kind=4) ind[3000] [value-expr: arrays.ind];
+  static integer(kind=4) ind1[3000] [value-expr: arrays.ind1];
+  static integer(kind=4) ind2[3000] [value-expr: arrays.ind2];
+  static integer(kind=4) isp[3000] [value-expr: arrays.isp];
+  static integer(kind=4) ispecl[3000] [value-expr: arrays.ispecl];
+  static integer(kind=4) itre[3000] [value-expr: arrays.itre];
+  static integer(kind=4) itrunc[3000] [value-expr: arrays.itrunc];
+  static integer(kind=4) kutkod[3000] [value-expr: arrays.kutkod];
+  static logical(kind=4) lbirth[3000] [value-expr: arrays.lbirth];
+  static integer(kind=4) normht[3000] [value-expr: arrays.normht];
+  static real(kind=4) oldpct[3000] [value-expr: arrays.oldpct];
+  static real(kind=4) oldrn[3000] [value-expr: arrays.oldrn];
+  static real(kind=4) pct[3000] [value-expr: arrays.pct];
+  static real(kind=4) pltsiz[3000] [value-expr: arrays.pltsiz];
+  static real(kind=4) prob[3000] [value-expr: arrays.prob];
+  static real(kind=4) wk1[3000] [value-expr: arrays.wk1];
+  static real(kind=4) wk2[3000] [value-expr: arrays.wk2];
+  static real(kind=4) wk3[3000] [value-expr: arrays.wk3];
+  static real(kind=4) wk4[3000] [value-expr: arrays.wk4];
+  static real(kind=4) wk5[3000] [value-expr: arrays.wk5];
+  static real(kind=4) wk6[3000] [value-expr: arrays.wk6];
+  static real(kind=4) yrdlos[3000] [value-expr: arrays.yrdlos];
+  static real(kind=4) zrand[3000] [value-expr: arrays.zrand];
+  static real(kind=4) mcfv[3000] [value-expr: arrays.mcfv];
+  static real(kind=4) scfv[3000] [value-expr: arrays.scfv];
+  static real(kind=4) wk7[3000] [value-expr: arrays.wk7];
+  static real(kind=4) cull[3000] [value-expr: arrays.cull];
+  static integer(kind=4) decaycd[3000] [value-expr: arrays.decaycd];
+  static integer(kind=4) wdldstem[3000] [value-expr: arrays.wdldstem];
+  static real(kind=4) abvgrd_bio[3000] [value-expr: arrays.abvgrd_bio];
+  static real(kind=4) merch_bio[3000] [value-expr: arrays.merch_bio];
+  static real(kind=4) cubsaw_bio[3000] [value-expr: arrays.cubsaw_bio];
+  static real(kind=4) abvgrd_carb[3000] [value-expr: arrays.abvgrd_carb];
+  static real(kind=4) merch_carb[3000] [value-expr: arrays.merch_carb];
+  static real(kind=4) cubsaw_carb[3000] [value-expr: arrays.cubsaw_carb];
+  static real(kind=4) carb_frac[3000] [value-expr: arrays.carb_frac];
+  static real(kind=4) foli_bio[3000] [value-expr: arrays.foli_bio];
+  static real(kind=4) foli_carb[3000] [value-expr: arrays.foli_carb];
+  static real(kind=4) wk8[3000] [value-expr: arrays.wk8];
+  static real(kind=4) wk9[3000] [value-expr: arrays.wk9];
+  static real(kind=4) wk10[3000] [value-expr: arrays.wk10];
+  static real(kind=4) wk11[3000] [value-expr: arrays.wk11];
+  static real(kind=4) wk12[3000] [value-expr: arrays.wk12];
+  static real(kind=4) wk13[3000] [value-expr: arrays.wk13];
+  static real(kind=4) wk14[3000] [value-expr: arrays.wk14];
+  static real(kind=4) wk15[3000] [value-expr: arrays.wk15];
+  static character(kind=1) calcsdi[1:7] [value-expr: conchr.calcsdi];
+  static character(kind=1) iused[11][1:4] [value-expr: conchr.iused];
+  static character(kind=1) kwdfil[1:250] [value-expr: conchr.kwdfil];
+  static character(kind=1) namgrp[30][1:10] [value-expr: conchr.namgrp];
+  static character(kind=1) ptgname[30][1:10] [value-expr: conchr.ptgname];
+  static character(kind=1) trefmt[1:160] [value-expr: conchr.trefmt];
+  static character(kind=1) varacd[1:2] [value-expr: conchr.varacd];
+  static character(kind=1) cfctype[1:1] [value-expr: conchr.cfctype];
+  static character(kind=1) bfctype[1:1] [value-expr: conchr.bfctype];
+  static real(kind=4) auteff [value-expr: contrl.auteff];
+  static real(kind=4) autmax [value-expr: contrl.autmax];
+  static real(kind=4) autmin [value-expr: contrl.autmin];
+  static real(kind=4) bamax [value-expr: contrl.bamax];
+  static real(kind=4) bamin [value-expr: contrl.bamin];
+  static real(kind=4) bfmin [value-expr: contrl.bfmin];
+  static real(kind=4) cccoef [value-expr: contrl.cccoef];
+  static real(kind=4) cccoef2 [value-expr: contrl.cccoef2];
+  static real(kind=4) cfmin [value-expr: contrl.cfmin];
+  static real(kind=4) dbhmin[11] [value-expr: contrl.dbhmin];
+  static real(kind=4) dbhsdi [value-expr: contrl.dbhsdi];
+  static real(kind=4) dbhstage [value-expr: contrl.dbhstage];
+  static real(kind=4) dbhzeide [value-expr: contrl.dbhzeide];
+  static real(kind=4) dgsd [value-expr: contrl.dgsd];
+  static real(kind=4) dr016 [value-expr: contrl.dr016];
+  static real(kind=4) eff [value-expr: contrl.eff];
+  static real(kind=4) fintm [value-expr: contrl.fintm];
+  static real(kind=4) frmcls[11] [value-expr: contrl.frmcls];
+  static integer(kind=4) ibegin[11] [value-expr: contrl.ibegin];
+  static integer(kind=4) iccode [value-expr: contrl.iccode];
+  static integer(kind=4) icflag [value-expr: contrl.icflag];
+  static integer(kind=4) icl1 [value-expr: contrl.icl1];
+  static integer(kind=4) icl2 [value-expr: contrl.icl2];
+  static integer(kind=4) icl3 [value-expr: contrl.icl3];
+  static integer(kind=4) icl4 [value-expr: contrl.icl4];
+  static integer(kind=4) icl5 [value-expr: contrl.icl5];
+  static integer(kind=4) icl6 [value-expr: contrl.icl6];
+  static integer(kind=4) icyc [value-expr: contrl.icyc];
+  static integer(kind=4) idg [value-expr: contrl.idg];
+  static integer(kind=4) ifst [value-expr: contrl.ifst];
+  static integer(kind=4) ins[6] [value-expr: contrl.ins];
+  static integer(kind=4) iptgrp[1560] [value-expr: contrl.iptgrp];
+  static integer(kind=4) iread [value-expr: contrl.iread];
+  static integer(kind=4) irec1 [value-expr: contrl.irec1];
+  static integer(kind=4) irec2 [value-expr: contrl.irec2];
+  static integer(kind=4) irecnt [value-expr: contrl.irecnt];
+  static integer(kind=4) irecrd [value-expr: contrl.irecrd];
+  static integer(kind=4) iref[11] [value-expr: contrl.iref];
+  static integer(kind=4) isct[22] [value-expr: contrl.isct];
+  static integer(kind=4) ispgrp[2760] [value-expr: contrl.ispgrp];
+  static integer(kind=4) istdat [value-expr: contrl.istdat];
+  static integer(kind=4) itable[7] [value-expr: contrl.itable];
+  static integer(kind=4) ithnpa [value-expr: contrl.ithnpa];
+  static integer(kind=4) ithnpi [value-expr: contrl.ithnpi];
+  static integer(kind=4) ithnpn [value-expr: contrl.ithnpn];
+  static integer(kind=4) itrn [value-expr: contrl.itrn];
+  static integer(kind=4) iy[41] [value-expr: contrl.iy];
+  static integer(kind=4) jocalb [value-expr: contrl.jocalb];
+  static integer(kind=4) jolist [value-expr: contrl.jolist];
+  static integer(kind=4) jostnd [value-expr: contrl.jostnd];
+  static integer(kind=4) josum [value-expr: contrl.josum];
+  static integer(kind=4) jotree [value-expr: contrl.jotree];
+  static integer(kind=4) kount[11] [value-expr: contrl.kount];
+  static integer(kind=4) kptr[11] [value-expr: contrl.kptr];
+  static logical(kind=4) lauton [value-expr: contrl.lauton];
+  static logical(kind=4) lbkden [value-expr: contrl.lbkden];
+  static logical(kind=4) lbvols [value-expr: contrl.lbvols];
+  static logical(kind=4) lcvols [value-expr: contrl.lcvols];
+  static logical(kind=4) ldcor2 [value-expr: contrl.ldcor2];
+  static logical(kind=4) ldgcal[11] [value-expr: contrl.ldgcal];
+  static logical(kind=4) ldubdg [value-expr: contrl.ldubdg];
+  static logical(kind=4) leavesp[11] [value-expr: contrl.leavesp];
+  static logical(kind=4) lfia [value-expr: contrl.lfia];
+  static logical(kind=4) lfire [value-expr: contrl.lfire];
+  static logical(kind=4) lflag [value-expr: contrl.lflag];
+  static logical(kind=4) lhtdrg[11] [value-expr: contrl.lhtdrg];
+  static logical(kind=4) lmort [value-expr: contrl.lmort];
+  static logical(kind=4) lperm [value-expr: contrl.lperm];
+  static logical(kind=4) lrcor2 [value-expr: contrl.lrcor2];
+  static logical(kind=4) lsite [value-expr: contrl.lsite];
+  static logical(kind=4) lstart [value-expr: contrl.lstart];
+  static integer(kind=4) lstknt [value-expr: contrl.lstknt];
+  static logical(kind=4) lsumry [value-expr: contrl.lsumry];
+  static logical(kind=4) ltrip [value-expr: contrl.ltrip];
+  static logical(kind=4) lzeide [value-expr: contrl.lzeide];
+  static integer(kind=4) methb[11] [value-expr: contrl.methb];
+  static integer(kind=4) methc[11] [value-expr: contrl.methc];
+  static logical(kind=4) mordat [value-expr: contrl.mordat];
+  static integer(kind=4) ncyc [value-expr: contrl.ncyc];
+  static logical(kind=4) notrip [value-expr: contrl.notrip];
+  static integer(kind=4) nptgrp [value-expr: contrl.nptgrp];
+  static integer(kind=4) nspgrp [value-expr: contrl.nspgrp];
+  static integer(kind=4) nstknt [value-expr: contrl.nstknt];
+  static integer(kind=4) numsp [value-expr: contrl.numsp];
+  static real(kind=4) pbawt [value-expr: contrl.pbawt];
+  static real(kind=4) pccfwt [value-expr: contrl.pccfwt];
+  static real(kind=4) ptpawt [value-expr: contrl.ptpawt];
+  static real(kind=4) rcor2[11] [value-expr: contrl.rcor2];
+  static real(kind=4) sizcap[44] [value-expr: contrl.sizcap];
+  static real(kind=4) spclwt [value-expr: contrl.spclwt];
+  static real(kind=4) stmp[11] [value-expr: contrl.stmp];
+  static real(kind=4) tcfmin [value-expr: contrl.tcfmin];
+  static real(kind=4) tcwt [value-expr: contrl.tcwt];
+  static real(kind=4) topd[11] [value-expr: contrl.topd];
+  static real(kind=4) trm [value-expr: contrl.trm];
+  static real(kind=4) yr [value-expr: contrl.yr];
+  static real(kind=4) scfmind[11] [value-expr: contrl.scfmind];
+  static real(kind=4) scftopd[11] [value-expr: contrl.scftopd];
+  static logical(kind=4) lfianvb [value-expr: contrl.lfianvb];
+  static real(kind=4) scfstmp[11] [value-expr: contrl.scfstmp];
+  static real(kind=4) scfmin [value-expr: contrl.scfmin];
+  static real(kind=4) atdr016 [value-expr: contrl.atdr016];
+  static real(kind=4) odr016 [value-expr: contrl.odr016];
+  static real(kind=4) alldwn[11] [value-expr: fmcom.alldwn];
+  static integer(kind=4) burnyr [value-expr: fmcom.burnyr];
+  static real(kind=4) canmht [value-expr: fmcom.canmht];
+  static real(kind=4) cbhcut [value-expr: fmcom.cbhcut];
+  static integer(kind=4) covtyp [value-expr: fmcom.covtyp];
+  static real(kind=4) crburn [value-expr: fmcom.crburn];
+  static real(kind=4) crownw[18000] [value-expr: fmcom.crownw];
+  static real(kind=4) curkil[3000] [value-expr: fmcom.curkil];
+  static real(kind=4) cwd[330] [value-expr: fmcom.cwd];
+  static real(kind=4) cwd2b[1440] [value-expr: fmcom.cwd2b];
+  static real(kind=4) cwd2b2[1440] [value-expr: fmcom.cwd2b2];
+  static real(kind=4) cwdcut [value-expr: fmcom.cwdcut];
+  static real(kind=4) cwdnew[22] [value-expr: fmcom.cwdnew];
+  static real(kind=4) cwdvol[300] [value-expr: fmcom.cwdvol];
+  static real(kind=4) cwdcov[300] [value-expr: fmcom.cwdcov];
+  static real(kind=4) dbhs[2000] [value-expr: fmcom.dbhs];
+  static real(kind=4) decayx[11] [value-expr: fmcom.decayx];
+  static real(kind=4) denih[2000] [value-expr: fmcom.denih];
+  static real(kind=4) denis[2000] [value-expr: fmcom.denis];
+  static real(kind=4) dend[2000] [value-expr: fmcom.dend];
+  static real(kind=4) dkr[44] [value-expr: fmcom.dkr];
+  static integer(kind=4) dkrcls[11] [value-expr: fmcom.dkrcls];
+  static real(kind=4) dkrdef[4] [value-expr: fmcom.dkrdef];
+  static real(kind=4) dspdbh[209] [value-expr: fmcom.dspdbh];
+  static real(kind=4) fallx[11] [value-expr: fmcom.fallx];
+  static real(kind=4) flive[2] [value-expr: fmcom.flive];
+  static real(kind=4) firkil[3000] [value-expr: fmcom.firkil];
+  static real(kind=4) folmc [value-expr: fmcom.folmc];
+  static real(kind=4) fmprob[3000] [value-expr: fmcom.fmprob];
+  static real(kind=4) fmtba[11] [value-expr: fmcom.fmtba];
+  static integer(kind=4) nfmsvpx [value-expr: fmcom.nfmsvpx];
+  static integer(kind=4) fmicr[3000] [value-expr: fmcom.fmicr];
+  static integer(kind=4) fmkod [value-expr: fmcom.fmkod];
+  static real(kind=4) fmslop [value-expr: fmcom.fmslop];
+  static integer(kind=4) ftreat [value-expr: fmcom.ftreat];
+  static real(kind=4) fmortmlt[3000] [value-expr: fmcom.fmortmlt];
+  static real(kind=4) fuarea[20] [value-expr: fmcom.fuarea];
+  static integer(kind=4) grow[3000] [value-expr: fmcom.grow];
+  static logical(kind=4) hard[2000] [value-expr: fmcom.hard];
+  static integer(kind=4) hartyp [value-expr: fmcom.hartyp];
+  static integer(kind=4) harvyr [value-expr: fmcom.harvyr];
+  static real(kind=4) htdead[2000] [value-expr: fmcom.htdead];
+  static real(kind=4) htih[2000] [value-expr: fmcom.htih];
+  static real(kind=4) htis[2000] [value-expr: fmcom.htis];
+  static real(kind=4) htr1 [value-expr: fmcom.htr1];
+  static real(kind=4) htr2 [value-expr: fmcom.htr2];
+  static real(kind=4) htx[44] [value-expr: fmcom.htx];
+  static real(kind=4) htxsft [value-expr: fmcom.htxsft];
+  static integer(kind=4) icansp [value-expr: fmcom.icansp];
+  static integer(kind=4) icbhmt [value-expr: fmcom.icbhmt];
+  static integer(kind=4) icycrm [value-expr: fmcom.icycrm];
+  static integer(kind=4) ifmyr1 [value-expr: fmcom.ifmyr1];
+  static integer(kind=4) ifmyr2 [value-expr: fmcom.ifmyr2];
+  static integer(kind=4) iftyr [value-expr: fmcom.iftyr];
+  static integer(kind=4) isalvc [value-expr: fmcom.isalvc];
+  static integer(kind=4) isalvs [value-expr: fmcom.isalvs];
+  static integer(kind=4) isngsm [value-expr: fmcom.isngsm];
+  static integer(kind=4) itrnl [value-expr: fmcom.itrnl];
+  static integer(kind=4) jcout [value-expr: fmcom.jcout];
+  static integer(kind=4) jfrout[3] [value-expr: fmcom.jfrout];
+  static integer(kind=4) jlout[3] [value-expr: fmcom.jlout];
+  static logical(kind=4) lanhed [value-expr: fmcom.lanhed];
+  static real(kind=4) leaflf[11] [value-expr: fmcom.leaflf];
+  static logical(kind=4) lfmon [value-expr: fmcom.lfmon];
+  static logical(kind=4) lfmon2 [value-expr: fmcom.lfmon2];
+  static logical(kind=4) lfrout[3] [value-expr: fmcom.lfrout];
+  static logical(kind=4) ldynfm [value-expr: fmcom.ldynfm];
+  static real(kind=4) limbrk [value-expr: fmcom.limbrk];
+  static logical(kind=4) ldhead [value-expr: fmcom.ldhead];
+  static logical(kind=4) lshead [value-expr: fmcom.lshead];
+  static logical(kind=4) lvwest [value-expr: fmcom.lvwest];
+  static real(kind=4) maxht[209] [value-expr: fmcom.maxht];
+  static real(kind=4) minht[209] [value-expr: fmcom.minht];
+  static integer(kind=4) nsnag [value-expr: fmcom.nsnag];
+  static integer(kind=4) nyrs [value-expr: fmcom.nyrs];
+  static real(kind=4) nzero [value-expr: fmcom.nzero];
+  static integer(kind=4) oldcovtyp [value-expr: fmcom.oldcovtyp];
+  static real(kind=4) oldcrl[3000] [value-expr: fmcom.oldcrl];
+  static real(kind=4) oldht[3000] [value-expr: fmcom.oldht];
+  static real(kind=4) oldcrw[18000] [value-expr: fmcom.oldcrw];
+  static integer(kind=4) oldict [value-expr: fmcom.oldict];
+  static integer(kind=4) oldict2 [value-expr: fmcom.oldict2];
+  static real(kind=4) oldictwt[2] [value-expr: fmcom.oldictwt];
+  static real(kind=4) pbfrih[2000] [value-expr: fmcom.pbfrih];
+  static real(kind=4) pbfris[2000] [value-expr: fmcom.pbfris];
+  static real(kind=4) pbscor [value-expr: fmcom.pbscor];
+  static real(kind=4) pbsoft [value-expr: fmcom.pbsoft];
+  static real(kind=4) pbsize [value-expr: fmcom.pbsize];
+  static real(kind=4) pbsmal [value-expr: fmcom.pbsmal];
+  static real(kind=4) pbtime [value-expr: fmcom.pbtime];
+  static integer(kind=4) pburnyr [value-expr: fmcom.pburnyr];
+  static real(kind=4) percov [value-expr: fmcom.percov];
+  static real(kind=4) prduff[44] [value-expr: fmcom.prduff];
+  static real(kind=4) prsnag [value-expr: fmcom.prsnag];
+  static real(kind=4) psoft[11] [value-expr: fmcom.psoft];
+  static real(kind=4) prpile[11] [value-expr: fmcom.prpile];
+  static real(kind=4) salvspa[4000] [value-expr: fmcom.salvspa];
+  static real(kind=4) sccf [value-expr: fmcom.sccf];
+  static real(kind=4) setdecay[44] [value-expr: fmcom.setdecay];
+  static real(kind=4) sngnew[3000] [value-expr: fmcom.sngnew];
+  static real(kind=4) snprcl[6] [value-expr: fmcom.snprcl];
+  static integer(kind=4) sps[2000] [value-expr: fmcom.sps];
+  static real(kind=4) tcwd[6] [value-expr: fmcom.tcwd];
+  static real(kind=4) tcwd2[6] [value-expr: fmcom.tcwd2];
+  static real(kind=4) tfall[66] [value-expr: fmcom.tfall];
+  static real(kind=4) toduff[44] [value-expr: fmcom.toduff];
+  static real(kind=4) tonrmc [value-expr: fmcom.tonrmc];
+  static real(kind=4) tonrms [value-expr: fmcom.tonrms];
+  static real(kind=4) tonrmh [value-expr: fmcom.tonrmh];
+  static real(kind=4) totacr [value-expr: fmcom.totacr];
+  static real(kind=4) v2t[11] [value-expr: fmcom.v2t];
+  static integer(kind=4) yrdead[2000] [value-expr: fmcom.yrdead];
+  static logical(kind=4) lremt [value-expr: fmcom.lremt];
+  static integer(kind=4) nsnagsalv [value-expr: fmcom.nsnagsalv];
+  static real(kind=4) htdeadsalv[2000] [value-expr: fmcom.htdeadsalv];
+  static integer(kind=4) spssalv[2000] [value-expr: fmcom.spssalv];
+  static real(kind=4) dbhssalv[2000] [value-expr: fmcom.dbhssalv];
+  static real(kind=4) htihsalv[2000] [value-expr: fmcom.htihsalv];
+  static real(kind=4) htissalv[2000] [value-expr: fmcom.htissalv];
+  static logical(kind=4) hardsalv[2000] [value-expr: fmcom.hardsalv];
+  static real(kind=4) premst[3000] [value-expr: fmcom.premst];
+  static real(kind=4) premcr[3000] [value-expr: fmcom.premcr];
+  static integer(kind=4) ispcc[3000] [value-expr: fmcom.ispcc];
+  static real(kind=4) dbhc[3000] [value-expr: fmcom.dbhc];
+  static real(kind=4) htc[3000] [value-expr: fmcom.htc];
+  static real(kind=4) crownwc[18000] [value-expr: fmcom.crownwc];
+  real(kind=4) d;
+  logical(kind=4) debug;
+  real(kind=4) h;
+  real(kind=4) hp;
+  real(kind=4) hpct[3000];
+  integer(kind=4) hpoint[3000];
+  integer(kind=4) i;
+  integer(kind=4) ic;
+  static integer(kind=4) ispmap[11] = {15, 8, 3, 4, 6, 7, 11, 18, 1, 13, 24};
+  integer(kind=4) itr;
+  integer(kind=4) j;
+  real(kind=4) junk;
+  real(kind=4) sg;
+  integer(kind=4) spi;
+  real(kind=4) xv[6];
+
+  {
+    static integer(kind=4) C.3801 = 6;
+
+    dbchk (&debug, &"FMCROW"[1]{lb: 1 sz: 1}, &C.3801, &icyc, 6);
+  }
+  if (debug)
+    {
+      {
+        struct __st_parameter_dt dt_parm.0;
+
+        dt_parm.0.common.filename = &"/private/tmp/mfvs-c01-c06-20261114/original/fire/kt/fmcrow.f"[1]{lb: 1 sz: 1};
+        dt_parm.0.common.line = 78;
+        dt_parm.0.format = &"(\' ENTERING FMCROW CYCLE = \',I2,\' ITRN=\',I5)"[1]{lb: 1 sz: 1};
+        dt_parm.0.format_len = 44;
+        dt_parm.0.common.flags = 134221824;
+        dt_parm.0.common.unit = jostnd;
+        _gfortran_st_write (&dt_parm.0);
+        _gfortran_transfer_integer_write (&dt_parm.0, &icyc, 4);
+        _gfortran_transfer_integer_write (&dt_parm.0, &itrn, 4);
+        _gfortran_st_write_done (&dt_parm.0);
+      }
+    }
+  L.1:;
+  if (itrn == 0)
+    {
+      return;
+    }
+  L.2:;
+  {
+    static logical(kind=4) C.3806 = 1;
+
+    rdpsrt (&itrn, &ht, &hpoint, &C.3806);
+  }
+  pctile (&itrn, &hpoint, &prob, &hpct, &junk);
+  {
+    integer(kind=4) TEMP0;
+
+    TEMP0 = itrn;
+    i = 1;
+    while (1)
+      {
+        {
+          logical(kind=4) TEMP1;
+
+          TEMP1 = i > TEMP0;
+          if (TEMP1) goto L.4;
+          if (grow[(integer(kind=8)) i + -1] <= 0)
+            {
+              grow[(integer(kind=8)) i + -1] = grow[(integer(kind=8)) i + -1] + 1;
+            }
+          L.5:;
+          if (grow[(integer(kind=8)) i + -1] <= 0) goto __label_000999;
+          L.6:;
+          spi = ispmap[(integer(kind=8)) isp[(integer(kind=8)) i + -1] + -1];
+          d = dbh[(integer(kind=8)) i + -1];
+          h = ht[(integer(kind=8)) i + -1];
+          ic = icr[(integer(kind=8)) i + -1];
+          itr = itrunc[(integer(kind=8)) i + -1];
+          hp = hpct[(integer(kind=8)) i + -1];
+          sg = v2t[(integer(kind=8)) isp[(integer(kind=8)) i + -1] + -1];
+          j = 0;
+          while (1)
+            {
+              {
+                logical(kind=4) TEMP2;
+
+                TEMP2 = j > 5;
+                if (TEMP2) goto L.8;
+                xv[(integer(kind=8)) j] = 0.0;
+                L.7:;
+                j = j + 1;
+              }
+            }
+          L.8:;
+          fmcroww (&spi, &d, &h, &itr, &ic, &hp, &sg, &xv);
+          j = 0;
+          while (1)
+            {
+              {
+                logical(kind=4) TEMP3;
+
+                TEMP3 = j > 5;
+                if (TEMP3) goto L.10;
+                crownw[((integer(kind=8)) j * 3000 + (integer(kind=8)) i) + -1] = xv[(integer(kind=8)) j];
+                if (debug)
+                  {
+                    {
+                      struct __st_parameter_dt dt_parm.1;
+
+                      dt_parm.1.common.filename = &"/private/tmp/mfvs-c01-c06-20261114/original/fire/kt/fmcrow.f"[1]{lb: 1 sz: 1};
+                      dt_parm.1.common.line = 132;
+                      dt_parm.1.common.flags = 134217856;
+                      dt_parm.1.common.unit = jostnd;
+                      _gfortran_st_write (&dt_parm.1);
+                      _gfortran_transfer_character_write (&dt_parm.1, &"I="[1]{lb: 1 sz: 1}, 2);
+                      _gfortran_transfer_integer_write (&dt_parm.1, &i, 4);
+                      _gfortran_transfer_character_write (&dt_parm.1, &" size="[1]{lb: 1 sz: 1}, 6);
+                      _gfortran_transfer_integer_write (&dt_parm.1, &j, 4);
+                      _gfortran_transfer_character_write (&dt_parm.1, &" CROWNW="[1]{lb: 1 sz: 1}, 8);
+                      _gfortran_transfer_real_write (&dt_parm.1, &crownw[((integer(kind=8)) j * 3000 + (integer(kind=8)) i) + -1], 4);
+                      _gfortran_st_write_done (&dt_parm.1);
+                    }
+                  }
+                L.11:;
+                L.9:;
+                j = j + 1;
+              }
+            }
+          L.10:;
+          __label_000999:;
+          L.3:;
+          i = i + 1;
+        }
+      }
+    L.4:;
+  }
+  return;
+}
+
+

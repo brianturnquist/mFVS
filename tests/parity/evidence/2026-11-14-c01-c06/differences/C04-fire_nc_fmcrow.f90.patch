@@ -1,0 +1,76 @@
+--- before/fire/nc/fmcrow.f90
++++ canonical/fire/base/fmcrow.f90
+@@ -1,7 +1,7 @@
+ !======================!
+-!   fire/nc : fmcrow   !
++!   fire/base : fmcrow !
+ !======================!
+-! FIRE-NC $Id$
++! FIRE-BASE $Id$
+ subroutine FMCROW
+   implicit none
+ 
+@@ -46,7 +46,7 @@
+ 
+   ! Variables
+   logical :: DEBUG
+-  integer :: I,J,IC,ISPMAP(MAXSP),SPI,HPOINT(MAXTRE)
++  integer :: I,J,IC,ISPMAPKT(11),ISPMAPNC(12),SPI,HPOINT(MAXTRE)
+   integer :: ITR
+   real    :: D,H,HPCT(MAXTRE),HP,SG,JUNK,XV(0:5)
+ 
+@@ -58,20 +58,27 @@
+ 
+   !     I   NAME                     MAPS TO          WEST   EAST
+ 
+-  !     1 = OTHER CONIFERS           Douglas-fir       3
+-  !     2 = SUGAR PINE               w white pine     15
++  !     1 = WESTERN WHITE PINE       -                15
++  !     2 = WESTERN LARCH            -                 8
+   !     3 = DOUGLAS-FIR              -                 3
+-  !     4 = WHITE FIR                grand fir         4
+-  !     5 = MADRONE                  -                10
+-  !     6 = INCENSE CEDAR            -                20
+-  !     7 = CALIFORNIA BLACK OAK     -                21
+-  !     8 = TANOAK                   -                17
+-  !     9 = RED FIR                  grand fir         4
++  !     4 = GRAND FIR                -                 4
++  !     5 = WESTERN HEMLOCK          -                 6
++  !     6 = WESTERN REDCEDAR         -                 7
++  !     7 = LODGEPOLE PINE           -                11
++  !     8 = ENGELMANN SPRUCE         -                18
++  !     9 = SUBALPINE FIR            -                 1
+   !    10 = PONDEROSA PINE           -                13
+-  !    11 = OTHER HARDWOOD           tanoak           17
+-  !    12 = COAST REDWOOD                              3
++  !    11 = OTHER                    mountain hemlock 24
+ 
+-  data ISPMAP / 3, 15, 3, 4, 10, 20, 21, 17, 4, 13,&
++  data ISPMAPKT /15, 8, 3, 4, 6, 7,11,18, 1,13,&
++       &24/
++
++  !     NC SPECIES: OTHER CONIFERS, SUGAR PINE, DOUGLAS-FIR, WHITE FIR,
++  !     MADRONE, INCENSE CEDAR, CALIFORNIA BLACK OAK, TANOAK, RED FIR,
++  !     PONDEROSA PINE, OTHER HARDWOOD, COAST REDWOOD. KEEP THE ORIGINAL
++  !     TWELVE VALUES, INCLUDING THE FINAL 19; THE OLD COMMENT SAID 3.
++
++  data ISPMAPNC / 3, 15, 3, 4, 10, 20, 21, 17, 4, 13,&
+        &17, 19/
+ 
+   !     CHECK FOR DEBUG
+@@ -108,7 +115,14 @@
+ 
+      !       ARGUMENTS TO PASS
+ 
+-     SPI = ISPMAP(ISP(I))
++     !       TABLE LENGTHS DIFFER. USE THE COMPILE-TIME VARIANT SO THE
++     !       SPECIES MAPPING DOES NOT DEPEND ON GRINIT HAVING RUN.
++
++     if (VARIANTCD .eq. 'NC') then
++        SPI = ISPMAPNC(ISP(I))
++     else
++        SPI = ISPMAPKT(ISP(I))
++     end if
+ 
+      D = DBH(I)
+      H = HT(I)

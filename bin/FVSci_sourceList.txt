@@ -368,8 +368,8 @@
 ../ci/esdlay.f90
 ../ci/esinit.f90
 ../ci/espadv.f90
-../ci/espsub.f90
-../ci/espxcs.f90
+../estb/espsub.f90
+../estb/espxcs.f90
 ../ci/essubh.f90
 ../ci/esxcsh.f90
 
@@ -614,7 +614,7 @@
 ../fire/ci/fmcfmd.f90
 ../fire/ci/fmcrow.f90
 ../fire/base/exhtdbh.f90
-../fire/ci/fmsfall.f90
+../fire/base/fmsfall.f90
 ../fire/ci/fmvinit.f90
 ../fire/ie/fmcons.f90
 ../fire/base/fmmois.f90

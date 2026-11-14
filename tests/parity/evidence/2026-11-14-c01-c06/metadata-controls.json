@@ -1,0 +1,218 @@
+[
+  {
+    "case": "ie-iet01",
+    "passed": true,
+    "metadata_changes_accepted": true,
+    "title_or_variant_change_rejected": true,
+    "retained_title_suffix": "  ",
+    "retained_clock_suffix": "  ",
+    "residual_title_change_rejected": true
+  },
+  {
+    "case": "ie-iet01",
+    "passed": true,
+    "metadata_changes_accepted": true,
+    "title_or_variant_change_rejected": true,
+    "retained_title_suffix": "  ",
+    "retained_clock_suffix": "  ",
+    "residual_title_change_rejected": true
+  },
+  {
+    "case": "ie-iet01",
+    "passed": true,
+    "metadata_changes_accepted": true,
+    "title_or_variant_change_rejected": true,
+    "retained_title_suffix": "  ",
+    "retained_clock_suffix": "  ",
+    "residual_title_change_rejected": true
+  },
+  {
+    "case": "ie-iet01",
+    "passed": true,
+    "metadata_changes_accepted": true,
+    "title_or_variant_change_rejected": true,
+    "retained_title_suffix": "  ",
+    "retained_clock_suffix": "  ",
+    "residual_title_change_rejected": true
+  },
+  {
+    "case": "ie-iet01",
+    "passed": true,
+    "metadata_changes_accepted": true,
+    "title_or_variant_change_rejected": true,
+    "retained_title_suffix": "  ",
+    "retained_clock_suffix": "  ",
+    "residual_title_change_rejected": true
+  },
+  {
+    "case": "on-Hardwood",
+    "passed": true,
+    "metadata_changes_accepted": true,
+    "title_or_variant_change_rejected": true,
+    "retained_title_suffix": "",
+    "retained_clock_suffix": "  ",
+    "residual_title_change_rejected": true
+  },
+  {
+    "case": "ca-cat01",
+    "passed": true,
+    "metadata_changes_accepted": true,
+    "title_or_variant_change_rejected": true,
+    "retained_title_suffix": " C",
+    "retained_clock_suffix": "  ",
+    "residual_title_change_rejected": true
+  },
+  {
+    "case": "ca-cat01",
+    "passed": true,
+    "metadata_changes_accepted": true,
+    "title_or_variant_change_rejected": true,
+    "retained_title_suffix": " C",
+    "retained_clock_suffix": "  ",
+    "residual_title_change_rejected": true
+  },
+  {
+    "case": "ca-cat01",
+    "passed": true,
+    "metadata_changes_accepted": true,
+    "title_or_variant_change_rejected": true,
+    "retained_title_suffix": " C",
+    "retained_clock_suffix": "  ",
+    "residual_title_change_rejected": true
+  },
+  {
+    "case": "ca-cat01",
+    "passed": true,
+    "metadata_changes_accepted": true,
+    "title_or_variant_change_rejected": true,
+    "retained_title_suffix": " C",
+    "retained_clock_suffix": "  ",
+    "residual_title_change_rejected": true
+  },
+  {
+    "case": "ca-cat01",
+    "passed": true,
+    "metadata_changes_accepted": true,
+    "title_or_variant_change_rejected": true,
+    "retained_title_suffix": " C",
+    "retained_clock_suffix": "  ",
+    "residual_title_change_rejected": true
+  },
+  {
+    "case": "cr-crt01",
+    "passed": true,
+    "metadata_changes_accepted": true,
+    "title_or_variant_change_rejected": true,
+    "retained_title_suffix": "NE",
+    "retained_clock_suffix": "  ",
+    "residual_title_change_rejected": true
+  },
+  {
+    "case": "cr-crt01",
+    "passed": true,
+    "metadata_changes_accepted": true,
+    "title_or_variant_change_rejected": true,
+    "retained_title_suffix": "NE",
+    "retained_clock_suffix": "  ",
+    "residual_title_change_rejected": true
+  },
+  {
+    "case": "cr-crt01",
+    "passed": true,
+    "metadata_changes_accepted": true,
+    "title_or_variant_change_rejected": true,
+    "retained_title_suffix": "NE",
+    "retained_clock_suffix": "  ",
+    "residual_title_change_rejected": true
+  },
+  {
+    "case": "cr-crt01",
+    "passed": true,
+    "metadata_changes_accepted": true,
+    "title_or_variant_change_rejected": true,
+    "retained_title_suffix": "NE",
+    "retained_clock_suffix": "  ",
+    "residual_title_change_rejected": true
+  },
+  {
+    "case": "cr-crt01",
+    "passed": true,
+    "metadata_changes_accepted": true,
+    "title_or_variant_change_rejected": true,
+    "retained_title_suffix": "  ",
+    "retained_clock_suffix": "  ",
+    "residual_title_change_rejected": true
+  },
+  {
+    "case": "kt-ktt01",
+    "passed": true,
+    "metadata_changes_accepted": true,
+    "title_or_variant_change_rejected": true,
+    "retained_title_suffix": "E ",
+    "retained_clock_suffix": "  ",
+    "residual_title_change_rejected": true
+  },
+  {
+    "case": "kt-ktt01",
+    "passed": true,
+    "metadata_changes_accepted": true,
+    "title_or_variant_change_rejected": true,
+    "retained_title_suffix": "E ",
+    "retained_clock_suffix": "  ",
+    "residual_title_change_rejected": true
+  },
+  {
+    "case": "so-sot01",
+    "passed": true,
+    "metadata_changes_accepted": true,
+    "title_or_variant_change_rejected": true,
+    "retained_title_suffix": "RO",
+    "retained_clock_suffix": "  ",
+    "residual_title_change_rejected": true
+  },
+  {
+    "case": "so-sot01",
+    "passed": true,
+    "metadata_changes_accepted": true,
+    "title_or_variant_change_rejected": true,
+    "retained_title_suffix": "RO",
+    "retained_clock_suffix": "  ",
+    "residual_title_change_rejected": true
+  },
+  {
+    "case": "tt-ttt01",
+    "passed": true,
+    "metadata_changes_accepted": true,
+    "title_or_variant_change_rejected": true,
+    "retained_title_suffix": "IN",
+    "retained_clock_suffix": "S ",
+    "residual_title_change_rejected": true
+  },
+  {
+    "case": "tt-ttt01",
+    "passed": true,
+    "metadata_changes_accepted": true,
+    "title_or_variant_change_rejected": true,
+    "retained_title_suffix": "IN",
+    "retained_clock_suffix": "S ",
+    "residual_title_change_rejected": true
+  },
+  {
+    "case": "ws-wst01",
+    "passed": true,
+    "metadata_changes_accepted": true,
+    "title_or_variant_change_rejected": true,
+    "retained_title_suffix": "PR",
+    "retained_clock_suffix": "  ",
+    "residual_title_change_rejected": true
+  },
+  {
+    "case": "ws-wst01",
+    "passed": true,
+    "metadata_changes_accepted": true,
+    "title_or_variant_change_rejected": true,
+    "retained_title_suffix": "PR",
+    "retained_clock_suffix": "  ",
+    "residual_title_change_rejected": true
+  }
+]

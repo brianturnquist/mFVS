@@ -25,9 +25,11 @@ main revision explicitly. The candidate is a separate snapshot of the current
 working files, including new untracked source files. Both submodule identity
 and dirty status are recorded.
 
-The tools currently prepare IE, BC, ON, and SN. Extend deck coverage explicitly
-when another cleanup requires it. Do not assume this first deck reaches every
-changed branch.
+The build tool accepts all 24 root-manifest variants; its default remains IE,
+BC and ON. The case runner includes each variant's standard `xxt01` deck,
+plus the named Canadian and targeted SN cases. Request consumers explicitly;
+the default case list is unchanged. Do not assume one standard deck reaches
+every changed branch.
 
 The [D01–D03 retirement report](evidence/2026-11-13-d01-d03/README.md) adds SN
 coverage and a proof that all 24 variants' selected build inputs are unchanged.
@@ -186,3 +188,38 @@ branch.
 `record_evidence.py` accepts the absence of the retired, unselected D07 metric
 reader when inspecting later snapshots. Its live shared callee and metric
 caller signature checks remain strict. A missing selected reader still fails.
+
+## Shared-routine comparisons
+
+For C01–C06, [check_consolidation.py](check_consolidation.py) builds fixtures
+that call each affected routine selected from original/current/candidate
+manifests. The fixtures in `fixtures/` exercise timing histories, species-array
+tails, every KT/NC crown mapping, OP/PN/WC fuel groups, and snag-fall boundaries.
+They compare raw state bytes and diagnostics exactly, with supplemental bounds
+checking in all three states. Original model files and fixed-form includes are
+unchanged; only the generated original driver uses fixed form.
+
+```sh
+python3 tests/parity/check_consolidation.py \
+  --evidence-dir tests/parity/evidence/2026-11-14-c01-c06
+python3 tests/parity/verify_consolidation.py \
+  --evidence-dir tests/parity/evidence/2026-11-14-c01-c06
+```
+
+These commands need the recorded snapshots, or newly prepared equivalents, and
+a fresh targeted-run directory. Direct routine fixtures provide branch evidence;
+they do not claim integrated BC/ON simulation parity. The source verifier
+requires exactly the planned canonical definitions and source-list rewrites,
+with every other model source/include unchanged.
+
+For a larger matrix, `prepare_builds.py --build-workers 3 --jobs 2` runs three
+independent variants at a time, each with two compiler processes. State batches
+remain ordered; one main thread writes completed build receipts. All numerical
+flags remain identical across states.
+
+`run_cases.py --resume` verifies recorded output and binary hashes before
+retaining a completed run and adding requested cases. Use
+`--include-canadian-candidate` when a candidate actually changes Canadian build
+inputs and its known failure boundary must also be recorded. That option adds
+a candidate execution; matching the input failure still is not simulation
+verification.

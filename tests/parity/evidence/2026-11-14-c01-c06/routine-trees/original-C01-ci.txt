@@ -1,0 +1,156 @@
+__attribute__((fn spec (". w w ")))
+void estime (integer(kind=4) & restrict ievtyr, integer(kind=4) & restrict kdt)
+{
+  static real(kind=4) chab[160] [value-expr: escom2.chab];
+  static real(kind=4) cpre[40] [value-expr: escom2.cpre];
+  static real(kind=4) dhab[160] [value-expr: escom2.dhab];
+  static real(kind=4) dpre[40] [value-expr: escom2.dpre];
+  static real(kind=4) fhab[160] [value-expr: escom2.fhab];
+  static real(kind=4) fpre[40] [value-expr: escom2.fpre];
+  static real(kind=4) padv[19] [value-expr: escom2.padv];
+  static real(kind=4) psub[19] [value-expr: escom2.psub];
+  static real(kind=4) pxcs[19] [value-expr: escom2.pxcs];
+  static real(kind=4) spehab[20] [value-expr: escom2.spehab];
+  static real(kind=4) xprep[20] [value-expr: escom2.xprep];
+  static real(kind=4) baa [value-expr: escomn.baa];
+  static real(kind=4) baaln [value-expr: escomn.baaln];
+  static real(kind=4) baasq [value-expr: escomn.baasq];
+  static real(kind=4) bnorml[20] [value-expr: escomn.bnorml];
+  static real(kind=4) bwaf [value-expr: escomn.bwaf];
+  static real(kind=4) bwb4 [value-expr: escomn.bwb4];
+  static real(kind=4) dbhmid[10] [value-expr: escomn.dbhmid];
+  static real(kind=4) elevsq [value-expr: escomn.elevsq];
+  static real(kind=4) hhtmax[19] [value-expr: escomn.hhtmax];
+  static integer(kind=4) iforcd[20] [value-expr: escomn.iforcd];
+  static integer(kind=4) iforst[20] [value-expr: escomn.iforst];
+  static integer(kind=4) ihab [value-expr: escomn.ihab];
+  static integer(kind=4) iphy [value-expr: escomn.iphy];
+  static integer(kind=4) iprep [value-expr: escomn.iprep];
+  static integer(kind=4) ispspe[3] [value-expr: escomn.ispspe];
+  static integer(kind=4) nnid [value-expr: escomn.nnid];
+  static real(kind=4) ocurht[304] [value-expr: escomn.ocurht];
+  static real(kind=4) ocurnf[380] [value-expr: escomn.ocurnf];
+  static real(kind=4) regt [value-expr: escomn.regt];
+  static real(kind=4) slo [value-expr: escomn.slo];
+  static real(kind=4) sqbwaf [value-expr: escomn.sqbwaf];
+  static real(kind=4) sqregt [value-expr: escomn.sqregt];
+  static real(kind=4) sumpi[19] [value-expr: escomn.sumpi];
+  static real(kind=4) sumpx[19] [value-expr: escomn.sumpx];
+  static real(kind=4) time [value-expr: escomn.time];
+  static real(kind=4) xcos [value-expr: escomn.xcos];
+  static real(kind=4) xcosas [value-expr: escomn.xcosas];
+  static real(kind=4) xmin[19] [value-expr: escomn.xmin];
+  static real(kind=4) xsin [value-expr: escomn.xsin];
+  static real(kind=4) xsinas [value-expr: escomn.xsinas];
+  static integer(kind=4) ibwhst[40] [value-expr: eswsbw.ibwhst];
+  static integer(kind=4) nbwhst [value-expr: eswsbw.nbwhst];
+  integer(kind=4) i;
+  integer(kind=4) iyr;
+  static real(kind=4) sqrvec[20] = {1.0e+0, 4.142099916934967041015625e-1, 3.178400099277496337890625e-1, 2.67949998378753662109375e-1, 2.360700070858001708984375e-1, 2.134200036525726318359375e-1, 1.962600052356719970703125e-1, 1.8267999589443206787109375e-1, 1.71570003032684326171875e-1, 1.622799932956695556640625e-1, 1.5434999763965606689453125e-1, 1.4747999608516693115234375e-1, 1.4145000278949737548828125e-1, 1.3610999286174774169921875e-1, 1.3132999837398529052734375e-1, 1.2702000141143798828125e-1, 1.23109996318817138671875e-1, 1.19539998471736907958984375e-1, 1.16259999573230743408203125e-1, 1.132400035858154296875e-1};
+
+  bwb4 = 0.0;
+  bwaf = 0.0;
+  sqbwaf = 0.0;
+  if (nbwhst > 0)
+    {
+      {
+        integer(kind=4) TEMP0;
+        integer(kind=4) TEMP1;
+
+        TEMP0 = *ievtyr + -5;
+        TEMP1 = *ievtyr + -1;
+        iyr = TEMP0;
+        while (1)
+          {
+            {
+              logical(kind=4) TEMP2;
+
+              TEMP2 = iyr > TEMP1;
+              if (TEMP2) goto L.3;
+              {
+                integer(kind=4) TEMP3;
+
+                TEMP3 = nbwhst;
+                i = 1;
+                while (1)
+                  {
+                    {
+                      logical(kind=4) TEMP4;
+
+                      TEMP4 = i > TEMP3;
+                      if (TEMP4) goto L.5;
+                      if (ibwhst[((integer(kind=8)) i + -1) * 2] <= iyr && ibwhst[(integer(kind=8)) i * 2 + -1] >= iyr)
+                        {
+                          bwb4 = bwb4 + 1.0e+0;
+                          goto __label_000020;
+                        }
+                      L.6:;
+                      __label_000010:;
+                      L.4:;
+                      i = i + 1;
+                    }
+                  }
+                L.5:;
+              }
+              __label_000020:;
+              L.2:;
+              iyr = iyr + 1;
+            }
+          }
+        L.3:;
+      }
+      {
+        integer(kind=4) TEMP5;
+        integer(kind=4) TEMP6;
+
+        TEMP5 = *ievtyr;
+        TEMP6 = *kdt;
+        iyr = TEMP5;
+        while (1)
+          {
+            {
+              logical(kind=4) TEMP7;
+
+              TEMP7 = iyr > TEMP6;
+              if (TEMP7) goto L.8;
+              {
+                integer(kind=4) TEMP8;
+
+                TEMP8 = nbwhst;
+                i = 1;
+                while (1)
+                  {
+                    {
+                      logical(kind=4) TEMP9;
+
+                      TEMP9 = i > TEMP8;
+                      if (TEMP9) goto L.10;
+                      if (ibwhst[((integer(kind=8)) i + -1) * 2] <= iyr && ibwhst[(integer(kind=8)) i * 2 + -1] >= iyr)
+                        {
+                          bwaf = bwaf + 1.0e+0;
+                          sqbwaf = sqrvec[(integer(kind=8)) ((iyr - *ievtyr) + 1) + -1] + sqbwaf;
+                          goto __label_000040;
+                        }
+                      L.11:;
+                      __label_000030:;
+                      L.9:;
+                      i = i + 1;
+                    }
+                  }
+                L.10:;
+              }
+              __label_000040:;
+              L.7:;
+              iyr = iyr + 1;
+            }
+          }
+        L.8:;
+      }
+    }
+  L.1:;
+  sqregt = __builtin_sqrtf (time) - sqbwaf;
+  regt = time - bwaf;
+  return;
+}
+
+

@@ -10,6 +10,7 @@ build inputs and compiler flags are identical; that reuse is recorded explicitly
 from __future__ import annotations
 
 import argparse
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import difflib
 import gzip
 import hashlib
@@ -114,8 +115,11 @@ def main() -> int:
     parser.add_argument("--work-dir", type=Path, required=True)
     parser.add_argument("--evidence-dir", type=Path, required=True)
     parser.add_argument("--current-revision", default="HEAD")
-    parser.add_argument("--variants", nargs="+", choices=("ie", "bc", "on", "sn"), default=["ie", "bc", "on"])
+    variants = sorted(path.stem[3:5] for path in (ROOT / "bin").glob("FVS*_sourceList.txt"))
+    parser.add_argument("--variants", nargs="+", choices=variants, default=["ie", "bc", "on"])
     parser.add_argument("--jobs", type=int, default=4)
+    parser.add_argument("--build-workers", type=int, default=1,
+                        help="Independent variant builds; each uses --jobs compiler processes")
     args = parser.parse_args()
     work = args.work_dir.resolve()
     evidence = args.evidence_dir.resolve()
@@ -194,48 +198,62 @@ def main() -> int:
         env.pop(name, None)
     env.update({"LC_ALL": "C", "TZ": "UTC", "TMPDIR": str(work)})
     successful = {}
-    for state, identity in receipt["states"].items():
+    def build_one(state: str, identity: dict, variant: str) -> dict:
+        """Build in the variant's own flat directory; return one complete receipt.
+
+        Workers never write the shared JSON. The main thread records each
+        completed build so concurrent compiler jobs cannot corrupt provenance.
+        """
         snapshot = Path(identity["snapshot"])
-        for variant in args.variants:
-            inputs = selected_inputs(snapshot, variant)
-            entry = {"state": state, "variant": variant, "inputs": inputs}
-            receipt["builds"].append(entry)
-            save()
-            signature = hashlib.sha256(json.dumps(inputs, sort_keys=True).encode()).hexdigest()
-            binary = snapshot / "bin" / f"FVS{variant}"
-            prior = successful.get((variant, signature))
-            if state == "candidate" and prior:
-                # Identical source/build input identity is stronger than merely
-                # observing equal outputs. Record this reuse, never imply a
-                # separately compiled third implementation.
-                binary.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copy2(prior, binary)
-                entry.update({"returncode": 0, "reused_binary": str(prior), "binary_sha256": sha256(binary)})
-                print(f"Reused identical current build inputs for candidate {variant}", flush=True)
-                save()
-                continue
-            command = [
-                make, f"-j{args.jobs}", f"FVS{variant}",
-                f"FC={fc}", f"CC={cc}", f"LD={fc}",
-                f"FFLAGS={fflags}", f"CFLAGS={cflags}",
-            ]
-            log = evidence / f"build-{state}-{variant}.log.gz"
-            raw_log = work / f"build-{state}-{variant}.log"
-            entry.update({"command": command, "cwd": str(snapshot / "bin"), "log": log.name})
-            print(f"Building {state} {variant}; log: {log}", flush=True)
-            start = time.monotonic()
-            with raw_log.open("wb") as stream:
-                result = subprocess.run(command, cwd=snapshot / "bin", env=env, stdout=stream, stderr=subprocess.STDOUT)
-            log.write_bytes(gzip.compress(raw_log.read_bytes(), mtime=0))
-            entry.update({"returncode": result.returncode, "seconds": round(time.monotonic() - start, 3)})
-            if result.returncode == 0:
-                entry["binary_sha256"] = sha256(binary)
-                successful[(variant, signature)] = binary
-            save()
-            if result.returncode:
-                print(f"FAILED {state} {variant}: exit {result.returncode}; inspect {log}", flush=True)
-                return result.returncode
+        inputs = selected_inputs(snapshot, variant)
+        entry = {"state": state, "variant": variant, "inputs": inputs}
+        signature = hashlib.sha256(json.dumps(inputs, sort_keys=True).encode()).hexdigest()
+        binary = snapshot / "bin" / f"FVS{variant}"
+        prior = successful.get((variant, signature))
+        if state == "candidate" and prior:
+            # Identical source/build input identity is stronger than merely
+            # observing equal outputs. Record reuse, never a new compilation.
+            binary.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(prior, binary)
+            entry.update({"returncode": 0, "reused_binary": str(prior), "binary_sha256": sha256(binary)})
+            print(f"Reused identical current build inputs for candidate {variant}", flush=True)
+            return entry
+        command = [
+            make, f"-j{args.jobs}", f"FVS{variant}",
+            f"FC={fc}", f"CC={cc}", f"LD={fc}",
+            f"FFLAGS={fflags}", f"CFLAGS={cflags}",
+        ]
+        log = evidence / f"build-{state}-{variant}.log.gz"
+        raw_log = work / f"build-{state}-{variant}.log"
+        entry.update({"command": command, "cwd": str(snapshot / "bin"), "log": log.name})
+        print(f"Building {state} {variant}; log: {log}", flush=True)
+        start = time.monotonic()
+        with raw_log.open("wb") as stream:
+            result = subprocess.run(command, cwd=snapshot / "bin", env=env, stdout=stream, stderr=subprocess.STDOUT)
+        log.write_bytes(gzip.compress(raw_log.read_bytes(), mtime=0))
+        entry.update({"returncode": result.returncode, "seconds": round(time.monotonic() - start, 3)})
+        if result.returncode == 0:
+            entry["binary_sha256"] = sha256(binary)
+            successful[(variant, signature)] = binary
             print(f"Built {state} {variant} in {entry['seconds']} seconds", flush=True)
+        else:
+            print(f"FAILED {state} {variant}: exit {result.returncode}; inspect {log}", flush=True)
+        return entry
+
+    receipt["build_workers"] = args.build_workers
+    receipt["compiler_jobs_per_build"] = args.jobs
+    for state, identity in receipt["states"].items():
+        failures = []
+        with ThreadPoolExecutor(max_workers=args.build_workers) as pool:
+            futures = [pool.submit(build_one, state, identity, variant) for variant in args.variants]
+            for future in as_completed(futures):
+                entry = future.result()
+                receipt["builds"].append(entry)
+                save()
+                if entry["returncode"]:
+                    failures.append(entry["returncode"])
+        if failures:
+            return failures[0]
     return 0
 
 

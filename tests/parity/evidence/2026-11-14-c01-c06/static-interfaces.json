@@ -1,0 +1,512 @@
+{
+  "original": {
+    "signatures": [
+      {
+        "file": "dbsqlite/dbstreesin.f",
+        "kind": "subroutine",
+        "name": "DBSTREESIN",
+        "argument_count": 33,
+        "arguments": [
+          "IPLOT",
+          "ITREE",
+          "RCOUNT",
+          "HISTORY",
+          "SPECIES",
+          "DBH",
+          "DG",
+          "HT",
+          "HTTOPK",
+          "HTG",
+          "CRWNR",
+          "DMG1",
+          "SVR1",
+          "DMG2",
+          "SVR2",
+          "DMG3",
+          "SVR3",
+          "TREEVAL",
+          "PRESCRIPT",
+          "SLOPE",
+          "ASPECT",
+          "HABITAT",
+          "TOPOCODE",
+          "SITEPREP",
+          "KODE",
+          "DEBUG",
+          "JOSTND",
+          "LKECHO",
+          "ABIRTH",
+          "LBIRTH",
+          "RCULL",
+          "IDECAY",
+          "IWDLDSTMS"
+        ],
+        "source_sha256": "d950c6ebd82da1a3b020e25aa6cd1df650fe839878659d7409daa42f7a1e1f10"
+      },
+      {
+        "file": "metric/base/intree.f",
+        "kind": "call",
+        "name": "DBSTREESIN",
+        "argument_count": 30,
+        "arguments": [
+          "ITREI",
+          "IDTREE(I)",
+          "PROB(I)",
+          "ITH",
+          "CSPI",
+          "DBH(I)",
+          "DG(I)",
+          "HT(I)",
+          "THT",
+          "HTG(I)",
+          "ICR(I)",
+          "IDAMCD(1)",
+          "IDAMCD(2)",
+          "IDAMCD(3)",
+          "IDAMCD(4)",
+          "IDAMCD(5)",
+          "IDAMCD(6)",
+          "IMC1",
+          "KUTKOD(I)",
+          "IPVARS(1)",
+          "IPVARS(2)",
+          "IPVARS(3)",
+          "IPVARS(4)",
+          "IPVARS(5)",
+          "DBSKODE",
+          "DEBUG",
+          "JOSTND",
+          "LKECHO",
+          "ABIRTH(I)",
+          "LBIRTH(I)"
+        ],
+        "source_sha256": "abd3e868b181d23e11a81ea9dd095f96f63ac7f49b72eba8aada6402e0ac7acd"
+      },
+      {
+        "file": "metric/dbsqlite/dbstreesin.f",
+        "kind": "subroutine",
+        "name": "DBSTREESIN",
+        "argument_count": 30,
+        "arguments": [
+          "IPLOT",
+          "ITREE",
+          "RCOUNT",
+          "HISTORY",
+          "SPECIES",
+          "DBH",
+          "DG",
+          "HT",
+          "HTTOPK",
+          "HTG",
+          "CRWNR",
+          "DMG1",
+          "SVR1",
+          "DMG2",
+          "SVR2",
+          "DMG3",
+          "SVR3",
+          "TREEVAL",
+          "PRESCRIPT",
+          "SLOPE",
+          "ASPECT",
+          "HABITAT",
+          "TOPOCODE",
+          "SITEPREP",
+          "KODE",
+          "DEBUG",
+          "JOSTND",
+          "LKECHO",
+          "ABIRTH",
+          "LBIRTH"
+        ],
+        "source_sha256": "2cd907df04d8ef3cfdecdf2d56a2439d23473c7c44f1b26dd2275f48fcd7e8d3"
+      },
+      {
+        "file": "canada/fire/bc/fmsvol.f",
+        "kind": "entry",
+        "name": "FMSVL2",
+        "argument_count": 8,
+        "arguments": [
+          "JSP",
+          "XD",
+          "XH",
+          "XHT",
+          "VOL2HT",
+          "LMERCHIN",
+          "DEBUG",
+          "IOUT"
+        ],
+        "source_sha256": "ce7c41ebd1540dd4e52d3974914168556432be3b0219c46cc4d782dcab97365c"
+      },
+      {
+        "file": "fire/base/fmsvol.f",
+        "kind": "entry",
+        "name": "FMSVL2",
+        "argument_count": 10,
+        "arguments": [
+          "JSP",
+          "XD",
+          "XH",
+          "XHT",
+          "VOL2HT",
+          "CRWNRTO",
+          "LIVEDEAD",
+          "LMERCHIN",
+          "DEBUG",
+          "IOUT"
+        ],
+        "source_sha256": "b95a34893cc7cd760d1983ee450a9b7c0a2ccc69834f2185fc07afd199f64e35"
+      },
+      {
+        "file": "metric/fire/base/fmdout.f",
+        "kind": "call",
+        "name": "FMSVL2",
+        "argument_count": 8,
+        "arguments": [
+          "JS",
+          "D",
+          "H",
+          "X",
+          "VT",
+          "LMERCH",
+          "DEBUG",
+          "JOSTND"
+        ],
+        "source_sha256": "68eeefd6290d5de65d932f230ee416b817f759b98da23da87d3edf5b860bbca1"
+      },
+      {
+        "file": "base/svcwd.f",
+        "kind": "call",
+        "name": "FMSVL2",
+        "argument_count": 10,
+        "arguments": [
+          "SP",
+          "DIAM2",
+          "HTD2",
+          "HICUT",
+          "VHI",
+          "0",
+          "'D'",
+          ".FALSE.",
+          ".FALSE.",
+          "JOSTND"
+        ],
+        "source_sha256": "f51b68177aff8fbee404e144a6866630858b9b2f819f353a9bd3d17ac9dcb402"
+      }
+    ],
+    "keyword_declarations": [
+      {
+        "file": "base/keyrdr.f",
+        "line": 33,
+        "declaration": "REAL ARRAY(12)",
+        "source_sha256": "5203d42ab023205340fdca2d2229566d28c0b36abfb3af275982c7bb24e79885"
+      },
+      {
+        "file": "base/keyrdr.f",
+        "line": 41,
+        "declaration": "DIMENSION KARD(12),LNOTBK(12)",
+        "source_sha256": "5203d42ab023205340fdca2d2229566d28c0b36abfb3af275982c7bb24e79885"
+      },
+      {
+        "file": "canada/bc/initre.f",
+        "line": 74,
+        "declaration": "REAL    TC,SDHI,SDLO,ARRAY(7),PRMS(10),XBAF",
+        "source_sha256": "85f22896bb42596ebc14c204c98bdb14d8736d350e7dff1870812fe17d435663"
+      },
+      {
+        "file": "canada/bc/initre.f",
+        "line": 80,
+        "declaration": "LOGICAL LTRERD,LFIRST,LNOTBK(7),LNOTRE",
+        "source_sha256": "85f22896bb42596ebc14c204c98bdb14d8736d350e7dff1870812fe17d435663"
+      },
+      {
+        "file": "canada/bc/initre.f",
+        "line": 84,
+        "declaration": "CHARACTER*10 KARD(7),PVRDUM",
+        "source_sha256": "85f22896bb42596ebc14c204c98bdb14d8736d350e7dff1870812fe17d435663"
+      },
+      {
+        "file": "metric/vbase/initre.f",
+        "line": 72,
+        "declaration": "REAL    TC,SDHI,SDLO,ARRAY(7),PRMS(10)",
+        "source_sha256": "759d4ddad29ff750ef741d61f4cee3c33fb205dac05257b00940b297af0c0f54"
+      },
+      {
+        "file": "metric/vbase/initre.f",
+        "line": 79,
+        "declaration": "LOGICAL LTRERD,LFIRST,LNOTBK(7),LNOTRE",
+        "source_sha256": "759d4ddad29ff750ef741d61f4cee3c33fb205dac05257b00940b297af0c0f54"
+      },
+      {
+        "file": "metric/vbase/initre.f",
+        "line": 83,
+        "declaration": "CHARACTER*10 KARD(7),PVRDUM",
+        "source_sha256": "759d4ddad29ff750ef741d61f4cee3c33fb205dac05257b00940b297af0c0f54"
+      },
+      {
+        "file": "metric/dbsqlite/dbsin.f",
+        "line": 74,
+        "declaration": "CHARACTER*10 KARD(7)",
+        "source_sha256": "0271e6c89cfb181be85ddb7c317bc55079717cfad6fdbab0069539c4f45f94f8"
+      },
+      {
+        "file": "metric/newmist/misin.f",
+        "line": 119,
+        "declaration": "LOGICAL      LNOTBK(7),DEBUG,LCHK(2),LOK,LKECHO",
+        "source_sha256": "df929059b4cd747699593cb4b6d3c5bfeefa6e0edc9d14a263c3cd4d7bceab24"
+      },
+      {
+        "file": "metric/newmist/misin.f",
+        "line": 124,
+        "declaration": "REAL         ARRAY(7)",
+        "source_sha256": "df929059b4cd747699593cb4b6d3c5bfeefa6e0edc9d14a263c3cd4d7bceab24"
+      },
+      {
+        "file": "metric/newmist/misin.f",
+        "line": 126,
+        "declaration": "CHARACTER*10 KARD(7)",
+        "source_sha256": "df929059b4cd747699593cb4b6d3c5bfeefa6e0edc9d14a263c3cd4d7bceab24"
+      }
+    ]
+  },
+  "current": {
+    "signatures": [
+      {
+        "file": "dbsqlite/dbstreesin.f90",
+        "kind": "subroutine",
+        "name": "DBSTREESIN",
+        "argument_count": 33,
+        "arguments": [
+          "IPLOT",
+          "ITREE",
+          "RCOUNT",
+          "HISTORY",
+          "SPECIES",
+          "DBH",
+          "DG",
+          "HT",
+          "HTTOPK",
+          "HTG",
+          "CRWNR",
+          "DMG1",
+          "SVR1",
+          "DMG2",
+          "SVR2",
+          "DMG3",
+          "SVR3",
+          "TREEVAL",
+          "PRESCRIPT",
+          "SLOPE",
+          "ASPECT",
+          "HABITAT",
+          "TOPOCODE",
+          "SITEPREP",
+          "KODE",
+          "DEBUG",
+          "JOSTND",
+          "LKECHO",
+          "ABIRTH",
+          "LBIRTH",
+          "RCULL",
+          "IDECAY",
+          "IWDLDSTMS"
+        ],
+        "source_sha256": "855888d0b6bffaf8fb10e9c64d1e289968636e1b965434f6f52b3b5dc34e2c37"
+      },
+      {
+        "file": "metric/base/intree.f90",
+        "kind": "call",
+        "name": "DBSTREESIN",
+        "argument_count": 30,
+        "arguments": [
+          "ITREI",
+          "IDTREE(I)",
+          "PROB(I)",
+          "ITH",
+          "CSPI",
+          "DBH(I)",
+          "DG(I)",
+          "HT(I)",
+          "THT",
+          "HTG(I)",
+          "ICR(I)",
+          "IDAMCD(1)",
+          "IDAMCD(2)",
+          "IDAMCD(3)",
+          "IDAMCD(4)",
+          "IDAMCD(5)",
+          "IDAMCD(6)",
+          "IMC1",
+          "KUTKOD(I)",
+          "IPVARS(1)",
+          "IPVARS(2)",
+          "IPVARS(3)",
+          "IPVARS(4)",
+          "IPVARS(5)",
+          "DBSKODE",
+          "DEBUG",
+          "JOSTND",
+          "LKECHO",
+          "ABIRTH(I)",
+          "LBIRTH(I)"
+        ],
+        "source_sha256": "f943bed68797ff25f629a76bc0b341a84aa4915103afcd8932c926d37c11137f"
+      },
+      {
+        "file": "metric/dbsqlite/dbstreesin.f90",
+        "status": "retired_unselected",
+        "kind": "subroutine",
+        "name": "DBSTREESIN",
+        "former_argument_count": 30,
+        "selected_by": [],
+        "replacement": "dbsqlite/dbstreesin.f90"
+      },
+      {
+        "file": "canada/fire/bc/fmsvol.f90",
+        "kind": "entry",
+        "name": "FMSVL2",
+        "argument_count": 8,
+        "arguments": [
+          "JSP",
+          "XD",
+          "XH",
+          "XHT",
+          "VOL2HT",
+          "LMERCHIN",
+          "DEBUG",
+          "IOUT"
+        ],
+        "source_sha256": "debadc5f82c88e251ee68728b23adabacc5726f22119782c37fb9c2969287bf4"
+      },
+      {
+        "file": "fire/base/fmsvol.f90",
+        "kind": "entry",
+        "name": "FMSVL2",
+        "argument_count": 10,
+        "arguments": [
+          "JSP",
+          "XD",
+          "XH",
+          "XHT",
+          "VOL2HT",
+          "CRWNRTO",
+          "LIVEDEAD",
+          "LMERCHIN",
+          "DEBUG",
+          "IOUT"
+        ],
+        "source_sha256": "07c88ffb353063acd4e767ea04db4fa62729a618d63b2bf218186dd011977c86"
+      },
+      {
+        "file": "metric/fire/base/fmdout.f90",
+        "kind": "call",
+        "name": "FMSVL2",
+        "argument_count": 8,
+        "arguments": [
+          "JS",
+          "D",
+          "H",
+          "X",
+          "VT",
+          "LMERCH",
+          "DEBUG",
+          "JOSTND"
+        ],
+        "source_sha256": "0c7b5908cb4efd950212ed39eb2af20e18144a8057e94c40333a08f72fa6b255"
+      },
+      {
+        "file": "base/svcwd.f90",
+        "kind": "call",
+        "name": "FMSVL2",
+        "argument_count": 10,
+        "arguments": [
+          "SP",
+          "DIAM2",
+          "HTD2",
+          "HICUT",
+          "VHI",
+          "0",
+          "'D'",
+          ".false.",
+          ".false.",
+          "JOSTND"
+        ],
+        "source_sha256": "b50957f97178dc8d95321b23d23889f9fc2115ba7da2964e4f1a485421cfe718"
+      }
+    ],
+    "keyword_declarations": [
+      {
+        "file": "base/keyrdr.f90",
+        "line": 35,
+        "declaration": "real    :: ARRAY(12)",
+        "source_sha256": "68f894f49863218dd5a68ea44228b984cb4076dc6a9e83fe178a308ccc425fe5"
+      },
+      {
+        "file": "base/keyrdr.f90",
+        "line": 44,
+        "declaration": "dimension KARD(12),LNOTBK(12)",
+        "source_sha256": "68f894f49863218dd5a68ea44228b984cb4076dc6a9e83fe178a308ccc425fe5"
+      },
+      {
+        "file": "canada/bc/initre.f90",
+        "line": 54,
+        "declaration": "real    :: TC,SDHI,SDLO,ARRAY(7),PRMS(10),XBAF",
+        "source_sha256": "b015fbb93c64e34e4ca639a360abf0ef1f0b553033cf73df2e27593dee73bc2c"
+      },
+      {
+        "file": "canada/bc/initre.f90",
+        "line": 60,
+        "declaration": "logical :: LTRERD,LFIRST,LNOTBK(7),LNOTRE",
+        "source_sha256": "b015fbb93c64e34e4ca639a360abf0ef1f0b553033cf73df2e27593dee73bc2c"
+      },
+      {
+        "file": "canada/bc/initre.f90",
+        "line": 64,
+        "declaration": "character(len=10) :: KARD(7)",
+        "source_sha256": "b015fbb93c64e34e4ca639a360abf0ef1f0b553033cf73df2e27593dee73bc2c"
+      },
+      {
+        "file": "metric/vbase/initre.f90",
+        "line": 52,
+        "declaration": "real    :: TC,SDHI,SDLO,ARRAY(7),PRMS(10)",
+        "source_sha256": "c2047bd3fcb5f6511ced3edd137ca55162ba6d30605cd2badd13df390c1304bf"
+      },
+      {
+        "file": "metric/vbase/initre.f90",
+        "line": 59,
+        "declaration": "logical :: LTRERD,LFIRST,LNOTBK(7),LNOTRE",
+        "source_sha256": "c2047bd3fcb5f6511ced3edd137ca55162ba6d30605cd2badd13df390c1304bf"
+      },
+      {
+        "file": "metric/vbase/initre.f90",
+        "line": 63,
+        "declaration": "character(len=10) :: KARD(7)",
+        "source_sha256": "c2047bd3fcb5f6511ced3edd137ca55162ba6d30605cd2badd13df390c1304bf"
+      },
+      {
+        "file": "metric/dbsqlite/dbsin.f90",
+        "line": 73,
+        "declaration": "character(len=10) :: KARD(7)",
+        "source_sha256": "2d61fd966713295f0798f4456c10fb28491172e8b5d497498d4427bad770a253"
+      },
+      {
+        "file": "metric/newmist/misin.f90",
+        "line": 121,
+        "declaration": "logical :: LNOTBK(7),DEBUG,LCHK(2),LOK,LKECHO",
+        "source_sha256": "a7602022113ca8a18736b3db30d2361898161c60dfb8f11cb384b7061ab2c312"
+      },
+      {
+        "file": "metric/newmist/misin.f90",
+        "line": 126,
+        "declaration": "real    :: ARRAY(7)",
+        "source_sha256": "a7602022113ca8a18736b3db30d2361898161c60dfb8f11cb384b7061ab2c312"
+      },
+      {
+        "file": "metric/newmist/misin.f90",
+        "line": 131,
+        "declaration": "character(len=10) :: KARD(7)",
+        "source_sha256": "a7602022113ca8a18736b3db30d2361898161c60dfb8f11cb384b7061ab2c312"
+      }
+    ]
+  }
+}

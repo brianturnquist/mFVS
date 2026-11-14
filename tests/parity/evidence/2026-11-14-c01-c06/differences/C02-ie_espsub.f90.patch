@@ -1,0 +1,46 @@
+--- before/ie/espsub.f90
++++ canonical/estb/espsub.f90
+@@ -1,7 +1,7 @@
+ !==============================================!
+ !   Predict subsequent species probabilities   !
+ !==============================================!
+-! IE $Id$
++! ESTB $Id$
+ subroutine ESPSUB
+   implicit none
+ 
+@@ -17,7 +17,6 @@
+ 
+   !     PREDICT THE PROBABILITY OF SUBSEQUENT SPECIES.
+   !     PLANTING COEFFICIENTS NOT INCLUDED IN THIS SUBROUTINE.
+-
+   !     P(SUBSEQUENT WHITE PINE)  7/12/89
+ 
+   ! Variables
+@@ -134,22 +133,10 @@
+   if (IPHY.eq.4.or.IPHY.eq.5) PN = PN +0.346372
+   PSUB(10) = (1.0/(1.0+EXP(-PN))) * OCURHT(IHAB,10)*XESMLT(10)&
+        &*OCURNF(IFO,10)
++  !     THE FIRST TEN EQUATIONS ARE SHARED BY CI, IE AND KT. CLEAR THE
++  !     REMAINING SPECIES USING THE SELECTED VARIANT'S ARRAY DIMENSION:
++  !     CI HAS 19 SPECIES, IE HAS 23, AND KT HAS ONLY 11.
+ 
+-  !     P(SUBSEQUENT OTHER SPECIES)
+-
+-  PSUB(11) = 0.0
+-  PSUB(12) = 0.0
+-  PSUB(13) = 0.0
+-  PSUB(14) = 0.0
+-  PSUB(15) = 0.0
+-  PSUB(16) = 0.0
+-  PSUB(17) = 0.0
+-  PSUB(18) = 0.0
+-  PSUB(19) = 0.0
+-  PSUB(20) = 0.0
+-  PSUB(21) = 0.0
+-  PSUB(22) = 0.0
+-  PSUB(23) = 0.0
+-
++  PSUB(11:MAXSP) = 0.0
+   return
+ end

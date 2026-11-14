@@ -20,7 +20,11 @@ import sqlite3
 UUID = re.compile(r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}")
 DATE = r"\d{2}-\d{2}-\d{4}"
 TIME = r"\d{2}:\d{2}:\d{2}"
-HEADER_END = re.compile(rf"RV:(?P<revision>.{{10}})(?P<separator>  |)(?P<date>{DATE})  (?P<time>{TIME})$")
+# GROHED backtracks to fixed columns for RV and date. Long CA/CR (and
+# similar) titles can leave one or two title characters between those fields.
+# A long TT title also survives in the two skipped columns before the time.
+# Capture and RETAIN both gaps; only revision/date/time are metadata.
+HEADER_END = re.compile(rf"RV:(?P<revision>.{{10}})(?P<separator>.{{0,2}})(?P<date>{DATE})(?P<clock_separator>.{{2}})(?P<time>{TIME})$")
 SUMMARY_META = re.compile(rf"(?P<prefix>^-999.*? [A-Z]{{2}} )({DATE}) ({TIME}) (.{{10}})")
 CASE_META = {"Version", "RV", "RunDateTime"}
 
@@ -89,7 +93,7 @@ def normalize_text(data: bytes, aliases: dict[str, str]) -> tuple[bytes, dict[st
             else:
                 line = re.sub(r"(?<=VERSION ).{32}", "<VERSION>".ljust(32), line, count=1)
             line = HEADER_END.sub(lambda m: "RV:" + "<RV>".ljust(10) + m["separator"]
-                                 + "<RUN-DATE>  <RUN-TIME>", line)
+                                 + "<RUN-DATE>" + m["clock_separator"] + "<RUN-TIME>", line)
             counts["grohed_metadata"] += 1
         if SUMMARY_META.search(line):
             line = SUMMARY_META.sub(lambda m: m["prefix"] + "<RUN-DATE> <RUN-TIME> " + "<RV>".ljust(10), line, count=1)

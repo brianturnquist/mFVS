@@ -401,7 +401,7 @@
 ../estb/esprin.f90
 ../estb/esrann.f90
 ../strp/estab.f90
-../strp/estime.f90
+../estb/estime.f90
 ../estb/estump.f90
 ../strp/esuckr.f90
 
@@ -611,7 +611,7 @@
 ../fire/ca/fmcrow.f90
 ../fire/ca/fmvinit.f90
 ../fire/ie/fmcons.f90
-../fire/ie/fmsfall.f90
+../fire/base/fmsfall.f90
 ../fire/ws/cwhr.f90
 ../fire/base/fmmois.f90
 ../fire/ws/fmshrub.f90

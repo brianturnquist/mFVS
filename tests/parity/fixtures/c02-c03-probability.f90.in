@@ -1,0 +1,57 @@
+! Use original routines as the oracle, with nonzero tail/collateral sentinels.
+program CHECK_PROBABILITY
+  implicit none
+  include 'PRGPRM.f90'
+  include 'ESPARM.f90'
+  include 'ESCOMN.f90'
+  include 'ESCOM2.f90'
+  include 'PLOT.f90'
+  include 'PDEN.f90'
+  include 'ESHAP.f90'
+  include 'ESHAP2.f90'
+  integer :: TESTMODE,TESTI,TESTCOUNT
+  open(31,file='state.bin',access='stream',form='unformatted')
+  DHAB = 0.05
+  FHAB = 0.03
+  DPRE = 0.01
+  FPRE = 0.02
+  OCURHT = 0.7
+  OCURNF = 0.8
+  do TESTI = 1,MAXSP
+     XESMLT(TESTI) = 0.5+0.02*TESTI
+  end do
+  NNID = 1
+  BAA = 25.0
+  BAALN = LOG(BAA)
+  ELEV = 12.0
+  ELEVSQ = ELEV**2
+  TIME = 5.0
+  SLO = 0.2
+  XCOS = 0.4
+  XSIN = 0.3
+  SQREGT = 2.0
+  SQBWAF = 0.3
+  BWAF = 1.0
+  BWB4 = 2.0
+  REGT = 4.0
+  TESTCOUNT = 0
+  do TESTMODE = 0,1
+     OVER = 12.0*TESTMODE
+     do IHAB = 1,16
+        do IFO = 1,MIN(20,MXFRCDS)
+           do IPREP = 1,4
+              do IPHY = 1,5
+                 PSUB = 12345.25
+                 PXCS = -12345.25
+                 PADV = 8765.5
+                 call @ROUTINE@
+                 write(31) TESTMODE,IHAB,IFO,IPREP,IPHY,PSUB,PXCS,PADV
+                 TESTCOUNT = TESTCOUNT+1
+              end do
+           end do
+        end do
+     end do
+  end do
+  close(31)
+  write(*,*) '@ROUTINE@ cases:',TESTCOUNT
+end program CHECK_PROBABILITY

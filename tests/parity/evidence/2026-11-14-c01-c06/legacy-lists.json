@@ -1,0 +1,37 @@
+{
+  "lists": [
+    {
+      "path": "canada/bin/FVSon_sourceList.txt",
+      "entries": 521,
+      "resolutions": {
+        "root_bin": {
+          "retired_references": [
+            "../strp/estime.f90"
+          ],
+          "missing_before": 88,
+          "missing_after": 89
+        }
+      },
+      "qualified_recipe_consumers": [],
+      "unchanged": true
+    },
+    {
+      "path": "canada/bin/FVSbcc_notReady.txt",
+      "entries": 712,
+      "resolutions": {
+        "root_bin": {
+          "retired_references": [
+            "../fire/ie/fmsfall.f90",
+            "../strp/estime.f90"
+          ],
+          "missing_before": 115,
+          "missing_after": 117
+        }
+      },
+      "qualified_recipe_consumers": [],
+      "unchanged": true
+    }
+  ],
+  "root_CMake_relative_globs_use_root_lists": true,
+  "passed": true
+}

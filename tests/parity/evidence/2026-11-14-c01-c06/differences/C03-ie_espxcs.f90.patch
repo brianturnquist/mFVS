@@ -1,0 +1,53 @@
+--- before/ie/espxcs.f90
++++ canonical/estb/espxcs.f90
+@@ -1,7 +1,7 @@
+ !==========================================!
+ !   Predict excess species probabilities   !
+ !==========================================!
+-! IE $Id$
++! ESTB $Id$
+ subroutine ESPXCS
+   implicit none
+ 
+@@ -15,12 +15,11 @@
+   include 'ESHAP.f90'
+   include 'ESHAP2.f90'
+ 
+-  !     PREDICT THE PROBABILITY OF EXCESS SPECIES
+-
+-  !     P(EXCESS WWP)  3/24/87
+-
+   ! Variables
+   real    :: PN
++
++  !     PREDICT THE PROBABILITY OF EXCESS SPECIES
++  !     P(EXCESS WWP)  3/24/87
+ 
+   PN = -2.6601112 -0.2103586*XCOS -2.1766529*XSIN -2.6159747*SLO&
+        &-.0170345*BAA +0.3166977*BAALN +FHAB(IHAB,1)
+@@ -104,21 +103,10 @@
+   PXCS(10) = (1.0/(1.0+EXP(-PN)))*XESMLT(10)*OCURHT(IHAB,10)&
+        &*OCURNF(IFO,10)
+ 
+-  !     P(EXCESS MOUNTAIN HEMLOCK) & OTHER SPECIES
++  !     THE FIRST TEN EQUATIONS ARE SHARED BY CI, IE AND KT. CLEAR THE
++  !     REMAINING SPECIES USING THE SELECTED VARIANT'S ARRAY DIMENSION:
++  !     CI HAS 19 SPECIES, IE HAS 23, AND KT HAS ONLY 11.
+ 
+-  PXCS(11) = 0.0
+-  PXCS(12) = 0.0
+-  PXCS(13) = 0.0
+-  PXCS(14) = 0.0
+-  PXCS(15) = 0.0
+-  PXCS(16) = 0.0
+-  PXCS(17) = 0.0
+-  PXCS(18) = 0.0
+-  PXCS(19) = 0.0
+-  PXCS(20) = 0.0
+-  PXCS(21) = 0.0
+-  PXCS(22) = 0.0
+-  PXCS(23) = 0.0
+-
++  PXCS(11:MAXSP) = 0.0
+   return
+ end

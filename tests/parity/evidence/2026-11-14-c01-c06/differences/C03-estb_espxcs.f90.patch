@@ -1,0 +1,15 @@
+--- before/estb/espxcs.f90
++++ canonical/estb/espxcs.f90
+@@ -103,8 +103,10 @@
+   PXCS(10) = (1.0/(1.0+EXP(-PN)))*XESMLT(10)*OCURHT(IHAB,10)&
+        &*OCURNF(IFO,10)
+ 
+-  !     P(EXCESS MOUNTAIN HEMLOCK)
++  !     THE FIRST TEN EQUATIONS ARE SHARED BY CI, IE AND KT. CLEAR THE
++  !     REMAINING SPECIES USING THE SELECTED VARIANT'S ARRAY DIMENSION:
++  !     CI HAS 19 SPECIES, IE HAS 23, AND KT HAS ONLY 11.
+ 
+-  PXCS(11) = 0.0
++  PXCS(11:MAXSP) = 0.0
+   return
+ end

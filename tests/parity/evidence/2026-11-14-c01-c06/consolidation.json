@@ -1,0 +1,740 @@
+{
+  "before_revision": "1a8aef8b210ebf532d8c94291fea511f11a6a19a",
+  "tasks": [
+    {
+      "id": "C01",
+      "routine": "ESTIME",
+      "sources": [
+        "estb/estime.f90",
+        "strp/estime.f90"
+      ],
+      "canonical": "estb/estime.f90",
+      "consumers": {
+        "bc": "strp/estime.f90",
+        "bm": "strp/estime.f90",
+        "ca": "strp/estime.f90",
+        "ci": "estb/estime.f90",
+        "cr": "strp/estime.f90",
+        "cs": "strp/estime.f90",
+        "ec": "strp/estime.f90",
+        "em": "estb/estime.f90",
+        "ie": "estb/estime.f90",
+        "kt": "estb/estime.f90",
+        "ls": "strp/estime.f90",
+        "nc": "strp/estime.f90",
+        "ne": "strp/estime.f90",
+        "oc": "strp/estime.f90",
+        "on": "strp/estime.f90",
+        "op": "strp/estime.f90",
+        "pn": "strp/estime.f90",
+        "sn": "strp/estime.f90",
+        "so": "strp/estime.f90",
+        "tt": "strp/estime.f90",
+        "ut": "strp/estime.f90",
+        "wc": "strp/estime.f90",
+        "ws": "strp/estime.f90"
+      },
+      "preservation_contract": "ESCOM2 declares only unused species probability storage; omit that unused include. Preserve all timing statements.",
+      "before_sources": {
+        "estb/estime.f90": "a33e9ad11cc379844820e31a24d5732d912628786d95c06d347e34fcf5cc7b89",
+        "strp/estime.f90": "6378a328a678d81427bfb10512949cac2bc99b1a864fbaee9c2ef41412ab46b6"
+      },
+      "canonical_sha256": "51e1f4b0109e58e00d16f946dda1eeac5e77fcbe983dd09910dbb886921595a0",
+      "signature": {
+        "kind": "subroutine",
+        "name": "ESTIME",
+        "argument_count": 2,
+        "arguments": [
+          "IEVTYR",
+          "KDT"
+        ],
+        "source_sha256": "51e1f4b0109e58e00d16f946dda1eeac5e77fcbe983dd09910dbb886921595a0"
+      },
+      "recovery_sources": [
+        {
+          "path": "estb/estime.f90",
+          "sha256": "a33e9ad11cc379844820e31a24d5732d912628786d95c06d347e34fcf5cc7b89",
+          "git_blob": "7496fa075cb3d8f85726876547a60d5297214abc",
+          "recovery": "git show 1a8aef8b210ebf532d8c94291fea511f11a6a19a:estb/estime.f90",
+          "difference_file": "differences/C01-estb_estime.f90.patch",
+          "difference_sha256": "7a714b467e05986adefd391a1c655bcea812da814ba4173d4901c5dd72dbf6ef"
+        },
+        {
+          "path": "strp/estime.f90",
+          "sha256": "6378a328a678d81427bfb10512949cac2bc99b1a864fbaee9c2ef41412ab46b6",
+          "git_blob": "aed5a0128bf14a1546c0bc5cce41476fc1bcef57",
+          "recovery": "git show 1a8aef8b210ebf532d8c94291fea511f11a6a19a:strp/estime.f90",
+          "difference_file": "differences/C01-strp_estime.f90.patch",
+          "difference_sha256": "fb801dd0c584371fecec2473dcfc582466a5e14253a80b6f36666036d7ef4d45"
+        }
+      ]
+    },
+    {
+      "id": "C02",
+      "routine": "ESPSUB",
+      "sources": [
+        "estb/espsub.f90",
+        "ci/espsub.f90",
+        "ie/espsub.f90"
+      ],
+      "canonical": "estb/espsub.f90",
+      "consumers": {
+        "ci": "ci/espsub.f90",
+        "ie": "ie/espsub.f90",
+        "kt": "estb/espsub.f90"
+      },
+      "preservation_contract": "Shared first ten probability equations; clear 11:MAXSP, preserving KT=11, CI=19 and IE=23 species bounds.",
+      "before_sources": {
+        "estb/espsub.f90": "4779f8083cb845d1ba0b1200f9a3da3d6968cb018c735ca2a21234600d0cfb42",
+        "ci/espsub.f90": "3aa2484dfe4952375e270b0711b0d7c714e573ea4f9d9eeb4593d8fb5add2d28",
+        "ie/espsub.f90": "28b1517daba9eda5ac9913f65f1227552d8b31af1008322802e0ad6617a74d6e"
+      },
+      "canonical_sha256": "99d59e221b793d10eb4e8d57169d3b8d9d2dc5abf2c3391577901f63b31f792a",
+      "signature": {
+        "kind": "subroutine",
+        "name": "ESPSUB",
+        "argument_count": 0,
+        "arguments": [],
+        "source_sha256": "99d59e221b793d10eb4e8d57169d3b8d9d2dc5abf2c3391577901f63b31f792a"
+      },
+      "recovery_sources": [
+        {
+          "path": "estb/espsub.f90",
+          "sha256": "4779f8083cb845d1ba0b1200f9a3da3d6968cb018c735ca2a21234600d0cfb42",
+          "git_blob": "dde1db3fb903a11497416d0c53c8a92e34152b3b",
+          "recovery": "git show 1a8aef8b210ebf532d8c94291fea511f11a6a19a:estb/espsub.f90",
+          "difference_file": "differences/C02-estb_espsub.f90.patch",
+          "difference_sha256": "5879890726ce7834bfca43f4146f188aa0539b201ed59763d3a8b69f6592ff75"
+        },
+        {
+          "path": "ci/espsub.f90",
+          "sha256": "3aa2484dfe4952375e270b0711b0d7c714e573ea4f9d9eeb4593d8fb5add2d28",
+          "git_blob": "4473db9e81acd42c51f68399abeb7649697a7a52",
+          "recovery": "git show 1a8aef8b210ebf532d8c94291fea511f11a6a19a:ci/espsub.f90",
+          "difference_file": "differences/C02-ci_espsub.f90.patch",
+          "difference_sha256": "6104d049cee0042422407a095838dcf32233b73c0c02b8c079939640e2d3faad"
+        },
+        {
+          "path": "ie/espsub.f90",
+          "sha256": "28b1517daba9eda5ac9913f65f1227552d8b31af1008322802e0ad6617a74d6e",
+          "git_blob": "9a0db56e934b9784314c55fd7b8cb6b5b3d3e753",
+          "recovery": "git show 1a8aef8b210ebf532d8c94291fea511f11a6a19a:ie/espsub.f90",
+          "difference_file": "differences/C02-ie_espsub.f90.patch",
+          "difference_sha256": "e9a5bc73d4535a031f78a4662d09b503303229aece616b678cedebea625b81a1"
+        }
+      ]
+    },
+    {
+      "id": "C03",
+      "routine": "ESPXCS",
+      "sources": [
+        "estb/espxcs.f90",
+        "ci/espxcs.f90",
+        "ie/espxcs.f90"
+      ],
+      "canonical": "estb/espxcs.f90",
+      "consumers": {
+        "ci": "ci/espxcs.f90",
+        "ie": "ie/espxcs.f90",
+        "kt": "estb/espxcs.f90"
+      },
+      "preservation_contract": "Independently preserve all excess-probability equations and the dimensioned zero tail.",
+      "before_sources": {
+        "estb/espxcs.f90": "884768e1e4238a21eb2e72b0812d8cfc877f7038af8f028e504ea21176cdeeb9",
+        "ci/espxcs.f90": "330342aae4e4a4b3baa85660cfaff302fbd46561d06c6c1991601520e9425247",
+        "ie/espxcs.f90": "5f2ded6e02eea659ec5b667774e3d8d51d399cb34311eba75f4c57533e4ecaae"
+      },
+      "canonical_sha256": "0ced91bc80a175828c3b25d6c7fb4e2314cc46fd41afa1c46502d020599ce46c",
+      "signature": {
+        "kind": "subroutine",
+        "name": "ESPXCS",
+        "argument_count": 0,
+        "arguments": [],
+        "source_sha256": "0ced91bc80a175828c3b25d6c7fb4e2314cc46fd41afa1c46502d020599ce46c"
+      },
+      "recovery_sources": [
+        {
+          "path": "estb/espxcs.f90",
+          "sha256": "884768e1e4238a21eb2e72b0812d8cfc877f7038af8f028e504ea21176cdeeb9",
+          "git_blob": "de2c2527742d06063dd61c4c3ea79d22c8153583",
+          "recovery": "git show 1a8aef8b210ebf532d8c94291fea511f11a6a19a:estb/espxcs.f90",
+          "difference_file": "differences/C03-estb_espxcs.f90.patch",
+          "difference_sha256": "e754a3010ed10e4ec990feeb6642114f85361d9db08aef425c62dc0282140467"
+        },
+        {
+          "path": "ci/espxcs.f90",
+          "sha256": "330342aae4e4a4b3baa85660cfaff302fbd46561d06c6c1991601520e9425247",
+          "git_blob": "b0a6bc73b8485b015153fb91c868e5516df0303c",
+          "recovery": "git show 1a8aef8b210ebf532d8c94291fea511f11a6a19a:ci/espxcs.f90",
+          "difference_file": "differences/C03-ci_espxcs.f90.patch",
+          "difference_sha256": "e07228ef555a4a8cf85da7265562d8e38a5def1317adad1c4f8220d6975b9826"
+        },
+        {
+          "path": "ie/espxcs.f90",
+          "sha256": "5f2ded6e02eea659ec5b667774e3d8d51d399cb34311eba75f4c57533e4ecaae",
+          "git_blob": "c1d6baea0f051acf72c35461a75c9091b4490fbc",
+          "recovery": "git show 1a8aef8b210ebf532d8c94291fea511f11a6a19a:ie/espxcs.f90",
+          "difference_file": "differences/C03-ie_espxcs.f90.patch",
+          "difference_sha256": "0889a32131a59c47ba5abbbb5e63f9df71f9b33e08974e794aa76aeae29e12aa"
+        }
+      ]
+    },
+    {
+      "id": "C04",
+      "routine": "FMCROW",
+      "sources": [
+        "fire/kt/fmcrow.f90",
+        "fire/nc/fmcrow.f90"
+      ],
+      "canonical": "fire/base/fmcrow.f90",
+      "consumers": {
+        "kt": "fire/kt/fmcrow.f90",
+        "nc": "fire/nc/fmcrow.f90"
+      },
+      "preservation_contract": "Keep separate 11- and 12-element mapping tables selected by compile-time VARIANTCD. Preserve NC species 12 mapping 19 despite the historical comment saying 3.",
+      "before_sources": {
+        "fire/kt/fmcrow.f90": "eb44a3b00396d2668b0ef0bb522b2dae5f199c650e41630c9951252c2941b6a6",
+        "fire/nc/fmcrow.f90": "a2ab88b761af0723a77211f0fea738d0b3518e599faa9ac70ad3bf77d6663407"
+      },
+      "canonical_sha256": "fd37edcc5353b324fd67ef8d96e69f680a5393c55a620f0bcd0efa6d6135f39c",
+      "signature": {
+        "kind": "subroutine",
+        "name": "FMCROW",
+        "argument_count": 0,
+        "arguments": [],
+        "source_sha256": "fd37edcc5353b324fd67ef8d96e69f680a5393c55a620f0bcd0efa6d6135f39c"
+      },
+      "recovery_sources": [
+        {
+          "path": "fire/kt/fmcrow.f90",
+          "sha256": "eb44a3b00396d2668b0ef0bb522b2dae5f199c650e41630c9951252c2941b6a6",
+          "git_blob": "25e0eac580f207175f69751edcb7b103947a79b9",
+          "recovery": "git show 1a8aef8b210ebf532d8c94291fea511f11a6a19a:fire/kt/fmcrow.f90",
+          "difference_file": "differences/C04-fire_kt_fmcrow.f90.patch",
+          "difference_sha256": "ace77d1e0b23b9d0d0fa1ac6ac95f40cb26b164154b066df512852179a964e25"
+        },
+        {
+          "path": "fire/nc/fmcrow.f90",
+          "sha256": "a2ab88b761af0723a77211f0fea738d0b3518e599faa9ac70ad3bf77d6663407",
+          "git_blob": "fbb7bd07723f53a485f8f8b394e5b1b5356a511e",
+          "recovery": "git show 1a8aef8b210ebf532d8c94291fea511f11a6a19a:fire/nc/fmcrow.f90",
+          "difference_file": "differences/C04-fire_nc_fmcrow.f90.patch",
+          "difference_sha256": "30fd6face447328354512cfce1838108d6a9e8734c41a832e06662ba0fa0821d"
+        }
+      ]
+    },
+    {
+      "id": "C05",
+      "routine": "FMCFMD",
+      "sources": [
+        "fire/vop/fmcfmd.f90",
+        "fire/vpn/fmcfmd.f90"
+      ],
+      "canonical": "fire/base/fmcfmd.f90",
+      "consumers": {
+        "op": "fire/vop/fmcfmd.f90",
+        "pn": "fire/vpn/fmcfmd.f90",
+        "wc": "fire/vpn/fmcfmd.f90"
+      },
+      "preservation_contract": "Only OP puts non-WC species 24 in WOCT. Keep the exact original arithmetic order and WC outer branch.",
+      "before_sources": {
+        "fire/vop/fmcfmd.f90": "3396f3f569f9b0df44784771bf0b5387d8360bdb2d6c95bffefdacfede4e14a8",
+        "fire/vpn/fmcfmd.f90": "71f730579fc3a493b5f2ea39d6d5a1e785441fd4b643ee704dbf8f18f42ce398"
+      },
+      "canonical_sha256": "f3a1df29a05dec86a5eb77cd8d19cd3e554f4c8f909ea194fe865bdce1fc02f2",
+      "signature": {
+        "kind": "subroutine",
+        "name": "FMCFMD",
+        "argument_count": 2,
+        "arguments": [
+          "IYR",
+          "FMD"
+        ],
+        "source_sha256": "f3a1df29a05dec86a5eb77cd8d19cd3e554f4c8f909ea194fe865bdce1fc02f2"
+      },
+      "recovery_sources": [
+        {
+          "path": "fire/vop/fmcfmd.f90",
+          "sha256": "3396f3f569f9b0df44784771bf0b5387d8360bdb2d6c95bffefdacfede4e14a8",
+          "git_blob": "40126f73633ab70aa0f1eca1ff0cbb3f3c31c8ea",
+          "recovery": "git show 1a8aef8b210ebf532d8c94291fea511f11a6a19a:fire/vop/fmcfmd.f90",
+          "difference_file": "differences/C05-fire_vop_fmcfmd.f90.patch",
+          "difference_sha256": "a85b3806c3f1eb8bc6489f6572682d7a1e636700fbd65a27f9ec0faf67e6ff40"
+        },
+        {
+          "path": "fire/vpn/fmcfmd.f90",
+          "sha256": "71f730579fc3a493b5f2ea39d6d5a1e785441fd4b643ee704dbf8f18f42ce398",
+          "git_blob": "e1ad7a6f91027ec957d800368755b236ee687708",
+          "recovery": "git show 1a8aef8b210ebf532d8c94291fea511f11a6a19a:fire/vpn/fmcfmd.f90",
+          "difference_file": "differences/C05-fire_vpn_fmcfmd.f90.patch",
+          "difference_sha256": "65a2c7c28ba762280647caa6f4bc9cb9bc4ae21ec04eee0668940547b78217a7"
+        }
+      ]
+    },
+    {
+      "id": "C06",
+      "routine": "FMSFALL",
+      "sources": [
+        "fire/ci/fmsfall.f90",
+        "fire/ie/fmsfall.f90"
+      ],
+      "canonical": "fire/base/fmsfall.f90",
+      "consumers": {
+        "bc": "fire/ie/fmsfall.f90",
+        "ca": "fire/ie/fmsfall.f90",
+        "ci": "fire/ci/fmsfall.f90",
+        "ie": "fire/ie/fmsfall.f90",
+        "kt": "fire/ie/fmsfall.f90",
+        "nc": "fire/ie/fmsfall.f90",
+        "oc": "fire/ie/fmsfall.f90",
+        "ws": "fire/ie/fmsfall.f90"
+      },
+      "preservation_contract": "Only CI applies the species-2/8 adjustment within D>=18; preserve all IE-file consumers including BC.",
+      "before_sources": {
+        "fire/ci/fmsfall.f90": "42eec77a6442847f5fbf5241a3896f8b19159b7e1e628da8c607462188167a53",
+        "fire/ie/fmsfall.f90": "120404a27610d113f39e49cb96e2070688dc1e0ca944f06188870348d14c7e20"
+      },
+      "canonical_sha256": "8b0daabe801f109a6d6b1653d9607188baa5ecaf05322a096e212e9b4f67df97",
+      "signature": {
+        "kind": "subroutine",
+        "name": "FMSFALL",
+        "argument_count": 9,
+        "arguments": [
+          "IYR",
+          "KSP",
+          "D",
+          "ORIGDEN",
+          "DENTTL",
+          "ISWTCH",
+          "RSOFT",
+          "RSMAL",
+          "DFALLN"
+        ],
+        "source_sha256": "8b0daabe801f109a6d6b1653d9607188baa5ecaf05322a096e212e9b4f67df97"
+      },
+      "recovery_sources": [
+        {
+          "path": "fire/ci/fmsfall.f90",
+          "sha256": "42eec77a6442847f5fbf5241a3896f8b19159b7e1e628da8c607462188167a53",
+          "git_blob": "5c6a01d764f941d6453a847f9d67a4de7f06489a",
+          "recovery": "git show 1a8aef8b210ebf532d8c94291fea511f11a6a19a:fire/ci/fmsfall.f90",
+          "difference_file": "differences/C06-fire_ci_fmsfall.f90.patch",
+          "difference_sha256": "79c5b8d477dca8a1de09badf0621ce6996677510c75da83e093ce38fa600813f"
+        },
+        {
+          "path": "fire/ie/fmsfall.f90",
+          "sha256": "120404a27610d113f39e49cb96e2070688dc1e0ca944f06188870348d14c7e20",
+          "git_blob": "b3debaa6cd1779ce87ccfcae2a52bda98e21de79",
+          "recovery": "git show 1a8aef8b210ebf532d8c94291fea511f11a6a19a:fire/ie/fmsfall.f90",
+          "difference_file": "differences/C06-fire_ie_fmsfall.f90.patch",
+          "difference_sha256": "9be860c7c62454edded405392775bf2cd021e5c245b9a748711154d8602353bb"
+        }
+      ]
+    }
+  ],
+  "variants": {
+    "ak": {
+      "manifest_sha256": "6e1767ab00482e9d381ab668f7098f3a0d2117a7deca1b32590760c3a7e568d8",
+      "rewrites": {},
+      "selected_input_count": 712,
+      "selected_definitions": {
+        "C01": "ak/estime.f90",
+        "C02": "ak/espsub.f90",
+        "C03": "ak/espxcs.f90",
+        "C04": "fire/ak/fmcrow.f90",
+        "C05": "fire/ak/fmcfmd.f90",
+        "C06": "fire/pn/fmsfall.f90"
+      },
+      "input_inventory_sha256": "b57c0e378d5241991ddf8a71dcd65d6a23b606702b575d41ec10c8af68a22595"
+    },
+    "bc": {
+      "manifest_sha256": "a940f7debfc504b1460cdff1fdc4f2a36467d34fcb44a57cdef109afe1113574",
+      "rewrites": {
+        "strp/estime.f90": "estb/estime.f90",
+        "fire/ie/fmsfall.f90": "fire/base/fmsfall.f90"
+      },
+      "selected_input_count": 653,
+      "selected_definitions": {
+        "C01": "estb/estime.f90",
+        "C02": null,
+        "C03": null,
+        "C04": "canada/fire/bc/fmcrow.f90",
+        "C05": "fire/ie/fmcfmd.f90",
+        "C06": "fire/base/fmsfall.f90"
+      },
+      "input_inventory_sha256": "5f17507b68cc37704197a126bed61dfc0908ad78660fcc780dafb32aaa7d9bcf"
+    },
+    "bm": {
+      "manifest_sha256": "5230f278a9f49c48998a637f67932350f2b06cbc48918b656ff32b13a00f4239",
+      "rewrites": {
+        "strp/estime.f90": "estb/estime.f90"
+      },
+      "selected_input_count": 792,
+      "selected_definitions": {
+        "C01": "estb/estime.f90",
+        "C02": null,
+        "C03": null,
+        "C04": "fire/bm/fmcrow.f90",
+        "C05": "fire/bm/fmcfmd.f90",
+        "C06": "fire/pn/fmsfall.f90"
+      },
+      "input_inventory_sha256": "02aa07b4bc9818e491a38f0b0510f65183f26ceed210eaaf1354a899c49ff9c1"
+    },
+    "ca": {
+      "manifest_sha256": "18416371356edc58327e4ce5f000b4ee79baa52d71c3d6cd1fa85adfc209f5c4",
+      "rewrites": {
+        "strp/estime.f90": "estb/estime.f90",
+        "fire/ie/fmsfall.f90": "fire/base/fmsfall.f90"
+      },
+      "selected_input_count": 716,
+      "selected_definitions": {
+        "C01": "estb/estime.f90",
+        "C02": null,
+        "C03": null,
+        "C04": "fire/ca/fmcrow.f90",
+        "C05": "fire/ca/fmcfmd.f90",
+        "C06": "fire/base/fmsfall.f90"
+      },
+      "input_inventory_sha256": "97970606a5909c4c3df72e9140ca5d94460ad1eaa5681064a45065dea23321a3"
+    },
+    "ci": {
+      "manifest_sha256": "de94e2b87ad10ca400e65373ccfac00775e57b23a01b5b0e7481f665059c4568",
+      "rewrites": {
+        "ci/espsub.f90": "estb/espsub.f90",
+        "ci/espxcs.f90": "estb/espxcs.f90",
+        "fire/ci/fmsfall.f90": "fire/base/fmsfall.f90"
+      },
+      "selected_input_count": 798,
+      "selected_definitions": {
+        "C01": "estb/estime.f90",
+        "C02": "estb/espsub.f90",
+        "C03": "estb/espxcs.f90",
+        "C04": "fire/ci/fmcrow.f90",
+        "C05": "fire/ci/fmcfmd.f90",
+        "C06": "fire/base/fmsfall.f90"
+      },
+      "input_inventory_sha256": "1c21e365fda9cd015abc2f361e20c5960ec33b73497f8247a9969572ee66bde5"
+    },
+    "cr": {
+      "manifest_sha256": "6950edeea4a5b4858c5e92562bad2559d9b54389c7251b48debfc04889331ba9",
+      "rewrites": {
+        "strp/estime.f90": "estb/estime.f90"
+      },
+      "selected_input_count": 790,
+      "selected_definitions": {
+        "C01": "estb/estime.f90",
+        "C02": null,
+        "C03": null,
+        "C04": "fire/cr/fmcrow.f90",
+        "C05": "fire/vut/fmcfmd.f90",
+        "C06": "fire/vut/fmsfall.f90"
+      },
+      "input_inventory_sha256": "534f8d619483272e14fb6a0108902c39ead5ffae85f2efd870186bc5050c5d72"
+    },
+    "cs": {
+      "manifest_sha256": "f59ed1c77d2823dd1488b627df76da2a0b2176f731a59acbe48f9a22e6fe43ed",
+      "rewrites": {
+        "strp/estime.f90": "estb/estime.f90"
+      },
+      "selected_input_count": 665,
+      "selected_definitions": {
+        "C01": "estb/estime.f90",
+        "C02": null,
+        "C03": null,
+        "C04": "fire/cs/fmcrow.f90",
+        "C05": "fire/cs/fmcfmd.f90",
+        "C06": "fire/cs/fmsfall.f90"
+      },
+      "input_inventory_sha256": "944ca8322c48b550598666c2dd14aa6be050320b0d19005429252f371b1fd0bd"
+    },
+    "ec": {
+      "manifest_sha256": "d7347078264ef290a77100ac2e41107e26cca510aeb3348eddfebfb18ae7210c",
+      "rewrites": {
+        "strp/estime.f90": "estb/estime.f90"
+      },
+      "selected_input_count": 790,
+      "selected_definitions": {
+        "C01": "estb/estime.f90",
+        "C02": null,
+        "C03": null,
+        "C04": "fire/ec/fmcrow.f90",
+        "C05": "fire/ec/fmcfmd.f90",
+        "C06": "fire/pn/fmsfall.f90"
+      },
+      "input_inventory_sha256": "53ab37c6205761729c6e1c17c39c79c8f41d1e78a877f66ab9b0726041bb098b"
+    },
+    "em": {
+      "manifest_sha256": "975e04e0e9829fbc412542f3a78b175ea049b282147bc5f18a1b96d7ba6c04bd",
+      "rewrites": {},
+      "selected_input_count": 800,
+      "selected_definitions": {
+        "C01": "estb/estime.f90",
+        "C02": "em/espsub.f90",
+        "C03": "em/espxcs.f90",
+        "C04": "fire/em/fmcrow.f90",
+        "C05": "fire/em/fmcfmd.f90",
+        "C06": "fire/em/fmsfall.f90"
+      },
+      "input_inventory_sha256": "20be5f965c8760e4fa8f894045a6dfbfc10731ed0e7e1b18a20a21f35d225992"
+    },
+    "ie": {
+      "manifest_sha256": "30121cbaa3291a0c63789235e699353043f76d5ca1cb3994c28f18a5d98c2c1f",
+      "rewrites": {
+        "ie/espsub.f90": "estb/espsub.f90",
+        "ie/espxcs.f90": "estb/espxcs.f90",
+        "fire/ie/fmsfall.f90": "fire/base/fmsfall.f90"
+      },
+      "selected_input_count": 796,
+      "selected_definitions": {
+        "C01": "estb/estime.f90",
+        "C02": "estb/espsub.f90",
+        "C03": "estb/espxcs.f90",
+        "C04": "fire/ie/fmcrow.f90",
+        "C05": "fire/ie/fmcfmd.f90",
+        "C06": "fire/base/fmsfall.f90"
+      },
+      "input_inventory_sha256": "212968cf38a2a70a515b4e46febcc0f640ee4f0085304d0f7ba1107b4348a00d"
+    },
+    "kt": {
+      "manifest_sha256": "ff30a0cdae5a0068b463cca8e6496463a268150736cbf9daed4ad6dacc04beab",
+      "rewrites": {
+        "fire/kt/fmcrow.f90": "fire/base/fmcrow.f90",
+        "fire/ie/fmsfall.f90": "fire/base/fmsfall.f90"
+      },
+      "selected_input_count": 795,
+      "selected_definitions": {
+        "C01": "estb/estime.f90",
+        "C02": "estb/espsub.f90",
+        "C03": "estb/espxcs.f90",
+        "C04": "fire/base/fmcrow.f90",
+        "C05": "fire/ie/fmcfmd.f90",
+        "C06": "fire/base/fmsfall.f90"
+      },
+      "input_inventory_sha256": "7e5c8cec6f61f261601bf02c6f1c3b89e3b5e035bf0cfb2693b504c8f6b9f100"
+    },
+    "ls": {
+      "manifest_sha256": "870e98611071b67eaa1df5b294025deebe554a671ec18e5f6b82a04cf1d83394",
+      "rewrites": {
+        "strp/estime.f90": "estb/estime.f90"
+      },
+      "selected_input_count": 667,
+      "selected_definitions": {
+        "C01": "estb/estime.f90",
+        "C02": null,
+        "C03": null,
+        "C04": "fire/ls/fmcrow.f90",
+        "C05": "fire/ls/fmcfmd.f90",
+        "C06": "fire/ls/fmsfall.f90"
+      },
+      "input_inventory_sha256": "d6676bbbe69880f83b0d04bd132e0e65c97e95ae7eb4ce774ce16005581a69fa"
+    },
+    "nc": {
+      "manifest_sha256": "344878ee7c84c633b97c36e59cbfff1718d5253dd991fdea008d1aee09fd82eb",
+      "rewrites": {
+        "strp/estime.f90": "estb/estime.f90",
+        "fire/nc/fmcrow.f90": "fire/base/fmcrow.f90",
+        "fire/ie/fmsfall.f90": "fire/base/fmsfall.f90"
+      },
+      "selected_input_count": 795,
+      "selected_definitions": {
+        "C01": "estb/estime.f90",
+        "C02": null,
+        "C03": null,
+        "C04": "fire/base/fmcrow.f90",
+        "C05": "fire/nc/fmcfmd.f90",
+        "C06": "fire/base/fmsfall.f90"
+      },
+      "input_inventory_sha256": "c000b8cff001bcce5f88163cfaac6e4007ec8e6c4110cea66296f342450ce4ce"
+    },
+    "ne": {
+      "manifest_sha256": "8a3f02b9174f24c4d16d45da9f2a291ec01bdc957f10621810672a64a0064211",
+      "rewrites": {
+        "strp/estime.f90": "estb/estime.f90"
+      },
+      "selected_input_count": 666,
+      "selected_definitions": {
+        "C01": "estb/estime.f90",
+        "C02": null,
+        "C03": null,
+        "C04": "fire/ne/fmcrow.f90",
+        "C05": "fire/ak/fmcfmd.f90",
+        "C06": "fire/ne/fmsfall.f90"
+      },
+      "input_inventory_sha256": "5eee05e884fc229960032d63f07ee4132701018f6e6ea4b2c6166b3a7fb8d935"
+    },
+    "oc": {
+      "manifest_sha256": "92eff60931c0649fc2044d47f8b2b05d0688addf08997c9554557ae1c2dd9d9a",
+      "rewrites": {
+        "strp/estime.f90": "estb/estime.f90",
+        "fire/ie/fmsfall.f90": "fire/base/fmsfall.f90"
+      },
+      "selected_input_count": 740,
+      "selected_definitions": {
+        "C01": "estb/estime.f90",
+        "C02": null,
+        "C03": null,
+        "C04": "fire/ca/fmcrow.f90",
+        "C05": "fire/ca/fmcfmd.f90",
+        "C06": "fire/base/fmsfall.f90"
+      },
+      "input_inventory_sha256": "9b9eea93830eb9621b08ead35f486d602303afaa062d93193f1778327e4dfdae"
+    },
+    "on": {
+      "manifest_sha256": "23ca4cb3521f41bc9ece8e09dcaecab05b8b1704929a67f2ef10fdd111170236",
+      "rewrites": {
+        "strp/estime.f90": "estb/estime.f90"
+      },
+      "selected_input_count": 682,
+      "selected_definitions": {
+        "C01": "estb/estime.f90",
+        "C02": null,
+        "C03": null,
+        "C04": "canada/fire/on/fmcrow.f90",
+        "C05": "canada/fire/on/fmcfmd.f90",
+        "C06": "fire/ls/fmsfall.f90"
+      },
+      "input_inventory_sha256": "920754a5e82fb1b9f433435b08282c5b6e82d56bb7a74c8f384bbaaaf65f24a1"
+    },
+    "op": {
+      "manifest_sha256": "f9d54b65b0cc937031444082d7c18b791806fb28d06637eba7bd0774801a4040",
+      "rewrites": {
+        "strp/estime.f90": "estb/estime.f90",
+        "fire/vop/fmcfmd.f90": "fire/base/fmcfmd.f90"
+      },
+      "selected_input_count": 733,
+      "selected_definitions": {
+        "C01": "estb/estime.f90",
+        "C02": null,
+        "C03": null,
+        "C04": "fire/op/fmcrow.f90",
+        "C05": "fire/base/fmcfmd.f90",
+        "C06": "fire/pn/fmsfall.f90"
+      },
+      "input_inventory_sha256": "8467df0c950ab6901622fad3646d7a5862cb99a15745f5d638faf90525546973"
+    },
+    "pn": {
+      "manifest_sha256": "66f46417abe963095a0a0027936a2dfcc77e360818acf709aee7abb67df8a407",
+      "rewrites": {
+        "strp/estime.f90": "estb/estime.f90",
+        "fire/vpn/fmcfmd.f90": "fire/base/fmcfmd.f90"
+      },
+      "selected_input_count": 788,
+      "selected_definitions": {
+        "C01": "estb/estime.f90",
+        "C02": null,
+        "C03": null,
+        "C04": "fire/pn/fmcrow.f90",
+        "C05": "fire/base/fmcfmd.f90",
+        "C06": "fire/pn/fmsfall.f90"
+      },
+      "input_inventory_sha256": "9928b854beacfd55f44cceaa2ba0bf32c13bc7119f244196ad8ebb8bdb431e0a"
+    },
+    "sn": {
+      "manifest_sha256": "11a8a846edf26928f891d57fed429604c7c4bc0d8a06104744b6074cc3306f09",
+      "rewrites": {
+        "strp/estime.f90": "estb/estime.f90"
+      },
+      "selected_input_count": 663,
+      "selected_definitions": {
+        "C01": "estb/estime.f90",
+        "C02": null,
+        "C03": null,
+        "C04": "fire/sn/fmcrow.f90",
+        "C05": "fire/sn/fmcfmd.f90",
+        "C06": "fire/sn/fmsfall.f90"
+      },
+      "input_inventory_sha256": "ee430534685831da0192bf7c29f10cf91ed79a4ace2e907c08f413cd5a537939"
+    },
+    "so": {
+      "manifest_sha256": "0842e34eafb0e31cca8f354666b3aadf47f160d686d807f068d426c19a633d22",
+      "rewrites": {
+        "strp/estime.f90": "estb/estime.f90"
+      },
+      "selected_input_count": 795,
+      "selected_definitions": {
+        "C01": "estb/estime.f90",
+        "C02": null,
+        "C03": null,
+        "C04": "fire/so/fmcrow.f90",
+        "C05": "fire/so/fmcfmd.f90",
+        "C06": "fire/so/fmsfall.f90"
+      },
+      "input_inventory_sha256": "eadc34fe7c1cd80756c17bef4a5c2afe8b0e2a75f74c6ae16727a8262c9e3125"
+    },
+    "tt": {
+      "manifest_sha256": "251ef575b90864cce685612ef82aec8b5c50bac5943f1b7ccd68da5bbf556045",
+      "rewrites": {
+        "strp/estime.f90": "estb/estime.f90"
+      },
+      "selected_input_count": 793,
+      "selected_definitions": {
+        "C01": "estb/estime.f90",
+        "C02": null,
+        "C03": null,
+        "C04": "fire/tt/fmcrow.f90",
+        "C05": "fire/vut/fmcfmd.f90",
+        "C06": "fire/vut/fmsfall.f90"
+      },
+      "input_inventory_sha256": "d8df83e4155d5950ca8dba4ba45e1b6f62e2559c67d327aee0ad688b135a7d60"
+    },
+    "ut": {
+      "manifest_sha256": "4d6641f2eaf4055413af1613ec850c5f9636a65f15c0e147a5406741c81a2dc7",
+      "rewrites": {
+        "strp/estime.f90": "estb/estime.f90"
+      },
+      "selected_input_count": 790,
+      "selected_definitions": {
+        "C01": "estb/estime.f90",
+        "C02": null,
+        "C03": null,
+        "C04": "fire/ut/fmcrow.f90",
+        "C05": "fire/vut/fmcfmd.f90",
+        "C06": "fire/vut/fmsfall.f90"
+      },
+      "input_inventory_sha256": "be7d3dc5993e3eeb9aa61a7e77239f6e79f452436a6ea5f600f1436da91d5ffc"
+    },
+    "wc": {
+      "manifest_sha256": "330b75bfabf63b69beb48625211da252f671cf7c6350bcdaeb736708d0292da9",
+      "rewrites": {
+        "strp/estime.f90": "estb/estime.f90",
+        "fire/vpn/fmcfmd.f90": "fire/base/fmcfmd.f90"
+      },
+      "selected_input_count": 788,
+      "selected_definitions": {
+        "C01": "estb/estime.f90",
+        "C02": null,
+        "C03": null,
+        "C04": "fire/pn/fmcrow.f90",
+        "C05": "fire/base/fmcfmd.f90",
+        "C06": "fire/pn/fmsfall.f90"
+      },
+      "input_inventory_sha256": "38a4c4f21c6971a6237517b9c59d0256fab13616189a94016e3c5a3381a776e8"
+    },
+    "ws": {
+      "manifest_sha256": "a2af2e4743a52116331f841aef15de400c9b4a770111000e6c3d00f454563c3b",
+      "rewrites": {
+        "strp/estime.f90": "estb/estime.f90",
+        "fire/ie/fmsfall.f90": "fire/base/fmsfall.f90"
+      },
+      "selected_input_count": 792,
+      "selected_definitions": {
+        "C01": "estb/estime.f90",
+        "C02": null,
+        "C03": null,
+        "C04": "fire/ws/fmcrow.f90",
+        "C05": "fire/ws/fmcfmd.f90",
+        "C06": "fire/base/fmsfall.f90"
+      },
+      "input_inventory_sha256": "09ae3a419e69375b835c36ec9e3d94e7a752f4b29d5b0161d2a9eeba6a426878"
+    }
+  },
+  "other_model_files_unchanged": 2103,
+  "working_nvel": {
+    "revision": "a73e697e220ffd0f792aa7ac10d84c911edb7ad7",
+    "blobs_checked": 285,
+    "modified_paths": [],
+    "allowed_modified_paths": [],
+    "passed": true
+  },
+  "passed": true
+}

@@ -1,0 +1,318 @@
+__attribute__((fn spec (". ")))
+void espxcs ()
+{
+  static real(kind=4) chab[160] [value-expr: escom2.chab];
+  static real(kind=4) cpre[40] [value-expr: escom2.cpre];
+  static real(kind=4) dhab[160] [value-expr: escom2.dhab];
+  static real(kind=4) dpre[40] [value-expr: escom2.dpre];
+  static real(kind=4) fhab[160] [value-expr: escom2.fhab];
+  static real(kind=4) fpre[40] [value-expr: escom2.fpre];
+  static real(kind=4) padv[23] [value-expr: escom2.padv];
+  static real(kind=4) psub[23] [value-expr: escom2.psub];
+  static real(kind=4) pxcs[23] [value-expr: escom2.pxcs];
+  static real(kind=4) spehab[20] [value-expr: escom2.spehab];
+  static real(kind=4) xprep[20] [value-expr: escom2.xprep];
+  static real(kind=4) baa [value-expr: escomn.baa];
+  static real(kind=4) baaln [value-expr: escomn.baaln];
+  static real(kind=4) baasq [value-expr: escomn.baasq];
+  static real(kind=4) bnorml[20] [value-expr: escomn.bnorml];
+  static real(kind=4) bwaf [value-expr: escomn.bwaf];
+  static real(kind=4) bwb4 [value-expr: escomn.bwb4];
+  static real(kind=4) dbhmid[10] [value-expr: escomn.dbhmid];
+  static real(kind=4) elevsq [value-expr: escomn.elevsq];
+  static real(kind=4) hhtmax[23] [value-expr: escomn.hhtmax];
+  static integer(kind=4) iforcd[20] [value-expr: escomn.iforcd];
+  static integer(kind=4) iforst[20] [value-expr: escomn.iforst];
+  static integer(kind=4) ihab [value-expr: escomn.ihab];
+  static integer(kind=4) iphy [value-expr: escomn.iphy];
+  static integer(kind=4) iprep [value-expr: escomn.iprep];
+  static integer(kind=4) ispspe[5] [value-expr: escomn.ispspe];
+  static integer(kind=4) nnid [value-expr: escomn.nnid];
+  static real(kind=4) ocurht[368] [value-expr: escomn.ocurht];
+  static real(kind=4) ocurnf[460] [value-expr: escomn.ocurnf];
+  static real(kind=4) regt [value-expr: escomn.regt];
+  static real(kind=4) slo [value-expr: escomn.slo];
+  static real(kind=4) sqbwaf [value-expr: escomn.sqbwaf];
+  static real(kind=4) sqregt [value-expr: escomn.sqregt];
+  static real(kind=4) sumpi[23] [value-expr: escomn.sumpi];
+  static real(kind=4) sumpx[23] [value-expr: escomn.sumpx];
+  static real(kind=4) time [value-expr: escomn.time];
+  static real(kind=4) xcos [value-expr: escomn.xcos];
+  static real(kind=4) xcosas [value-expr: escomn.xcosas];
+  static real(kind=4) xmin[23] [value-expr: escomn.xmin];
+  static real(kind=4) xsin [value-expr: escomn.xsin];
+  static real(kind=4) xsinas [value-expr: escomn.xsinas];
+  static real(kind=4) confid [value-expr: eshap.confid];
+  static real(kind=4) esa [value-expr: eshap.esa];
+  static real(kind=4) esb [value-expr: eshap.esb];
+  static real(kind=4) esdraw [value-expr: eshap.esdraw];
+  static real(kind=4) htadj[23] [value-expr: eshap.htadj];
+  static integer(kind=4) ialn[3] [value-expr: eshap.ialn];
+  static integer(kind=4) iblk [value-expr: eshap.iblk];
+  static integer(kind=4) idsdat [value-expr: eshap.idsdat];
+  static integer(kind=4) ifo [value-expr: eshap.ifo];
+  static integer(kind=4) ihabt[16] [value-expr: eshap.ihabt];
+  static integer(kind=4) ihtype [value-expr: eshap.ihtype];
+  static integer(kind=4) inadv [value-expr: eshap.inadv];
+  static integer(kind=4) iphab[500] [value-expr: eshap.iphab];
+  static integer(kind=4) iphys[500] [value-expr: eshap.iphys];
+  static integer(kind=4) ipinfo [value-expr: eshap.ipinfo];
+  static integer(kind=4) ipprep[500] [value-expr: eshap.ipprep];
+  static integer(kind=4) iprint [value-expr: eshap.iprint];
+  static integer(kind=4) iptids[500] [value-expr: eshap.iptids];
+  static integer(kind=4) itrnrm [value-expr: eshap.itrnrm];
+  static integer(kind=4) iyrlrm [value-expr: eshap.iyrlrm];
+  static integer(kind=4) joregt [value-expr: eshap.joregt];
+  static integer(kind=4) kdtold [value-expr: eshap.kdtold];
+  static logical(kind=4) lautal [value-expr: eshap.lautal];
+  static logical(kind=4) lingrw [value-expr: eshap.lingrw];
+  static integer(kind=4) load [value-expr: eshap.load];
+  static logical(kind=4) lsprut [value-expr: eshap.lsprut];
+  static integer(kind=4) meth [value-expr: eshap.meth];
+  static integer(kind=4) minrep [value-expr: eshap.minrep];
+  static integer(kind=4) mode [value-expr: eshap.mode];
+  static integer(kind=4) nptids [value-expr: eshap.nptids];
+  static integer(kind=4) ntally [value-expr: eshap.ntally];
+  static real(kind=4) oldtim [value-expr: eshap.oldtim];
+  static real(kind=4) pasp[500] [value-expr: eshap.pasp];
+  static real(kind=4) pburn [value-expr: eshap.pburn];
+  static real(kind=4) pmech [value-expr: eshap.pmech];
+  static real(kind=4) pslo[500] [value-expr: eshap.pslo];
+  static real(kind=4) stoadj [value-expr: eshap.stoadj];
+  static real(kind=4) sumpre[5] [value-expr: eshap.sumpre];
+  static real(kind=4) thres1 [value-expr: eshap.thres1];
+  static real(kind=4) thres2 [value-expr: eshap.thres2];
+  static real(kind=4) xesmlt[23] [value-expr: eshap.xesmlt];
+  static real(kind=4) xtes [value-expr: eshap.xtes];
+  static real(kind=4) zburn [value-expr: eshap.zburn];
+  static real(kind=4) zmech [value-expr: eshap.zmech];
+  static real(kind=4) esb1[500] [value-expr: eshap2.esb1];
+  static integer(kind=4) nstore[500] [value-expr: eshap2.nstore];
+  static real(kind=4) plprob[500] [value-expr: eshap2.plprob];
+  static real(kind=4) pnn[500] [value-expr: eshap2.pnn];
+  static real(kind=4) prob1[500] [value-expr: eshap2.prob1];
+  static real(kind=4) sumprb [value-expr: eshap2.sumprb];
+  static real(kind=4) xstore[500] [value-expr: eshap2.xstore];
+  static real(kind=4) baaa[500] [value-expr: pden.baaa];
+  static real(kind=4) oldfnt [value-expr: pden.oldfnt];
+  static real(kind=4) over[11500] [value-expr: pden.over];
+  static real(kind=4) pccf[500] [value-expr: pden.pccf];
+  static real(kind=4) ptpa[500] [value-expr: pden.ptpa];
+  static real(kind=4) ptpaa[500] [value-expr: pden.ptpaa];
+  static real(kind=4) prda[500] [value-expr: pden.prda];
+  static real(kind=4) regnbk [value-expr: pden.regnbk];
+  static real(kind=4) aspect [value-expr: plot.aspect];
+  static real(kind=4) atavd [value-expr: plot.atavd];
+  static real(kind=4) atavh [value-expr: plot.atavh];
+  static real(kind=4) atba [value-expr: plot.atba];
+  static real(kind=4) atccf [value-expr: plot.atccf];
+  static real(kind=4) atsdix [value-expr: plot.atsdix];
+  static real(kind=4) attpa [value-expr: plot.attpa];
+  static real(kind=4) avh [value-expr: plot.avh];
+  static real(kind=4) ba [value-expr: plot.ba];
+  static real(kind=4) baf [value-expr: plot.baf];
+  static real(kind=4) barank[23] [value-expr: plot.barank];
+  static real(kind=4) brk [value-expr: plot.brk];
+  static real(kind=4) btsdix [value-expr: plot.btsdix];
+  static real(kind=4) covmlt [value-expr: plot.covmlt];
+  static real(kind=4) covyr [value-expr: plot.covyr];
+  static real(kind=4) elev [value-expr: plot.elev];
+  static real(kind=4) fint [value-expr: plot.fint];
+  static real(kind=4) fpa [value-expr: plot.fpa];
+  static real(kind=4) grospc [value-expr: plot.grospc];
+  static integer(kind=4) iage [value-expr: plot.iage];
+  static integer(kind=4) iaspec [value-expr: plot.iaspec];
+  static integer(kind=4) icage [value-expr: plot.icage];
+  static integer(kind=4) icnty [value-expr: plot.icnty];
+  static integer(kind=4) ifint [value-expr: plot.ifint];
+  static integer(kind=4) ifor [value-expr: plot.ifor];
+  static integer(kind=4) ifortp [value-expr: plot.ifortp];
+  static integer(kind=4) igl [value-expr: plot.igl];
+  static integer(kind=4) iifortp [value-expr: plot.iifortp];
+  static integer(kind=4) imodty [value-expr: plot.imodty];
+  static integer(kind=4) iphreg [value-expr: plot.iphreg];
+  static integer(kind=4) iptinv [value-expr: plot.iptinv];
+  static integer(kind=4) ipvec[500] [value-expr: plot.ipvec];
+  static integer(kind=4) isisp [value-expr: plot.isisp];
+  static integer(kind=4) islop [value-expr: plot.islop];
+  static integer(kind=4) ismall [value-expr: plot.ismall];
+  static integer(kind=4) istate [value-expr: plot.istate];
+  static integer(kind=4) istcl [value-expr: plot.istcl];
+  static integer(kind=4) iszcl [value-expr: plot.iszcl];
+  static integer(kind=4) itype [value-expr: plot.itype];
+  static integer(kind=4) jspin[23] [value-expr: plot.jspin];
+  static integer(kind=4) jspindef [value-expr: plot.jspindef];
+  static integer(kind=4) jtype[122] [value-expr: plot.jtype];
+  static integer(kind=4) kodfor [value-expr: plot.kodfor];
+  static integer(kind=4) kodtyp [value-expr: plot.kodtyp];
+  static integer(kind=4) managd [value-expr: plot.managd];
+  static integer(kind=4) nonstk [value-expr: plot.nonstk];
+  static integer(kind=4) nsitet [value-expr: plot.nsitet];
+  static real(kind=4) oldavh [value-expr: plot.oldavh];
+  static real(kind=4) oldba [value-expr: plot.oldba];
+  static real(kind=4) oldtpa [value-expr: plot.oldtpa];
+  static real(kind=4) ormsqd [value-expr: plot.ormsqd];
+  static real(kind=4) pi [value-expr: plot.pi];
+  static real(kind=4) pmsdil [value-expr: plot.pmsdil];
+  static real(kind=4) pmsdiu [value-expr: plot.pmsdiu];
+  static real(kind=4) relden [value-expr: plot.relden];
+  static real(kind=4) reldm1 [value-expr: plot.reldm1];
+  static real(kind=4) reldsp[23] [value-expr: plot.reldsp];
+  static real(kind=4) rmai [value-expr: plot.rmai];
+  static real(kind=4) rmsqd [value-expr: plot.rmsqd];
+  static real(kind=4) samwt [value-expr: plot.samwt];
+  static real(kind=4) sdiac [value-expr: plot.sdiac];
+  static real(kind=4) sdiac2 [value-expr: plot.sdiac2];
+  static real(kind=4) sdibc [value-expr: plot.sdibc];
+  static real(kind=4) sdibc2 [value-expr: plot.sdibc2];
+  static real(kind=4) sdidef[23] [value-expr: plot.sdidef];
+  static real(kind=4) sdimax [value-expr: plot.sdimax];
+  static real(kind=4) sitear[23] [value-expr: plot.sitear];
+  static real(kind=4) sitetr[120] [value-expr: plot.sitetr];
+  static real(kind=4) slope [value-expr: plot.slope];
+  static real(kind=4) stndsi [value-expr: plot.stndsi];
+  static real(kind=4) tfpa [value-expr: plot.tfpa];
+  static real(kind=4) tlat [value-expr: plot.tlat];
+  static real(kind=4) tlong [value-expr: plot.tlong];
+  static real(kind=4) tprob [value-expr: plot.tprob];
+  static real(kind=4) vmlt [value-expr: plot.vmlt];
+  static real(kind=4) vmltyr [value-expr: plot.vmltyr];
+  static integer(kind=4) istdorg [value-expr: plot.istdorg];
+  static character(kind=1) cpvref[1:10] [value-expr: pltchr.cpvref];
+  static character(kind=1) dbcn[1:40] [value-expr: pltchr.dbcn];
+  static character(kind=1) ecoreg[1:4] [value-expr: pltchr.ecoreg];
+  static character(kind=1) fiajsp[23][1:4] [value-expr: pltchr.fiajsp];
+  static character(kind=1) jsp[23][1:4] [value-expr: pltchr.jsp];
+  static character(kind=1) mgmid[1:4] [value-expr: pltchr.mgmid];
+  static character(kind=1) nplt[1:26] [value-expr: pltchr.nplt];
+  static character(kind=1) nsp[69][1:4] [value-expr: pltchr.nsp];
+  static character(kind=1) plnjsp[23][1:6] [value-expr: pltchr.plnjsp];
+  real(kind=4) pn;
+
+  pn = (((((-2.6601111888885498046875e+0 - xcos * 2.1035860478878021240234375e-1) - xsin * 2.1766529083251953125e+0) - slo * 2.6159746646881103515625e+0) - baa * 1.70345008373260498046875e-2) + baaln * 3.166976869106292724609375e-1) + fhab[(integer(kind=8)) ihab + -1];
+  if (over[((integer(kind=8)) nnid + -1) * 23] > 9.94999980926513671875e+0)
+    {
+      pn = pn + 1.054657459259033203125e+0;
+    }
+  L.1:;
+  if ((ifo == 7 || ifo == 10) || ifo == 16)
+    {
+      pn = pn - 1.864836215972900390625e+0;
+    }
+  L.2:;
+  if (ifo == 5)
+    {
+      pn = pn - 5.62999904155731201171875e-1;
+    }
+  L.3:;
+  pxcs[0] = ((((1.0e+0 / ((__builtin_expf (-pn) + 1.0e+0)))) * xesmlt[0]) * ocurht[(integer(kind=8)) ihab + -1]) * ocurnf[(integer(kind=8)) ifo + -1];
+  pn = ((((((xcos * 1.58774912357330322265625e+0 - 1.52532958984375e+1) + xsin * 4.421724975109100341796875e-1) - slo * 1.50272881984710693359375e+0) + elev * 4.384917914867401123046875e-1) - elevsq * 5.1305000670254230499267578125e-3) + fpre[(integer(kind=8)) iprep + 3]) + fhab[(integer(kind=8)) ihab + 15];
+  if (((ifo == 9 || ifo == 10) || ifo == 14) || ifo == 16)
+    {
+      pn = pn + 2.3989264965057373046875e+0;
+    }
+  L.4:;
+  if (over[(integer(kind=8)) nnid * 23 + -22] > 9.94999980926513671875e+0)
+    {
+      pn = pn + 1.2872436046600341796875e+0;
+    }
+  L.5:;
+  pxcs[1] = ((((1.0e+0 / ((__builtin_expf (-pn) + 1.0e+0)))) * xesmlt[1]) * ocurht[(integer(kind=8)) ihab + 15]) * ocurnf[(integer(kind=8)) ifo + 19];
+  pn = ((((((-2.0080204010009765625e+0 - xcos * 1.351577937602996826171875e-1) - xsin * 3.944477140903472900390625e-1) + slo * 8.5318648815155029296875e-1) - elev * 3.83463017642498016357421875e-2) + time * 6.5205402672290802001953125e-2) + fhab[(integer(kind=8)) ihab + 31]) + fpre[(integer(kind=8)) iprep + 7];
+  if (((ifo == 3 || ifo == 9) || ifo == 12) || ifo == 16)
+    {
+      pn = pn + 1.315558910369873046875e+0;
+    }
+  L.6:;
+  if (over[(integer(kind=8)) nnid * 23 + -21] > 9.94999980926513671875e+0)
+    {
+      pn = pn + 7.3419392108917236328125e-1;
+    }
+  L.7:;
+  pxcs[2] = ((((1.0e+0 / ((__builtin_expf (-pn) + 1.0e+0)))) * xesmlt[2]) * ocurht[(integer(kind=8)) ihab + 31]) * ocurnf[(integer(kind=8)) ifo + 39];
+  pn = ((((((((((fhab[(integer(kind=8)) ihab + 47] - 6.14483928680419921875e+0) + xcos * 1.47745287418365478515625e+0) + xsin * 2.61609613895416259765625e-1) - slo * 4.7691810131072998046875e-1) + fpre[(integer(kind=8)) iprep + 11]) - baa * 4.8862998373806476593017578125e-3) + elev * 2.789069116115570068359375e-1) - elevsq * 3.65670002065598964691162109375e-3) + regt * 5.82383014261722564697265625e-2) + bwaf * 5.02622015774250030517578125e-2) + baaln * 1.35673999786376953125e-1;
+  if (over[(integer(kind=8)) nnid * 23 + -20] > 9.94999980926513671875e+0)
+    {
+      pn = pn + 4.3489360809326171875e-1;
+    }
+  L.8:;
+  if (ifo == 14 || ifo == 16)
+    {
+      pn = pn - 5.18815219402313232421875e-1;
+    }
+  L.9:;
+  if (ifo == 19 || ifo == 20)
+    {
+      pn = pn - 7.6811301708221435546875e-1;
+    }
+  L.10:;
+  pxcs[3] = ((((1.0e+0 / ((__builtin_expf (-pn) + 1.0e+0)))) * xesmlt[3]) * ocurht[(integer(kind=8)) ihab + 47]) * ocurnf[(integer(kind=8)) ifo + 59];
+  pn = ((((((xcos * 4.31678485870361328125e+0 - 9.31953716278076171875e+0) - xsin * 9.01111304759979248046875e-1) - slo * 1.3393749296665191650390625e-1) + elev * 3.96481990814208984375e-1) - elevsq * 5.58529980480670928955078125e-3) + time * 8.964540064334869384765625e-2) + fpre[(integer(kind=8)) iprep + 23];
+  if (over[(integer(kind=8)) nnid * 23 + -19] > 9.94999980926513671875e+0)
+    {
+      pn = pn + 1.02525508403778076171875e+0;
+    }
+  L.11:;
+  pxcs[4] = ((((1.0e+0 / ((__builtin_expf (-pn) + 1.0e+0)))) * xesmlt[4]) * ocurht[(integer(kind=8)) ihab + 63]) * ocurnf[(integer(kind=8)) ifo + 79];
+  pn = (((((xcos * 1.961111545562744140625e+0 - 1.2917892932891845703125e+0) - xsin * 8.096410334110260009765625e-2) - slo * 6.73173725605010986328125e-1) + time * 7.17763006687164306640625e-2) + fpre[(integer(kind=8)) iprep + 19]) + fhab[(integer(kind=8)) ihab + 79];
+  if (over[(integer(kind=8)) nnid * 23 + -18] > 9.94999980926513671875e+0)
+    {
+      pn = pn + 1.39995801448822021484375e+0;
+    }
+  L.12:;
+  pxcs[5] = ((((1.0e+0 / ((__builtin_expf (-pn) + 1.0e+0)))) * xesmlt[5]) * ocurht[(integer(kind=8)) ihab + 79]) * ocurnf[(integer(kind=8)) ifo + 99];
+  pn = ((((((fhab[(integer(kind=8)) ihab + 95] - 2.648855686187744140625e+0) + xcos * 9.3094348907470703125e-1) - xsin * 2.9256141185760498046875e-1) - slo * 2.4103925228118896484375e+0) - baaln * 3.734259903430938720703125e-1) + elev * 1.4212899841368198394775390625e-2) + fpre[(integer(kind=8)) iprep + 23];
+  if (over[(integer(kind=8)) nnid * 23 + -17] > 9.94999980926513671875e+0)
+    {
+      pn = pn + 2.5861046314239501953125e+0;
+    }
+  L.13:;
+  if (iphy == 1)
+    {
+      pn = pn + 1.13205540180206298828125e+0;
+    }
+  L.14:;
+  pxcs[6] = ((((1.0e+0 / ((__builtin_expf (-pn) + 1.0e+0)))) * xesmlt[6]) * ocurht[(integer(kind=8)) ihab + 95]) * ocurnf[(integer(kind=8)) ifo + 119];
+  pn = (((((elev * 7.45457112789154052734375e-1 - 2.6327205657958984375e+1) - elevsq * 6.4948000945150852203369140625e-3) - slo * 1.95903146266937255859375e+0) + time * 7.037959992885589599609375e-2) + fhab[(integer(kind=8)) ihab + 111]) + fpre[(integer(kind=8)) iprep + 27];
+  if (over[(integer(kind=8)) nnid * 23 + -16] > 9.94999980926513671875e+0)
+    {
+      pn = pn + 1.22240436077117919921875e+0;
+    }
+  L.15:;
+  pxcs[7] = ((((1.0e+0 / ((__builtin_expf (-pn) + 1.0e+0)))) * xesmlt[7]) * ocurht[(integer(kind=8)) ihab + 111]) * ocurnf[(integer(kind=8)) ifo + 139];
+  pn = ((((((fhab[(integer(kind=8)) ihab + 127] - 7.40720081329345703125e+0) + xcos * 1.03636300563812255859375e+0) + xsin * 2.8255379199981689453125e-1) - slo * 1.52017629146575927734375e+0) + elev * 5.697830021381378173828125e-2) - bwb4 * 1.9509400427341461181640625e-1) + fpre[(integer(kind=8)) iprep + 31];
+  if ((((((ifo == 3 || ifo == 9) || ifo == 10) || ifo == 11) || ifo == 12) || ifo == 14) || ifo == 16)
+    {
+      pn = pn + 1.2027771472930908203125e+0;
+    }
+  L.16:;
+  if (over[(integer(kind=8)) nnid * 23 + -15] > 9.94999980926513671875e+0)
+    {
+      pn = pn + 1.50976765155792236328125e+0;
+    }
+  L.17:;
+  pxcs[8] = ((((1.0e+0 / ((__builtin_expf (-pn) + 1.0e+0)))) * xesmlt[8]) * ocurht[(integer(kind=8)) ihab + 127]) * ocurnf[(integer(kind=8)) ifo + 159];
+  pn = ((elev * 6.606922149658203125e-1 - 1.8891185760498046875e+1) - elevsq * 6.899599917232990264892578125e-3) + fhab[(integer(kind=8)) ihab + 143];
+  if (over[(integer(kind=8)) nnid * 23 + -14] > 9.94999980926513671875e+0)
+    {
+      pn = pn + 9.11777079105377197265625e-1;
+    }
+  L.18:;
+  pxcs[9] = ((((1.0e+0 / ((__builtin_expf (-pn) + 1.0e+0)))) * xesmlt[9]) * ocurht[(integer(kind=8)) ihab + 143]) * ocurnf[(integer(kind=8)) ifo + 179];
+  pxcs[10] = 0.0;
+  pxcs[11] = 0.0;
+  pxcs[12] = 0.0;
+  pxcs[13] = 0.0;
+  pxcs[14] = 0.0;
+  pxcs[15] = 0.0;
+  pxcs[16] = 0.0;
+  pxcs[17] = 0.0;
+  pxcs[18] = 0.0;
+  pxcs[19] = 0.0;
+  pxcs[20] = 0.0;
+  pxcs[21] = 0.0;
+  pxcs[22] = 0.0;
+  return;
+}
+
+

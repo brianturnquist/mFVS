@@ -13,7 +13,10 @@ P01–P03 verification preparation and D01–D13 retirement are now complete; se
 the [verification report](tests/parity/evidence/2026-11-13-p01-p03/README.md) and
 the retirement reports for [D01–D03](tests/parity/evidence/2026-11-13-d01-d03/README.md)
 and [D04–D13](tests/parity/evidence/2026-11-13-d04-d13/README.md).
-D14 remains pending. There are 35 completed and 85 pending checkbox items.
+D14 remains pending. C01–C06 are now complete; the user accepted the exact
+routine and runtime-object evidence for C01/C06 while leaving BC/ON simulation
+parity blocked. There are 41 completed and 79 pending checkbox items. See the
+[C01–C06 report](tests/parity/evidence/2026-11-14-c01-c06/README.md).
 
 The findings combine repository-wide source-list inventory, targeted source
 comparisons, call/ENTRY inspection, and historical notes. They are not an
@@ -132,6 +135,11 @@ upstream reference and cannot be reported as pristine-original parity.
   failures in original and current code. Model bugs remain unfixed, and
   simulation parity remains blocked.
 
+  **Limited acceptance exception, 14 November 2026:** the user accepted exact
+  routine and runtime-object comparisons for completion of C01 and C06 only,
+  while leaving BC/ON simulation parity blocked. This does not relax the gate
+  for other tasks. See the [acceptance record](tests/parity/evidence/2026-11-14-c01-c06/acceptance.json).
+
 ## Centralized definitions
 
 Use existing shared areas for canonical routines. Avoid adding another set of
@@ -190,23 +198,32 @@ understood. Retain existing behavior, including known defects, during these
 structural changes. Build and compare every consumer identified from manifests;
 the named variants below are starting points, not a substitute for that check.
 
-- [ ] **C01 — ESTIME.** Merge `estb/estime.f90` and `strp/estime.f90` into
-  `estb/`. Their normalized statements differ only by the `ESCOM2` include.
-  Verify its declaration effects before removing the twin. Check BC/ON coverage.
-- [ ] **C02 — CI/IE ESPSUB.** Centralize in `estb/`. IE additionally zeros
-  `PSUB(20:23)`; preserve species dimensions and initialization. Exercise those
-  tail entries in the comparison.
-- [ ] **C03 — CI/IE ESPXCS.** Centralize in `estb/`, independently of C02.
-  IE additionally zeros `PXCS(20:23)`; preserve that behavior.
-- [ ] **C04 — KT/NC FMCROW.** Centralize in `fire/base/`. The normalized
-  statement differences are the `ISPMAP` tables. Preserve all mappings and
-  table lengths; exercise every mapped species.
-- [ ] **C05 — OP/PN/WC FMCFMD.** Merge `fire/vop/fmcfmd.f90` and
-  `fire/vpn/fmcfmd.f90` into shared fire code. OP includes species 24 in a
-  basal-area group; the PN/WC implementation excludes it. Test that distinction.
-- [ ] **C06 — CI/IE FMSFALL.** Centralize in `fire/base/`. CI applies an extra
-  `MAX(0.01, BASE*0.32)` adjustment for species 8 and 2. Derive all consumers of
-  the IE implementation, including BC, and preserve the adjustment boundary.
+- [x] **C01 — ESTIME.** Completed 14 November 2026 in `estb/estime.f90`:
+  removed the unused ESCOM2 declaration and STRP twin. All 23 consumers build;
+  direct timing/state comparisons match F77 and the immediate baseline.
+  BC/ON runtime objects also match. The user accepted that evidence for this
+  task's completion; Canadian integrated simulation parity remains blocked.
+- [x] **C02 — CI/IE ESPSUB.** Completed 14 November 2026 in
+  `estb/espsub.f90`, including existing KT consumption. Preserved first-ten
+  equations and exactly the old tails using `PSUB(11:MAXSP)`: CI 19, IE 23,
+  KT 11 species. Direct bounds-checked and integrated comparisons pass.
+- [x] **C03 — CI/IE ESPXCS.** Completed independently 14 November 2026 in
+  `estb/espxcs.f90`. Preserved all equations and variant tails using
+  `PXCS(11:MAXSP)`; CI/IE/KT direct and integrated comparisons pass.
+- [x] **C04 — KT/NC FMCROW.** Completed 14 November 2026 in
+  `fire/base/fmcrow.f90`. Preserved both full mapping tables and their 11/12
+  lengths. Every mapped species is exercised with actual crown equations.
+  The old NC comment/table discrepancy is logged without changing mapping 19.
+- [x] **C05 — OP/PN/WC FMCFMD.** Completed 14 November 2026 in
+  `fire/base/fmcfmd.f90`. OP alone includes non-WC species 24 in WOCT; PN/WC
+  grouping and arithmetic order are preserved. Direct and integrated tests
+  pass, and targeted group outputs distinguish the variants as expected.
+- [x] **C06 — CI/IE FMSFALL.** Completed 14 November 2026 in
+  `fire/base/fmsfall.f90` for CI plus BC/CA/IE/KT/NC/OC/WS. Only CI retains
+  its species-2/8 adjustment at DBH >= 18. All eight direct fixtures and
+  seven available integrated simulations pass; BC runtime objects match.
+  The user accepted that evidence for this task's completion; BC integrated
+  simulation parity remains blocked.
 - [ ] **C07 — CS/SN FMSFALL.** Centralize in `fire/base/`. Preserve the
   small-tree condition: `KSP > 2` for CS versus `KSP /= 2` for SN.
 - [ ] **C08 — PN/WC GRINIT.** Centralize in `vbase/`. Preserve the four
@@ -714,3 +731,50 @@ for scientific differences, history, scope limits, source identities, exact
 commands and replay instructions. Prior P01–P03 and D01–D03 evidence bytes are
 unchanged. D14 and every C/M/R/U/B/L task remain pending. The tracker now has
 35 completed and 85 pending items.
+
+### C01–C06 record — 14 November 2026
+
+**All six implementations are complete and checked off.** The user accepted
+the alternative Canadian evidence for C01/C06 on 14 November 2026.
+The fourteen selected definitions now use six canonical definitions in `estb/`
+and `fire/base/`, reducing model source by 1,484 lines (2,652 to 1,168).
+The pre-cleanup revision is `1a8aef8b210ebf532d8c94291fea511f11a6a19a`;
+NVEL remains `a73e697e220ffd0f792aa7ac10d84c911edb7ad7`.
+The per-task plan was stored before edits. Each task retains its consumer map,
+public signature, old-source hashes/blobs, replacement diffs and recovery
+commands in the [C01–C06 report](tests/parity/evidence/2026-11-14-c01-c06/README.md).
+
+All 23 affected variants build in original, pre-cleanup and candidate states:
+69 fresh builds, with no candidate reuse. All 72 pairwise comparisons across
+24 integrated decks pass. Those comprise 63 comparisons for 21 US consumers'
+simulation outputs and nine Canadian input-failure boundary comparisons.
+All 126 additional direct comparisons pass across 42 routine/variant fixtures.
+Raw artifacts replay exactly. Ten deliberate model/output mismatches remain
+rejected, including one-ULP REAL changes and wrong CaseID relationships.
+
+C01 removes only the unused ESCOM2 declaration from shared ESTIME and the STRP
+twin. C02/C03 preserve all equations and dimensioned tails for CI/IE/KT.
+C04 preserves the complete 11/12-element mapping tables. C05 preserves OP-only
+species-24 grouping, PN/WC defaults and arithmetic order. C06 preserves the
+CI-only species-2/8 adjustment at DBH >= 18 for all eight consumers.
+The other 2,103 model source/include files, all COMMON declarations, current
+NVEL, test decks and historical evidence are unchanged. All 24 source sets
+have exactly the planned definitions and filename selection.
+
+The comparator's metadata recognizer was extended for source-verified CA/CR/TT
+GROHED layouts: old title characters survive between metadata fields. Both
+gaps are retained byte-for-byte; only version/revision/date/time are masked.
+Controls reject changed title characters in either gap. No model/header code
+was fixed. A stale NC mapping comment is recorded in `FOUND_BUGS.md`; numeric
+mapping 19 and all confirmed model defects remain unchanged.
+
+**C01/C06 acceptance, 14 November 2026:** Canadian simulations still stop on
+existing input bugs. Direct tests and full runtime-object
+sections/constants/relocations/common sizes match original/current/candidate
+for BC/ON ESTIME and BC FMSFALL, but no Canadian integrated simulation result
+is claimed. The user explicitly answered “Accept this evidence for C01/C06”,
+authorizing completion of these two checkboxes using that evidence. The
+[acceptance record](tests/parity/evidence/2026-11-14-c01-c06/acceptance.json)
+retains the scope and response. The P03 simulation boundary remains blocked;
+the exception applies only to C01/C06. No model bug was fixed and no later
+cleanup task was implemented. There are now 41 completed and 79 pending items.

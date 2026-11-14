@@ -1,0 +1,43 @@
+! Compare timing and untouched probability storage through the real ESTIME.
+program CHECK_TIMING
+  implicit none
+  include 'PRGPRM.f90'
+  include 'ESPARM.f90'
+  include 'ESCOMN.f90'
+  include 'ESCOM2.f90'
+  include 'ESWSBW.f90'
+  integer :: TESTCASE,TESTYEAR,TESTHIST,TESTI,TESTCOUNT
+  open(31,file='state.bin',access='stream',form='unformatted')
+  TESTCOUNT = 0
+  do TESTHIST = 0,4
+     IBWHST = 0
+     NBWHST = 0
+     if (TESTHIST.eq.1) then
+        NBWHST = 1
+        IBWHST(:,1) = [1985,1989]
+     else if (TESTHIST.eq.2) then
+        NBWHST = 1
+        IBWHST(:,1) = [1990,2009]
+     else if (TESTHIST.eq.3) then
+        NBWHST = 2
+        IBWHST(:,1) = [1987,1993]
+        IBWHST(:,2) = [1991,2009]
+     else if (TESTHIST.eq.4) then
+        NBWHST = 20
+        do TESTI = 1,20
+           IBWHST(:,TESTI) = 1980+2*TESTI
+        end do
+     end if
+     do TESTCASE = 0,19
+        TESTYEAR = 1990+TESTCASE
+        TIME = REAL(TESTCASE+1)
+        PSUB = 12345.25
+        PXCS = -12345.25
+        call ESTIME(1990,TESTYEAR)
+        write(31) TESTHIST,TESTCASE,BWB4,BWAF,SQBWAF,SQREGT,REGT,PSUB,PXCS
+        TESTCOUNT = TESTCOUNT+1
+     end do
+  end do
+  close(31)
+  write(*,*) 'ESTIME cases:',TESTCOUNT
+end program CHECK_TIMING

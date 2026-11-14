@@ -1,0 +1,64 @@
+! Compare full fuel-model outputs, cover groups and weights for every species.
+program CHECK_FUEL
+  implicit none
+  include 'PRGPRM.f90'
+  include 'FMPARM.f90'
+  include 'FMFCOM.f90'
+  include 'FMCOM.f90'
+  include 'CONTRL.f90'
+  include 'PLOT.f90'
+  include 'ARRAYS.f90'
+  include 'SSTGMC.f90'
+  integer :: TESTSPEC,TESTMODE,TESTCOV,TESTCOUNT,TESTFMD,TESTWET,TESTWARN,TESTCOVER
+  logical :: TESTDEBUG
+  common /TESTDBG/ TESTDEBUG
+  common /TESTCTX/ TESTWET,TESTWARN,TESTCOVER
+  open(31,file='state.bin',access='stream',form='unformatted')
+  ICYC = 1
+  JOSTND = 6
+  VARACD = '@VARIANT@'
+  TESTCOUNT = 0
+  do TESTSPEC = 1,MAXSP
+     do TESTMODE = 0,4
+        do TESTCOV = 1,3
+           TESTDEBUG = TESTSPEC.eq.24.and.TESTMODE.eq.0.and.TESTCOV.eq.2
+           TESTWET = 0
+           if (TESTMODE.eq.1) TESTWET = 2
+           TESTWARN = 0
+           TESTCOVER = TESTCOV
+           ITRN = 1
+           if (TESTMODE.eq.3) ITRN = 0
+           FMTBA = 0.0
+           FMTBA(TESTSPEC) = 20.0
+           FMTBA(3) = FMTBA(3)+5.0
+           FMPROB = 0.0
+           FMPROB(1) = 25.0
+           DBH(1) = 10.0
+           FMKOD = TESTCOV
+           PERCOV = 20.0+20.0*TESTCOV
+           SMALL = 2.3+TESTMODE
+           LARGE = 7.8+TESTCOV
+           SLCHNG = 0.0
+           if (TESTMODE.eq.2) SLCHNG = 0.2
+           SLCRIT = 0.1
+           LATFUEL = .false.
+           HARVYR = 1999
+           LDYNFM = TESTMODE.ne.2
+           LUSRFM = TESTMODE.eq.4
+           OLDICT = 2
+           OLDICT2 = 6
+           OLDICTWT = [0.75,0.25]
+           TESTFMD = -123
+           FMOD = -123
+           FWT = -123.0
+           NFMODS = -123
+           call FMCFMD(2000,TESTFMD)
+           write(31) TESTSPEC,TESTMODE,TESTCOV,TESTFMD,OLDICT,OLDICT2
+           write(31) OLDICTWT,FMOD,FWT,NFMODS,LATFUEL,TESTWARN
+           TESTCOUNT = TESTCOUNT+1
+        end do
+     end do
+  end do
+  close(31)
+  write(*,*) 'FMCFMD cases:',TESTCOUNT
+end program CHECK_FUEL

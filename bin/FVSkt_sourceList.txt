@@ -608,11 +608,11 @@
 ../fire/base/fmbrkt.f90
 ../fire/kt/fmcba.f90
 ../fire/kt/fmcblk.f90
-../fire/kt/fmcrow.f90
+../fire/base/fmcrow.f90
 ../fire/kt/fmvinit.f90
 ../fire/ie/fmcons.f90
 ../fire/base/fmmois.f90
-../fire/ie/fmsfall.f90
+../fire/base/fmsfall.f90
 ../fire/ie/fmcfmd.f90
 
 ../fire/vbase/fmburn.f90

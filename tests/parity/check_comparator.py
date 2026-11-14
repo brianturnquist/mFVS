@@ -20,7 +20,7 @@ import subprocess
 import sys
 import tempfile
 
-from compare_outputs import normalize_text
+from compare_outputs import HEADER_END, normalize_text
 
 
 COMPARATOR = Path(__file__).with_name("compare_outputs.py")
@@ -72,22 +72,44 @@ def main() -> int:
     args.evidence_dir.mkdir(parents=True, exist_ok=True)
     original = json.loads(args.runs.read_text())
     metadata_checks = []
-    for case in ("ie-iet01", "on-Hardwood"):
+    cases = ["ie-iet01", "on-Hardwood"]
+    cases.extend(case for case in ("ca-cat01", "cr-crt01", "kt-ktt01", "so-sot01", "tt-ttt01", "ws-wst01")
+                 if any(run["case"] == case for run in original["runs"]))
+    for case in cases:
         run = next(run for run in original["runs"] if run["case"] == case and run["state"] == "original")
         listing = next((Path(run["directory"]) / name).read_bytes()
                        for name in run["outputs"] if name.endswith(".out"))
-        header = next(line for line in listing.splitlines(keepends=True)
-                      if line.lstrip().startswith(b"FOREST VEGETATION SIMULATOR"))
-        changed = re.sub(rb"\d{2}-\d{2}-\d{4}", b"12-31-2030", header.replace(b"unknown", b"changed"))
-        changed = re.sub(rb"\d{2}:\d{2}:\d{2}", b"23:59:59", changed)
-        before, counts = normalize_text(header, {})
-        after, _ = normalize_text(changed, {})
-        variant_changed = header.replace(b"INLAND EMPIRE", b"ALTERED TITLE") if case == "ie-iet01" else header.replace(b"VERSION ON", b"VERSION XX")
-        title, _ = normalize_text(variant_changed, {})
-        passed = header != changed and before == after and counts.get("grohed_metadata") == 1 and title != before
-        metadata_checks.append({"case": case, "passed": passed,
-                                "metadata_changes_accepted": before == after,
-                                "title_or_variant_change_rejected": title != before})
+        headers = sorted(set(line for line in listing.splitlines(keepends=True)
+                             if line.lstrip().startswith(b"FOREST VEGETATION SIMULATOR")))
+        for header in headers:
+            changed = re.sub(rb"\d{2}-\d{2}-\d{4}", b"12-31-2030", header.replace(b"unknown", b"changed"))
+            changed = re.sub(rb"\d{2}:\d{2}:\d{2}", b"23:59:59", changed)
+            before, counts = normalize_text(header, {})
+            after, _ = normalize_text(changed, {})
+            variant_changed = (header.replace(b"VERSION ON", b"VERSION XX") if case == "on-Hardwood"
+                               else header.replace(b" -- ", b" -X ", 1))
+            title, _ = normalize_text(variant_changed, {})
+            residual_rejected = True
+            end = HEADER_END.search(header.decode("latin1").rstrip("\r\n"))
+            residual = end["separator"] if end else ""
+            if end:
+                # Title characters can survive either gap between metadata
+                # fields. Each remains significant, including TT's final S.
+                for group in ("separator", "clock_separator"):
+                    for offset, character in enumerate(end[group]):
+                        if character.isspace():
+                            continue
+                        position = end.start(group) + offset
+                        mutated = header[:position] + b"?" + header[position + 1:]
+                        residual_rejected &= normalize_text(mutated, {})[0] != before
+            passed = (header != changed and before == after and counts.get("grohed_metadata") == 1
+                      and title != before and residual_rejected)
+            metadata_checks.append({"case": case, "passed": passed,
+                                    "metadata_changes_accepted": before == after,
+                                    "title_or_variant_change_rejected": title != before,
+                                    "retained_title_suffix": residual,
+                                    "retained_clock_suffix": end["clock_separator"] if end else "",
+                                    "residual_title_change_rejected": residual_rejected})
     (args.evidence_dir / "metadata-controls.json").write_text(json.dumps(metadata_checks, indent=2) + "\n")
     selected = [run for run in original["runs"] if run["case"] == "ie-iet01" and run["state"] in ("original", "current")]
     checks = []

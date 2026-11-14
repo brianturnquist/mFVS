@@ -1,0 +1,47 @@
+--- before/fire/vop/fmcfmd.f90
++++ canonical/fire/base/fmcfmd.f90
+@@ -1,7 +1,7 @@
+ !=======================!
+-!   fire/vop : fmcfmd   !
++!   fire/base : fmcfmd !
+ !=======================!
+-! FIRE-VOP $Id$
++! FIRE-BASE $Id$
+ subroutine FMCFMD (IYR, FMD)
+   implicit none
+ 
+@@ -59,7 +59,7 @@
+        &MHCT = 3,& ! MH,AF,WB
+        &RACT = 4,& ! RA
+        &LPCT = 5,& ! LP
+-       &WOCT = 6,& ! WO,GC,TO
++       &WOCT = 6,& ! WO,GC; OP ALSO INCLUDES TO
+        &UBCT = 6) ! UPPER BOUND
+ 
+   integer :: FMD
+@@ -202,7 +202,15 @@
+         case (11)
+            CTBA(LPCT) = FMTBA(11)
+         case (28,24,25)
+-           CTBA(WOCT) = FMTBA(28) + FMTBA(24) + FMTBA(25)
++           ! OP POOLS SPECIES 24 WITH WO/GC. PN LEAVES IT IN DFCT.
++           ! KEEP THE ORIGINAL ADDITION ORDER FOR EACH VARIANT.
++           if (VARIANTCD .eq. 'OP') then
++              CTBA(WOCT) = FMTBA(28) + FMTBA(24) + FMTBA(25)
++           else if (I .eq. 24) then
++              CTBA(DFCT) = CTBA(DFCT) + FMTBA(I)
++           else
++              CTBA(WOCT) = FMTBA(28) + FMTBA(25)
++           end if
+         case default ! 16,3,14 + minor
+            CTBA(DFCT) = CTBA(DFCT) + FMTBA(I)
+         end select
+@@ -453,7 +461,7 @@
+                  EQWT(5) = EQWT(5) + WT1(I)
+               end if
+ 
+-              ! WO,TO,GC
++              ! WO,GC; OP ALSO INCLUDES TO
+            case (WOCT)
+ 
+               do K = 1,2

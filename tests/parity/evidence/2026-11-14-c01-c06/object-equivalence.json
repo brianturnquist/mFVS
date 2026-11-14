@@ -1,0 +1,902 @@
+{
+  "platform": "macOS arm64 Mach-O 64",
+  "method": "Compare every __TEXT/__DATA/__DATA_CONST section payload/type/size, their symbolic otool -rv relocations, and external/common symbol identities/sizes. Omit DWARF debug sections only. Objects use exact integrated-build flags, without supplemental bounds checking.",
+  "checks": [
+    {
+      "case": "C01-bc",
+      "all_three_runtime_objects_equal": true,
+      "versions": [
+        {
+          "state": "original",
+          "object_sha256": "511315212a6d3fcd8397977563c58ae9e376fb88e534d7e4fe45c67411af83f0",
+          "object": "/private/tmp/mfvs-c01-c06-20261114/targeted-build/original/C01-bc/tree.o",
+          "code": {
+            "runtime_sections": {
+              "__TEXT,__text": {
+                "bytes": 736,
+                "section_type": 0,
+                "sha256": "ec13f702dee015710dd87fd5f4c26b8833730659adac499ded26636f4b237308",
+                "hex": "ff8300d1e00700f9e10300f900000090000040f91f6000b900000090000040f91f5c00b900000090000040f91f040ab900000090000040f900a040b91f0000710d120054e00740f9000040b902140051e00740f9000040b901040051e21b00b9e01b40b91f00016be0d79f1a1f0000718106005400000090000040f902a040b920008052e01f00b9e01f40b91f00026be0d79f1a1f000071a1040054e01f80b9000400d103f87fd300000090000040f9007863b8e31b40b97f00006be3b79f1ae01f80b900f87fd3040400d100000090000040f9007864b8e41b40b99f00006be0c79f1a7f0000710418407ae0079f1a1f0000714001005400000090000040f91e6040bd1f102e1edf2b3f1e00000090000040f91f6000bd06000014e01f40b900040011e01f00b9d8ffff171f2003d5e01b40b900040011e01b00b9c9ffff171f2003d5e00740f9020040b9e00340f9010040b9e21b00b9e01b40b91f00016be0d79f1a1f000071a108005400000090000040f902a040b920008052e01f00b9e01f40b91f00026be0d79f1a1f000071c1060054e01f80b9000400d103f87fd300000090000040f9007863b8e31b40b97f00006be3b79f1ae01f80b900f87fd3040400d100000090000040f9007864b8e41b40b99f00006be0c79f1a7f0000710418407ae0079f1a1f0000716003005400000090000040f91e5c40bd1f102e1edf2b3f1e00000090000040f91f5c00bde00740f9000040b9e21b40b94000004b00040011007c4093020400d100000090000000911e7862bc00000090000040f91f044abddf2b3f1e00000090000040f91f040abd06000014e01f40b900040011e01f00b9c7ffff171f2003d5e01b40b900040011e01b00b9b8ffff171f2003d500000090000040f91f844abdfec3211e00000090000040f91f044abddf3b3f1e00000090000040f91f080abd00000090000040f91e844abd00000090000040f91f5c40bddf3b3f1e00000090000040f91ffc09bd1f2003d5ff830091c0035fd6"
+              },
+              "__DATA,__data": {
+                "bytes": 80,
+                "section_type": 0,
+                "sha256": "78ab3e4dfdac6f0e0792f23d52e887bbf83e17e02bdd82ede05f61092ad90c0c",
+                "hex": "0000803f5513d43eedbba23ebe30893e56bc713ec68a5a3e62f8483e77103b3e0cb02f3eba2c263eed0d1e3eff04173e45d8103e6b600b3e5f7b063e8811023e1821fc3d63d1f43db919ee3d60eae73d"
+              },
+              "__TEXT,__eh_frame": {
+                "bytes": 64,
+                "section_type": 11,
+                "sha256": "771a5f939237eb62d99883a233df4622eb80704628fdaddeab3bbf8f87daa3ad",
+                "hex": "1400000000000000037a520001781e01100c1f0000000000240000001c000000e0ffffffffffffffe0020000000000000004040000000e2004d80200000e0000"
+              }
+            },
+            "runtime_relocations": {
+              "__TEXT,__text": [
+                "address  pcrel length extern type    scattered symbolnum/value",
+                "000002cc False long   True   GOTLDPOFFalse     _escomn_",
+                "000002c8 True  long   True   GOTLDP  False     _escomn_",
+                "000002bc False long   True   GOTLDPOFFalse     _escomn_",
+                "000002b8 True  long   True   GOTLDP  False     _escomn_",
+                "000002b0 False long   True   GOTLDPOFFalse     _escomn_",
+                "000002ac True  long   True   GOTLDP  False     _escomn_",
+                "000002a4 False long   True   GOTLDPOFFalse     _escomn_",
+                "000002a0 True  long   True   GOTLDP  False     _escomn_",
+                "00000294 False long   True   GOTLDPOFFalse     _escomn_",
+                "00000290 True  long   True   GOTLDP  False     _escomn_",
+                "00000284 False long   True   GOTLDPOFFalse     _escomn_",
+                "00000280 True  long   True   GOTLDP  False     _escomn_",
+                "0000024c False long   True   GOTLDPOFFalse     _escomn_",
+                "00000248 True  long   True   GOTLDP  False     _escomn_",
+                "0000023c False long   True   GOTLDPOFFalse     _escomn_",
+                "00000238 True  long   True   GOTLDP  False     _escomn_",
+                "00000230 False long   True   PAGOF12 False     _sqrvec.0",
+                "0000022c True  long   True   PAGE21  False     _sqrvec.0",
+                "00000208 False long   True   GOTLDPOFFalse     _escomn_",
+                "00000204 True  long   True   GOTLDP  False     _escomn_",
+                "000001f4 False long   True   GOTLDPOFFalse     _escomn_",
+                "000001f0 True  long   True   GOTLDP  False     _escomn_",
+                "000001c8 False long   True   GOTLDPOFFalse     _eswsbw_",
+                "000001c4 True  long   True   GOTLDP  False     _eswsbw_",
+                "000001a4 False long   True   GOTLDPOFFalse     _eswsbw_",
+                "000001a0 True  long   True   GOTLDP  False     _eswsbw_",
+                "00000170 False long   True   GOTLDPOFFalse     _eswsbw_",
+                "0000016c True  long   True   GOTLDP  False     _eswsbw_",
+                "00000110 False long   True   GOTLDPOFFalse     _escomn_",
+                "0000010c True  long   True   GOTLDP  False     _escomn_",
+                "000000fc False long   True   GOTLDPOFFalse     _escomn_",
+                "000000f8 True  long   True   GOTLDP  False     _escomn_",
+                "000000d0 False long   True   GOTLDPOFFalse     _eswsbw_",
+                "000000cc True  long   True   GOTLDP  False     _eswsbw_",
+                "000000ac False long   True   GOTLDPOFFalse     _eswsbw_",
+                "000000a8 True  long   True   GOTLDP  False     _eswsbw_",
+                "00000078 False long   True   GOTLDPOFFalse     _eswsbw_",
+                "00000074 True  long   True   GOTLDP  False     _eswsbw_",
+                "00000034 False long   True   GOTLDPOFFalse     _eswsbw_",
+                "00000030 True  long   True   GOTLDP  False     _eswsbw_",
+                "00000028 False long   True   GOTLDPOFFalse     _escomn_",
+                "00000024 True  long   True   GOTLDP  False     _escomn_",
+                "0000001c False long   True   GOTLDPOFFalse     _escomn_",
+                "00000018 True  long   True   GOTLDP  False     _escomn_",
+                "00000010 False long   True   GOTLDPOFFalse     _escomn_",
+                "0000000c True  long   True   GOTLDP  False     _escomn_"
+              ],
+              "__TEXT,__eh_frame": [
+                "address  pcrel length extern type    scattered symbolnum/value",
+                "00000020 False ?( 3)  True   SUB     False     EH_frame1",
+                "00000020 False ?( 3)  True   UNSIGND False     _estime_"
+              ]
+            },
+            "external_symbols": [
+              {
+                "symbol": "_escomn_",
+                "type": 1,
+                "common_bytes": 2772
+              },
+              {
+                "symbol": "_eswsbw_",
+                "type": 1,
+                "common_bytes": 164
+              }
+            ]
+          }
+        },
+        {
+          "state": "current",
+          "object_sha256": "3c6a5bee0cdb8f66cafc260b1bcd1403f09e3a81edc64370dd2ebc9f0e6a59ff",
+          "object": "/private/tmp/mfvs-c01-c06-20261114/targeted-build/current/C01-bc/tree.o",
+          "code": {
+            "runtime_sections": {
+              "__TEXT,__text": {
+                "bytes": 736,
+                "section_type": 0,
+                "sha256": "ec13f702dee015710dd87fd5f4c26b8833730659adac499ded26636f4b237308",
+                "hex": "ff8300d1e00700f9e10300f900000090000040f91f6000b900000090000040f91f5c00b900000090000040f91f040ab900000090000040f900a040b91f0000710d120054e00740f9000040b902140051e00740f9000040b901040051e21b00b9e01b40b91f00016be0d79f1a1f0000718106005400000090000040f902a040b920008052e01f00b9e01f40b91f00026be0d79f1a1f000071a1040054e01f80b9000400d103f87fd300000090000040f9007863b8e31b40b97f00006be3b79f1ae01f80b900f87fd3040400d100000090000040f9007864b8e41b40b99f00006be0c79f1a7f0000710418407ae0079f1a1f0000714001005400000090000040f91e6040bd1f102e1edf2b3f1e00000090000040f91f6000bd06000014e01f40b900040011e01f00b9d8ffff171f2003d5e01b40b900040011e01b00b9c9ffff171f2003d5e00740f9020040b9e00340f9010040b9e21b00b9e01b40b91f00016be0d79f1a1f000071a108005400000090000040f902a040b920008052e01f00b9e01f40b91f00026be0d79f1a1f000071c1060054e01f80b9000400d103f87fd300000090000040f9007863b8e31b40b97f00006be3b79f1ae01f80b900f87fd3040400d100000090000040f9007864b8e41b40b99f00006be0c79f1a7f0000710418407ae0079f1a1f0000716003005400000090000040f91e5c40bd1f102e1edf2b3f1e00000090000040f91f5c00bde00740f9000040b9e21b40b94000004b00040011007c4093020400d100000090000000911e7862bc00000090000040f91f044abddf2b3f1e00000090000040f91f040abd06000014e01f40b900040011e01f00b9c7ffff171f2003d5e01b40b900040011e01b00b9b8ffff171f2003d500000090000040f91f844abdfec3211e00000090000040f91f044abddf3b3f1e00000090000040f91f080abd00000090000040f91e844abd00000090000040f91f5c40bddf3b3f1e00000090000040f91ffc09bd1f2003d5ff830091c0035fd6"
+              },
+              "__DATA,__data": {
+                "bytes": 80,
+                "section_type": 0,
+                "sha256": "78ab3e4dfdac6f0e0792f23d52e887bbf83e17e02bdd82ede05f61092ad90c0c",
+                "hex": "0000803f5513d43eedbba23ebe30893e56bc713ec68a5a3e62f8483e77103b3e0cb02f3eba2c263eed0d1e3eff04173e45d8103e6b600b3e5f7b063e8811023e1821fc3d63d1f43db919ee3d60eae73d"
+              },
+              "__TEXT,__eh_frame": {
+                "bytes": 64,
+                "section_type": 11,
+                "sha256": "771a5f939237eb62d99883a233df4622eb80704628fdaddeab3bbf8f87daa3ad",
+                "hex": "1400000000000000037a520001781e01100c1f0000000000240000001c000000e0ffffffffffffffe0020000000000000004040000000e2004d80200000e0000"
+              }
+            },
+            "runtime_relocations": {
+              "__TEXT,__text": [
+                "address  pcrel length extern type    scattered symbolnum/value",
+                "000002cc False long   True   GOTLDPOFFalse     _escomn_",
+                "000002c8 True  long   True   GOTLDP  False     _escomn_",
+                "000002bc False long   True   GOTLDPOFFalse     _escomn_",
+                "000002b8 True  long   True   GOTLDP  False     _escomn_",
+                "000002b0 False long   True   GOTLDPOFFalse     _escomn_",
+                "000002ac True  long   True   GOTLDP  False     _escomn_",
+                "000002a4 False long   True   GOTLDPOFFalse     _escomn_",
+                "000002a0 True  long   True   GOTLDP  False     _escomn_",
+                "00000294 False long   True   GOTLDPOFFalse     _escomn_",
+                "00000290 True  long   True   GOTLDP  False     _escomn_",
+                "00000284 False long   True   GOTLDPOFFalse     _escomn_",
+                "00000280 True  long   True   GOTLDP  False     _escomn_",
+                "0000024c False long   True   GOTLDPOFFalse     _escomn_",
+                "00000248 True  long   True   GOTLDP  False     _escomn_",
+                "0000023c False long   True   GOTLDPOFFalse     _escomn_",
+                "00000238 True  long   True   GOTLDP  False     _escomn_",
+                "00000230 False long   True   PAGOF12 False     _sqrvec.0",
+                "0000022c True  long   True   PAGE21  False     _sqrvec.0",
+                "00000208 False long   True   GOTLDPOFFalse     _escomn_",
+                "00000204 True  long   True   GOTLDP  False     _escomn_",
+                "000001f4 False long   True   GOTLDPOFFalse     _escomn_",
+                "000001f0 True  long   True   GOTLDP  False     _escomn_",
+                "000001c8 False long   True   GOTLDPOFFalse     _eswsbw_",
+                "000001c4 True  long   True   GOTLDP  False     _eswsbw_",
+                "000001a4 False long   True   GOTLDPOFFalse     _eswsbw_",
+                "000001a0 True  long   True   GOTLDP  False     _eswsbw_",
+                "00000170 False long   True   GOTLDPOFFalse     _eswsbw_",
+                "0000016c True  long   True   GOTLDP  False     _eswsbw_",
+                "00000110 False long   True   GOTLDPOFFalse     _escomn_",
+                "0000010c True  long   True   GOTLDP  False     _escomn_",
+                "000000fc False long   True   GOTLDPOFFalse     _escomn_",
+                "000000f8 True  long   True   GOTLDP  False     _escomn_",
+                "000000d0 False long   True   GOTLDPOFFalse     _eswsbw_",
+                "000000cc True  long   True   GOTLDP  False     _eswsbw_",
+                "000000ac False long   True   GOTLDPOFFalse     _eswsbw_",
+                "000000a8 True  long   True   GOTLDP  False     _eswsbw_",
+                "00000078 False long   True   GOTLDPOFFalse     _eswsbw_",
+                "00000074 True  long   True   GOTLDP  False     _eswsbw_",
+                "00000034 False long   True   GOTLDPOFFalse     _eswsbw_",
+                "00000030 True  long   True   GOTLDP  False     _eswsbw_",
+                "00000028 False long   True   GOTLDPOFFalse     _escomn_",
+                "00000024 True  long   True   GOTLDP  False     _escomn_",
+                "0000001c False long   True   GOTLDPOFFalse     _escomn_",
+                "00000018 True  long   True   GOTLDP  False     _escomn_",
+                "00000010 False long   True   GOTLDPOFFalse     _escomn_",
+                "0000000c True  long   True   GOTLDP  False     _escomn_"
+              ],
+              "__TEXT,__eh_frame": [
+                "address  pcrel length extern type    scattered symbolnum/value",
+                "00000020 False ?( 3)  True   SUB     False     EH_frame1",
+                "00000020 False ?( 3)  True   UNSIGND False     _estime_"
+              ]
+            },
+            "external_symbols": [
+              {
+                "symbol": "_escomn_",
+                "type": 1,
+                "common_bytes": 2772
+              },
+              {
+                "symbol": "_eswsbw_",
+                "type": 1,
+                "common_bytes": 164
+              }
+            ]
+          }
+        },
+        {
+          "state": "candidate",
+          "object_sha256": "93617c247887f20b3581b6a9627bff53eb377c82b0594647d803853dbdc1d2c2",
+          "object": "/private/tmp/mfvs-c01-c06-20261114/targeted-build/candidate/C01-bc/tree.o",
+          "code": {
+            "runtime_sections": {
+              "__TEXT,__text": {
+                "bytes": 736,
+                "section_type": 0,
+                "sha256": "ec13f702dee015710dd87fd5f4c26b8833730659adac499ded26636f4b237308",
+                "hex": "ff8300d1e00700f9e10300f900000090000040f91f6000b900000090000040f91f5c00b900000090000040f91f040ab900000090000040f900a040b91f0000710d120054e00740f9000040b902140051e00740f9000040b901040051e21b00b9e01b40b91f00016be0d79f1a1f0000718106005400000090000040f902a040b920008052e01f00b9e01f40b91f00026be0d79f1a1f000071a1040054e01f80b9000400d103f87fd300000090000040f9007863b8e31b40b97f00006be3b79f1ae01f80b900f87fd3040400d100000090000040f9007864b8e41b40b99f00006be0c79f1a7f0000710418407ae0079f1a1f0000714001005400000090000040f91e6040bd1f102e1edf2b3f1e00000090000040f91f6000bd06000014e01f40b900040011e01f00b9d8ffff171f2003d5e01b40b900040011e01b00b9c9ffff171f2003d5e00740f9020040b9e00340f9010040b9e21b00b9e01b40b91f00016be0d79f1a1f000071a108005400000090000040f902a040b920008052e01f00b9e01f40b91f00026be0d79f1a1f000071c1060054e01f80b9000400d103f87fd300000090000040f9007863b8e31b40b97f00006be3b79f1ae01f80b900f87fd3040400d100000090000040f9007864b8e41b40b99f00006be0c79f1a7f0000710418407ae0079f1a1f0000716003005400000090000040f91e5c40bd1f102e1edf2b3f1e00000090000040f91f5c00bde00740f9000040b9e21b40b94000004b00040011007c4093020400d100000090000000911e7862bc00000090000040f91f044abddf2b3f1e00000090000040f91f040abd06000014e01f40b900040011e01f00b9c7ffff171f2003d5e01b40b900040011e01b00b9b8ffff171f2003d500000090000040f91f844abdfec3211e00000090000040f91f044abddf3b3f1e00000090000040f91f080abd00000090000040f91e844abd00000090000040f91f5c40bddf3b3f1e00000090000040f91ffc09bd1f2003d5ff830091c0035fd6"
+              },
+              "__DATA,__data": {
+                "bytes": 80,
+                "section_type": 0,
+                "sha256": "78ab3e4dfdac6f0e0792f23d52e887bbf83e17e02bdd82ede05f61092ad90c0c",
+                "hex": "0000803f5513d43eedbba23ebe30893e56bc713ec68a5a3e62f8483e77103b3e0cb02f3eba2c263eed0d1e3eff04173e45d8103e6b600b3e5f7b063e8811023e1821fc3d63d1f43db919ee3d60eae73d"
+              },
+              "__TEXT,__eh_frame": {
+                "bytes": 64,
+                "section_type": 11,
+                "sha256": "771a5f939237eb62d99883a233df4622eb80704628fdaddeab3bbf8f87daa3ad",
+                "hex": "1400000000000000037a520001781e01100c1f0000000000240000001c000000e0ffffffffffffffe0020000000000000004040000000e2004d80200000e0000"
+              }
+            },
+            "runtime_relocations": {
+              "__TEXT,__text": [
+                "address  pcrel length extern type    scattered symbolnum/value",
+                "000002cc False long   True   GOTLDPOFFalse     _escomn_",
+                "000002c8 True  long   True   GOTLDP  False     _escomn_",
+                "000002bc False long   True   GOTLDPOFFalse     _escomn_",
+                "000002b8 True  long   True   GOTLDP  False     _escomn_",
+                "000002b0 False long   True   GOTLDPOFFalse     _escomn_",
+                "000002ac True  long   True   GOTLDP  False     _escomn_",
+                "000002a4 False long   True   GOTLDPOFFalse     _escomn_",
+                "000002a0 True  long   True   GOTLDP  False     _escomn_",
+                "00000294 False long   True   GOTLDPOFFalse     _escomn_",
+                "00000290 True  long   True   GOTLDP  False     _escomn_",
+                "00000284 False long   True   GOTLDPOFFalse     _escomn_",
+                "00000280 True  long   True   GOTLDP  False     _escomn_",
+                "0000024c False long   True   GOTLDPOFFalse     _escomn_",
+                "00000248 True  long   True   GOTLDP  False     _escomn_",
+                "0000023c False long   True   GOTLDPOFFalse     _escomn_",
+                "00000238 True  long   True   GOTLDP  False     _escomn_",
+                "00000230 False long   True   PAGOF12 False     _sqrvec.0",
+                "0000022c True  long   True   PAGE21  False     _sqrvec.0",
+                "00000208 False long   True   GOTLDPOFFalse     _escomn_",
+                "00000204 True  long   True   GOTLDP  False     _escomn_",
+                "000001f4 False long   True   GOTLDPOFFalse     _escomn_",
+                "000001f0 True  long   True   GOTLDP  False     _escomn_",
+                "000001c8 False long   True   GOTLDPOFFalse     _eswsbw_",
+                "000001c4 True  long   True   GOTLDP  False     _eswsbw_",
+                "000001a4 False long   True   GOTLDPOFFalse     _eswsbw_",
+                "000001a0 True  long   True   GOTLDP  False     _eswsbw_",
+                "00000170 False long   True   GOTLDPOFFalse     _eswsbw_",
+                "0000016c True  long   True   GOTLDP  False     _eswsbw_",
+                "00000110 False long   True   GOTLDPOFFalse     _escomn_",
+                "0000010c True  long   True   GOTLDP  False     _escomn_",
+                "000000fc False long   True   GOTLDPOFFalse     _escomn_",
+                "000000f8 True  long   True   GOTLDP  False     _escomn_",
+                "000000d0 False long   True   GOTLDPOFFalse     _eswsbw_",
+                "000000cc True  long   True   GOTLDP  False     _eswsbw_",
+                "000000ac False long   True   GOTLDPOFFalse     _eswsbw_",
+                "000000a8 True  long   True   GOTLDP  False     _eswsbw_",
+                "00000078 False long   True   GOTLDPOFFalse     _eswsbw_",
+                "00000074 True  long   True   GOTLDP  False     _eswsbw_",
+                "00000034 False long   True   GOTLDPOFFalse     _eswsbw_",
+                "00000030 True  long   True   GOTLDP  False     _eswsbw_",
+                "00000028 False long   True   GOTLDPOFFalse     _escomn_",
+                "00000024 True  long   True   GOTLDP  False     _escomn_",
+                "0000001c False long   True   GOTLDPOFFalse     _escomn_",
+                "00000018 True  long   True   GOTLDP  False     _escomn_",
+                "00000010 False long   True   GOTLDPOFFalse     _escomn_",
+                "0000000c True  long   True   GOTLDP  False     _escomn_"
+              ],
+              "__TEXT,__eh_frame": [
+                "address  pcrel length extern type    scattered symbolnum/value",
+                "00000020 False ?( 3)  True   SUB     False     EH_frame1",
+                "00000020 False ?( 3)  True   UNSIGND False     _estime_"
+              ]
+            },
+            "external_symbols": [
+              {
+                "symbol": "_escomn_",
+                "type": 1,
+                "common_bytes": 2772
+              },
+              {
+                "symbol": "_eswsbw_",
+                "type": 1,
+                "common_bytes": 164
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case": "C01-on",
+      "all_three_runtime_objects_equal": true,
+      "versions": [
+        {
+          "state": "original",
+          "object_sha256": "f06f481793a2b01553309710dcedffa6c778140674f7114d02e9b6155d9ee6a4",
+          "object": "/private/tmp/mfvs-c01-c06-20261114/targeted-build/original/C01-on/tree.o",
+          "code": {
+            "runtime_sections": {
+              "__TEXT,__text": {
+                "bytes": 736,
+                "section_type": 0,
+                "sha256": "d35914c0454c055feb9621cd9fce0d10832207567f9ff0ff3fa9a12a55eb4989",
+                "hex": "ff8300d1e00700f9e10300f900000090000040f91f6000b900000090000040f91f5c00b900000090000040f91fb82bb900000090000040f900a040b91f0000710d120054e00740f9000040b902140051e00740f9000040b901040051e21b00b9e01b40b91f00016be0d79f1a1f0000718106005400000090000040f902a040b920008052e01f00b9e01f40b91f00026be0d79f1a1f000071a1040054e01f80b9000400d103f87fd300000090000040f9007863b8e31b40b97f00006be3b79f1ae01f80b900f87fd3040400d100000090000040f9007864b8e41b40b99f00006be0c79f1a7f0000710418407ae0079f1a1f0000714001005400000090000040f91e6040bd1f102e1edf2b3f1e00000090000040f91f6000bd06000014e01f40b900040011e01f00b9d8ffff171f2003d5e01b40b900040011e01b00b9c9ffff171f2003d5e00740f9020040b9e00340f9010040b9e21b00b9e01b40b91f00016be0d79f1a1f000071a108005400000090000040f902a040b920008052e01f00b9e01f40b91f00026be0d79f1a1f000071c1060054e01f80b9000400d103f87fd300000090000040f9007863b8e31b40b97f00006be3b79f1ae01f80b900f87fd3040400d100000090000040f9007864b8e41b40b99f00006be0c79f1a7f0000710418407ae0079f1a1f0000716003005400000090000040f91e5c40bd1f102e1edf2b3f1e00000090000040f91f5c00bde00740f9000040b9e21b40b94000004b00040011007c4093020400d100000090000000911e7862bc00000090000040f91fb86bbddf2b3f1e00000090000040f91fb82bbd06000014e01f40b900040011e01f00b9c7ffff171f2003d5e01b40b900040011e01b00b9b8ffff171f2003d500000090000040f91f006ebdfec3211e00000090000040f91fb86bbddf3b3f1e00000090000040f91fbc2bbd00000090000040f91e006ebd00000090000040f91f5c40bddf3b3f1e00000090000040f91fb02bbd1f2003d5ff830091c0035fd6"
+              },
+              "__DATA,__data": {
+                "bytes": 80,
+                "section_type": 0,
+                "sha256": "78ab3e4dfdac6f0e0792f23d52e887bbf83e17e02bdd82ede05f61092ad90c0c",
+                "hex": "0000803f5513d43eedbba23ebe30893e56bc713ec68a5a3e62f8483e77103b3e0cb02f3eba2c263eed0d1e3eff04173e45d8103e6b600b3e5f7b063e8811023e1821fc3d63d1f43db919ee3d60eae73d"
+              },
+              "__TEXT,__eh_frame": {
+                "bytes": 64,
+                "section_type": 11,
+                "sha256": "771a5f939237eb62d99883a233df4622eb80704628fdaddeab3bbf8f87daa3ad",
+                "hex": "1400000000000000037a520001781e01100c1f0000000000240000001c000000e0ffffffffffffffe0020000000000000004040000000e2004d80200000e0000"
+              }
+            },
+            "runtime_relocations": {
+              "__TEXT,__text": [
+                "address  pcrel length extern type    scattered symbolnum/value",
+                "000002cc False long   True   GOTLDPOFFalse     _escomn_",
+                "000002c8 True  long   True   GOTLDP  False     _escomn_",
+                "000002bc False long   True   GOTLDPOFFalse     _escomn_",
+                "000002b8 True  long   True   GOTLDP  False     _escomn_",
+                "000002b0 False long   True   GOTLDPOFFalse     _escomn_",
+                "000002ac True  long   True   GOTLDP  False     _escomn_",
+                "000002a4 False long   True   GOTLDPOFFalse     _escomn_",
+                "000002a0 True  long   True   GOTLDP  False     _escomn_",
+                "00000294 False long   True   GOTLDPOFFalse     _escomn_",
+                "00000290 True  long   True   GOTLDP  False     _escomn_",
+                "00000284 False long   True   GOTLDPOFFalse     _escomn_",
+                "00000280 True  long   True   GOTLDP  False     _escomn_",
+                "0000024c False long   True   GOTLDPOFFalse     _escomn_",
+                "00000248 True  long   True   GOTLDP  False     _escomn_",
+                "0000023c False long   True   GOTLDPOFFalse     _escomn_",
+                "00000238 True  long   True   GOTLDP  False     _escomn_",
+                "00000230 False long   True   PAGOF12 False     _sqrvec.0",
+                "0000022c True  long   True   PAGE21  False     _sqrvec.0",
+                "00000208 False long   True   GOTLDPOFFalse     _escomn_",
+                "00000204 True  long   True   GOTLDP  False     _escomn_",
+                "000001f4 False long   True   GOTLDPOFFalse     _escomn_",
+                "000001f0 True  long   True   GOTLDP  False     _escomn_",
+                "000001c8 False long   True   GOTLDPOFFalse     _eswsbw_",
+                "000001c4 True  long   True   GOTLDP  False     _eswsbw_",
+                "000001a4 False long   True   GOTLDPOFFalse     _eswsbw_",
+                "000001a0 True  long   True   GOTLDP  False     _eswsbw_",
+                "00000170 False long   True   GOTLDPOFFalse     _eswsbw_",
+                "0000016c True  long   True   GOTLDP  False     _eswsbw_",
+                "00000110 False long   True   GOTLDPOFFalse     _escomn_",
+                "0000010c True  long   True   GOTLDP  False     _escomn_",
+                "000000fc False long   True   GOTLDPOFFalse     _escomn_",
+                "000000f8 True  long   True   GOTLDP  False     _escomn_",
+                "000000d0 False long   True   GOTLDPOFFalse     _eswsbw_",
+                "000000cc True  long   True   GOTLDP  False     _eswsbw_",
+                "000000ac False long   True   GOTLDPOFFalse     _eswsbw_",
+                "000000a8 True  long   True   GOTLDP  False     _eswsbw_",
+                "00000078 False long   True   GOTLDPOFFalse     _eswsbw_",
+                "00000074 True  long   True   GOTLDP  False     _eswsbw_",
+                "00000034 False long   True   GOTLDPOFFalse     _eswsbw_",
+                "00000030 True  long   True   GOTLDP  False     _eswsbw_",
+                "00000028 False long   True   GOTLDPOFFalse     _escomn_",
+                "00000024 True  long   True   GOTLDP  False     _escomn_",
+                "0000001c False long   True   GOTLDPOFFalse     _escomn_",
+                "00000018 True  long   True   GOTLDP  False     _escomn_",
+                "00000010 False long   True   GOTLDPOFFalse     _escomn_",
+                "0000000c True  long   True   GOTLDP  False     _escomn_"
+              ],
+              "__TEXT,__eh_frame": [
+                "address  pcrel length extern type    scattered symbolnum/value",
+                "00000020 False ?( 3)  True   SUB     False     EH_frame1",
+                "00000020 False ?( 3)  True   UNSIGND False     _estime_"
+              ]
+            },
+            "external_symbols": [
+              {
+                "symbol": "_escomn_",
+                "type": 1,
+                "common_bytes": 12084
+              },
+              {
+                "symbol": "_eswsbw_",
+                "type": 1,
+                "common_bytes": 164
+              }
+            ]
+          }
+        },
+        {
+          "state": "current",
+          "object_sha256": "e75d1fd74d43a38165f581016adcb819874cc8570e9d6ef387d396e13f183837",
+          "object": "/private/tmp/mfvs-c01-c06-20261114/targeted-build/current/C01-on/tree.o",
+          "code": {
+            "runtime_sections": {
+              "__TEXT,__text": {
+                "bytes": 736,
+                "section_type": 0,
+                "sha256": "d35914c0454c055feb9621cd9fce0d10832207567f9ff0ff3fa9a12a55eb4989",
+                "hex": "ff8300d1e00700f9e10300f900000090000040f91f6000b900000090000040f91f5c00b900000090000040f91fb82bb900000090000040f900a040b91f0000710d120054e00740f9000040b902140051e00740f9000040b901040051e21b00b9e01b40b91f00016be0d79f1a1f0000718106005400000090000040f902a040b920008052e01f00b9e01f40b91f00026be0d79f1a1f000071a1040054e01f80b9000400d103f87fd300000090000040f9007863b8e31b40b97f00006be3b79f1ae01f80b900f87fd3040400d100000090000040f9007864b8e41b40b99f00006be0c79f1a7f0000710418407ae0079f1a1f0000714001005400000090000040f91e6040bd1f102e1edf2b3f1e00000090000040f91f6000bd06000014e01f40b900040011e01f00b9d8ffff171f2003d5e01b40b900040011e01b00b9c9ffff171f2003d5e00740f9020040b9e00340f9010040b9e21b00b9e01b40b91f00016be0d79f1a1f000071a108005400000090000040f902a040b920008052e01f00b9e01f40b91f00026be0d79f1a1f000071c1060054e01f80b9000400d103f87fd300000090000040f9007863b8e31b40b97f00006be3b79f1ae01f80b900f87fd3040400d100000090000040f9007864b8e41b40b99f00006be0c79f1a7f0000710418407ae0079f1a1f0000716003005400000090000040f91e5c40bd1f102e1edf2b3f1e00000090000040f91f5c00bde00740f9000040b9e21b40b94000004b00040011007c4093020400d100000090000000911e7862bc00000090000040f91fb86bbddf2b3f1e00000090000040f91fb82bbd06000014e01f40b900040011e01f00b9c7ffff171f2003d5e01b40b900040011e01b00b9b8ffff171f2003d500000090000040f91f006ebdfec3211e00000090000040f91fb86bbddf3b3f1e00000090000040f91fbc2bbd00000090000040f91e006ebd00000090000040f91f5c40bddf3b3f1e00000090000040f91fb02bbd1f2003d5ff830091c0035fd6"
+              },
+              "__DATA,__data": {
+                "bytes": 80,
+                "section_type": 0,
+                "sha256": "78ab3e4dfdac6f0e0792f23d52e887bbf83e17e02bdd82ede05f61092ad90c0c",
+                "hex": "0000803f5513d43eedbba23ebe30893e56bc713ec68a5a3e62f8483e77103b3e0cb02f3eba2c263eed0d1e3eff04173e45d8103e6b600b3e5f7b063e8811023e1821fc3d63d1f43db919ee3d60eae73d"
+              },
+              "__TEXT,__eh_frame": {
+                "bytes": 64,
+                "section_type": 11,
+                "sha256": "771a5f939237eb62d99883a233df4622eb80704628fdaddeab3bbf8f87daa3ad",
+                "hex": "1400000000000000037a520001781e01100c1f0000000000240000001c000000e0ffffffffffffffe0020000000000000004040000000e2004d80200000e0000"
+              }
+            },
+            "runtime_relocations": {
+              "__TEXT,__text": [
+                "address  pcrel length extern type    scattered symbolnum/value",
+                "000002cc False long   True   GOTLDPOFFalse     _escomn_",
+                "000002c8 True  long   True   GOTLDP  False     _escomn_",
+                "000002bc False long   True   GOTLDPOFFalse     _escomn_",
+                "000002b8 True  long   True   GOTLDP  False     _escomn_",
+                "000002b0 False long   True   GOTLDPOFFalse     _escomn_",
+                "000002ac True  long   True   GOTLDP  False     _escomn_",
+                "000002a4 False long   True   GOTLDPOFFalse     _escomn_",
+                "000002a0 True  long   True   GOTLDP  False     _escomn_",
+                "00000294 False long   True   GOTLDPOFFalse     _escomn_",
+                "00000290 True  long   True   GOTLDP  False     _escomn_",
+                "00000284 False long   True   GOTLDPOFFalse     _escomn_",
+                "00000280 True  long   True   GOTLDP  False     _escomn_",
+                "0000024c False long   True   GOTLDPOFFalse     _escomn_",
+                "00000248 True  long   True   GOTLDP  False     _escomn_",
+                "0000023c False long   True   GOTLDPOFFalse     _escomn_",
+                "00000238 True  long   True   GOTLDP  False     _escomn_",
+                "00000230 False long   True   PAGOF12 False     _sqrvec.0",
+                "0000022c True  long   True   PAGE21  False     _sqrvec.0",
+                "00000208 False long   True   GOTLDPOFFalse     _escomn_",
+                "00000204 True  long   True   GOTLDP  False     _escomn_",
+                "000001f4 False long   True   GOTLDPOFFalse     _escomn_",
+                "000001f0 True  long   True   GOTLDP  False     _escomn_",
+                "000001c8 False long   True   GOTLDPOFFalse     _eswsbw_",
+                "000001c4 True  long   True   GOTLDP  False     _eswsbw_",
+                "000001a4 False long   True   GOTLDPOFFalse     _eswsbw_",
+                "000001a0 True  long   True   GOTLDP  False     _eswsbw_",
+                "00000170 False long   True   GOTLDPOFFalse     _eswsbw_",
+                "0000016c True  long   True   GOTLDP  False     _eswsbw_",
+                "00000110 False long   True   GOTLDPOFFalse     _escomn_",
+                "0000010c True  long   True   GOTLDP  False     _escomn_",
+                "000000fc False long   True   GOTLDPOFFalse     _escomn_",
+                "000000f8 True  long   True   GOTLDP  False     _escomn_",
+                "000000d0 False long   True   GOTLDPOFFalse     _eswsbw_",
+                "000000cc True  long   True   GOTLDP  False     _eswsbw_",
+                "000000ac False long   True   GOTLDPOFFalse     _eswsbw_",
+                "000000a8 True  long   True   GOTLDP  False     _eswsbw_",
+                "00000078 False long   True   GOTLDPOFFalse     _eswsbw_",
+                "00000074 True  long   True   GOTLDP  False     _eswsbw_",
+                "00000034 False long   True   GOTLDPOFFalse     _eswsbw_",
+                "00000030 True  long   True   GOTLDP  False     _eswsbw_",
+                "00000028 False long   True   GOTLDPOFFalse     _escomn_",
+                "00000024 True  long   True   GOTLDP  False     _escomn_",
+                "0000001c False long   True   GOTLDPOFFalse     _escomn_",
+                "00000018 True  long   True   GOTLDP  False     _escomn_",
+                "00000010 False long   True   GOTLDPOFFalse     _escomn_",
+                "0000000c True  long   True   GOTLDP  False     _escomn_"
+              ],
+              "__TEXT,__eh_frame": [
+                "address  pcrel length extern type    scattered symbolnum/value",
+                "00000020 False ?( 3)  True   SUB     False     EH_frame1",
+                "00000020 False ?( 3)  True   UNSIGND False     _estime_"
+              ]
+            },
+            "external_symbols": [
+              {
+                "symbol": "_escomn_",
+                "type": 1,
+                "common_bytes": 12084
+              },
+              {
+                "symbol": "_eswsbw_",
+                "type": 1,
+                "common_bytes": 164
+              }
+            ]
+          }
+        },
+        {
+          "state": "candidate",
+          "object_sha256": "2d8a16728d05767d03821634ae5eb9c49791ca1c05763c46c20d19906a0ac51b",
+          "object": "/private/tmp/mfvs-c01-c06-20261114/targeted-build/candidate/C01-on/tree.o",
+          "code": {
+            "runtime_sections": {
+              "__TEXT,__text": {
+                "bytes": 736,
+                "section_type": 0,
+                "sha256": "d35914c0454c055feb9621cd9fce0d10832207567f9ff0ff3fa9a12a55eb4989",
+                "hex": "ff8300d1e00700f9e10300f900000090000040f91f6000b900000090000040f91f5c00b900000090000040f91fb82bb900000090000040f900a040b91f0000710d120054e00740f9000040b902140051e00740f9000040b901040051e21b00b9e01b40b91f00016be0d79f1a1f0000718106005400000090000040f902a040b920008052e01f00b9e01f40b91f00026be0d79f1a1f000071a1040054e01f80b9000400d103f87fd300000090000040f9007863b8e31b40b97f00006be3b79f1ae01f80b900f87fd3040400d100000090000040f9007864b8e41b40b99f00006be0c79f1a7f0000710418407ae0079f1a1f0000714001005400000090000040f91e6040bd1f102e1edf2b3f1e00000090000040f91f6000bd06000014e01f40b900040011e01f00b9d8ffff171f2003d5e01b40b900040011e01b00b9c9ffff171f2003d5e00740f9020040b9e00340f9010040b9e21b00b9e01b40b91f00016be0d79f1a1f000071a108005400000090000040f902a040b920008052e01f00b9e01f40b91f00026be0d79f1a1f000071c1060054e01f80b9000400d103f87fd300000090000040f9007863b8e31b40b97f00006be3b79f1ae01f80b900f87fd3040400d100000090000040f9007864b8e41b40b99f00006be0c79f1a7f0000710418407ae0079f1a1f0000716003005400000090000040f91e5c40bd1f102e1edf2b3f1e00000090000040f91f5c00bde00740f9000040b9e21b40b94000004b00040011007c4093020400d100000090000000911e7862bc00000090000040f91fb86bbddf2b3f1e00000090000040f91fb82bbd06000014e01f40b900040011e01f00b9c7ffff171f2003d5e01b40b900040011e01b00b9b8ffff171f2003d500000090000040f91f006ebdfec3211e00000090000040f91fb86bbddf3b3f1e00000090000040f91fbc2bbd00000090000040f91e006ebd00000090000040f91f5c40bddf3b3f1e00000090000040f91fb02bbd1f2003d5ff830091c0035fd6"
+              },
+              "__DATA,__data": {
+                "bytes": 80,
+                "section_type": 0,
+                "sha256": "78ab3e4dfdac6f0e0792f23d52e887bbf83e17e02bdd82ede05f61092ad90c0c",
+                "hex": "0000803f5513d43eedbba23ebe30893e56bc713ec68a5a3e62f8483e77103b3e0cb02f3eba2c263eed0d1e3eff04173e45d8103e6b600b3e5f7b063e8811023e1821fc3d63d1f43db919ee3d60eae73d"
+              },
+              "__TEXT,__eh_frame": {
+                "bytes": 64,
+                "section_type": 11,
+                "sha256": "771a5f939237eb62d99883a233df4622eb80704628fdaddeab3bbf8f87daa3ad",
+                "hex": "1400000000000000037a520001781e01100c1f0000000000240000001c000000e0ffffffffffffffe0020000000000000004040000000e2004d80200000e0000"
+              }
+            },
+            "runtime_relocations": {
+              "__TEXT,__text": [
+                "address  pcrel length extern type    scattered symbolnum/value",
+                "000002cc False long   True   GOTLDPOFFalse     _escomn_",
+                "000002c8 True  long   True   GOTLDP  False     _escomn_",
+                "000002bc False long   True   GOTLDPOFFalse     _escomn_",
+                "000002b8 True  long   True   GOTLDP  False     _escomn_",
+                "000002b0 False long   True   GOTLDPOFFalse     _escomn_",
+                "000002ac True  long   True   GOTLDP  False     _escomn_",
+                "000002a4 False long   True   GOTLDPOFFalse     _escomn_",
+                "000002a0 True  long   True   GOTLDP  False     _escomn_",
+                "00000294 False long   True   GOTLDPOFFalse     _escomn_",
+                "00000290 True  long   True   GOTLDP  False     _escomn_",
+                "00000284 False long   True   GOTLDPOFFalse     _escomn_",
+                "00000280 True  long   True   GOTLDP  False     _escomn_",
+                "0000024c False long   True   GOTLDPOFFalse     _escomn_",
+                "00000248 True  long   True   GOTLDP  False     _escomn_",
+                "0000023c False long   True   GOTLDPOFFalse     _escomn_",
+                "00000238 True  long   True   GOTLDP  False     _escomn_",
+                "00000230 False long   True   PAGOF12 False     _sqrvec.0",
+                "0000022c True  long   True   PAGE21  False     _sqrvec.0",
+                "00000208 False long   True   GOTLDPOFFalse     _escomn_",
+                "00000204 True  long   True   GOTLDP  False     _escomn_",
+                "000001f4 False long   True   GOTLDPOFFalse     _escomn_",
+                "000001f0 True  long   True   GOTLDP  False     _escomn_",
+                "000001c8 False long   True   GOTLDPOFFalse     _eswsbw_",
+                "000001c4 True  long   True   GOTLDP  False     _eswsbw_",
+                "000001a4 False long   True   GOTLDPOFFalse     _eswsbw_",
+                "000001a0 True  long   True   GOTLDP  False     _eswsbw_",
+                "00000170 False long   True   GOTLDPOFFalse     _eswsbw_",
+                "0000016c True  long   True   GOTLDP  False     _eswsbw_",
+                "00000110 False long   True   GOTLDPOFFalse     _escomn_",
+                "0000010c True  long   True   GOTLDP  False     _escomn_",
+                "000000fc False long   True   GOTLDPOFFalse     _escomn_",
+                "000000f8 True  long   True   GOTLDP  False     _escomn_",
+                "000000d0 False long   True   GOTLDPOFFalse     _eswsbw_",
+                "000000cc True  long   True   GOTLDP  False     _eswsbw_",
+                "000000ac False long   True   GOTLDPOFFalse     _eswsbw_",
+                "000000a8 True  long   True   GOTLDP  False     _eswsbw_",
+                "00000078 False long   True   GOTLDPOFFalse     _eswsbw_",
+                "00000074 True  long   True   GOTLDP  False     _eswsbw_",
+                "00000034 False long   True   GOTLDPOFFalse     _eswsbw_",
+                "00000030 True  long   True   GOTLDP  False     _eswsbw_",
+                "00000028 False long   True   GOTLDPOFFalse     _escomn_",
+                "00000024 True  long   True   GOTLDP  False     _escomn_",
+                "0000001c False long   True   GOTLDPOFFalse     _escomn_",
+                "00000018 True  long   True   GOTLDP  False     _escomn_",
+                "00000010 False long   True   GOTLDPOFFalse     _escomn_",
+                "0000000c True  long   True   GOTLDP  False     _escomn_"
+              ],
+              "__TEXT,__eh_frame": [
+                "address  pcrel length extern type    scattered symbolnum/value",
+                "00000020 False ?( 3)  True   SUB     False     EH_frame1",
+                "00000020 False ?( 3)  True   UNSIGND False     _estime_"
+              ]
+            },
+            "external_symbols": [
+              {
+                "symbol": "_escomn_",
+                "type": 1,
+                "common_bytes": 12084
+              },
+              {
+                "symbol": "_eswsbw_",
+                "type": 1,
+                "common_bytes": 164
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case": "C06-bc",
+      "all_three_runtime_objects_equal": true,
+      "versions": [
+        {
+          "state": "original",
+          "object_sha256": "a2978e867840e9133acd0c7c19e17514c6fe0dd2dc1ce9896ac90603fcf3a4e6",
+          "object": "/private/tmp/mfvs-c01-c06-20261114/targeted-build/original/C06-bc/tree.o",
+          "code": {
+            "runtime_sections": {
+              "__TEXT,__text": {
+                "bytes": 1248,
+                "section_type": 0,
+                "sha256": "b46b6c2e4521a1b0c190c5bbd0696db4719938647945a4c30e7828b86a1e9259",
+                "hex": "fd7bb9a9fd030091a02700f9a12300f9a21f00f9a31b00f9a41700f9a51300f9a60f00f9a70b00f9a01340f9000040b9a06700b9a03b40f91f0000b9a00f40f91f0000b9a00b40f91f0000b9a01740f91f0040bdf823201ee9230054a02740f9010040b900000090000040f9003c40b92000004b1e00221e00000090000040f9009041911f0c68bdd0233f1e440000547900001400000090000040f9000041911f6475bd0049a8521e00271eff1b3e1ebf6300bd00000090000040f9009041911f0068bdf823201e4c0000543200001400000090000040f9009041911e0068bd1f102e1ed0233f1e440000541700001400000090000040f9009041911f0068bd1e102e1edf3b3f1ee043201e000000941e40201e00000090000040f9009041911f0c68bddf1b3f1ee043201e000000941e40201e1f102e1eff3b3e1ea00f40f91f0000bd14000014a01740f91f0040bdbe6340bddf1b3f1ee043201e000000941e40201e00000090000040f9009041911f0c68bddf1b3f1ee043201e000000941e40201e1f102e1eff3b3e1ea00f40f91f0000bd00000090000040f9009041911f0868bdf823201e4c0000543200001400000090000040f9009041911e0868bd1f102e1ed0233f1e440000541700001400000090000040f9009041911f0868bd1e102e1edf3b3f1ee043201e000000941e40201e00000090000040f9009041911f0c68bddf1b3f1ee043201e000000941e40201e1f102e1eff3b3e1ea00b40f91f0000bd14000014a01740f91f0040bdbe6340bddf1b3f1ee043201e000000941e40201e00000090000040f9009041911f0c68bddf1b3f1ee043201e000000941e40201e1f102e1eff3b3e1ea00b40f91f0000bda01f40f91f0040bd803c8252805ba7721e00271eff0b3e1e80af965260b0a7721e00271edf3b3f1ebf6f00bdbf6f40bd40e19a526084a7721e00271ef0233e1e440000540500001440e19a526084a7721f00271ebf6f00bda01f40f91e0040bd1f50261ed0233f1e4400005412000014a02340f9000040b9007c4093020400d100000090000040f901a393d24100018b1e7861bcbf6f40bdde0b3f1ea01b40f91f0040bddf0b3f1ea03b40f91f0000bd6d000014a02340f9000040b9007c4093020400d100000090000040f901a393d24100018b1e7861bcbf6f40bddf0b3f1eff43211e6066865260eeb7721e00271edf1b3f1ebf5f00bda02340f9000040b9007c4093010400d100000090000040f91f7861bcbe5f40bdd0233f1e4a000054040000141f10201ebf6b00bd0f000014a02340f9000040b9007c4093010400d100000090000040f91e7861bcbf5f40bddf3b3f1ea099995280a9a7721e00271edf1b3f1ebf6b00bda01740f91f0040bda01b40f91e0040bda099995280a9a7721d00271ede0b3d1ef0233e1e4900005408000014a01b40f91e0040bdbf6b40bddf0b3f1ea03b40f91f0000bd2e000014a02340f9000040b9007c4093020400d100000090000040f901a393d24100018b1e7861bcbf6f40bdde0b3f1ea01b40f91f0040bddf0b3f1ea03b40f91f0000bda01740f91f0040bda03b40f91d0040bda01b40f91e0040bda099995280a9a7721c00271ede0b3c1ebe2b3e1ef0233e1e4400005410000014a01740f91f0040bda01b40f91e0040bda099995280a9a7721c00271ebd6b40bd9d3b3d1ede0b3d1eff3b3e1ea03b40f91f0000bd020000141f2003d5fd7bc7a8c0035fd6"
+              },
+              "__TEXT,__eh_frame": {
+                "bytes": 80,
+                "section_type": 11,
+                "sha256": "35f09f2209f0f7f748b0ab147d917f750df6afc35cae096dd300a242b63ab829",
+                "hex": "1400000000000000037a520001781e01100c1f0000000000340000001c000000e0ffffffffffffffe0040000000000000004040000000e709d0e9e0d04040000000d1d04d4040000dedd0c1f00000000"
+              }
+            },
+            "runtime_relocations": {
+              "__TEXT,__text": [
+                "address  pcrel length extern type    scattered symbolnum/value",
+                "00000438 False long   True   GOTLDPOFFalse     _fmcom_",
+                "00000434 True  long   True   GOTLDP  False     _fmcom_",
+                "000003b8 False long   True   GOTLDPOFFalse     _fmcom_",
+                "000003b4 True  long   True   GOTLDP  False     _fmcom_",
+                "00000380 False long   True   GOTLDPOFFalse     _fmcom_",
+                "0000037c True  long   True   GOTLDP  False     _fmcom_",
+                "0000033c False long   True   GOTLDPOFFalse     _fmcom_",
+                "00000338 True  long   True   GOTLDP  False     _fmcom_",
+                "000002f8 False long   True   GOTLDPOFFalse     _fmcom_",
+                "000002f4 True  long   True   GOTLDP  False     _fmcom_",
+                "0000025c True  long   True   BR26    False     _expf",
+                "00000248 False long   True   GOTLDPOFFalse     _fmcom_",
+                "00000244 True  long   True   GOTLDP  False     _fmcom_",
+                "0000023c True  long   True   BR26    False     _logf",
+                "0000020c True  long   True   BR26    False     _expf",
+                "000001f8 False long   True   GOTLDPOFFalse     _fmcom_",
+                "000001f4 True  long   True   GOTLDP  False     _fmcom_",
+                "000001ec True  long   True   BR26    False     _logf",
+                "000001d4 False long   True   GOTLDPOFFalse     _fmcom_",
+                "000001d0 True  long   True   GOTLDP  False     _fmcom_",
+                "000001b4 False long   True   GOTLDPOFFalse     _fmcom_",
+                "000001b0 True  long   True   GOTLDP  False     _fmcom_",
+                "00000198 False long   True   GOTLDPOFFalse     _fmcom_",
+                "00000194 True  long   True   GOTLDP  False     _fmcom_",
+                "0000017c True  long   True   BR26    False     _expf",
+                "00000168 False long   True   GOTLDPOFFalse     _fmcom_",
+                "00000164 True  long   True   GOTLDP  False     _fmcom_",
+                "0000015c True  long   True   BR26    False     _logf",
+                "0000012c True  long   True   BR26    False     _expf",
+                "00000118 False long   True   GOTLDPOFFalse     _fmcom_",
+                "00000114 True  long   True   GOTLDP  False     _fmcom_",
+                "0000010c True  long   True   BR26    False     _logf",
+                "000000f4 False long   True   GOTLDPOFFalse     _fmcom_",
+                "000000f0 True  long   True   GOTLDP  False     _fmcom_",
+                "000000d4 False long   True   GOTLDPOFFalse     _fmcom_",
+                "000000d0 True  long   True   GOTLDP  False     _fmcom_",
+                "000000b8 False long   True   GOTLDPOFFalse     _fmcom_",
+                "000000b4 True  long   True   GOTLDP  False     _fmcom_",
+                "00000098 False long   True   GOTLDPOFFalse     _fmcom_",
+                "00000094 True  long   True   GOTLDP  False     _fmcom_",
+                "0000007c False long   True   GOTLDPOFFalse     _fmcom_",
+                "00000078 True  long   True   GOTLDP  False     _fmcom_",
+                "00000068 False long   True   GOTLDPOFFalse     _fmcom_",
+                "00000064 True  long   True   GOTLDP  False     _fmcom_"
+              ],
+              "__TEXT,__eh_frame": [
+                "address  pcrel length extern type    scattered symbolnum/value",
+                "00000020 False ?( 3)  True   SUB     False     EH_frame1",
+                "00000020 False ?( 3)  True   UNSIGND False     _fmsfall_"
+              ]
+            },
+            "external_symbols": [
+              {
+                "symbol": "_conchr_",
+                "type": 1,
+                "common_bytes": 1081
+              },
+              {
+                "symbol": "_contrl_",
+                "type": 1,
+                "common_bytes": 19192
+              },
+              {
+                "symbol": "_expf",
+                "type": 1,
+                "common_bytes": 0
+              },
+              {
+                "symbol": "_fmcom_",
+                "type": 1,
+                "common_bytes": 693020
+              },
+              {
+                "symbol": "_logf",
+                "type": 1,
+                "common_bytes": 0
+              }
+            ]
+          }
+        },
+        {
+          "state": "current",
+          "object_sha256": "79a388a306d084ccc517dc74c6eab79f33cf5f8260008ada0a40659d1d82a4ab",
+          "object": "/private/tmp/mfvs-c01-c06-20261114/targeted-build/current/C06-bc/tree.o",
+          "code": {
+            "runtime_sections": {
+              "__TEXT,__text": {
+                "bytes": 1248,
+                "section_type": 0,
+                "sha256": "b46b6c2e4521a1b0c190c5bbd0696db4719938647945a4c30e7828b86a1e9259",
+                "hex": "fd7bb9a9fd030091a02700f9a12300f9a21f00f9a31b00f9a41700f9a51300f9a60f00f9a70b00f9a01340f9000040b9a06700b9a03b40f91f0000b9a00f40f91f0000b9a00b40f91f0000b9a01740f91f0040bdf823201ee9230054a02740f9010040b900000090000040f9003c40b92000004b1e00221e00000090000040f9009041911f0c68bdd0233f1e440000547900001400000090000040f9000041911f6475bd0049a8521e00271eff1b3e1ebf6300bd00000090000040f9009041911f0068bdf823201e4c0000543200001400000090000040f9009041911e0068bd1f102e1ed0233f1e440000541700001400000090000040f9009041911f0068bd1e102e1edf3b3f1ee043201e000000941e40201e00000090000040f9009041911f0c68bddf1b3f1ee043201e000000941e40201e1f102e1eff3b3e1ea00f40f91f0000bd14000014a01740f91f0040bdbe6340bddf1b3f1ee043201e000000941e40201e00000090000040f9009041911f0c68bddf1b3f1ee043201e000000941e40201e1f102e1eff3b3e1ea00f40f91f0000bd00000090000040f9009041911f0868bdf823201e4c0000543200001400000090000040f9009041911e0868bd1f102e1ed0233f1e440000541700001400000090000040f9009041911f0868bd1e102e1edf3b3f1ee043201e000000941e40201e00000090000040f9009041911f0c68bddf1b3f1ee043201e000000941e40201e1f102e1eff3b3e1ea00b40f91f0000bd14000014a01740f91f0040bdbe6340bddf1b3f1ee043201e000000941e40201e00000090000040f9009041911f0c68bddf1b3f1ee043201e000000941e40201e1f102e1eff3b3e1ea00b40f91f0000bda01f40f91f0040bd803c8252805ba7721e00271eff0b3e1e80af965260b0a7721e00271edf3b3f1ebf6f00bdbf6f40bd40e19a526084a7721e00271ef0233e1e440000540500001440e19a526084a7721f00271ebf6f00bda01f40f91e0040bd1f50261ed0233f1e4400005412000014a02340f9000040b9007c4093020400d100000090000040f901a393d24100018b1e7861bcbf6f40bdde0b3f1ea01b40f91f0040bddf0b3f1ea03b40f91f0000bd6d000014a02340f9000040b9007c4093020400d100000090000040f901a393d24100018b1e7861bcbf6f40bddf0b3f1eff43211e6066865260eeb7721e00271edf1b3f1ebf5f00bda02340f9000040b9007c4093010400d100000090000040f91f7861bcbe5f40bdd0233f1e4a000054040000141f10201ebf6b00bd0f000014a02340f9000040b9007c4093010400d100000090000040f91e7861bcbf5f40bddf3b3f1ea099995280a9a7721e00271edf1b3f1ebf6b00bda01740f91f0040bda01b40f91e0040bda099995280a9a7721d00271ede0b3d1ef0233e1e4900005408000014a01b40f91e0040bdbf6b40bddf0b3f1ea03b40f91f0000bd2e000014a02340f9000040b9007c4093020400d100000090000040f901a393d24100018b1e7861bcbf6f40bdde0b3f1ea01b40f91f0040bddf0b3f1ea03b40f91f0000bda01740f91f0040bda03b40f91d0040bda01b40f91e0040bda099995280a9a7721c00271ede0b3c1ebe2b3e1ef0233e1e4400005410000014a01740f91f0040bda01b40f91e0040bda099995280a9a7721c00271ebd6b40bd9d3b3d1ede0b3d1eff3b3e1ea03b40f91f0000bd020000141f2003d5fd7bc7a8c0035fd6"
+              },
+              "__TEXT,__eh_frame": {
+                "bytes": 80,
+                "section_type": 11,
+                "sha256": "35f09f2209f0f7f748b0ab147d917f750df6afc35cae096dd300a242b63ab829",
+                "hex": "1400000000000000037a520001781e01100c1f0000000000340000001c000000e0ffffffffffffffe0040000000000000004040000000e709d0e9e0d04040000000d1d04d4040000dedd0c1f00000000"
+              }
+            },
+            "runtime_relocations": {
+              "__TEXT,__text": [
+                "address  pcrel length extern type    scattered symbolnum/value",
+                "00000438 False long   True   GOTLDPOFFalse     _fmcom_",
+                "00000434 True  long   True   GOTLDP  False     _fmcom_",
+                "000003b8 False long   True   GOTLDPOFFalse     _fmcom_",
+                "000003b4 True  long   True   GOTLDP  False     _fmcom_",
+                "00000380 False long   True   GOTLDPOFFalse     _fmcom_",
+                "0000037c True  long   True   GOTLDP  False     _fmcom_",
+                "0000033c False long   True   GOTLDPOFFalse     _fmcom_",
+                "00000338 True  long   True   GOTLDP  False     _fmcom_",
+                "000002f8 False long   True   GOTLDPOFFalse     _fmcom_",
+                "000002f4 True  long   True   GOTLDP  False     _fmcom_",
+                "0000025c True  long   True   BR26    False     _expf",
+                "00000248 False long   True   GOTLDPOFFalse     _fmcom_",
+                "00000244 True  long   True   GOTLDP  False     _fmcom_",
+                "0000023c True  long   True   BR26    False     _logf",
+                "0000020c True  long   True   BR26    False     _expf",
+                "000001f8 False long   True   GOTLDPOFFalse     _fmcom_",
+                "000001f4 True  long   True   GOTLDP  False     _fmcom_",
+                "000001ec True  long   True   BR26    False     _logf",
+                "000001d4 False long   True   GOTLDPOFFalse     _fmcom_",
+                "000001d0 True  long   True   GOTLDP  False     _fmcom_",
+                "000001b4 False long   True   GOTLDPOFFalse     _fmcom_",
+                "000001b0 True  long   True   GOTLDP  False     _fmcom_",
+                "00000198 False long   True   GOTLDPOFFalse     _fmcom_",
+                "00000194 True  long   True   GOTLDP  False     _fmcom_",
+                "0000017c True  long   True   BR26    False     _expf",
+                "00000168 False long   True   GOTLDPOFFalse     _fmcom_",
+                "00000164 True  long   True   GOTLDP  False     _fmcom_",
+                "0000015c True  long   True   BR26    False     _logf",
+                "0000012c True  long   True   BR26    False     _expf",
+                "00000118 False long   True   GOTLDPOFFalse     _fmcom_",
+                "00000114 True  long   True   GOTLDP  False     _fmcom_",
+                "0000010c True  long   True   BR26    False     _logf",
+                "000000f4 False long   True   GOTLDPOFFalse     _fmcom_",
+                "000000f0 True  long   True   GOTLDP  False     _fmcom_",
+                "000000d4 False long   True   GOTLDPOFFalse     _fmcom_",
+                "000000d0 True  long   True   GOTLDP  False     _fmcom_",
+                "000000b8 False long   True   GOTLDPOFFalse     _fmcom_",
+                "000000b4 True  long   True   GOTLDP  False     _fmcom_",
+                "00000098 False long   True   GOTLDPOFFalse     _fmcom_",
+                "00000094 True  long   True   GOTLDP  False     _fmcom_",
+                "0000007c False long   True   GOTLDPOFFalse     _fmcom_",
+                "00000078 True  long   True   GOTLDP  False     _fmcom_",
+                "00000068 False long   True   GOTLDPOFFalse     _fmcom_",
+                "00000064 True  long   True   GOTLDP  False     _fmcom_"
+              ],
+              "__TEXT,__eh_frame": [
+                "address  pcrel length extern type    scattered symbolnum/value",
+                "00000020 False ?( 3)  True   SUB     False     EH_frame1",
+                "00000020 False ?( 3)  True   UNSIGND False     _fmsfall_"
+              ]
+            },
+            "external_symbols": [
+              {
+                "symbol": "_conchr_",
+                "type": 1,
+                "common_bytes": 1081
+              },
+              {
+                "symbol": "_contrl_",
+                "type": 1,
+                "common_bytes": 19192
+              },
+              {
+                "symbol": "_expf",
+                "type": 1,
+                "common_bytes": 0
+              },
+              {
+                "symbol": "_fmcom_",
+                "type": 1,
+                "common_bytes": 693020
+              },
+              {
+                "symbol": "_logf",
+                "type": 1,
+                "common_bytes": 0
+              }
+            ]
+          }
+        },
+        {
+          "state": "candidate",
+          "object_sha256": "802c1f6e26db4d71cd7351e1aeb3a09c070e1a0c533f4d7d2e0192eded2dd57a",
+          "object": "/private/tmp/mfvs-c01-c06-20261114/targeted-build/candidate/C06-bc/tree.o",
+          "code": {
+            "runtime_sections": {
+              "__TEXT,__text": {
+                "bytes": 1248,
+                "section_type": 0,
+                "sha256": "b46b6c2e4521a1b0c190c5bbd0696db4719938647945a4c30e7828b86a1e9259",
+                "hex": "fd7bb9a9fd030091a02700f9a12300f9a21f00f9a31b00f9a41700f9a51300f9a60f00f9a70b00f9a01340f9000040b9a06700b9a03b40f91f0000b9a00f40f91f0000b9a00b40f91f0000b9a01740f91f0040bdf823201ee9230054a02740f9010040b900000090000040f9003c40b92000004b1e00221e00000090000040f9009041911f0c68bdd0233f1e440000547900001400000090000040f9000041911f6475bd0049a8521e00271eff1b3e1ebf6300bd00000090000040f9009041911f0068bdf823201e4c0000543200001400000090000040f9009041911e0068bd1f102e1ed0233f1e440000541700001400000090000040f9009041911f0068bd1e102e1edf3b3f1ee043201e000000941e40201e00000090000040f9009041911f0c68bddf1b3f1ee043201e000000941e40201e1f102e1eff3b3e1ea00f40f91f0000bd14000014a01740f91f0040bdbe6340bddf1b3f1ee043201e000000941e40201e00000090000040f9009041911f0c68bddf1b3f1ee043201e000000941e40201e1f102e1eff3b3e1ea00f40f91f0000bd00000090000040f9009041911f0868bdf823201e4c0000543200001400000090000040f9009041911e0868bd1f102e1ed0233f1e440000541700001400000090000040f9009041911f0868bd1e102e1edf3b3f1ee043201e000000941e40201e00000090000040f9009041911f0c68bddf1b3f1ee043201e000000941e40201e1f102e1eff3b3e1ea00b40f91f0000bd14000014a01740f91f0040bdbe6340bddf1b3f1ee043201e000000941e40201e00000090000040f9009041911f0c68bddf1b3f1ee043201e000000941e40201e1f102e1eff3b3e1ea00b40f91f0000bda01f40f91f0040bd803c8252805ba7721e00271eff0b3e1e80af965260b0a7721e00271edf3b3f1ebf6f00bdbf6f40bd40e19a526084a7721e00271ef0233e1e440000540500001440e19a526084a7721f00271ebf6f00bda01f40f91e0040bd1f50261ed0233f1e4400005412000014a02340f9000040b9007c4093020400d100000090000040f901a393d24100018b1e7861bcbf6f40bdde0b3f1ea01b40f91f0040bddf0b3f1ea03b40f91f0000bd6d000014a02340f9000040b9007c4093020400d100000090000040f901a393d24100018b1e7861bcbf6f40bddf0b3f1eff43211e6066865260eeb7721e00271edf1b3f1ebf5f00bda02340f9000040b9007c4093010400d100000090000040f91f7861bcbe5f40bdd0233f1e4a000054040000141f10201ebf6b00bd0f000014a02340f9000040b9007c4093010400d100000090000040f91e7861bcbf5f40bddf3b3f1ea099995280a9a7721e00271edf1b3f1ebf6b00bda01740f91f0040bda01b40f91e0040bda099995280a9a7721d00271ede0b3d1ef0233e1e4900005408000014a01b40f91e0040bdbf6b40bddf0b3f1ea03b40f91f0000bd2e000014a02340f9000040b9007c4093020400d100000090000040f901a393d24100018b1e7861bcbf6f40bdde0b3f1ea01b40f91f0040bddf0b3f1ea03b40f91f0000bda01740f91f0040bda03b40f91d0040bda01b40f91e0040bda099995280a9a7721c00271ede0b3c1ebe2b3e1ef0233e1e4400005410000014a01740f91f0040bda01b40f91e0040bda099995280a9a7721c00271ebd6b40bd9d3b3d1ede0b3d1eff3b3e1ea03b40f91f0000bd020000141f2003d5fd7bc7a8c0035fd6"
+              },
+              "__TEXT,__eh_frame": {
+                "bytes": 80,
+                "section_type": 11,
+                "sha256": "35f09f2209f0f7f748b0ab147d917f750df6afc35cae096dd300a242b63ab829",
+                "hex": "1400000000000000037a520001781e01100c1f0000000000340000001c000000e0ffffffffffffffe0040000000000000004040000000e709d0e9e0d04040000000d1d04d4040000dedd0c1f00000000"
+              }
+            },
+            "runtime_relocations": {
+              "__TEXT,__text": [
+                "address  pcrel length extern type    scattered symbolnum/value",
+                "00000438 False long   True   GOTLDPOFFalse     _fmcom_",
+                "00000434 True  long   True   GOTLDP  False     _fmcom_",
+                "000003b8 False long   True   GOTLDPOFFalse     _fmcom_",
+                "000003b4 True  long   True   GOTLDP  False     _fmcom_",
+                "00000380 False long   True   GOTLDPOFFalse     _fmcom_",
+                "0000037c True  long   True   GOTLDP  False     _fmcom_",
+                "0000033c False long   True   GOTLDPOFFalse     _fmcom_",
+                "00000338 True  long   True   GOTLDP  False     _fmcom_",
+                "000002f8 False long   True   GOTLDPOFFalse     _fmcom_",
+                "000002f4 True  long   True   GOTLDP  False     _fmcom_",
+                "0000025c True  long   True   BR26    False     _expf",
+                "00000248 False long   True   GOTLDPOFFalse     _fmcom_",
+                "00000244 True  long   True   GOTLDP  False     _fmcom_",
+                "0000023c True  long   True   BR26    False     _logf",
+                "0000020c True  long   True   BR26    False     _expf",
+                "000001f8 False long   True   GOTLDPOFFalse     _fmcom_",
+                "000001f4 True  long   True   GOTLDP  False     _fmcom_",
+                "000001ec True  long   True   BR26    False     _logf",
+                "000001d4 False long   True   GOTLDPOFFalse     _fmcom_",
+                "000001d0 True  long   True   GOTLDP  False     _fmcom_",
+                "000001b4 False long   True   GOTLDPOFFalse     _fmcom_",
+                "000001b0 True  long   True   GOTLDP  False     _fmcom_",
+                "00000198 False long   True   GOTLDPOFFalse     _fmcom_",
+                "00000194 True  long   True   GOTLDP  False     _fmcom_",
+                "0000017c True  long   True   BR26    False     _expf",
+                "00000168 False long   True   GOTLDPOFFalse     _fmcom_",
+                "00000164 True  long   True   GOTLDP  False     _fmcom_",
+                "0000015c True  long   True   BR26    False     _logf",
+                "0000012c True  long   True   BR26    False     _expf",
+                "00000118 False long   True   GOTLDPOFFalse     _fmcom_",
+                "00000114 True  long   True   GOTLDP  False     _fmcom_",
+                "0000010c True  long   True   BR26    False     _logf",
+                "000000f4 False long   True   GOTLDPOFFalse     _fmcom_",
+                "000000f0 True  long   True   GOTLDP  False     _fmcom_",
+                "000000d4 False long   True   GOTLDPOFFalse     _fmcom_",
+                "000000d0 True  long   True   GOTLDP  False     _fmcom_",
+                "000000b8 False long   True   GOTLDPOFFalse     _fmcom_",
+                "000000b4 True  long   True   GOTLDP  False     _fmcom_",
+                "00000098 False long   True   GOTLDPOFFalse     _fmcom_",
+                "00000094 True  long   True   GOTLDP  False     _fmcom_",
+                "0000007c False long   True   GOTLDPOFFalse     _fmcom_",
+                "00000078 True  long   True   GOTLDP  False     _fmcom_",
+                "00000068 False long   True   GOTLDPOFFalse     _fmcom_",
+                "00000064 True  long   True   GOTLDP  False     _fmcom_"
+              ],
+              "__TEXT,__eh_frame": [
+                "address  pcrel length extern type    scattered symbolnum/value",
+                "00000020 False ?( 3)  True   SUB     False     EH_frame1",
+                "00000020 False ?( 3)  True   UNSIGND False     _fmsfall_"
+              ]
+            },
+            "external_symbols": [
+              {
+                "symbol": "_conchr_",
+                "type": 1,
+                "common_bytes": 1081
+              },
+              {
+                "symbol": "_contrl_",
+                "type": 1,
+                "common_bytes": 19192
+              },
+              {
+                "symbol": "_expf",
+                "type": 1,
+                "common_bytes": 0
+              },
+              {
+                "symbol": "_fmcom_",
+                "type": 1,
+                "common_bytes": 693020
+              },
+              {
+                "symbol": "_logf",
+                "type": 1,
+                "common_bytes": 0
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "passed": true,
+  "integrated_simulation_parity_claimed": false
+}

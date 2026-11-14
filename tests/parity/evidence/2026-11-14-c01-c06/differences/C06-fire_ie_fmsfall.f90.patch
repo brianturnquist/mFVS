@@ -1,0 +1,118 @@
+--- before/fire/ie/fmsfall.f90
++++ canonical/fire/base/fmsfall.f90
+@@ -1,7 +1,7 @@
+ !=======================!
+-!   fire/ie : fmsfall   !
++!   fire/base : fmsfall !
+ !=======================!
+-! FIRE-IE $Id$
++! FIRE-BASE $Id$
+ subroutine FMSFALL(IYR,KSP,D,ORIGDEN,DENTTL,ISWTCH,&
+      &RSOFT,RSMAL,DFALLN)
+   implicit none
+@@ -10,8 +10,8 @@
+ 
+   !   Purpose:
+   !     This routine calculates the base fall rates for snags, based
+-  !     on species, DBH (large vs small), and whether we are down to the
+-  !     last 5% of the snags original stem/ac representation.
++  !     on species, DBH (large vs small), and whether we're down to the
++  !     last 5% of the snag's original stem/ac representation.
+ 
+   !     The logic in this routine was extracted from its original
+   !     location in FMSNAG, in order to generalize the logic for use
+@@ -74,15 +74,15 @@
+ 
+   IDANUW = ISWTCH
+ 
+-  !     In the first year after a fire, some work is required to determine
+-  !     what fall rates to use in the coming years.  First, calculate
+-  !     RSOFT and RSMAL.  These rates are the constant proportion
+-  !     of snags that must fall each year in order for a total proportion
+-  !     PBSOFT (or PBSMAL) of snags to have fallen after PBTIME (e.g.,
+-  !     28% of remaining snags must fall every year in order for 90% of
+-  !     the initial number to have fallen in 7 years:  (1-0.28)**7 = 0.1).
+-  !     This could be done outside the snag loop except when either PBSOFT
+-  !     of PBSMAL equals 1, which may often be the case.  So its done here.
++  !  In the first year after a fire, some work is required to determine
++  !  what fall rates to use in the coming years.  First, calculate
++  !  RSOFT and RSMAL.  These rates are the constant proportion
++  !  of snags that must fall each year in order for a total proportion
++  !  PBSOFT (or PBSMAL) of snags to have fallen after PBTIME (e.g.,
++  !  28% of remaining snags must fall every year in order for 90% of
++  !  the initial number to have fallen in 7 years:  (1-0.28)**7 = 0.1).
++  !  This could be done outside the snag loop except when either PBSOFT
++  !  or PBSMAL equals 1, which may often be the case.  So it's done here.
+ 
+   DFALLN = 0.
+   RSOFT = 0.0
+@@ -108,9 +108,9 @@
+      end if
+   end if
+ 
+-  !     Calculate the density of snags in this record that would fall under
+-  !     normal conditions.  This depends on species, dbh and whether 5% are
+-  !     left.
++  !  Calculate the density of snags in this record that would fall under
++  !  normal conditions. This depends on species, DBH and whether 5% are
++  !  left.
+ 
+   BASE = -0.001679 * D + 0.064311
+   if (BASE .lt.0.01) BASE = 0.01
+@@ -119,19 +119,29 @@
+      DFALLN = BASE * FALLX(KSP) * ORIGDEN
+   else
+ 
+-     !     Near 5%, fall at least as many lg. snags as should fall at
+-     !     final rate-of-fall, but be sure not to fall more than this
+-     !     many below 5% all at once.  This requires calculating FALLM2.
+-     !     First, find the time X at which 5% of snags will be left
+-     !     (proportion standing = -BASE*FALLX*time + 1).
++     !  Reduce base rate for larger spruce and larger larch.
++     !  Marcot's eqn is too fast (20 yrs @ 15 in DBH vs 95 yrs @ 24 in DBH)
++
++     ! THIS ADJUSTMENT BELONGS ONLY TO CI. THE OTHER CONSUMERS USED
++     ! THE IE IMPLEMENTATION, WHICH LEAVES BASE UNCHANGED HERE.
++
++     if (VARIANTCD .eq. 'CI') then
++        if (KSP .eq.8.or. KSP .eq.2) BASE = MAX(0.01, BASE * 0.32)
++     end if
++
++     !  Near 5%, fall at least as many lrg snags as should fall at
++     !  final rate-of-fall, but be sure not to fall more than this
++     !  many below 5% all at once. This requires calculating FALLM2.
++     !  First, find the time X at which 5% of snags will be left
++     !  (proportion standing = -BASE*FALLX*time + 1).
+ 
+      X = (0.05 - 1) / (-BASE*FALLX(KSP))
+ 
+-     !     Then find the slope of the line that passes from
+-     !     5% at this time to 0% at ALLDWN (adjusted for the different
+-     !     FALLX values).  If ALLDWN <= time at which 5% left, assign
+-     !     a slope of -2 (removes last 5% of snags immediately).  The
+-     !     negative of this slope is the rate FALLM2.
++     !  Then find the slope of the line that passes from
++     !  5% at this time to 0% at ALLDWN (adjusted for the different
++     !  FALLX values). If ALLDWN <= time at which 5% left, assign
++     !  a slope of -2 (removes last 5% of snags immediately). The
++     !  negative of this slope is the rate FALLM2.
+ 
+      if (ALLDWN(KSP) .le. X) then
+         FALLM2 = 2
+@@ -139,14 +149,14 @@
+         FALLM2 = 0.05 / (ALLDWN(KSP) - X)
+      end if
+ 
+-     !     Now proceed to calculate how many snags should normally fall.
++     !  Now proceed to calculate how many snags should normally fall.
+ 
+      if (DENTTL .le. (0.05*ORIGDEN)) then
+         DFALLN = FALLM2 * ORIGDEN
+      else
+         DFALLN = BASE * FALLX(KSP) * ORIGDEN
+         if (DENTTL .lt. (DFALLN + 0.05*ORIGDEN)) then
+-           DFALLN = DENTTL  - (ORIGDEN * (0.05 - FALLM2))
++           DFALLN = DENTTL - (ORIGDEN * (0.05 - FALLM2))
+         end if
+      end if
+   end if

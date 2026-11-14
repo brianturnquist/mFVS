@@ -1,0 +1,26 @@
+--- before/fire/ci/fmsfall.f90
++++ canonical/fire/base/fmsfall.f90
+@@ -1,7 +1,7 @@
+ !=======================!
+-!   fire/ci : fmsfall   !
++!   fire/base : fmsfall !
+ !=======================!
+-! FIRE-CI $Id$
++! FIRE-BASE $Id$
+ subroutine FMSFALL(IYR,KSP,D,ORIGDEN,DENTTL,ISWTCH,&
+      &RSOFT,RSMAL,DFALLN)
+   implicit none
+@@ -122,7 +122,12 @@
+      !  Reduce base rate for larger spruce and larger larch.
+      !  Marcot's eqn is too fast (20 yrs @ 15 in DBH vs 95 yrs @ 24 in DBH)
+ 
+-     if (KSP .eq.8.or. KSP .eq.2) BASE = MAX(0.01, BASE * 0.32)
++     ! THIS ADJUSTMENT BELONGS ONLY TO CI. THE OTHER CONSUMERS USED
++     ! THE IE IMPLEMENTATION, WHICH LEAVES BASE UNCHANGED HERE.
++
++     if (VARIANTCD .eq. 'CI') then
++        if (KSP .eq.8.or. KSP .eq.2) BASE = MAX(0.01, BASE * 0.32)
++     end if
+ 
+      !  Near 5%, fall at least as many lrg snags as should fall at
+      !  final rate-of-fall, but be sure not to fall more than this

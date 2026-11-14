@@ -1,0 +1,26 @@
+{
+  "accepted_on": "2026-11-14",
+  "authority": "Explicit user response in this conversation",
+  "tasks": [
+    "C01",
+    "C06"
+  ],
+  "response": "Accept this evidence for C01/C06",
+  "question": "May I mark C01 and C06 complete using the exact routine and runtime-object comparisons, while leaving BC/ON simulation parity blocked? All other checks passed and no model bugs were fixed. This decision is needed because CLEANUP_TRACKER.md\u2019s P03 gate says: \u201cDo not check off an affected consolidation as verified while its required BC/ON simulation coverage remains blocked.\u201d",
+  "accepted_evidence": [
+    "targeted.json",
+    "object-equivalence.json",
+    "branch-controls.json",
+    "replay.json"
+  ],
+  "evidence_sha256": {
+    "targeted.json": "41391a6e23703a85ba4e06d3a01335a991e6d93a186f34edc69cf83bee6395f4",
+    "object-equivalence.json": "39474131f3da937ae88e1d74c250968c5b4c3a3aa33896064b1ba52c20387b48",
+    "branch-controls.json": "aee8ff4cdd0b67a130e443c46016bd710577c0743b3166856a56c5aee9ca7135",
+    "replay.json": "41e91bf312be5ea263721f2ef0fdf5a02c0f56ca119cf1585e1182a2fdb87074"
+  },
+  "scope": "Completion of C01 and C06 only using exact original/current/candidate direct routine and runtime-object evidence",
+  "BC_ON_simulation_parity": "blocked",
+  "scientific_bug_fixes_authorized": false,
+  "other_task_gate_waived": false
+}

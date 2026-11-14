@@ -60,6 +60,9 @@ def signature(path: Path, kind: str, name: str) -> dict:
     text = " ".join(lines)
     match = re.search(rf"\b{kind}\s+{name}\s*\(", text, re.I)
     if not match:
+        if kind in ("subroutine", "call") and re.search(rf"\b{kind}\s+{name}\b", text, re.I):
+            return {"kind": kind, "name": name, "argument_count": 0, "arguments": [],
+                    "source_sha256": sha256(path)}
         raise ValueError(f"Cannot locate {kind} {name} in {path}")
     start = match.end()
     depth = 1

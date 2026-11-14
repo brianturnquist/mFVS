@@ -1,0 +1,3294 @@
+{
+  "cases": {
+    "bc-StandStructure": {
+      "variant": "bc",
+      "deck": "StandStructure",
+      "inputs": {
+        "StandStructure.key": "55af80b62b90f69918468fdf711a4be4682443c973acd6d934e88eef800036fd",
+        "FVS-BC.Stand.Structure.Data.db": "86c91f2fc7c2b876fa9f7e9b77cf90adaf0c773d3067704e437c93fe81ce9668"
+      },
+      "source_inputs": {
+        "StandStructure.key": "55af80b62b90f69918468fdf711a4be4682443c973acd6d934e88eef800036fd",
+        "FVS-BC.Stand.Structure.Data.db": "86c91f2fc7c2b876fa9f7e9b77cf90adaf0c773d3067704e437c93fe81ce9668"
+      }
+    },
+    "bc-YSM-SkyRanch": {
+      "variant": "bc",
+      "deck": "YSM-SkyRanch",
+      "inputs": {
+        "YSM-SkyRanch.key": "93e9169bd6605c828196137d2d1bcc6f6b3654e8f62f8a4f6920837b973316e3",
+        "FVS-BC.YSM-SkyRanch.db": "d91ed285bf0505f0dd6de80f65e00c3f25bd449497384b53d72738c81bc35d09"
+      },
+      "source_inputs": {
+        "YSM-SkyRanch.key": "93e9169bd6605c828196137d2d1bcc6f6b3654e8f62f8a4f6920837b973316e3",
+        "FVS-BC.YSM-SkyRanch.db": "d91ed285bf0505f0dd6de80f65e00c3f25bd449497384b53d72738c81bc35d09"
+      }
+    },
+    "bm-bmt01": {
+      "variant": "bm",
+      "deck": "bmt01",
+      "inputs": {
+        "bmt01.key": "dfd8cddff17ffcb0ac1bf769be8d8d3beff0b606878c247738dfc9774cd10f12",
+        "bmt01.tre": "252f57a220725bb6cfb52f08c33fe39cf750ee111cc0450cf89ba2530f4fd96b"
+      },
+      "source_inputs": {
+        "bmt01.key": "dfd8cddff17ffcb0ac1bf769be8d8d3beff0b606878c247738dfc9774cd10f12",
+        "bmt01.tre": "252f57a220725bb6cfb52f08c33fe39cf750ee111cc0450cf89ba2530f4fd96b"
+      }
+    },
+    "ca-cat01": {
+      "variant": "ca",
+      "deck": "cat01",
+      "inputs": {
+        "cat01.key": "6fc9cd17919bb90cd706bad40156f289169633829509999866229c9c3fcbe415",
+        "cat01.tre": "431c8355945b0af9d853524efcd3629c0f35c74f5c0fedc26354ce0c25786455"
+      },
+      "source_inputs": {
+        "cat01.key": "6fc9cd17919bb90cd706bad40156f289169633829509999866229c9c3fcbe415",
+        "cat01.tre": "431c8355945b0af9d853524efcd3629c0f35c74f5c0fedc26354ce0c25786455"
+      }
+    },
+    "ci-cit01": {
+      "variant": "ci",
+      "deck": "cit01",
+      "inputs": {
+        "cit01.key": "7b0900d7f8645d6ef397f4e0e1060f6b0861b38353f8d61725476e32a49834a3",
+        "cit01.tre": "0c7983fa513e0f0821a734a1c5932ca0ea16690db07edc6931b88f7917e7c06e"
+      },
+      "source_inputs": {
+        "cit01.key": "7b0900d7f8645d6ef397f4e0e1060f6b0861b38353f8d61725476e32a49834a3",
+        "cit01.tre": "0c7983fa513e0f0821a734a1c5932ca0ea16690db07edc6931b88f7917e7c06e"
+      }
+    },
+    "cr-crt01": {
+      "variant": "cr",
+      "deck": "crt01",
+      "inputs": {
+        "crt01.key": "899556191df0daed9e052f09cfe38f365b2d5e25cb4d784fbd0d4f2dd56d3ece",
+        "crt01.tre": "20a9335da61b75d969c00611f53490eb67e3e8cba1ef156246282d4ee484212b"
+      },
+      "source_inputs": {
+        "crt01.key": "899556191df0daed9e052f09cfe38f365b2d5e25cb4d784fbd0d4f2dd56d3ece",
+        "crt01.tre": "20a9335da61b75d969c00611f53490eb67e3e8cba1ef156246282d4ee484212b"
+      }
+    },
+    "cs-cst01": {
+      "variant": "cs",
+      "deck": "cst01",
+      "inputs": {
+        "cst01.key": "903fe2afee122a76bbfbcb65443d0397dea1c94e96fabbc609d43ef019d5b757",
+        "cst01.tre": "359fd439451753b47dff44e47c7b23337c02d6e655a04e6044d8d86f71dee6f0"
+      },
+      "source_inputs": {
+        "cst01.key": "903fe2afee122a76bbfbcb65443d0397dea1c94e96fabbc609d43ef019d5b757",
+        "cst01.tre": "359fd439451753b47dff44e47c7b23337c02d6e655a04e6044d8d86f71dee6f0"
+      }
+    },
+    "ec-ect01": {
+      "variant": "ec",
+      "deck": "ect01",
+      "inputs": {
+        "ect01.key": "08ca8a71e8c9cc116c60ea798cc0f3a97f7164436e9efc75a37449318355c22f",
+        "ect01.tre": "a01fb8fbd558ecb6b10ab96654befedee49951c671b03c3624d543da738d5eec"
+      },
+      "source_inputs": {
+        "ect01.key": "08ca8a71e8c9cc116c60ea798cc0f3a97f7164436e9efc75a37449318355c22f",
+        "ect01.tre": "a01fb8fbd558ecb6b10ab96654befedee49951c671b03c3624d543da738d5eec"
+      }
+    },
+    "em-emt01": {
+      "variant": "em",
+      "deck": "emt01",
+      "inputs": {
+        "emt01.key": "3a8ad56b0bdb95d385207913ebe67fe5050451fa5e4dd27217a06780fb2eeab4",
+        "emt01.tre": "83599d2d069dd389acd93030a2c6680f46ae5e8d19b83e244e924554aed070b7"
+      },
+      "source_inputs": {
+        "emt01.key": "3a8ad56b0bdb95d385207913ebe67fe5050451fa5e4dd27217a06780fb2eeab4",
+        "emt01.tre": "83599d2d069dd389acd93030a2c6680f46ae5e8d19b83e244e924554aed070b7"
+      }
+    },
+    "ie-iet01": {
+      "variant": "ie",
+      "deck": "iet01",
+      "inputs": {
+        "iet01.key": "da901f73d99a81dab8d50eb9d7d77eaf4ae958691fa69e90987d0a99bcc573a1",
+        "iet01.tre": "dbf3e8f3c665e4f20c44417fb4b4ab56c19e3f79398db1e2b91bbfb1ff218530"
+      },
+      "source_inputs": {
+        "iet01.key": "da901f73d99a81dab8d50eb9d7d77eaf4ae958691fa69e90987d0a99bcc573a1",
+        "iet01.tre": "dbf3e8f3c665e4f20c44417fb4b4ab56c19e3f79398db1e2b91bbfb1ff218530"
+      }
+    },
+    "kt-ktt01": {
+      "variant": "kt",
+      "deck": "ktt01",
+      "inputs": {
+        "ktt01.key": "00822c490f110b3001857b49b914d722c5c6f92304b15923f688761137352c91",
+        "ktt01.tre": "0c7983fa513e0f0821a734a1c5932ca0ea16690db07edc6931b88f7917e7c06e"
+      },
+      "source_inputs": {
+        "ktt01.key": "00822c490f110b3001857b49b914d722c5c6f92304b15923f688761137352c91",
+        "ktt01.tre": "0c7983fa513e0f0821a734a1c5932ca0ea16690db07edc6931b88f7917e7c06e"
+      }
+    },
+    "ls-lst01": {
+      "variant": "ls",
+      "deck": "lst01",
+      "inputs": {
+        "lst01.key": "39b73aa72e32eff80ef08e672b24338540c89a442385f096e39566e8ebb20de6",
+        "lst01.tre": "8f70baf38d04778b895238319271631ded3c2f7656d0c6d98beb14a21b8270b2"
+      },
+      "source_inputs": {
+        "lst01.key": "39b73aa72e32eff80ef08e672b24338540c89a442385f096e39566e8ebb20de6",
+        "lst01.tre": "8f70baf38d04778b895238319271631ded3c2f7656d0c6d98beb14a21b8270b2"
+      }
+    },
+    "nc-nct01": {
+      "variant": "nc",
+      "deck": "nct01",
+      "inputs": {
+        "nct01.key": "8806a414375a4b1edc721615268829234c7f26d272dfec842f328afa3db192f9",
+        "nct01.tre": "4247074a069a5eacd0a879ec783b6de79afb633fafa3e4029d8fc43535e48673"
+      },
+      "source_inputs": {
+        "nct01.key": "8806a414375a4b1edc721615268829234c7f26d272dfec842f328afa3db192f9",
+        "nct01.tre": "4247074a069a5eacd0a879ec783b6de79afb633fafa3e4029d8fc43535e48673"
+      }
+    },
+    "ne-net01": {
+      "variant": "ne",
+      "deck": "net01",
+      "inputs": {
+        "net01.key": "7853e5695902c535d772a814056f498fd710a8c9938a2ce2a80baf1c39b1280c",
+        "net01.tre": "8f70baf38d04778b895238319271631ded3c2f7656d0c6d98beb14a21b8270b2"
+      },
+      "source_inputs": {
+        "net01.key": "7853e5695902c535d772a814056f498fd710a8c9938a2ce2a80baf1c39b1280c",
+        "net01.tre": "8f70baf38d04778b895238319271631ded3c2f7656d0c6d98beb14a21b8270b2"
+      }
+    },
+    "oc-oct01": {
+      "variant": "oc",
+      "deck": "oct01",
+      "inputs": {
+        "oct01.key": "9b4afe2e32f543862a05f8e228a99b59c497e273758bba5dd55635d99c0f937a",
+        "oct01.tre": "431c8355945b0af9d853524efcd3629c0f35c74f5c0fedc26354ce0c25786455"
+      },
+      "source_inputs": {
+        "oct01.key": "9b4afe2e32f543862a05f8e228a99b59c497e273758bba5dd55635d99c0f937a",
+        "oct01.tre": "431c8355945b0af9d853524efcd3629c0f35c74f5c0fedc26354ce0c25786455"
+      }
+    },
+    "on-Hardwood": {
+      "variant": "on",
+      "deck": "Hardwood",
+      "inputs": {
+        "Hardwood.key": "12ec3f4911390ac2c839b86c3f472cf019fb99c827a8de645380d49372a23fc1",
+        "FVSDataHardwood.db": "8d0db1656d0bb0069bc09f882d4ff3e65d3dbe9d51125041e94bd4e4fcf5bb11"
+      },
+      "source_inputs": {
+        "Hardwood.key": "12ec3f4911390ac2c839b86c3f472cf019fb99c827a8de645380d49372a23fc1",
+        "FVSDataHardwood.db": "8d0db1656d0bb0069bc09f882d4ff3e65d3dbe9d51125041e94bd4e4fcf5bb11"
+      }
+    },
+    "op-opt01": {
+      "variant": "op",
+      "deck": "opt01",
+      "inputs": {
+        "opt01.key": "15bccb308ac5fe5798a7833fc1942d650870d6d8067c6027f3d56b1e19638d5b",
+        "opt01.tre": "cffef45ee94dc8484546fefcb8bdd91816ffd466543d6b9f804a3071a20b8e38"
+      },
+      "source_inputs": {
+        "opt01.key": "15bccb308ac5fe5798a7833fc1942d650870d6d8067c6027f3d56b1e19638d5b",
+        "opt01.tre": "cffef45ee94dc8484546fefcb8bdd91816ffd466543d6b9f804a3071a20b8e38"
+      }
+    },
+    "pn-pnt01": {
+      "variant": "pn",
+      "deck": "pnt01",
+      "inputs": {
+        "pnt01.key": "32207a4ff06374b124dc09e492eadff41e380d1a396e57e19654fb33682eb2e4",
+        "pnt01.tre": "cffef45ee94dc8484546fefcb8bdd91816ffd466543d6b9f804a3071a20b8e38"
+      },
+      "source_inputs": {
+        "pnt01.key": "32207a4ff06374b124dc09e492eadff41e380d1a396e57e19654fb33682eb2e4",
+        "pnt01.tre": "cffef45ee94dc8484546fefcb8bdd91816ffd466543d6b9f804a3071a20b8e38"
+      }
+    },
+    "sn-snt01": {
+      "variant": "sn",
+      "deck": "snt01",
+      "inputs": {
+        "snt01.key": "109ff46adc74c627482cf6732a6d89d2a6ec854ee3e82b401dbb741801bd72ac",
+        "snt01.tre": "389220f1e8e211892b90e9a11810134377d87eadc8e8aec289ec3b64eec05288"
+      },
+      "source_inputs": {
+        "snt01.key": "109ff46adc74c627482cf6732a6d89d2a6ec854ee3e82b401dbb741801bd72ac",
+        "snt01.tre": "389220f1e8e211892b90e9a11810134377d87eadc8e8aec289ec3b64eec05288"
+      }
+    },
+    "so-sot01": {
+      "variant": "so",
+      "deck": "sot01",
+      "inputs": {
+        "sot01.key": "67e99f36229a894d4800af5791190f58f8fda4261e646aa67d1c6278901ecdb9",
+        "sot01.tre": "726fbb4271cd27e72fc7aedb17343fcecd1846ec017216233b19f272922c26f6"
+      },
+      "source_inputs": {
+        "sot01.key": "67e99f36229a894d4800af5791190f58f8fda4261e646aa67d1c6278901ecdb9",
+        "sot01.tre": "726fbb4271cd27e72fc7aedb17343fcecd1846ec017216233b19f272922c26f6"
+      }
+    },
+    "tt-ttt01": {
+      "variant": "tt",
+      "deck": "ttt01",
+      "inputs": {
+        "ttt01.key": "cd47837623f7f28973b417b360741e87415d210c1aa20a481cd11b40008addaa",
+        "ttt01.tre": "30927e13cc91438b1ff7d37b668f0d2103a7f7c5de31988baec477d04f2fe658"
+      },
+      "source_inputs": {
+        "ttt01.key": "cd47837623f7f28973b417b360741e87415d210c1aa20a481cd11b40008addaa",
+        "ttt01.tre": "30927e13cc91438b1ff7d37b668f0d2103a7f7c5de31988baec477d04f2fe658"
+      }
+    },
+    "ut-utt01": {
+      "variant": "ut",
+      "deck": "utt01",
+      "inputs": {
+        "utt01.key": "a6acb44382126552a5b2c6016de6d70ab9617eda4dbbc72a086ce2faef509ebc",
+        "utt01.tre": "047bbd1a4fd726147305c40c2873c04873671d431ef401b18684a7e957f9cd1e"
+      },
+      "source_inputs": {
+        "utt01.key": "a6acb44382126552a5b2c6016de6d70ab9617eda4dbbc72a086ce2faef509ebc",
+        "utt01.tre": "047bbd1a4fd726147305c40c2873c04873671d431ef401b18684a7e957f9cd1e"
+      }
+    },
+    "wc-wct01": {
+      "variant": "wc",
+      "deck": "wct01",
+      "inputs": {
+        "wct01.key": "da85c397d68ec58129ac716763dd95c7eb0a40db38e459c9b5ba7b47ae7e52c2",
+        "wct01.tre": "431c8355945b0af9d853524efcd3629c0f35c74f5c0fedc26354ce0c25786455"
+      },
+      "source_inputs": {
+        "wct01.key": "da85c397d68ec58129ac716763dd95c7eb0a40db38e459c9b5ba7b47ae7e52c2",
+        "wct01.tre": "431c8355945b0af9d853524efcd3629c0f35c74f5c0fedc26354ce0c25786455"
+      }
+    },
+    "ws-wst01": {
+      "variant": "ws",
+      "deck": "wst01",
+      "inputs": {
+        "wst01.key": "705125d6df3289a33144dd39832d6ade473ccac79b2677d470de9b7fe46cc3d0",
+        "wst01.tre": "4247074a069a5eacd0a879ec783b6de79afb633fafa3e4029d8fc43535e48673"
+      },
+      "source_inputs": {
+        "wst01.key": "705125d6df3289a33144dd39832d6ade473ccac79b2677d470de9b7fe46cc3d0",
+        "wst01.tre": "4247074a069a5eacd0a879ec783b6de79afb633fafa3e4029d8fc43535e48673"
+      }
+    }
+  },
+  "runs": [
+    {
+      "state": "original",
+      "case": "bc-StandStructure",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/original/bc-StandStructure",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/original/bin/FVSbc",
+        "--keywordfile=StandStructure.key"
+      ],
+      "returncode": 20,
+      "seconds": 1.33,
+      "binary_sha256": "8b6c4bde7a4ebe16a134fc0c8ce6e36c63ff25e871f7659d52f4b8cbf2ea04fb",
+      "outputs": {
+        "StandStructure.out": {
+          "sha256": "37cee90f57b76a0ff48a15001ce69554df3ceb6d4357fbf060f27207eb6d7662",
+          "bytes": 42743
+        },
+        "returncode.txt": {
+          "sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "d14dade1b367a6f37b0687de096971e2ddefc68fce70cd01054baffa82141c1a",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "current",
+      "case": "bc-StandStructure",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/current/bc-StandStructure",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/current/bin/FVSbc",
+        "--keywordfile=StandStructure.key"
+      ],
+      "returncode": 20,
+      "seconds": 1.159,
+      "binary_sha256": "f651c3f42b1af5dd7bead6e9c6319406d400a4b936acbcfbd2c64bc4d84043af",
+      "outputs": {
+        "StandStructure.out": {
+          "sha256": "0826bdc36a8a11dbcee03c899506467b218d824cda70180d5aa65033b71b0ad7",
+          "bytes": 42743
+        },
+        "returncode.txt": {
+          "sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "d14dade1b367a6f37b0687de096971e2ddefc68fce70cd01054baffa82141c1a",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "candidate",
+      "case": "bc-StandStructure",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/candidate/bc-StandStructure",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/candidate/bin/FVSbc",
+        "--keywordfile=StandStructure.key"
+      ],
+      "returncode": 20,
+      "seconds": 0.898,
+      "binary_sha256": "4428c4192dabf22ba612210a5e4a5424c415dfe71b09b1a65322740b5fddfe8c",
+      "outputs": {
+        "StandStructure.out": {
+          "sha256": "2db5a869000774a2f7a6650776760ada09d1dbdae836b02594443fa3f5331a43",
+          "bytes": 42743
+        },
+        "returncode.txt": {
+          "sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "d14dade1b367a6f37b0687de096971e2ddefc68fce70cd01054baffa82141c1a",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "original",
+      "case": "bc-YSM-SkyRanch",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/original/bc-YSM-SkyRanch",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/original/bin/FVSbc",
+        "--keywordfile=YSM-SkyRanch.key"
+      ],
+      "returncode": 20,
+      "seconds": 0.058,
+      "binary_sha256": "8b6c4bde7a4ebe16a134fc0c8ce6e36c63ff25e871f7659d52f4b8cbf2ea04fb",
+      "outputs": {
+        "YSM-SkyRanch.out": {
+          "sha256": "e481cabbbf396df11ad7aed5762800d24d9e9fb95dc53c4bc2233cf7fb6e81cf",
+          "bytes": 55137
+        },
+        "returncode.txt": {
+          "sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "d14dade1b367a6f37b0687de096971e2ddefc68fce70cd01054baffa82141c1a",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "current",
+      "case": "bc-YSM-SkyRanch",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/current/bc-YSM-SkyRanch",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/current/bin/FVSbc",
+        "--keywordfile=YSM-SkyRanch.key"
+      ],
+      "returncode": 20,
+      "seconds": 0.058,
+      "binary_sha256": "f651c3f42b1af5dd7bead6e9c6319406d400a4b936acbcfbd2c64bc4d84043af",
+      "outputs": {
+        "YSM-SkyRanch.out": {
+          "sha256": "ca415ad3d07f2b0a4785285992ceb042cff34a1883d5c9b7be0c805d7abb526a",
+          "bytes": 55137
+        },
+        "returncode.txt": {
+          "sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "d14dade1b367a6f37b0687de096971e2ddefc68fce70cd01054baffa82141c1a",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "candidate",
+      "case": "bc-YSM-SkyRanch",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/candidate/bc-YSM-SkyRanch",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/candidate/bin/FVSbc",
+        "--keywordfile=YSM-SkyRanch.key"
+      ],
+      "returncode": 20,
+      "seconds": 0.058,
+      "binary_sha256": "4428c4192dabf22ba612210a5e4a5424c415dfe71b09b1a65322740b5fddfe8c",
+      "outputs": {
+        "YSM-SkyRanch.out": {
+          "sha256": "ca415ad3d07f2b0a4785285992ceb042cff34a1883d5c9b7be0c805d7abb526a",
+          "bytes": 55137
+        },
+        "returncode.txt": {
+          "sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "d14dade1b367a6f37b0687de096971e2ddefc68fce70cd01054baffa82141c1a",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "original",
+      "case": "bm-bmt01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/original/bm-bmt01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/original/bin/FVSbm",
+        "--keywordfile=bmt01.key"
+      ],
+      "returncode": 10,
+      "seconds": 5.34,
+      "binary_sha256": "4079dc71f38d712e3a0e09bab34bc71a08dbb3c8d7790747fb9f85bf8cbb1a4c",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "692f37f483c3c45588e1a725112c26a043b6b9eda844810abaa21a715a1b5d38",
+          "bytes": 36864
+        },
+        "bmt01.out": {
+          "sha256": "b581fa9e38c2f565af68e3bb0087dfe7374dc3cc9a2ed897dd0a1ed046814dd3",
+          "bytes": 186871
+        },
+        "bmt01.sng": {
+          "sha256": "0bb2804051d0dbfc1a9f73b2ce30df0bc6116f1faa7f08358a1ed1321bbf353f",
+          "bytes": 9301
+        },
+        "bmt01.sum": {
+          "sha256": "d73ba1e07a3a5470ee6a1dbb5c9327acb888e22cbd3d0948cd170025b36d3767",
+          "bytes": 8762
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "2a54b6e14bd965be2c74c304f40c680858c31bf9b4f0a8b3b851860809412aee",
+          "bytes": 7739
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "current",
+      "case": "bm-bmt01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/current/bm-bmt01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/current/bin/FVSbm",
+        "--keywordfile=bmt01.key"
+      ],
+      "returncode": 10,
+      "seconds": 5.399,
+      "binary_sha256": "157e268e252ae63048b9edb153210d31d23897b3014ac0aa601b291612a8c6f7",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "9da4d12df6122ad83807283d9a28c92384ffcee108dfcbf8b94d45302d8bd1cb",
+          "bytes": 36864
+        },
+        "bmt01.out": {
+          "sha256": "4cc5fecda35bf09fb8700ee4c584287359c3c68befa6746cf9972c815a02a2ce",
+          "bytes": 186871
+        },
+        "bmt01.sng": {
+          "sha256": "0bb2804051d0dbfc1a9f73b2ce30df0bc6116f1faa7f08358a1ed1321bbf353f",
+          "bytes": 9301
+        },
+        "bmt01.sum": {
+          "sha256": "cb5f447095b7f4bbd082ee238750b0aad018fe9ad52cca0eb83fae9d4667559d",
+          "bytes": 8762
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "2a54b6e14bd965be2c74c304f40c680858c31bf9b4f0a8b3b851860809412aee",
+          "bytes": 7739
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "candidate",
+      "case": "bm-bmt01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/candidate/bm-bmt01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/candidate/bin/FVSbm",
+        "--keywordfile=bmt01.key"
+      ],
+      "returncode": 10,
+      "seconds": 5.053,
+      "binary_sha256": "4b984de1bfe33ae74e311f5361ee739252f5f1556e21e635e1f8eb7832a5498a",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "e679b25d0bba17562ce132adbc1e1442feb4d77c70846161b1b5c84fb189c408",
+          "bytes": 36864
+        },
+        "bmt01.out": {
+          "sha256": "f8fc7e1c65d915fe74cde0767f1cc675468edec1fed465b201c882aad3d667e4",
+          "bytes": 186871
+        },
+        "bmt01.sng": {
+          "sha256": "0bb2804051d0dbfc1a9f73b2ce30df0bc6116f1faa7f08358a1ed1321bbf353f",
+          "bytes": 9301
+        },
+        "bmt01.sum": {
+          "sha256": "075cfe8fd1178858bec1cbfefdb565d41e032760ce22c0b5c0a6473a5921f279",
+          "bytes": 8762
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "2a54b6e14bd965be2c74c304f40c680858c31bf9b4f0a8b3b851860809412aee",
+          "bytes": 7739
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "original",
+      "case": "ca-cat01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/original/ca-cat01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/original/bin/FVSca",
+        "--keywordfile=cat01.key"
+      ],
+      "returncode": 10,
+      "seconds": 5.004,
+      "binary_sha256": "558ac417dee5b6f02ee302ec5b9d6c3ea4580f881e453ee35230a0909d9c8940",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "6d0421fd5ca5178a63a150511144b1cc8596715ec3a10a11e2c32a8861952b80",
+          "bytes": 57344
+        },
+        "cat01.out": {
+          "sha256": "d64d395f866613a1251835baffb0831580fb7f7f40a2d4d631c08991e8eefb52",
+          "bytes": 198618
+        },
+        "cat01.sng": {
+          "sha256": "389e27758db6829eb0a4ac76d7882c86090663640ec058991d6ea257d7df9780",
+          "bytes": 6337
+        },
+        "cat01.sum": {
+          "sha256": "84c1d15f853bd378303141372aa2f55e38854d15df74afa59a9ee2055364ed90",
+          "bytes": 8762
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "199a36bf33b87fe52dc73bbb71c5d322d035ad1ff351b0a89257e783c7fa624d",
+          "bytes": 7739
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "current",
+      "case": "ca-cat01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/current/ca-cat01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/current/bin/FVSca",
+        "--keywordfile=cat01.key"
+      ],
+      "returncode": 10,
+      "seconds": 4.997,
+      "binary_sha256": "3599c8cb1ab21fda36fbaec2b37df07b930fbe5019659e6bfb0f796222ac86f0",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "0fc59295906de32bcbcd310128f1f99f2655cf0c82f069ab2592ee7bca1575ab",
+          "bytes": 57344
+        },
+        "cat01.out": {
+          "sha256": "7dcfd69eb05ab8de14b1202cc5fab2fb794f96ddd15128539a82785431e01183",
+          "bytes": 198618
+        },
+        "cat01.sng": {
+          "sha256": "389e27758db6829eb0a4ac76d7882c86090663640ec058991d6ea257d7df9780",
+          "bytes": 6337
+        },
+        "cat01.sum": {
+          "sha256": "6c9fcdb219ea0cfa797581ec61676d676106db53379bdf9fa05f876e82cc1024",
+          "bytes": 8762
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "199a36bf33b87fe52dc73bbb71c5d322d035ad1ff351b0a89257e783c7fa624d",
+          "bytes": 7739
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "candidate",
+      "case": "ca-cat01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/candidate/ca-cat01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/candidate/bin/FVSca",
+        "--keywordfile=cat01.key"
+      ],
+      "returncode": 10,
+      "seconds": 4.719,
+      "binary_sha256": "15d14713111dd864719a5412a90602124bb519eb0227e6c20be53c49bbf3d835",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "72eae2421005c16120ff8195206676b2806bf32c64f94dd8db2f56058f84576a",
+          "bytes": 57344
+        },
+        "cat01.out": {
+          "sha256": "c4552f8f670f85ea35f9e69389c7ccbe319480b79de95bc159ac35a07d8ee90b",
+          "bytes": 198618
+        },
+        "cat01.sng": {
+          "sha256": "389e27758db6829eb0a4ac76d7882c86090663640ec058991d6ea257d7df9780",
+          "bytes": 6337
+        },
+        "cat01.sum": {
+          "sha256": "455bc0e4577bf6fb229256f6627ba0ace973cf70db7534316f7277e25bcf5983",
+          "bytes": 8762
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "199a36bf33b87fe52dc73bbb71c5d322d035ad1ff351b0a89257e783c7fa624d",
+          "bytes": 7739
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "original",
+      "case": "ci-cit01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/original/ci-cit01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/original/bin/FVSci",
+        "--keywordfile=cit01.key"
+      ],
+      "returncode": 10,
+      "seconds": 4.329,
+      "binary_sha256": "4912809cdd002217ecc42e4ad951847777c91b94eca00d9bba59af18f414afa2",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "0499a742698bd5db2402ae0b31f5c64af20eb2566574e3be607db250438bb4f5",
+          "bytes": 32768
+        },
+        "cit01.out": {
+          "sha256": "17550e1750c10c8d4585f829daac2b91b2418e58c34b40ebbf60451d583c5af5",
+          "bytes": 185802
+        },
+        "cit01.sng": {
+          "sha256": "ee26dea00a63eb0ab2bcd5b09c38f29ac644343e6e0c3bb692486f51fb93027b",
+          "bytes": 5635
+        },
+        "cit01.sum": {
+          "sha256": "ae206e1593401772bfd7cf96aa5ee901dc99645289b981ac80d2f583d27050f8",
+          "bytes": 8762
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "4ed6a16cd01c6ec2c8aa3f758d8129da2e8d93e7b4460674ddafc4777b85170f",
+          "bytes": 7739
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "current",
+      "case": "ci-cit01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/current/ci-cit01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/current/bin/FVSci",
+        "--keywordfile=cit01.key"
+      ],
+      "returncode": 10,
+      "seconds": 4.24,
+      "binary_sha256": "093829f3fda20a554f0fdf6735543669db811255ee10138fb4b56cde3f97a247",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "e83da06d22d925e662a84f71c9d10e2cb14b7bdecc75ee9ddd3b93ed32aec58f",
+          "bytes": 32768
+        },
+        "cit01.out": {
+          "sha256": "2b9740108ed67997694c669d497ef04a0a752a567152dcf5407670fa5eb0fd19",
+          "bytes": 185802
+        },
+        "cit01.sng": {
+          "sha256": "ee26dea00a63eb0ab2bcd5b09c38f29ac644343e6e0c3bb692486f51fb93027b",
+          "bytes": 5635
+        },
+        "cit01.sum": {
+          "sha256": "6d9dbd909ad09c1c0e3cd6338c4f2398e23257b878be3b8240901adbd1abf2b6",
+          "bytes": 8762
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "4ed6a16cd01c6ec2c8aa3f758d8129da2e8d93e7b4460674ddafc4777b85170f",
+          "bytes": 7739
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "candidate",
+      "case": "ci-cit01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/candidate/ci-cit01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/candidate/bin/FVSci",
+        "--keywordfile=cit01.key"
+      ],
+      "returncode": 10,
+      "seconds": 3.951,
+      "binary_sha256": "1c5c18fbac4d0f9270faaa6197ca5bed7a4ef3602cf814afbdec5a67d9542add",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "94f653bad2fdd9528d34468cf0cfcd62dbe91abab72e5dd816ad4a78fc7a30f3",
+          "bytes": 32768
+        },
+        "cit01.out": {
+          "sha256": "15e21c6d048964e84362723d7276ecaf0cb0356ef25bcaa437a5d0035f140187",
+          "bytes": 185802
+        },
+        "cit01.sng": {
+          "sha256": "ee26dea00a63eb0ab2bcd5b09c38f29ac644343e6e0c3bb692486f51fb93027b",
+          "bytes": 5635
+        },
+        "cit01.sum": {
+          "sha256": "ce46de63117254b3d5b0fd9aaac126135d879c5c88e1a62e4b538cdc45b25136",
+          "bytes": 8762
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "4ed6a16cd01c6ec2c8aa3f758d8129da2e8d93e7b4460674ddafc4777b85170f",
+          "bytes": 7739
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "original",
+      "case": "cr-crt01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/original/cr-crt01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/original/bin/FVScr",
+        "--keywordfile=crt01.key"
+      ],
+      "returncode": 10,
+      "seconds": 3.975,
+      "binary_sha256": "0ded3dfbcbdcbcbd5e65c06846a3cef1e96e701ec5a513305393d06473ec4ba2",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "1530f5ddbf895a8b345aea050b67cc2c9fb9e198737e803061b7291aa8d65580",
+          "bytes": 45056
+        },
+        "crt01.out": {
+          "sha256": "c34d97c0a121d9f525acaae1c4bed61c2eeec5dd2acc15ca8e6048d3a1437efa",
+          "bytes": 196364
+        },
+        "crt01.sng": {
+          "sha256": "cf296a0a341e5d90f749de4042beb94bc376b645a0d2e502ca248782f144d81d",
+          "bytes": 4465
+        },
+        "crt01.sum": {
+          "sha256": "2587f62ba8478db59ca4e3532052bcbacf074a584acc4e74bb95814f5d7ca6ef",
+          "bytes": 8762
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "51914eabfb01006fba2cb3cc1e792b3e484e87b3fd5d8015222c63c36b99e94c",
+          "bytes": 7801
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "current",
+      "case": "cr-crt01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/current/cr-crt01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/current/bin/FVScr",
+        "--keywordfile=crt01.key"
+      ],
+      "returncode": 10,
+      "seconds": 3.947,
+      "binary_sha256": "bc03428dff0beae51817ad0997433d062ac00f34335dfa5f4458bfe5f3466568",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "a643ecfdc99b21a605abfe2530ee61633d39f697e094f37c4f0e4b8ce95c2f31",
+          "bytes": 45056
+        },
+        "crt01.out": {
+          "sha256": "909839dd95e1c9bd6451b9ae9feafa36df537cc9da0feb293570f6b0c209c8a4",
+          "bytes": 196364
+        },
+        "crt01.sng": {
+          "sha256": "cf296a0a341e5d90f749de4042beb94bc376b645a0d2e502ca248782f144d81d",
+          "bytes": 4465
+        },
+        "crt01.sum": {
+          "sha256": "8526f57af0ad83f00747f9eccfb15635c53bdea8ca8791209faf621f55573b7e",
+          "bytes": 8762
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "51914eabfb01006fba2cb3cc1e792b3e484e87b3fd5d8015222c63c36b99e94c",
+          "bytes": 7801
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "candidate",
+      "case": "cr-crt01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/candidate/cr-crt01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/candidate/bin/FVScr",
+        "--keywordfile=crt01.key"
+      ],
+      "returncode": 10,
+      "seconds": 3.673,
+      "binary_sha256": "4bc95877f3f9c744ea2db29f1d38cefded4f2da3f1843f0bf23c5108ab477b8e",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "0445614cbf136734705333b0c204a23850bc80ec0cd5ae4aca00e3b7fd20b9fd",
+          "bytes": 45056
+        },
+        "crt01.out": {
+          "sha256": "e29027a8c714cff4c29385316b95a340cbc1eddafb2e2716f90034062f20607b",
+          "bytes": 196364
+        },
+        "crt01.sng": {
+          "sha256": "cf296a0a341e5d90f749de4042beb94bc376b645a0d2e502ca248782f144d81d",
+          "bytes": 4465
+        },
+        "crt01.sum": {
+          "sha256": "0b995f890a3e73242d046bf576cc4059aa5203dffbdb3d9a98db54fd3e159e72",
+          "bytes": 8762
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "51914eabfb01006fba2cb3cc1e792b3e484e87b3fd5d8015222c63c36b99e94c",
+          "bytes": 7801
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "original",
+      "case": "cs-cst01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/original/cs-cst01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/original/bin/FVScs",
+        "--keywordfile=cst01.key"
+      ],
+      "returncode": 10,
+      "seconds": 4.696,
+      "binary_sha256": "04b730cdcb08d009e46f0f46a8f84bdddc14cb80eb7f72608c43f30a715186d2",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "8dbaf6f431c06c5fedaecf423c663ad1f1e5c14a72d8456edf1415df16ccbff5",
+          "bytes": 90112
+        },
+        "cst01.out": {
+          "sha256": "c385c2b19305115cba32dd90fd3250d8d05b39428eb660cddd96cd11f41232a5",
+          "bytes": 210688
+        },
+        "cst01.sng": {
+          "sha256": "ede6a44202de385523f22394e69db8c33560c1f0f332b04db66a522f8a77111a",
+          "bytes": 5479
+        },
+        "cst01.sum": {
+          "sha256": "346b9d62f1a83b694c3f51f9753875e8d1a2a554078dad480785a37d8a403862",
+          "bytes": 8762
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "458bb7ef96c79c6f637d76ca27f54696d1043ef9493b4f623704e934515b5660",
+          "bytes": 7786
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "current",
+      "case": "cs-cst01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/current/cs-cst01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/current/bin/FVScs",
+        "--keywordfile=cst01.key"
+      ],
+      "returncode": 10,
+      "seconds": 4.511,
+      "binary_sha256": "101099068812f1b8134d6b614c43000ea8382d94f985909bd9db8d1cbd83f94d",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "6335091992f98998192444db5140942403553e0f565abb2083c72745f069096c",
+          "bytes": 90112
+        },
+        "cst01.out": {
+          "sha256": "a2a8755ced9cc725cd4e901ecce20b3a9d2af2bfbaf93f7a353cfffa4e33d39a",
+          "bytes": 210688
+        },
+        "cst01.sng": {
+          "sha256": "ede6a44202de385523f22394e69db8c33560c1f0f332b04db66a522f8a77111a",
+          "bytes": 5479
+        },
+        "cst01.sum": {
+          "sha256": "38181b3673b9598335f37351452fc1cdc1c4321023f3908064f740bed7ea036c",
+          "bytes": 8762
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "458bb7ef96c79c6f637d76ca27f54696d1043ef9493b4f623704e934515b5660",
+          "bytes": 7786
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "candidate",
+      "case": "cs-cst01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/candidate/cs-cst01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/candidate/bin/FVScs",
+        "--keywordfile=cst01.key"
+      ],
+      "returncode": 10,
+      "seconds": 4.229,
+      "binary_sha256": "e5375093f90714764c1ababf9debfe7d1921027cb1c98282d5c2d31c5fe862af",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "b0d83001d331132612fab14cb0d072d47a9575f963b7f7abf8c3e8b069f68d58",
+          "bytes": 90112
+        },
+        "cst01.out": {
+          "sha256": "8692d46ef4c3ca44567cb44848b4554d810467a072cfca8fe2139347020ce7ec",
+          "bytes": 210688
+        },
+        "cst01.sng": {
+          "sha256": "ede6a44202de385523f22394e69db8c33560c1f0f332b04db66a522f8a77111a",
+          "bytes": 5479
+        },
+        "cst01.sum": {
+          "sha256": "9211beb93cbfc10884beba6ba8a473af85bd9265c38f6d81e3dabe6da20a09b2",
+          "bytes": 8762
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "458bb7ef96c79c6f637d76ca27f54696d1043ef9493b4f623704e934515b5660",
+          "bytes": 7786
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "original",
+      "case": "ec-ect01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/original/ec-ect01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/original/bin/FVSec",
+        "--keywordfile=ect01.key"
+      ],
+      "returncode": 10,
+      "seconds": 5.719,
+      "binary_sha256": "b14ebce5bee4f597cc1c82b39408612a40a41138febf0d65c6d414856eb2981c",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "c34712ca7cf24caa7e7a64b6dbb5b229a21adf7275c009363a42d133eaa77245",
+          "bytes": 45056
+        },
+        "ect01.out": {
+          "sha256": "062a1c8a628d9da63b40d045a323ea7f670e16e7bace6867e1123e969d87d5af",
+          "bytes": 191422
+        },
+        "ect01.sng": {
+          "sha256": "69f555c4cf0c01fc0da679b42d77e6f45116fe6d5b23d7f1f3c5c816f64a3e0c",
+          "bytes": 9613
+        },
+        "ect01.sum": {
+          "sha256": "4815b68deb699347255f03794d8f5e2e72ceaf54e9e0710ea4619dc20e06c303",
+          "bytes": 8762
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "910b0ccd928784ae5cf7ce568aada1b51c841eb2ef709fad431d78d7460478ab",
+          "bytes": 7739
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "current",
+      "case": "ec-ect01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/current/ec-ect01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/current/bin/FVSec",
+        "--keywordfile=ect01.key"
+      ],
+      "returncode": 10,
+      "seconds": 5.511,
+      "binary_sha256": "b003779a801efcd0647ec10b7d1b47740e09fd0a9ee7fbc5cb7f4db46d378d45",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "e52ce16fd84a93a2052e2cc68de8709dc3a820305cde9b7cfc3f44f15d0b8d1f",
+          "bytes": 45056
+        },
+        "ect01.out": {
+          "sha256": "ae57d826c2061ff35609f7395a25362d674589e4cd4eda08a8f74b28e338d427",
+          "bytes": 191422
+        },
+        "ect01.sng": {
+          "sha256": "69f555c4cf0c01fc0da679b42d77e6f45116fe6d5b23d7f1f3c5c816f64a3e0c",
+          "bytes": 9613
+        },
+        "ect01.sum": {
+          "sha256": "f3afc9575b13b9a7b4982518e402500549d99f2dadaac5ecae89ada7c0b0c880",
+          "bytes": 8762
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "910b0ccd928784ae5cf7ce568aada1b51c841eb2ef709fad431d78d7460478ab",
+          "bytes": 7739
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "candidate",
+      "case": "ec-ect01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/candidate/ec-ect01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/candidate/bin/FVSec",
+        "--keywordfile=ect01.key"
+      ],
+      "returncode": 10,
+      "seconds": 5.111,
+      "binary_sha256": "14947e5c208ca5e0dd42fc5d4fe3fa06bfb611770422c3ae1e8f8c6d558147a8",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "540c1e4b97a555a3e98bad4ffe13959f00d0d02e2d0969c27c54b91355fa8b4c",
+          "bytes": 45056
+        },
+        "ect01.out": {
+          "sha256": "63afa71de8f4a8635710400afcf95dfb201d6c080db790a42baea8365090ae19",
+          "bytes": 191422
+        },
+        "ect01.sng": {
+          "sha256": "69f555c4cf0c01fc0da679b42d77e6f45116fe6d5b23d7f1f3c5c816f64a3e0c",
+          "bytes": 9613
+        },
+        "ect01.sum": {
+          "sha256": "63c1158bbb22c2554f38972d1141c6cbf3efba1337682340bc3d2ba230fe2363",
+          "bytes": 8762
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "910b0ccd928784ae5cf7ce568aada1b51c841eb2ef709fad431d78d7460478ab",
+          "bytes": 7739
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "original",
+      "case": "em-emt01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/original/em-emt01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/original/bin/FVSem",
+        "--keywordfile=emt01.key"
+      ],
+      "returncode": 10,
+      "seconds": 4.395,
+      "binary_sha256": "01e1845241b3b178eda6ecafd3ca12b2b76d1f93bf2fe620a210c1c69845e002",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "ccc2885a03597d90191f166c2cad9a0cbed725b3328512adb600dfd8ad16a7fc",
+          "bytes": 36864
+        },
+        "emt01.out": {
+          "sha256": "d9d9d824ab1b38759cbced9b0d993264f46fc0c98dc199eac0617d810e75ca4a",
+          "bytes": 188124
+        },
+        "emt01.sng": {
+          "sha256": "ec41fb8b4dbaed09b7902014aefa9a84ef82848cfc3880ef79b5a6e62f685118",
+          "bytes": 5791
+        },
+        "emt01.sum": {
+          "sha256": "5a4c7c0cc7ea01ba63b2b15482b4438679c2f5ea7b77fe96fa4c8c41b2677f36",
+          "bytes": 8762
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "3a9fa49685c9f5cf8f098a0699d154cee3a98fb93298d0a1fd016c27d505ce8f",
+          "bytes": 7739
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "current",
+      "case": "em-emt01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/current/em-emt01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/current/bin/FVSem",
+        "--keywordfile=emt01.key"
+      ],
+      "returncode": 10,
+      "seconds": 4.379,
+      "binary_sha256": "c8030fe79a3bcd6267a9b27f63039a08818c754774e231653acf24127504938b",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "d7e59b9ecd67b0da4e51842c471369f35a086b612e971930c02731bfd62f5017",
+          "bytes": 36864
+        },
+        "emt01.out": {
+          "sha256": "ac13d5a7c31941ae4cb00fbd6578e2916835d162873bb00fbe1a3ff55deee251",
+          "bytes": 188124
+        },
+        "emt01.sng": {
+          "sha256": "ec41fb8b4dbaed09b7902014aefa9a84ef82848cfc3880ef79b5a6e62f685118",
+          "bytes": 5791
+        },
+        "emt01.sum": {
+          "sha256": "85aca0bc578c557fb14d3c3d261b2be618741511ecee4e2c6b73277372b1f260",
+          "bytes": 8762
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "3a9fa49685c9f5cf8f098a0699d154cee3a98fb93298d0a1fd016c27d505ce8f",
+          "bytes": 7739
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "candidate",
+      "case": "em-emt01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/candidate/em-emt01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/candidate/bin/FVSem",
+        "--keywordfile=emt01.key"
+      ],
+      "returncode": 10,
+      "seconds": 4.162,
+      "binary_sha256": "774dff08cd6dda8a83314830578e3dfaef9d3e48adcc7c1f6bec35c60a361933",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "68c49d7688218be0e08b5adead3edb590ec2c9716379d0b117ef02e0ea7a5cf2",
+          "bytes": 36864
+        },
+        "emt01.out": {
+          "sha256": "b8544abd98aff973923b308c6353cc3cc2165a2ae2d0656306c05f9700b75830",
+          "bytes": 188124
+        },
+        "emt01.sng": {
+          "sha256": "ec41fb8b4dbaed09b7902014aefa9a84ef82848cfc3880ef79b5a6e62f685118",
+          "bytes": 5791
+        },
+        "emt01.sum": {
+          "sha256": "5acfde487bffe7edabc1e0e68f51fa426abf85d0da661ca4eb355888eb5fd6da",
+          "bytes": 8762
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "3a9fa49685c9f5cf8f098a0699d154cee3a98fb93298d0a1fd016c27d505ce8f",
+          "bytes": 7739
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "original",
+      "case": "ie-iet01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/original/ie-iet01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/original/bin/FVSie",
+        "--keywordfile=iet01.key"
+      ],
+      "returncode": 20,
+      "seconds": 5.053,
+      "binary_sha256": "10910ff5773787fae74e9a7dbc28e9159e535d9356b93efae94bdaec5f10b49b",
+      "outputs": {
+        "iet01.out": {
+          "sha256": "5edd9217ba0d60414bf2fc6db9eeafb6e47fd75a297ce98fe22f1f8c3015c1f9",
+          "bytes": 393508
+        },
+        "iet01.sum": {
+          "sha256": "e793e3f4fc4dfcf2dede2be1784c10fcccd3b47b78bde6a9960a7e5bdaf913e3",
+          "bytes": 7774
+        },
+        "iet01.trl": {
+          "sha256": "134dbb184e67773ac24d095c93f46d57cac66f43d3f4fc2045f237c281a3895c",
+          "bytes": 2014152
+        },
+        "iet01_Out.db": {
+          "sha256": "2bc5715397427e3bab619e40fc094bab16f9b443c1948f7cd11e8524b915cef5",
+          "bytes": 2887680
+        },
+        "returncode.txt": {
+          "sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "d14dade1b367a6f37b0687de096971e2ddefc68fce70cd01054baffa82141c1a",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "3de1a09d2ba60a2621fd83c60d78a1bb57aa72d422cea008fd39c88a2116a6dd",
+          "bytes": 6648
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "current",
+      "case": "ie-iet01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/current/ie-iet01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/current/bin/FVSie",
+        "--keywordfile=iet01.key"
+      ],
+      "returncode": 20,
+      "seconds": 5.414,
+      "binary_sha256": "5fe739e88b37e0e45096c844a14d4e08b34e2921e5150d5a89f110f223b6c8ba",
+      "outputs": {
+        "iet01.out": {
+          "sha256": "7a16b55ac18de4c9162a631d23091ed92662d47a88d07d0dd2ad6fd05cf3ec61",
+          "bytes": 393508
+        },
+        "iet01.sum": {
+          "sha256": "6d91ade8c9b5a862366c4452bda78c69ff3de9e6ee0aa7a1fbf2273a061ec20d",
+          "bytes": 7774
+        },
+        "iet01.trl": {
+          "sha256": "5ea0b244e338394e553e7da417dfdb08d7200bccde6afdee4b4dda9ee8f05ae0",
+          "bytes": 2014152
+        },
+        "iet01_Out.db": {
+          "sha256": "adbaea31a5a4a5d5b0c49d864a37f36393a6f7e184114cf8e69c4b5250ff5e57",
+          "bytes": 2887680
+        },
+        "returncode.txt": {
+          "sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "d14dade1b367a6f37b0687de096971e2ddefc68fce70cd01054baffa82141c1a",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "3de1a09d2ba60a2621fd83c60d78a1bb57aa72d422cea008fd39c88a2116a6dd",
+          "bytes": 6648
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "candidate",
+      "case": "ie-iet01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/candidate/ie-iet01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/candidate/bin/FVSie",
+        "--keywordfile=iet01.key"
+      ],
+      "returncode": 20,
+      "seconds": 5.014,
+      "binary_sha256": "b84934c3d44757e8d6bd982010d64e3a4353b2999a2acc93ed537716d9e5d218",
+      "outputs": {
+        "iet01.out": {
+          "sha256": "22c91400af27fa8dab16910421bab0c52c094a4445ae2b964f940abafc071c4d",
+          "bytes": 393508
+        },
+        "iet01.sum": {
+          "sha256": "f4db6de04499043af51d024a9367bc0d3f82bcd6c43bad3751e97b298e9d2bf8",
+          "bytes": 7774
+        },
+        "iet01.trl": {
+          "sha256": "6e3672275d6f5b8523cdc2fd02670ff7db61c17cb07889a3a06e6b398c9bef9d",
+          "bytes": 2014152
+        },
+        "iet01_Out.db": {
+          "sha256": "9038d49e852f8791bb25b6adb436680183080bfed78876b5de1c22af3174ce84",
+          "bytes": 2887680
+        },
+        "returncode.txt": {
+          "sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "d14dade1b367a6f37b0687de096971e2ddefc68fce70cd01054baffa82141c1a",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "3de1a09d2ba60a2621fd83c60d78a1bb57aa72d422cea008fd39c88a2116a6dd",
+          "bytes": 6648
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "original",
+      "case": "kt-ktt01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/original/kt-ktt01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/original/bin/FVSkt",
+        "--keywordfile=ktt01.key"
+      ],
+      "returncode": 10,
+      "seconds": 1.22,
+      "binary_sha256": "416f596d8a30c3e6a241c2ebe47d1374c66ad51b38ece834011adfe4d097a7b3",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "c108325cd67e0f8dae924fcb6c7826697e18a0be45080ffc1456803c2e0581d2",
+          "bytes": 28672
+        },
+        "ktt01.out": {
+          "sha256": "e2d37cff6b59176576c8cd53225d5f5aa111a95b923cb8ee5fd653e68cb72b74",
+          "bytes": 185080
+        },
+        "ktt01.sng": {
+          "sha256": "39e7a1fb0ff90f561a935ee14088e29193727f8f56b75bc8eac97bb4698bf112",
+          "bytes": 5791
+        },
+        "ktt01.sum": {
+          "sha256": "a4472f60eddcdd8e7f5f42720210109798d620cb934bf8d70d71cf81cd8726f4",
+          "bytes": 8762
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "7c5acb3dcee389faf10ead555212481d74f149a873647518d52282efd257ee39",
+          "bytes": 7786
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "current",
+      "case": "kt-ktt01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/current/kt-ktt01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/current/bin/FVSkt",
+        "--keywordfile=ktt01.key"
+      ],
+      "returncode": 10,
+      "seconds": 1.065,
+      "binary_sha256": "d006207f5513b588e3ffd3a2fc10c9ec37525c3ede9fe81a7dbc0c7eeca5902e",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "2fef6e31ef7b401ad0c66e16598735fe5d29df4eb068a79ee04c81929e028522",
+          "bytes": 28672
+        },
+        "ktt01.out": {
+          "sha256": "520ee1740407244d48cd814e5bfbb9ea7ee8ee53f1e48d8ce8448158102d4479",
+          "bytes": 185080
+        },
+        "ktt01.sng": {
+          "sha256": "39e7a1fb0ff90f561a935ee14088e29193727f8f56b75bc8eac97bb4698bf112",
+          "bytes": 5791
+        },
+        "ktt01.sum": {
+          "sha256": "0a1dcb63ffe7c58e96106c6f08ec55295ad742e75c9eac0b24cadbb59c8dcd80",
+          "bytes": 8762
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "7c5acb3dcee389faf10ead555212481d74f149a873647518d52282efd257ee39",
+          "bytes": 7786
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "candidate",
+      "case": "kt-ktt01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/candidate/kt-ktt01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/candidate/bin/FVSkt",
+        "--keywordfile=ktt01.key"
+      ],
+      "returncode": 10,
+      "seconds": 0.868,
+      "binary_sha256": "872931d207793baaad3a9ca7434fd5ebd837e5db9e3a3a2981b95073473ec843",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "5e9d529d871e000cbd530aa421cb3307a876842288057e59bb189a59e71fe3b9",
+          "bytes": 28672
+        },
+        "ktt01.out": {
+          "sha256": "e8ae99810831cc514f7cf802e0fabf2a6f3f5248e84e144b4711f2c7503cc46d",
+          "bytes": 185080
+        },
+        "ktt01.sng": {
+          "sha256": "39e7a1fb0ff90f561a935ee14088e29193727f8f56b75bc8eac97bb4698bf112",
+          "bytes": 5791
+        },
+        "ktt01.sum": {
+          "sha256": "bda56efd51242726d797b32254ca37d395c6cb582ac524cc9e4e2252e6bef47b",
+          "bytes": 8762
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "7c5acb3dcee389faf10ead555212481d74f149a873647518d52282efd257ee39",
+          "bytes": 7786
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "original",
+      "case": "ls-lst01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/original/ls-lst01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/original/bin/FVSls",
+        "--keywordfile=lst01.key"
+      ],
+      "returncode": 10,
+      "seconds": 0.796,
+      "binary_sha256": "2ab7028dab5bc819f9ce2d150adadd4df691d982982c29424393eed2f2b3c034",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "b3b81cf2a068afa0b590dab547ed8acdadb728785dbb042411477960371f90c2",
+          "bytes": 69632
+        },
+        "lst01.out": {
+          "sha256": "76d56caa95bc0587c0cb5692e839cad403e6ea3f24eeceadf3e98fc361af4add",
+          "bytes": 204750
+        },
+        "lst01.sng": {
+          "sha256": "81978eadbfb0628504be6ca3ba67d25405d7ad547d2d8ad6a299608a94354487",
+          "bytes": 4855
+        },
+        "lst01.sum": {
+          "sha256": "581395cfee5cf81cb2be6ba7c91feb82e4cbd38b8b707a681f43efb74633c36d",
+          "bytes": 8762
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "87ed9dc977d7181af368de3fdf5f5829200486c410a1cd288f168b800828a2cb",
+          "bytes": 7786
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "current",
+      "case": "ls-lst01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/current/ls-lst01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/current/bin/FVSls",
+        "--keywordfile=lst01.key"
+      ],
+      "returncode": 10,
+      "seconds": 0.842,
+      "binary_sha256": "95029ca48dfc5dd7169a1d7808353809d6f65eb48276d03821f533a6bb8eab7c",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "c684fb0bb7d9a21a786158b27d69167e30616c62bdbd56783395c4c5d4ae0820",
+          "bytes": 69632
+        },
+        "lst01.out": {
+          "sha256": "a92b757618ad5588384c146da636238dde0c5667a8f96274ece7786819d30540",
+          "bytes": 204750
+        },
+        "lst01.sng": {
+          "sha256": "81978eadbfb0628504be6ca3ba67d25405d7ad547d2d8ad6a299608a94354487",
+          "bytes": 4855
+        },
+        "lst01.sum": {
+          "sha256": "f332e844b73201e69891c8abde5208cd65897f02085c51b6bed5d8684e0dea67",
+          "bytes": 8762
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "87ed9dc977d7181af368de3fdf5f5829200486c410a1cd288f168b800828a2cb",
+          "bytes": 7786
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "candidate",
+      "case": "ls-lst01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/candidate/ls-lst01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/candidate/bin/FVSls",
+        "--keywordfile=lst01.key"
+      ],
+      "returncode": 10,
+      "seconds": 0.785,
+      "binary_sha256": "5b163150db3942c0548dafdeab26be5d0c30a3bcf16d178f8f7b077dcc7e30d3",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "defaf835ce01a1250f3973ca99a8c072dae01ba7b94c748e486dd5175500a6cf",
+          "bytes": 69632
+        },
+        "lst01.out": {
+          "sha256": "afc5e2fb3b47cbd1ea8e623419b81bb51e8e0bef65c572093751425049124525",
+          "bytes": 204750
+        },
+        "lst01.sng": {
+          "sha256": "81978eadbfb0628504be6ca3ba67d25405d7ad547d2d8ad6a299608a94354487",
+          "bytes": 4855
+        },
+        "lst01.sum": {
+          "sha256": "2b81620f87932ac39d3521a5a632be65c700233bbad660d124bc987efb0a3926",
+          "bytes": 8762
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "87ed9dc977d7181af368de3fdf5f5829200486c410a1cd288f168b800828a2cb",
+          "bytes": 7786
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "original",
+      "case": "nc-nct01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/original/nc-nct01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/original/bin/FVSnc",
+        "--keywordfile=nct01.key"
+      ],
+      "returncode": 10,
+      "seconds": 1.097,
+      "binary_sha256": "5f6c4544f70a0772c00fdf3ab7d1d2405459ce87cccad0872f3216813ff311cc",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "628e30d418a4192572150c4cbab08776c7106913b1c9a4d02a4cb6ea4c16e5fe",
+          "bytes": 28672
+        },
+        "nct01.out": {
+          "sha256": "371d3e4088e179e313d8a532eaf97d3857392a98f543f99cdce4413b2e1792ea",
+          "bytes": 196248
+        },
+        "nct01.sng": {
+          "sha256": "1a4c0595a0ddd655758024f329621d194f4aca7879520dd5569831864c5ae9f3",
+          "bytes": 25369
+        },
+        "nct01.sum": {
+          "sha256": "b2ce0f6cc4e8592b3d4e6ab5171c509699d71e3193f679ccf83cf3aa38e6011a",
+          "bytes": 9791
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "a82b05143ab704130e7c8969844ab98a36d7329f79ae8088fdb699a5cc20ea49",
+          "bytes": 8314
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "current",
+      "case": "nc-nct01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/current/nc-nct01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/current/bin/FVSnc",
+        "--keywordfile=nct01.key"
+      ],
+      "returncode": 10,
+      "seconds": 1.155,
+      "binary_sha256": "f3e61dc7af06cb3a791b72a7a7b2db6c156b46a29ba69c2fb5f06a9de8b31dea",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "142cef2d41a0459d8165eb5021c433612735e5041788838e0e46fe508ca47d8c",
+          "bytes": 28672
+        },
+        "nct01.out": {
+          "sha256": "70018afaf8a0b923a4332052c3ebd1b2664d1f73dffef1b07936741946f1ac36",
+          "bytes": 196248
+        },
+        "nct01.sng": {
+          "sha256": "1a4c0595a0ddd655758024f329621d194f4aca7879520dd5569831864c5ae9f3",
+          "bytes": 25369
+        },
+        "nct01.sum": {
+          "sha256": "e95fb8065e26f180454cc3627e9ec89ba5d7ac1dc81ae89242e8bdcca2eeed70",
+          "bytes": 9791
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "a82b05143ab704130e7c8969844ab98a36d7329f79ae8088fdb699a5cc20ea49",
+          "bytes": 8314
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "candidate",
+      "case": "nc-nct01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/candidate/nc-nct01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/candidate/bin/FVSnc",
+        "--keywordfile=nct01.key"
+      ],
+      "returncode": 10,
+      "seconds": 1.068,
+      "binary_sha256": "c65b8da6940bc664d01e5f323521660f048be759d4884d408cb00e813666bf8a",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "97ce7333ab227037d3c428dcb7a9fffef71d05117e73b26af1470518acfd6d4b",
+          "bytes": 28672
+        },
+        "nct01.out": {
+          "sha256": "f2f03380c32ccbf17e8c7eff4255460dc6f34af42e5ef18d67500294ada95ccd",
+          "bytes": 196248
+        },
+        "nct01.sng": {
+          "sha256": "1a4c0595a0ddd655758024f329621d194f4aca7879520dd5569831864c5ae9f3",
+          "bytes": 25369
+        },
+        "nct01.sum": {
+          "sha256": "43975dc8418f8b1d84acbce214ddee698ace476edb199ed2a009abd73580f41a",
+          "bytes": 9791
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "a82b05143ab704130e7c8969844ab98a36d7329f79ae8088fdb699a5cc20ea49",
+          "bytes": 8314
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "original",
+      "case": "ne-net01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/original/ne-net01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/original/bin/FVSne",
+        "--keywordfile=net01.key"
+      ],
+      "returncode": 10,
+      "seconds": 1.019,
+      "binary_sha256": "16a65e72539f02eb5d82d089808783b81611d943f775a5cbb40f69ffa1553360",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "d2d5b60479ac7d8d89c64968933d441ad3414364adeb7e90bcabd2d5138fa4f4",
+          "bytes": 102400
+        },
+        "net01.out": {
+          "sha256": "189637159319235be70b0a7ad634c1ccb74abf93221057bb798248fca8eb2e5b",
+          "bytes": 216269
+        },
+        "net01.sng": {
+          "sha256": "692c1dfcce54e9cb959140563cdbac7b8cfedef359c2f6458001283ecdf3532c",
+          "bytes": 5245
+        },
+        "net01.sum": {
+          "sha256": "ac4965003fd34a96828ce2e88a90a0aa904760fe145e733a6c68c3ca62beb1dd",
+          "bytes": 8762
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "c94af5bf260fc741e1c49c06e8db2bc91ed63ff3552f4dd8804abe45e8fba7a3",
+          "bytes": 7786
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "current",
+      "case": "ne-net01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/current/ne-net01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/current/bin/FVSne",
+        "--keywordfile=net01.key"
+      ],
+      "returncode": 10,
+      "seconds": 1.035,
+      "binary_sha256": "f2ac0909e96c64dd4dc7683189730e367c108fd751485e390a589fced6877e45",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "1e598aeb445e2004c0e9eba653a60424a613f035039ebf48a54e1de2621817b3",
+          "bytes": 102400
+        },
+        "net01.out": {
+          "sha256": "3c84607e336bfc9f45dc5d2dff67e8e0a86b6679a24fc1c8f3379e85eb7562a4",
+          "bytes": 216269
+        },
+        "net01.sng": {
+          "sha256": "692c1dfcce54e9cb959140563cdbac7b8cfedef359c2f6458001283ecdf3532c",
+          "bytes": 5245
+        },
+        "net01.sum": {
+          "sha256": "ac80d88e4571f398603bfe9a3bf3ddb44d86653ea70a149d647b9e58f4d953eb",
+          "bytes": 8762
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "c94af5bf260fc741e1c49c06e8db2bc91ed63ff3552f4dd8804abe45e8fba7a3",
+          "bytes": 7786
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "candidate",
+      "case": "ne-net01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/candidate/ne-net01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/candidate/bin/FVSne",
+        "--keywordfile=net01.key"
+      ],
+      "returncode": 10,
+      "seconds": 0.955,
+      "binary_sha256": "6567e78ab6e4f78cf9ffc980508f4da5be69a73676d4b1dc9de0f5eaa4196628",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "de407f16ac2518feec26a51ba65a677978b474087925eb182a261c7b60dbe5d8",
+          "bytes": 102400
+        },
+        "net01.out": {
+          "sha256": "89e8320c0ec047ae865f0447eb041b92f09d8b83aa2c34f479cbd4d6cecb8469",
+          "bytes": 216269
+        },
+        "net01.sng": {
+          "sha256": "692c1dfcce54e9cb959140563cdbac7b8cfedef359c2f6458001283ecdf3532c",
+          "bytes": 5245
+        },
+        "net01.sum": {
+          "sha256": "8770048a285081f16484ab7ee5f42f5a972fc4807389b8135e1e49d40a70c93a",
+          "bytes": 8762
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "c94af5bf260fc741e1c49c06e8db2bc91ed63ff3552f4dd8804abe45e8fba7a3",
+          "bytes": 7786
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "original",
+      "case": "oc-oct01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/original/oc-oct01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/original/bin/FVSoc",
+        "--keywordfile=oct01.key"
+      ],
+      "returncode": 10,
+      "seconds": 0.855,
+      "binary_sha256": "440fb34841ede22b78c7d77a2237b1fb03287547d3132f145af8019d215008c4",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "b8870790efc41af3ccc157a513802b045ecbbd5614f5d30d8ee9ab266cf177a9",
+          "bytes": 57344
+        },
+        "oct01.out": {
+          "sha256": "fd5285d83884fae418a706ec54a4fe3962e94351283e9569796d6b048202eb3a",
+          "bytes": 239601
+        },
+        "oct01.sng": {
+          "sha256": "469347740612c729111405e97e9820511538c2965d11104175ae81c4d6ed8dc6",
+          "bytes": 30049
+        },
+        "oct01.sum": {
+          "sha256": "e048dbd6cda85b1b34a7d2fb078b2c26a1620701bd83672155853581b3ae033a",
+          "bytes": 9791
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "8deb2615e48ab1eee9dcf8cea60df65919ce378aa3e2cce670d7dbd252ed6274",
+          "bytes": 8278
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "current",
+      "case": "oc-oct01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/current/oc-oct01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/current/bin/FVSoc",
+        "--keywordfile=oct01.key"
+      ],
+      "returncode": 10,
+      "seconds": 0.896,
+      "binary_sha256": "75bdda0856fba13d05c8526b591f4cd6fad18f92d45c900be511f0c307199225",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "e0e4dfb5608e57d6b0ff57a6824ac8dda9e8c4cafe1ddcf561383dc3c48842e9",
+          "bytes": 57344
+        },
+        "oct01.out": {
+          "sha256": "bd55a5912e91db5bc0c3e04183bbf24510de06c03b7760b70b1154d7bc0d245c",
+          "bytes": 239601
+        },
+        "oct01.sng": {
+          "sha256": "469347740612c729111405e97e9820511538c2965d11104175ae81c4d6ed8dc6",
+          "bytes": 30049
+        },
+        "oct01.sum": {
+          "sha256": "7574858aa533c071c570a399085cda36aa13aaeb0e2d31566ce1890a02fe7126",
+          "bytes": 9791
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "8deb2615e48ab1eee9dcf8cea60df65919ce378aa3e2cce670d7dbd252ed6274",
+          "bytes": 8278
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "candidate",
+      "case": "oc-oct01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/candidate/oc-oct01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/candidate/bin/FVSoc",
+        "--keywordfile=oct01.key"
+      ],
+      "returncode": 10,
+      "seconds": 0.783,
+      "binary_sha256": "046b4cde37981e2851288518eced76f666caf435a5a2d4cdc0a6d0bb525eb539",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "163e9a9173eaa580b32acb9b06afb52f219702784f283c0516bd782e7ce85b35",
+          "bytes": 57344
+        },
+        "oct01.out": {
+          "sha256": "43a0f0f3cea6c08908c5fc9f33877992c3674317436f6202008e078ff8bc4347",
+          "bytes": 239601
+        },
+        "oct01.sng": {
+          "sha256": "469347740612c729111405e97e9820511538c2965d11104175ae81c4d6ed8dc6",
+          "bytes": 30049
+        },
+        "oct01.sum": {
+          "sha256": "f32722a66a3dd344eaadfc282244f555ff5919566769765b0e574cbe791f794a",
+          "bytes": 9791
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "8deb2615e48ab1eee9dcf8cea60df65919ce378aa3e2cce670d7dbd252ed6274",
+          "bytes": 8278
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "original",
+      "case": "on-Hardwood",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/original/on-Hardwood",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/original/bin/FVSon",
+        "--keywordfile=Hardwood.key"
+      ],
+      "returncode": 20,
+      "seconds": 0.392,
+      "binary_sha256": "599f74378225168de3fc8280440cbe3d355a808184645630b31ad5b0bec190b1",
+      "outputs": {
+        "Hardwood.out": {
+          "sha256": "33dd1a1d9bdd0888a33076ec45085b94449ac9b3585c8f072d40db98e66ffda5",
+          "bytes": 4087
+        },
+        "returncode.txt": {
+          "sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "d14dade1b367a6f37b0687de096971e2ddefc68fce70cd01054baffa82141c1a",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "current",
+      "case": "on-Hardwood",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/current/on-Hardwood",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/current/bin/FVSon",
+        "--keywordfile=Hardwood.key"
+      ],
+      "returncode": 20,
+      "seconds": 0.379,
+      "binary_sha256": "9de9a04a45adc338f436c55bd3b809831be484b3e27bc02124c78057061da29d",
+      "outputs": {
+        "Hardwood.out": {
+          "sha256": "08a14b328d568c0aa36eed3dd30ee2951b133764408070ebca5e4db7281cb287",
+          "bytes": 4087
+        },
+        "returncode.txt": {
+          "sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "d14dade1b367a6f37b0687de096971e2ddefc68fce70cd01054baffa82141c1a",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "candidate",
+      "case": "on-Hardwood",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/candidate/on-Hardwood",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/candidate/bin/FVSon",
+        "--keywordfile=Hardwood.key"
+      ],
+      "returncode": 20,
+      "seconds": 0.314,
+      "binary_sha256": "139695d66802e65867fe8343f47a8d0d9660c058879cfb2b85e3bf8534c7866c",
+      "outputs": {
+        "Hardwood.out": {
+          "sha256": "08a14b328d568c0aa36eed3dd30ee2951b133764408070ebca5e4db7281cb287",
+          "bytes": 4087
+        },
+        "returncode.txt": {
+          "sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "d14dade1b367a6f37b0687de096971e2ddefc68fce70cd01054baffa82141c1a",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "original",
+      "case": "op-opt01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/original/op-opt01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/original/bin/FVSop",
+        "--keywordfile=opt01.key"
+      ],
+      "returncode": 10,
+      "seconds": 0.954,
+      "binary_sha256": "4d0bcd1ce0450345c8022ab03bea370c1ae3e2ea984ea20a975a66864c844f0f",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "ed9f47872c1055713f3029e964a89f9608ece975a0d59195baa0ee7392c85145",
+          "bytes": 45056
+        },
+        "opt01.out": {
+          "sha256": "82f4b7e93e264128549a9121ff9c6e6b8b6c5578fad748fc82c876756e87b2c6",
+          "bytes": 231578
+        },
+        "opt01.sng": {
+          "sha256": "a5508f0a5f8d543f85b1c5465588caf39affa388c073d7e86a2133cf32746306",
+          "bytes": 52201
+        },
+        "opt01.sum": {
+          "sha256": "bf6e8e0adadc091b645fb87b3837ec2eab569814026b4d6b981dec6622b468f4",
+          "bytes": 9791
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "7b9b37c5e062ff25f66cc54a6a850b353a238e54ac44050f32a4a8308796bd15",
+          "bytes": 8278
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "current",
+      "case": "op-opt01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/current/op-opt01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/current/bin/FVSop",
+        "--keywordfile=opt01.key"
+      ],
+      "returncode": 10,
+      "seconds": 0.96,
+      "binary_sha256": "f388a218311ae5a96f35d0747c54b2db0c1980e6659cd2563eddf9345cff6700",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "8a5bf758b428237e7a71798853e2e3fe7b84fff16f11fc40042ef81d401dc9af",
+          "bytes": 45056
+        },
+        "opt01.out": {
+          "sha256": "696c254fcec8cfa0892a87b6012c631b53e1df948394b2f0da89c9c16d3d6749",
+          "bytes": 231578
+        },
+        "opt01.sng": {
+          "sha256": "a5508f0a5f8d543f85b1c5465588caf39affa388c073d7e86a2133cf32746306",
+          "bytes": 52201
+        },
+        "opt01.sum": {
+          "sha256": "79cd121bdd9e91d79bf28dab10cfdfb604ad5fde60c5cc870694bcf1866074a4",
+          "bytes": 9791
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "7b9b37c5e062ff25f66cc54a6a850b353a238e54ac44050f32a4a8308796bd15",
+          "bytes": 8278
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "candidate",
+      "case": "op-opt01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/candidate/op-opt01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/candidate/bin/FVSop",
+        "--keywordfile=opt01.key"
+      ],
+      "returncode": 10,
+      "seconds": 0.898,
+      "binary_sha256": "c62fd29da31f446e275b19f7e2824738e0423ca1b56ddc51448d47e5cad07343",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "a1296fb9ed4f6f36b47c25e6195bc21cfbc5590e334ddda06eb398c63353d695",
+          "bytes": 45056
+        },
+        "opt01.out": {
+          "sha256": "f352ee23cdd3cf02b45c686336194f1b6e4a7a5bd7b2592197c5781cd203b0e9",
+          "bytes": 231578
+        },
+        "opt01.sng": {
+          "sha256": "a5508f0a5f8d543f85b1c5465588caf39affa388c073d7e86a2133cf32746306",
+          "bytes": 52201
+        },
+        "opt01.sum": {
+          "sha256": "098a1a4eae8755f226a45cf671f44e0284c1c9c3892ce9ac230e4f03126fea6b",
+          "bytes": 9791
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "7b9b37c5e062ff25f66cc54a6a850b353a238e54ac44050f32a4a8308796bd15",
+          "bytes": 8278
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "original",
+      "case": "pn-pnt01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/original/pn-pnt01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/original/bin/FVSpn",
+        "--keywordfile=pnt01.key"
+      ],
+      "returncode": 10,
+      "seconds": 0.994,
+      "binary_sha256": "c8cff8b73f4d682039a2fa2e0c7c1137ca9ba9c3c238bd6564c724b722f7f8d1",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "8bdf01b211a144b39fcc335de8bb8d8d9ffbf4ad32e6e1750da43f249a470690",
+          "bytes": 49152
+        },
+        "pnt01.out": {
+          "sha256": "f2d247cb808942cad9097367a33e03cf91f0f85d9343de5e49e0e310650a5ae2",
+          "bytes": 195514
+        },
+        "pnt01.sng": {
+          "sha256": "82de31ce3ed5b262b21e0de3af37428aef39a742f5502f6f65ab66df196b7b5d",
+          "bytes": 11407
+        },
+        "pnt01.sum": {
+          "sha256": "4274e0f2779e9897cee871c7653ef9b50d2c9e67a25ae6d78e9632ea99dc4725",
+          "bytes": 8762
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "1941cb392f69bcb682bef8da9d0325ba01c8ffaaa6e34a3ec91be8fd78035af5",
+          "bytes": 7739
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "current",
+      "case": "pn-pnt01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/current/pn-pnt01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/current/bin/FVSpn",
+        "--keywordfile=pnt01.key"
+      ],
+      "returncode": 10,
+      "seconds": 0.972,
+      "binary_sha256": "4957389cc7704306c8e67fcac05d3143b42c4e56b67df593a2f691603a811877",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "4be6a931f6bacd3b4b6ed1852fd68347f4353c8836f51f74eb4fb7cb89e820ab",
+          "bytes": 49152
+        },
+        "pnt01.out": {
+          "sha256": "442084b38dbee786686aa8628de31f3caaa947cc294bb989526f1dd5db36c8ea",
+          "bytes": 195514
+        },
+        "pnt01.sng": {
+          "sha256": "82de31ce3ed5b262b21e0de3af37428aef39a742f5502f6f65ab66df196b7b5d",
+          "bytes": 11407
+        },
+        "pnt01.sum": {
+          "sha256": "0a00c4b31b1d5bb14d031fd327b32aa1beb56f6412072c1920a8758e9377dc3a",
+          "bytes": 8762
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "1941cb392f69bcb682bef8da9d0325ba01c8ffaaa6e34a3ec91be8fd78035af5",
+          "bytes": 7739
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "candidate",
+      "case": "pn-pnt01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/candidate/pn-pnt01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/candidate/bin/FVSpn",
+        "--keywordfile=pnt01.key"
+      ],
+      "returncode": 10,
+      "seconds": 1.028,
+      "binary_sha256": "0691c2f3d3394becde9fac07894a0ee24f3a4252105d067723c6ba36912d8b54",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "87d20a67c5e6d2061322210fa3b042afb8e797cb5d4b2aa615da270223663e7f",
+          "bytes": 49152
+        },
+        "pnt01.out": {
+          "sha256": "ae41f5f10da83ec3e4762897a40b131b5b641b7aaadec2135a5c57eb3fccaa36",
+          "bytes": 195514
+        },
+        "pnt01.sng": {
+          "sha256": "82de31ce3ed5b262b21e0de3af37428aef39a742f5502f6f65ab66df196b7b5d",
+          "bytes": 11407
+        },
+        "pnt01.sum": {
+          "sha256": "d771c325248098cb414af0ce887c09b54389c6480a1a6a5577993357ca9e4acb",
+          "bytes": 8762
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "1941cb392f69bcb682bef8da9d0325ba01c8ffaaa6e34a3ec91be8fd78035af5",
+          "bytes": 7739
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "original",
+      "case": "sn-snt01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/original/sn-snt01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/original/bin/FVSsn",
+        "--keywordfile=snt01.key"
+      ],
+      "returncode": 10,
+      "seconds": 1.141,
+      "binary_sha256": "ed84cf3220ba5537b79b1a346d0f3442b1f6167dc4a144621abd7074e01cf642",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "4118bbe285090a4c4374c7d9d387a40f94892a202c982d1d7f29008e22937dca",
+          "bytes": 81920
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "snt01.out": {
+          "sha256": "7f8ad784bbc2edc2c2fdde0690053fecb1494f0de71d6c7655deb00b85f44610",
+          "bytes": 212653
+        },
+        "snt01.sng": {
+          "sha256": "80f04d0afe27c1623b7368e350cb09062db002fa6f1e0657d69224ec8c9e9057",
+          "bytes": 17569
+        },
+        "snt01.sum": {
+          "sha256": "3585fb085efca107f6b3c415ef010355a3bbc164cad38f75927a954ff7a1d762",
+          "bytes": 8615
+        },
+        "snt01.trl": {
+          "sha256": "1eadb872a4759b82545d85fcb1bb8f1143ecc1f223ef43a67fbed1f405965902",
+          "bytes": 1136018
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "b8e908c72b6d609a1ec12600123f3d070810f3365b746799b41c6a83226baa75",
+          "bytes": 7709
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "current",
+      "case": "sn-snt01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/current/sn-snt01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/current/bin/FVSsn",
+        "--keywordfile=snt01.key"
+      ],
+      "returncode": 10,
+      "seconds": 1.031,
+      "binary_sha256": "29e7a755a0eb5f5e5318dcfde34423d3134c2d6480278c4618368cddcd6c0e09",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "40c85ae3557f6b7feaf28eae4cd1d58e098f9d22bc1e2d638320407576226815",
+          "bytes": 81920
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "snt01.out": {
+          "sha256": "04be555e3cb6c29f35314ea899221299e080adf52c4ba318d0f35ff285dae405",
+          "bytes": 212653
+        },
+        "snt01.sng": {
+          "sha256": "80f04d0afe27c1623b7368e350cb09062db002fa6f1e0657d69224ec8c9e9057",
+          "bytes": 17569
+        },
+        "snt01.sum": {
+          "sha256": "d1394ec7836ed5a1c1ddc70dcb47571fb85bdaed17e5355d6dde1d49803da6c1",
+          "bytes": 8615
+        },
+        "snt01.trl": {
+          "sha256": "48f2a6e4cb2332fd6a536a75b464ae5cb9129ac7c98f270f423a803fbfacb475",
+          "bytes": 1136018
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "b8e908c72b6d609a1ec12600123f3d070810f3365b746799b41c6a83226baa75",
+          "bytes": 7709
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "candidate",
+      "case": "sn-snt01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/candidate/sn-snt01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/candidate/bin/FVSsn",
+        "--keywordfile=snt01.key"
+      ],
+      "returncode": 10,
+      "seconds": 1.063,
+      "binary_sha256": "033146a4a0febe30ff1002a5d10799fcd964237de1cf0ecb910b73e5d3112289",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "23788559b02c19486e0f0a31fe2ab02b23c146ec1968128d4c68d3e8ecb8e5ee",
+          "bytes": 81920
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "snt01.out": {
+          "sha256": "363f76d562428d1823960f1540e3cb38ea5140f5abec6f174c8efc107c0eebff",
+          "bytes": 212653
+        },
+        "snt01.sng": {
+          "sha256": "80f04d0afe27c1623b7368e350cb09062db002fa6f1e0657d69224ec8c9e9057",
+          "bytes": 17569
+        },
+        "snt01.sum": {
+          "sha256": "82ab9b5e0322955c1290ea750729d9c915c36562344caad4d37b4e7d48ed8ce6",
+          "bytes": 8615
+        },
+        "snt01.trl": {
+          "sha256": "59cc4d8b0152af355d4ace1bb2a1f91de5eb8c86ea1cc5d87bb88abea285d83e",
+          "bytes": 1136018
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "b8e908c72b6d609a1ec12600123f3d070810f3365b746799b41c6a83226baa75",
+          "bytes": 7709
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "original",
+      "case": "so-sot01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/original/so-sot01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/original/bin/FVSso",
+        "--keywordfile=sot01.key"
+      ],
+      "returncode": 10,
+      "seconds": 1.238,
+      "binary_sha256": "7b4e5318e01c324597a711d16ccc660d7e0b9f7b7c39af31a21f603667114cc2",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "bb1a5aef6235895223ed3644ef21c94466c66173db7ce294c42d067e712bf502",
+          "bytes": 45056
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "sot01.out": {
+          "sha256": "011e65cf84e402d0df7452927f42dc27a8efec2947d34400a9e59693581a2402",
+          "bytes": 219717
+        },
+        "sot01.sng": {
+          "sha256": "c06ae648201e044a8c4c22a5fcc553dcd92d889957bffc53a8359627120c8dee",
+          "bytes": 26929
+        },
+        "sot01.sum": {
+          "sha256": "6c09329963005e8c0cd52a35bb8ff18bb39203b1f7fd6c69d8b916bdd67383dd",
+          "bytes": 8762
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "c7e2e9e6517f1e021c28c11bcf31e598aea2fb77b6b2e0b39dfbd87f7c3023d2",
+          "bytes": 7739
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "current",
+      "case": "so-sot01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/current/so-sot01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/current/bin/FVSso",
+        "--keywordfile=sot01.key"
+      ],
+      "returncode": 10,
+      "seconds": 1.31,
+      "binary_sha256": "b3478100b056a4f1382ef7d5dae91231858906bd0747aff3ec39f3a3f2c968ce",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "3329be8f6c04400195af2b1235a1045a0c027efb34274e353f92e5a9138de798",
+          "bytes": 45056
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "sot01.out": {
+          "sha256": "a47177524466d9e432b2b9f2797e200061cdc6f535a9df79c8d714718d7e1844",
+          "bytes": 219717
+        },
+        "sot01.sng": {
+          "sha256": "c06ae648201e044a8c4c22a5fcc553dcd92d889957bffc53a8359627120c8dee",
+          "bytes": 26929
+        },
+        "sot01.sum": {
+          "sha256": "7f9fa87a3d6f80359b53d866544875ea815eb7ae08d268d981a0c9f10a847e3c",
+          "bytes": 8762
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "c7e2e9e6517f1e021c28c11bcf31e598aea2fb77b6b2e0b39dfbd87f7c3023d2",
+          "bytes": 7739
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "candidate",
+      "case": "so-sot01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/candidate/so-sot01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/candidate/bin/FVSso",
+        "--keywordfile=sot01.key"
+      ],
+      "returncode": 10,
+      "seconds": 1.437,
+      "binary_sha256": "5168aceb75a6c7db3b63aa1ecf4f5336ad7d470d494cc51e356f09c0d0da43e6",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "3d425c66b50804f4fefadf9890f5627b56a2ca029d2d50b7f7a7391b9a096775",
+          "bytes": 45056
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "sot01.out": {
+          "sha256": "5b6f7f8643845e028767147c78437c2e5f7ce612fa0c8f21b51500eb60e1b5cf",
+          "bytes": 219717
+        },
+        "sot01.sng": {
+          "sha256": "c06ae648201e044a8c4c22a5fcc553dcd92d889957bffc53a8359627120c8dee",
+          "bytes": 26929
+        },
+        "sot01.sum": {
+          "sha256": "3420f923207ba6bcac2448435d21ac55984469dd534a67f367f5c8b5916b6af5",
+          "bytes": 8762
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "c7e2e9e6517f1e021c28c11bcf31e598aea2fb77b6b2e0b39dfbd87f7c3023d2",
+          "bytes": 7739
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "original",
+      "case": "tt-ttt01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/original/tt-ttt01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/original/bin/FVStt",
+        "--keywordfile=ttt01.key"
+      ],
+      "returncode": 10,
+      "seconds": 1.296,
+      "binary_sha256": "e79c51354e3273d343f42e170df0b4811508f4774ba0c9905ed7d5086d91c1ae",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "b5caf340cbf15e10c605e826f52946974a7b6e3dfa122ad84ce94bc72a085a42",
+          "bytes": 32768
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "a2bc8d186b13cbd5228d4103eced0f6606076399ac666665a42bdefe9b1b6d00",
+          "bytes": 7786
+        },
+        "ttt01.out": {
+          "sha256": "f0e76c79bcdcb9468de8d5140fcebf432cb1dd02a4229ebcd52cb49bf076b749",
+          "bytes": 189909
+        },
+        "ttt01.sng": {
+          "sha256": "e78bf8d020b0ec07941896d142481bc345ca783fe19c359902ac8fe93f77310f",
+          "bytes": 4777
+        },
+        "ttt01.sum": {
+          "sha256": "ec0556b2563ee6a6ac2bec69b14e53b4e23d004051afbab53e9430c0c4cd1824",
+          "bytes": 8762
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "current",
+      "case": "tt-ttt01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/current/tt-ttt01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/current/bin/FVStt",
+        "--keywordfile=ttt01.key"
+      ],
+      "returncode": 10,
+      "seconds": 1.438,
+      "binary_sha256": "497f966e5c65b777ea4cad12d08f9ab6f343fc2cebb5fdf2f8cfe8c9e2b5d60a",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "0f26d8f6c0a042382ae9a4f0420ddf30991b22b39a7894a0c41a1463148b25e7",
+          "bytes": 32768
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "a2bc8d186b13cbd5228d4103eced0f6606076399ac666665a42bdefe9b1b6d00",
+          "bytes": 7786
+        },
+        "ttt01.out": {
+          "sha256": "74b569ca560a153d6a2f2bd4315d5909a42c61e1b43be843f331f149f3cfdf44",
+          "bytes": 189909
+        },
+        "ttt01.sng": {
+          "sha256": "e78bf8d020b0ec07941896d142481bc345ca783fe19c359902ac8fe93f77310f",
+          "bytes": 4777
+        },
+        "ttt01.sum": {
+          "sha256": "e3d42fbce81bf03464f06a5808fd729661ecc080b61dbb46d4ed07b895003d3b",
+          "bytes": 8762
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "candidate",
+      "case": "tt-ttt01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/candidate/tt-ttt01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/candidate/bin/FVStt",
+        "--keywordfile=ttt01.key"
+      ],
+      "returncode": 10,
+      "seconds": 1.417,
+      "binary_sha256": "f0cefa0d005976b1d85b9826335d24a44f6f9cb13ed7c4b860b50a13f4e8caac",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "971c6150483d7923ab6f098414b510f70abf052cfd542b2118c92255781572ea",
+          "bytes": 32768
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "a2bc8d186b13cbd5228d4103eced0f6606076399ac666665a42bdefe9b1b6d00",
+          "bytes": 7786
+        },
+        "ttt01.out": {
+          "sha256": "f8228c4edfd97ddd6a4a8658597eb13549018040c78696196f8a2362d68b0c28",
+          "bytes": 189909
+        },
+        "ttt01.sng": {
+          "sha256": "e78bf8d020b0ec07941896d142481bc345ca783fe19c359902ac8fe93f77310f",
+          "bytes": 4777
+        },
+        "ttt01.sum": {
+          "sha256": "fd3df17a32217c39cfd544262c10d1bc921cff805a81a965f812b460319529d9",
+          "bytes": 8762
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "original",
+      "case": "ut-utt01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/original/ut-utt01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/original/bin/FVSut",
+        "--keywordfile=utt01.key"
+      ],
+      "returncode": 10,
+      "seconds": 1.318,
+      "binary_sha256": "6b180ce449ac2e744c67b0adc3a72c7eb2f40f55213eaf4ac9ef642353c6cae6",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "ca2ec18f1ab8c712f29c88c3ef3dae9531c0417a39f0a23d4a4b7e0bc12d94f0",
+          "bytes": 36864
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "6ce085088b426842a748122dbddf3b4d83f4adcec6cb9b7a85bc221f2325debe",
+          "bytes": 7786
+        },
+        "utt01.out": {
+          "sha256": "fd5dfa5e3c72003f468778fa58a053b33ba56b9000cf9d397bf7bf8cd621fa41",
+          "bytes": 191966
+        },
+        "utt01.sng": {
+          "sha256": "b700aefa3895a91f3db3af3c0b577aeaa9190b92461ea73113bb6c7f03b1e1cc",
+          "bytes": 4153
+        },
+        "utt01.sum": {
+          "sha256": "11905fb5ecc6fef2c0617558f625698fe655e499429a2b83f9c8e3e1232437c3",
+          "bytes": 8762
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "current",
+      "case": "ut-utt01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/current/ut-utt01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/current/bin/FVSut",
+        "--keywordfile=utt01.key"
+      ],
+      "returncode": 10,
+      "seconds": 1.14,
+      "binary_sha256": "5c52cbc652b737a1764f48b2c869ac5d99373c8773ca371778cb46bf8b06067f",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "9aa53f5bb7a9ff6726e86f1918973d087a6b62a04fc0a232f12347e5fa1e4be3",
+          "bytes": 36864
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "6ce085088b426842a748122dbddf3b4d83f4adcec6cb9b7a85bc221f2325debe",
+          "bytes": 7786
+        },
+        "utt01.out": {
+          "sha256": "18e20ef4a4dec96e046c890920d6c7867a91d3c948750a1d0ac6e733853c447c",
+          "bytes": 191966
+        },
+        "utt01.sng": {
+          "sha256": "b700aefa3895a91f3db3af3c0b577aeaa9190b92461ea73113bb6c7f03b1e1cc",
+          "bytes": 4153
+        },
+        "utt01.sum": {
+          "sha256": "44a88b513c75bb047654fb52f1195221934e122220db5abff251bc4d4784833b",
+          "bytes": 8762
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "candidate",
+      "case": "ut-utt01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/candidate/ut-utt01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/candidate/bin/FVSut",
+        "--keywordfile=utt01.key"
+      ],
+      "returncode": 10,
+      "seconds": 1.062,
+      "binary_sha256": "1db6d3c1756e12a2e2c20c3fe43853d55cec370597371ea65619b06036c3c02a",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "5a750c20397e3519164fd25e176e5864463e01b6a48e6a938ddc08ebb88f0b23",
+          "bytes": 36864
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "6ce085088b426842a748122dbddf3b4d83f4adcec6cb9b7a85bc221f2325debe",
+          "bytes": 7786
+        },
+        "utt01.out": {
+          "sha256": "8f5106c459002c9459b88c3b32caaa735bd2e5782a89cf5f64187bda1d89c040",
+          "bytes": 191966
+        },
+        "utt01.sng": {
+          "sha256": "b700aefa3895a91f3db3af3c0b577aeaa9190b92461ea73113bb6c7f03b1e1cc",
+          "bytes": 4153
+        },
+        "utt01.sum": {
+          "sha256": "fd40f7d146d66c900df9db329f278643f5f47dfe9f2def75b698bdcb6b5bd968",
+          "bytes": 8762
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "original",
+      "case": "wc-wct01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/original/wc-wct01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/original/bin/FVSwc",
+        "--keywordfile=wct01.key"
+      ],
+      "returncode": 10,
+      "seconds": 1.266,
+      "binary_sha256": "d1d4355f7cc9139d0a730ccab0d972e05c13707fff3c12b9c7a629d8298aa15a",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "73b28c6eec3c7c79e2bb52ee88e775636b73c16418934755b29df102572708a8",
+          "bytes": 49152
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "8e3bc7f726142300c31f4eccef5fa8e68c60fbc4ecddd3ec183b182e62db1b66",
+          "bytes": 7739
+        },
+        "wct01.out": {
+          "sha256": "f4c4f348b64e6257a2aad1d5c57d4aaba795cc71f81b4b00e32042bd38cb6e7f",
+          "bytes": 193540
+        },
+        "wct01.sng": {
+          "sha256": "549d1dd8ef3f024fe62f53558b1735284d92f3c7d58e36ea596b791916d743be",
+          "bytes": 9925
+        },
+        "wct01.sum": {
+          "sha256": "aea082950d61984bc4265a85425c72cded6f6f86b648c214ac1e9fb05bb4c1c6",
+          "bytes": 8762
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "current",
+      "case": "wc-wct01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/current/wc-wct01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/current/bin/FVSwc",
+        "--keywordfile=wct01.key"
+      ],
+      "returncode": 10,
+      "seconds": 1.142,
+      "binary_sha256": "3c1c0b2cf2ee29a7ed66647d9f5199fb66808543ee24bf5ac9f44e2026543243",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "5ac43d61a80ffa7b0effd64491eb6356044e1ce8d3899c1a49dde518dd4b0908",
+          "bytes": 49152
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "8e3bc7f726142300c31f4eccef5fa8e68c60fbc4ecddd3ec183b182e62db1b66",
+          "bytes": 7739
+        },
+        "wct01.out": {
+          "sha256": "3895ae40dda74f2664a380bfa495f87d652c7907c6b5550af4e37953b7f583d3",
+          "bytes": 193540
+        },
+        "wct01.sng": {
+          "sha256": "549d1dd8ef3f024fe62f53558b1735284d92f3c7d58e36ea596b791916d743be",
+          "bytes": 9925
+        },
+        "wct01.sum": {
+          "sha256": "a83879d5883fe5909ca9d374515acf3b28c95ae0a81295111f5c12b51f62e264",
+          "bytes": 8762
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "candidate",
+      "case": "wc-wct01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/candidate/wc-wct01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/candidate/bin/FVSwc",
+        "--keywordfile=wct01.key"
+      ],
+      "returncode": 10,
+      "seconds": 1.142,
+      "binary_sha256": "e73d8f325e0af3bec6b5c50b4bb3d847c05bb2402c6e583936874d1a99412a6a",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "3bf11174ec29b3660737ec9251d43a58d1f80c88e18b2ffe702e5f7cca416166",
+          "bytes": 49152
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "8e3bc7f726142300c31f4eccef5fa8e68c60fbc4ecddd3ec183b182e62db1b66",
+          "bytes": 7739
+        },
+        "wct01.out": {
+          "sha256": "366e057a3953c7944fb1b5d07590ddcf65367eaee0b7e5a3295bc0300c9f2b34",
+          "bytes": 193540
+        },
+        "wct01.sng": {
+          "sha256": "549d1dd8ef3f024fe62f53558b1735284d92f3c7d58e36ea596b791916d743be",
+          "bytes": 9925
+        },
+        "wct01.sum": {
+          "sha256": "c7bd40a66ee057600350bea996adf02214c67c73c16e05be63b7ff40f2d9e133",
+          "bytes": 8762
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "original",
+      "case": "ws-wst01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/original/ws-wst01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/original/bin/FVSws",
+        "--keywordfile=wst01.key"
+      ],
+      "returncode": 10,
+      "seconds": 1.117,
+      "binary_sha256": "90d9beba9c0d0b586fe57264e0017cbb04cdb65a5608ff6e9bcee9f04fe40983",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "909814e277fa1c5935538019f67b6f289d03e50313f29c6cafc6141ccf5fae3d",
+          "bytes": 49152
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "6c31363ad51cd46a07575fc92bde05af106a09f19b05664de933f257e445cae4",
+          "bytes": 7786
+        },
+        "wst01.out": {
+          "sha256": "0b517a8ae06ce75562df044d452f474037f2363d574ff0387997a1d404f3729d",
+          "bytes": 194265
+        },
+        "wst01.sng": {
+          "sha256": "b7ec550dcb2aa18743ebcc43b36b19b3e9d7604e509bb5d6ad324aa27c9e1096",
+          "bytes": 4699
+        },
+        "wst01.sum": {
+          "sha256": "7a229e70d621166353fbf2a5af9d0440620054316b4e84e4aba4119cb7793523",
+          "bytes": 8762
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "current",
+      "case": "ws-wst01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/current/ws-wst01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/current/bin/FVSws",
+        "--keywordfile=wst01.key"
+      ],
+      "returncode": 10,
+      "seconds": 1.057,
+      "binary_sha256": "3a8f81cbff55e6ceee172f310a4218fd3ea7ee846db026a68ca3381680a46ca6",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "3936571ba3b36c06ce09866e43ce2e9df4a8f3d9ccaaf93973a3b54d0cdde586",
+          "bytes": 49152
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "6c31363ad51cd46a07575fc92bde05af106a09f19b05664de933f257e445cae4",
+          "bytes": 7786
+        },
+        "wst01.out": {
+          "sha256": "c6ebbf55dc6aee3f3392af8a8a12af742c3a57e4fa72b228733a006365a4f192",
+          "bytes": 194265
+        },
+        "wst01.sng": {
+          "sha256": "b7ec550dcb2aa18743ebcc43b36b19b3e9d7604e509bb5d6ad324aa27c9e1096",
+          "bytes": 4699
+        },
+        "wst01.sum": {
+          "sha256": "84f02e03ec84bb34156e7a227045e1b53f056fb6d9ddf6e6ecb6ce970620e55e",
+          "bytes": 8762
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "candidate",
+      "case": "ws-wst01",
+      "directory": "/private/tmp/mfvs-c01-c06-20261114/runs/candidate/ws-wst01",
+      "command": [
+        "/private/tmp/mfvs-c01-c06-20261114/candidate/bin/FVSws",
+        "--keywordfile=wst01.key"
+      ],
+      "returncode": 10,
+      "seconds": 1.016,
+      "binary_sha256": "7dc10667b73436ece6874a80894ca5c8d2186b4bb9e32ee2c67ba76141d4c415",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "b4b09c3ae6b99897b4194861f4bf59e9af93ae872c7338c3dd0b4e990dbdba86",
+          "bytes": 49152
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "6c31363ad51cd46a07575fc92bde05af106a09f19b05664de933f257e445cae4",
+          "bytes": 7786
+        },
+        "wst01.out": {
+          "sha256": "5e7aecd266730a58970df39d2027f57be2ade4e5510ce16409f60a39711a1f09",
+          "bytes": 194265
+        },
+        "wst01.sng": {
+          "sha256": "b7ec550dcb2aa18743ebcc43b36b19b3e9d7604e509bb5d6ad324aa27c9e1096",
+          "bytes": 4699
+        },
+        "wst01.sum": {
+          "sha256": "e3691e401475c452074b54f150aaf149b962b2972f297ae43bba42cfec6a86f6",
+          "bytes": 8762
+        }
+      },
+      "modified_inputs": []
+    }
+  ]
+}

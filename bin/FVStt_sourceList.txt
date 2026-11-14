@@ -402,7 +402,7 @@
 ../estb/esprin.f90
 ../estb/esrann.f90
 ../strp/estab.f90
-../strp/estime.f90
+../estb/estime.f90
 ../estb/estump.f90
 ../strp/esuckr.f90
 

@@ -1,0 +1,46 @@
+! Exercise every mapped species with real sorting, percentiles and crown math.
+program CHECK_CROWN
+  implicit none
+  include 'PRGPRM.f90'
+  include 'FMPARM.f90'
+  include 'FMCOM.f90'
+  include 'CONTRL.f90'
+  include 'ARRAYS.f90'
+  integer :: TESTMODE,TESTD,TESTI,TESTCOUNT
+  real :: TESTDBH(5)
+  logical :: TESTDEBUG
+  common /TESTDBG/ TESTDEBUG
+  data TESTDBH /0.0,3.0,7.0,15.0,30.0/
+  open(31,file='state.bin',access='stream',form='unformatted')
+  ICYC = 1
+  JOSTND = 6
+  VARACD = '@VARIANT@'
+  V2T = 0.5
+  TESTCOUNT = 0
+  do TESTMODE = 0,4
+     do TESTD = 1,5
+        ITRN = MAXSP
+        if (TESTMODE.eq.3) ITRN = 0
+        TESTDEBUG = TESTMODE.eq.0.and.TESTD.eq.4
+        CROWNW = -876.5
+        do TESTI = 1,MAXSP
+           ISP(TESTI) = TESTI
+           DBH(TESTI) = TESTDBH(TESTD)
+           HT(TESTI) = 50.0+TESTI
+           ICR(TESTI) = 50
+           ITRUNC(TESTI) = 0
+           PROB(TESTI) = REAL(TESTI)
+           GROW(TESTI) = 1.0
+           if (TESTMODE.eq.1) GROW(TESTI) = -2.0
+           if (TESTMODE.eq.2) GROW(TESTI) = 0.0
+           if (TESTMODE.eq.4) HT(TESTI) = 0.0
+        end do
+        PROB(3) = 0.0
+        call FMCROW
+        write(31) TESTMODE,TESTD,GROW(1:MAXSP),CROWNW(1:MAXSP,:)
+        TESTCOUNT = TESTCOUNT+1
+     end do
+  end do
+  close(31)
+  write(*,*) 'FMCROW cases:',TESTCOUNT
+end program CHECK_CROWN

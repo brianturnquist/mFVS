@@ -25,6 +25,12 @@ CASES = {
     "sn-nc03": ("sn", "snt01", ["snt01.key", "snt01.tre"]),
     "sn-nc05": ("sn", "snt01", ["snt01.key", "snt01.tre"]),
 }
+# Standard decks for the other manifest-selected variants. Keep the original
+# default case list unchanged; a cleanup must explicitly request its consumers.
+for variant in ("ak", "bm", "ca", "ci", "cr", "cs", "ec", "em", "kt", "ls",
+                "nc", "ne", "oc", "op", "pn", "so", "tt", "ut", "wc", "ws"):
+    deck = f"{variant}t01"
+    CASES[f"{variant}-{deck}"] = (variant, deck, [f"{deck}.key", f"{deck}.tre"])
 DEFAULT_CASES = ["ie-iet01", "bc-StandStructure", "bc-YSM-SkyRanch", "on-Hardwood"]
 SN_FORESTS = {"sn-nc03": 81103, "sn-nc05": 81105}
 
@@ -55,12 +61,18 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--evidence-dir", type=Path, required=True)
     parser.add_argument("--cases", nargs="+", choices=tuple(CASES), default=DEFAULT_CASES)
+    parser.add_argument("--include-canadian-candidate", action="store_true",
+                        help="Also compare the candidate's existing BC/ON input-failure boundary")
+    parser.add_argument("--resume", action="store_true",
+                        help="Retain and validate completed runs while adding explicitly requested cases")
     args = parser.parse_args()
     evidence = args.evidence_dir.resolve()
     builds = json.loads((evidence / "builds.json").read_text())
     snapshots = {name: Path(state["snapshot"]) for name, state in builds["states"].items()}
     work = snapshots["original"].parent
     receipt = {"cases": {}, "runs": []}
+    if args.resume and (evidence / "runs.json").exists():
+        receipt = json.loads((evidence / "runs.json").read_text())
     env = dict(os.environ)
     env.update({"LC_ALL": "C", "TZ": "UTC"})
     for case in args.cases:
@@ -79,8 +91,13 @@ def main() -> int:
                 data = derived_sn_input(data, SN_FORESTS[case])
             payloads[name] = data
             inputs[name] = hashlib.sha256(data).hexdigest()
-        receipt["cases"][case] = {"variant": variant, "deck": deck, "inputs": inputs,
-                                 "source_inputs": source_inputs}
+        case_identity = {"variant": variant, "deck": deck, "inputs": inputs,
+                         "source_inputs": source_inputs}
+        if case in receipt["cases"]:
+            previous = {key: value for key, value in receipt["cases"][case].items() if key != "derivation"}
+            if previous != case_identity:
+                raise RuntimeError(f"Cannot resume changed case inputs: {case}")
+        receipt["cases"][case] = case_identity
         if case in SN_FORESTS:
             receipt["cases"][case]["derivation"] = {
                 "source": "sn-snt01", "first_stand_only": True,
@@ -88,9 +105,20 @@ def main() -> int:
             }
         # Canadian cases establish the existing input-failure boundary; the
         # simulation decks compare all three identities in separate processes.
-        states = ("original", "current") if variant in ("bc", "on") else ("original", "current", "candidate")
+        states = (("original", "current") if variant in ("bc", "on") and not args.include_canadian_candidate
+                  else ("original", "current", "candidate"))
         for state in states:
             binary = snapshots[state] / "bin" / f"FVS{variant}"
+            previous = next((run for run in receipt["runs"]
+                             if run["state"] == state and run["case"] == case), None)
+            if previous:
+                if sha256(binary) != previous["binary_sha256"] or any(
+                    sha256(Path(previous["directory"]) / name) != identity["sha256"]
+                    for name, identity in previous["outputs"].items()
+                ):
+                    raise RuntimeError(f"Cannot resume changed capture: {state}/{case}")
+                print(f"Verified retained run {state} {case}", flush=True)
+                continue
             directory = work / "runs" / state / case
             directory.mkdir(parents=True, exist_ok=False)
             for name in filenames:

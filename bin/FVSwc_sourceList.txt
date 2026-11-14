@@ -397,7 +397,7 @@
 ../estb/esprin.f90
 ../estb/esrann.f90
 ../strp/estab.f90
-../strp/estime.f90
+../estb/estime.f90
 ../estb/estump.f90
 ../strp/esuckr.f90
 
@@ -606,7 +606,7 @@
 ../fire/ie/fmcons.f90
 ../fire/base/fmmois.f90
 ../fire/pn/fmsfall.f90
-../fire/vpn/fmcfmd.f90
+../fire/base/fmcfmd.f90
 
 ../fire/vbase/fmburn.f90
 ../fire/vbase/fmcfmd2.f90
