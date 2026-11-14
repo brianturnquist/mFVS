@@ -126,13 +126,7 @@ Files still affected and compiled:
 
 The same defect was in pre-modernization `canada/bc/keyopn.f`, `metric/base/ksstag.f` and `metric/clim/clin.f`. The consolidation replaced those with the shared 12-element versions, so it no longer exists there.
 
-Uncompiled files with the same defect:
-- `archive/bgc/src/bgcin.f90`
-- `metric/dfb/dfbin.f90`
-- `metric/estb/esin.f90`
-- `metric/ppbase/ppin.f90`
-- `metric/rd/rdin.f90`, `rdinca.f90`, `rdincr.f90`, `rdinie.f90`, `rdinso33.f90`, `rdinut.f90`
-- `metric/wwpb/bmppin.f90`
+Eleven uncompiled files had the same defect (in `archive/bgc/`, `metric/dfb/`, `metric/estb/`, `metric/ppbase/`, `metric/rd/` and `metric/wwpb/`). They were removed with the other unbuilt directories on 14 November 2026.
 
 A scratch build with the four compiled files widened to 12 read the BC and ON keyword files correctly.
 

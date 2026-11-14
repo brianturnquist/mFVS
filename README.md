@@ -105,7 +105,7 @@ Each test runs a variant on the keyword files in its `tests/FVSxx` folder. It th
 | `volume/`, `fiavbc/` | Volume, biomass and carbon equations; `volume/NVEL` is a git submodule holding the mFVS fork of the National Volume Estimator Library (see its README) |
 | `pg/` | Stop and restart support |
 | `tests/` | Regression tests |
-| `acd/`, `dbs/`, `dfb/`, `dftm/`, `lpmpb/`, `wpbr/`, `wsbwe/`, `wwpb/`, `archive/` | Code not used by any current build |
+| `acd/` | Code not used by any current build |
 | `changeNotes/` | Historical upstream change notes |
 
 ## Known issues

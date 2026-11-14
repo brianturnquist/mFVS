@@ -6,9 +6,10 @@ Audit baseline: main repository `776491e8850b447e638f7b267b8bcaab641584f4`,
 with NVEL submodule `a73e697e220ffd0f792aa7ac10d84c911edb7ad7`.
 
 This checklist stores the redundancy and dormant-code findings before cleanup.
-P01–P03, D01–D13 and C01–C18 are complete. D14 and the remaining blocks are
-pending: 53 completed and 67 pending items. BC/ON simulation parity remains
-blocked by the existing bugs in [FOUND_BUGS.md](FOUND_BUGS.md).
+P01–P03, D01–D13, C01–C18 and the unbuilt-directory removal (R01–R08, R10–R10d)
+are complete. D14, R09 and the remaining blocks are pending: 65 completed and
+55 pending items. BC/ON simulation parity remains blocked by the existing bugs
+in [FOUND_BUGS.md](FOUND_BUGS.md).
 
 Run the necessary comparisons against original F77 and the immediate baseline,
 then discard generated results and temporary builds. Keep this checklist and
@@ -17,7 +18,9 @@ dumps or separate completion reports.
 
 The findings combine source-list inventory, source comparisons, call/ENTRY
 inspection and historical notes. They are not blanket permission to delete
-scientific alternatives or entire dormant features.
+scientific alternatives. The unbuilt directories listed in section R were
+removed on 14 November 2026 by the maintainer's decision; they remain in Git
+and in upstream FVS.
 
 ## Using this tracker
 
@@ -169,8 +172,14 @@ real statement differences, including species tables, defaults, diagnostics,
 and control flow. The 568 unlisted files are dormant inventory, not 568 proven
 safe deletions.
 
-Historical source lists under `canada/bin/` still reference older components.
-Current build exclusion and historical/custom-build support are separate facts.
+After the section R removal on 14 November 2026 there are 1,545 tracked
+Fortran files, of which 45 are outside all 24 source lists: `acd/` (27, R09),
+the nine D14 `esuckr` copies, `organon/orgfert.f` (kept on purpose), and eight
+others not yet reviewed: `rd/RDPARMCA.f90`, `rd/rdblk1ca.f90`, `rd/rdinca.f90`,
+`rd/rdinitca.f90`, and `canada/bc/bcspp.f90`, `esetpr.f90`, `esinit.f90`,
+`estab.f90`.
+
+The historical source lists under `canada/bin/` were removed with section R.
 Trace the selected implementation, not just the routine name: many old files
 define names that remain live through a different file.
 
@@ -355,7 +364,7 @@ retire it. Unknown historical intent is not evidence of abandoned research.
   keep `canada/bc/natcrz.f90`, which BC and ON still select. Completed
   13 November 2026: removed only the retired US implementation. The selected
   Canadian stub and historical notes are unchanged. Dormant Canadian source
-  lists still contain stale references; current recipes do not select them.
+  lists that still referenced it were removed with section R.
 - [x] **D04 — `canada/on/findag_for.f90`.** Completed 13 November 2026:
   retired the unselected FINDAG alternative. ON keeps `canada/on/findag.f90`;
   The retired HTCALC call omitted basal area, DBH and diameter percentile;
@@ -447,60 +456,59 @@ D14 retains the original audit's ID for CI.
 - [ ] **D14-08 — `canada/bc/esuckr.f90`.** Separate replacement comparison.
 - [ ] **D14-09 — `canada/on/esuckr.f90`.** Separate replacement comparison.
 
-## R — Dormant feature preservation decisions
+## R — Unbuilt directories: removed
 
-These are **decision tasks**, not whole-directory deletion tasks. Each first
-produces a build-boundary inventory, historical-purpose summary, and explicit
-retain/defer/retire decision. Split any approved removal into file-sized tasks
-with recovery references and verification. Checking a decision off never marks
-all files in that directory as deleted.
+The maintainer decided to remove code that no build uses, as in the earlier
+reverted commit `289fca18`. On 14 November 2026, 496 files (135,361 lines) were
+removed from the tree at `0245846c`. None was in any of the 24 source lists,
+and none is in any upstream source list at `c2105365`. The 41 matching entries
+in `bin/fortran_includes.txt` were removed with them.
 
-| Area at audit baseline | Unlisted Fortran files | Historical interpretation |
-|---|---:|---|
-| `archive/bgc/` | 31 | Documented ended special research project |
-| `dbs/` | 47 | Alternative ODBC database implementation |
-| `dfb/` | 30 | Douglas-fir beetle extension |
-| `dftm/` | 40 | Douglas-fir tussock moth extension |
-| `lpmpb/` | 58 | Mountain pine beetle extension |
-| `wpbr/` | 44 | White pine blister rust extension |
-| `wsbwe/` | 61 | Budworm extension |
-| `wwpb/` | 59 | Westwide pine beetle model |
-| `acd/` | 27 | Unbuilt geographic model implementation |
+Checks: all 24 source lists are byte-identical before and after, every list
+entry exists, the include/compile classification of every listed file is
+unchanged, and all 24 variants build. No compiled input changed, so no output
+comparison was needed.
 
-- [ ] **R01 — BGC retention decision.** The
-  [2021 note](changeNotes/2021.07.28_ldavid.txt) says the project ended, the
-  model had not been built for over five years, and no future use was expected.
-  Record that evidence and a recovery reference. ON still selects
-  `base/exbgc.f90`; the active stub is a separate matter.
-- [ ] **R02 — ODBC support decision.** Inventory the boundaries of `dbs/`,
-  `vdbs/`, and their metric counterparts. Historical notes distinguish ODBC
-  and SQLite products; current products select SQLite. Decide whether ODBC
-  remains supported before scheduling any file removals.
-- [ ] **R03 — Douglas-fir beetle support decision (`dfb/`).** Current builds
-  select stubs. No evidence found establishes that the science was abandoned.
-- [ ] **R04 — Tussock moth support decision (`dftm/`).** Current builds
-  select stubs; establish feature intent before proposing removals.
-- [ ] **R05 — Mountain pine beetle support decision (`lpmpb/`).** Current
-  builds select stubs; establish feature intent before proposing removals.
-- [ ] **R06 — Blister rust support decision (`wpbr/`).** Current builds
-  select stubs; establish feature intent before proposing removals.
-- [ ] **R07 — Budworm support decision (`wsbwe/`).** Current builds select
-  stubs; establish feature intent before proposing removals.
-- [ ] **R08 — Westwide pine beetle support decision (`wwpb/`).** Internal
-  comments about replaced output routines do not establish retirement of the
-  whole model. Preserve its science pending an explicit support decision.
-- [ ] **R09 — Acadian model support decision (`acd/`).** Treat the unbuilt
-  geographic implementation as a support-scope decision, not ordinary
-  duplicate removal.
-- [ ] **R10 — Northern Idaho archive decision (`archive/ni/`, 34 files).**
-  Establish replacement relationships and preserve scientific alternatives.
-- [ ] **R10b — Alaska archive decision (`archive/ak/`, 4 files).** Review
-  independently of the Northern Idaho archive.
-- [ ] **R10c — Fire archive decision (`archive/fire/`, 9 files).** Review
-  independently and retain replacement/recovery references.
-- [ ] **R10d — Parallel-processing declarations (`archive/PPEcommons/`, 13
-  files).** Trace historical PPE use and distinguish it from active stop/restart
-  support before deciding on retention.
+To recover a file, use `git show 0245846c:<path>` for the free-form version,
+or the same path with its original extension at upstream `c2105365` for the
+fixed-form original.
+
+| Removed | Files | Lines | Why it was dead |
+|---|---:|---:|---|
+| `wsbwe/` (budworm) | 61 | 17,996 | Left the last upstream source list on 2022-07-18 (`4cc51a97`); variants link the `base/exbudl.f90` stub |
+| `wwpb/`, `metric/wwpb/` (westwide pine beetle) | 63 | 19,080 | Left the last upstream source list on 2012-05-22 (`939005c2`); variants link `base/exbm.f90` |
+| `wpbr/` (blister rust) | 44 | 8,680 | Left the last upstream source list on 2022-01-16 (`b24f98fe`); variants link `base/exbrus.f90` |
+| `lpmpb/` (mountain pine beetle) | 58 | 6,002 | Left the last upstream source list on 2022-01-16; variants link `base/exmpb.f90` |
+| `dftm/` (tussock moth) | 40 | 5,141 | Left the last upstream source list on 2022-01-16; variants link `base/exdftm.f90` |
+| `dfb/`, `metric/dfb/` (Douglas-fir beetle) | 31 | 4,137 | Left the last upstream source list on 2022-07-18; variants link `base/exdfb.f90` |
+| `dbs/`, `vdbs/`, `metric/dbs/`, `metric/vdbs/` (ODBC database) | 58 | 18,410 | Left the last upstream source list on 2022-07-18; every variant uses `dbsqlite/` |
+| `archive/bgc/` | 31 | 5,053 | Archived upstream 2018-05-15 (`9a866907`); the [2021 note](changeNotes/2021.07.28_ldavid.txt) records that the project ended |
+| `archive/ni/`, `archive/ak/`, `archive/fire/`, `archive/PPEcommons/` | 60 | 14,956 | Archived upstream; never in a source list from that location |
+| `metric/rd/`, `metric/ppbase/` | 14 | 20,486 | Metric copies never in any upstream source list |
+| Other unbuilt `metric/` copies (`ak`, `base`, `cr`, `estb`, `ls`, `mistoe`, `ne`, `ni`, `ut`, `vbase`, `wc`) | 20 | 8,809 | In no source list; the imperial or shared routine is the one built |
+| `canada/bin/` | 2 | 1,235 | Historical source lists that no recipe reads |
+| Single unbuilt files: `base/exdbs.f90`, `exdbsqlite.f90`, `exestb.f90`, `exfire.f90`, `exsv.f90`; `canada/on/cuts.f90`, `fvsstd.f90`, `update.f90`; `fire/fofem/ansi_mai.c`, `fof_disp.c`; `mistoe/misintni.f90`; `rd/rdppatv.f90`; `sn/formcl.f90`; `vls/vols.f90` | 14 | 5,376 | In no source list; another file supplies the routine, or the real extension is always linked so its stub is unused |
+
+The list-removal dates come from the last upstream commit that changed how
+often each directory appears in `bin/` source lists. Apart from BGC, no change
+note was traced for the individual extensions.
+
+- [x] **R01 — BGC.** Removed with `archive/bgc/`. ON still selects the
+  `base/exbgc.f90` stub, which is unchanged.
+- [x] **R02 — ODBC.** Removed `dbs/`, `vdbs/` and their metric copies.
+- [x] **R03 — Douglas-fir beetle (`dfb/`).** Removed; stub unchanged.
+- [x] **R04 — Tussock moth (`dftm/`).** Removed; stub unchanged.
+- [x] **R05 — Mountain pine beetle (`lpmpb/`).** Removed; stub unchanged.
+- [x] **R06 — Blister rust (`wpbr/`).** Removed; stub unchanged.
+- [x] **R07 — Budworm (`wsbwe/`).** Removed; stub unchanged.
+- [x] **R08 — Westwide pine beetle (`wwpb/`).** Removed; stub unchanged.
+- [ ] **R09 — Acadian model (`acd/`, 27 files).** Not removed: the reverted
+  commit kept it. Unbuilt; needs a keep-or-remove decision.
+- [x] **R10 — Northern Idaho archive (`archive/ni/`).** Removed.
+- [x] **R10b — Alaska archive (`archive/ak/`).** Removed.
+- [x] **R10c — Fire archive (`archive/fire/`).** Removed.
+- [x] **R10d — Parallel-processing declarations (`archive/PPEcommons/`).**
+  Removed. Active stop/restart support in `pg/` is unchanged.
 
 ## U — Unreachable assignments inside active stubs
 
