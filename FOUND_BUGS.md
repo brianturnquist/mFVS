@@ -1,6 +1,6 @@
 # Found Bugs
 
-The five confirmed model defects below were found during the 2026-11 consolidation of duplicated routines. Every one is already present in the pre-modernization source (commit `c2105365`), so none was introduced by the conversion to free-form Fortran or by the consolidation. They are **deliberately left unfixed** for now so that model outputs stay identical to `c2105365` while modernization is finished. Each fix below will change outputs for the variants listed, so each should be made as its own commit with a before/after comparison. Sections 6–8 separately record an unconfirmed historical numerical concern, a historical documentation discrepancy, and ESADDT data-flow concerns requiring follow-up. Section 9 records a reproduced SQLite resource defect with scientific-output impact still unmeasured.
+The five confirmed model defects below were found during the 2026-11 consolidation of duplicated routines. Every one is already present in the pre-modernization source (commit `c2105365`), so none was introduced by the conversion to free-form Fortran or by the consolidation. They are **deliberately left unfixed** for now so that model outputs stay identical to `c2105365` while modernization is finished. Each fix below will change outputs for the variants listed, so each should be made as its own commit with a before/after comparison. Sections 6–8 separately record an unconfirmed historical numerical concern, a historical documentation discrepancy, and ESADDT data-flow concerns requiring follow-up. Section 9 records a reproduced SQLite resource defect with scientific-output impact still unmeasured. Section 10 records the one known difference from `c2105365` that modernization itself introduced, in restart files.
 
 File and line references are to the tree at commit `b5657da3` plus the uncommitted `VARIANTCD` change. Bugs 1 and 2 have the same root cause: FVS calls external procedures with no explicit interface, so gfortran cannot check argument lists across files. Moving these routines into modules would let the compiler catch this class of bug.
 
@@ -198,3 +198,18 @@ Later work should trace OPGET's parameter-count contract and the unit/IKEEP life
 The controlled IE fixture calls the actual writers in this order with real repository SQLite and an already established CaseID. It supplies case-number/error-reporting context only. SQLite reports **two** outstanding statements after the pair, **one** after normal `fsql3_finalize`, and `SQLITE_BUSY` (5) from direct close attempts at both points. All three source states produce these same observations. The test finalizes the orphan through separate harness teardown so it can release its test database; no model source is repaired. Single-writer retention alone is not the demonstrated defect, because the existing close routine can finalize the last tracked statement.
 
 To reproduce, call both writers on one open output database with both reports enabled and an established CaseID. Count statements with `sqlite3_next_stmt`, finalize the tracked statement through `fsql3_finalize`, count again, and try closing the connection. The original writer sequence and C wrapper already contain the leak; the binding helper preserves it. Later work should measure repeated-report resource growth and review statement ownership across prepare/finalize/close before choosing a fix. Do not combine that correction with F77-preserving cleanup.
+
+---
+
+## 10. Restart files differ from original F77 since `b5657da3`
+
+**Status:** found 14 November 2026 by running every `tests/FVSxx` makefile against original F77. Introduced by the consolidation, not inherited. Not yet traced to a variable. No listing, summary, tree list or database output differs in any test.
+**Variants:** the 17 US variants that use the partial establishment model (all except AK, CI, EM, IE and KT). BC and ON cannot be checked (bug 5).
+
+The stop/restart tests write a binary restart file (`bmt.stop`, `snt.stop`, and so on). In each stand's record, one block of eleven consecutive 4-byte reals is all zeros in original F77 and holds non-zero values now. For most variants the values are 55.45, 291.09, 490.58, 409.07, 261.08, 315.90, 0.0, 248.89, 144.73, 811.36, 168.36; CR and SO differ in one or two of them. The values are the same for every stand in a file. The TT restart file also differs in one 4-byte integer that looks like uninitialized memory in both versions.
+
+For BM, commit `9258972c` still writes the original zeros and `b5657da3` ("Merged duplicated functions, part 2") writes the new values. So some state that original F77 leaves at zero for these variants is now assigned and saved. Whether a restarted run can ever read it back into a result is unknown; the restarted test runs match the original.
+
+Because of this, `tests/parity/check_suite.py` compares restart files with the baseline commit instead of with original F77. Once the cause is found and corrected, change that script to compare restart files with the original as well.
+
+**To trace:** compare `bmt.stop` from the two commits above, find the offset of the block, and match it against the order in which `pg/putstd.f90` and the extension `put` routines write common blocks. An eleven-element real array is the target.

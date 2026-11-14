@@ -65,16 +65,22 @@ The current converted NVEL fork differs from the original reference's
 submodule. Pin both revisions explicitly; do not silently substitute the
 current library into the original reference.
 
-For a cleanup candidate, identify three states:
+Check every change that touches a compiled file with the whole regression
+suite:
 
-1. The original upstream reference, with its original NVEL revision.
-2. The current mFVS version immediately before that cleanup.
-3. The candidate containing only that cleanup.
+```sh
+python3 tests/parity/check_suite.py --cache-dir /private/tmp/mfvs-suite
+```
 
-Establish the current version's comparison with the original, then compare the
-candidate with both the original and the immediate pre-change version. This
-distinguishes inherited differences from cleanup regressions. If a difference
-already exists, record it; do not redefine the baseline to conceal it.
+It compares three versions: the original upstream reference with its original
+NVEL revision, the baseline commit before the change, and the working tree. It
+runs every `tests/FVSxx` makefile for each and requires every generated file to
+match the original, except restart files, which must match the baseline (bug
+10 in [FOUND_BUGS.md](FOUND_BUGS.md)). It first checks that every source-list
+entry exists and that every new source file is in a source list. A task is
+done when the final line says `PASS` for all variants the change can affect;
+put that line in the commit message. If a difference already exists, record
+it; do not redefine the baseline to conceal it.
 
 Follow [Contributing.md](Contributing.md), including its documented linkage-only
 accommodations for building the original BC/ON reference. Keep scientific

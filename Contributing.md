@@ -16,7 +16,15 @@ Please read the [README](README.md) first. It explains the project's goals, its 
 
 ## Verifying a change
 
-The `.save` files in `tests/` contain results from upstream FVS releases, and some tests differ from them or stop with a non-zero code even in unmodified code. They therefore cannot show whether *your* change altered results. Instead, compare your build with a reference build of the pre-modernization code:
+The `.save` files in `tests/` contain results from upstream FVS releases, and some tests differ from them or stop with a non-zero code even in unmodified code. They therefore cannot show whether *your* change altered results. Instead, compare your build with a reference build of the pre-modernization code. One command does this for every variant:
+
+```sh
+python3 tests/parity/check_suite.py --cache-dir /private/tmp/mfvs-suite
+```
+
+It checks the source lists, builds the original code, a baseline commit and your working tree, runs every `tests/FVSxx` makefile in each, and compares every generated file. It prints one line per variant and a final `PASS` or `FAIL`; quote that final line in your commit or pull request. Results are cached, so the original code is built only once and variants your change does not touch are not rebuilt. See [tests/parity/README.md](tests/parity/README.md) for options.
+
+The steps below are what the command does, in case you need to do them by hand:
 
 1. **Build the reference.** Check out upstream commit `c2105365` in a separate directory, initialize its submodule and build it:
    ```sh
@@ -36,7 +44,7 @@ The `.save` files in `tests/` contain results from upstream FVS releases, and so
 
 The BC and ON test decks currently stop while reading their keyword files, in both the reference and current code (bug 5 in [FOUND_BUGS.md](FOUND_BUGS.md)). Matching output for those two variants therefore does not show that a change is safe. Review changes that affect BC or ON with extra care.
 
-Run comparisons in temporary directories and discard generated outputs and build copies when finished. Update the cleanup checklist and record newly found bugs in `FOUND_BUGS.md`. Do not keep test-result archives, logs, compiler dumps, receipts or separate completion reports in the repository. The reusable comparison commands are in [tests/parity/README.md](tests/parity/README.md).
+Run comparisons in temporary directories and discard generated outputs and build copies when finished. Update the cleanup checklist and record newly found bugs in `FOUND_BUGS.md`. Do not keep test-result archives, logs, compiler dumps, receipts or separate completion reports in the repository.
 
 ## How the build works
 

@@ -1,19 +1,75 @@
-# Temporary original-F77 comparisons
+# Comparisons with original F77
 
-These reusable tools build isolated original/current/candidate versions and
-compare their outputs. Test results and build copies are disposable. Keep the
-cleanup checklist and bug descriptions; do not commit generated reports,
-archives, logs, compiler dumps or run metadata.
+These tools check that a change leaves model results identical to the original
+fixed-form code: main revision `c210536536d81fd9b46dccb9a571f0de1e55e944` with
+NVEL revision `38548071d5aa652bb90c7f111f86b427f798a1c9`. Both must already be
+available locally. Use Python 3.12+, GNU Fortran, a GNU C compiler, GNU make,
+the `sqlite3` command and Git.
 
-The original reference is main revision
-`c210536536d81fd9b46dccb9a571f0de1e55e944` with NVEL revision
-`38548071d5aa652bb90c7f111f86b427f798a1c9`. Set the immediate pre-change main
-revision explicitly. Both references must already be available locally.
-Use Python 3.12+, GNU Fortran, a GNU C compiler, GNU make and Git.
+Builds and results are temporary. Keep them outside the repository and do not
+commit generated reports, archives, logs or run metadata.
 
-## Run a comparison
+## Check a change: the whole regression suite
 
-From the repository root, choose temporary paths outside the repository:
+Run this from the repository root before committing a change:
+
+```sh
+python3 tests/parity/check_suite.py --cache-dir /private/tmp/mfvs-suite
+```
+
+It does four things:
+
+1. **Checks the source lists** without compiling: every entry exists, no list
+   names two files with the same name, every `bin/fortran_includes.txt` entry
+   exists, and every new source file is in at least one source list.
+2. **Builds three versions** of each variant: original F77, the baseline
+   commit, and your working tree (including uncommitted and untracked files).
+3. **Runs each variant's `tests/FVSxx` makefile** in every version. That is
+   the full existing suite, including the stop/restart, database, climate,
+   economics and fire tests.
+4. **Compares every generated file.** Everything must match original F77,
+   except restart (`.stop`) files, which must match the baseline: they already
+   differ from the original (bug 10 in [FOUND_BUGS.md](../../FOUND_BUGS.md)).
+
+It prints one line per variant and ends with `PASS` or `FAIL` and the commits
+compared. Put that last line in the commit message. The exit status is 0 only
+on `PASS`.
+
+Options:
+
+| Option | Use |
+|---|---|
+| `--baseline REV` | The commit before the change. The default `HEAD` suits uncommitted work; use `HEAD~1` to check the last commit. |
+| `--variants ie sn` | Limit the run while editing. Run all variants before committing a change to shared code. |
+| `--static-only` | Check only the source lists; takes about a second. |
+| `--workers N`, `--jobs N` | Variants built at once, and compiler processes per build (default 4 and 4). |
+
+Results are cached in `--cache-dir` by the content of each variant's source
+list, selected files, test folder and compiler version. The original is built
+once. A variant whose inputs your change does not touch is not rebuilt, so
+after the first run a check costs only the variants you changed. Delete the
+cache directory at any time to start again; it holds nothing that must be kept.
+
+When a variant fails, the output names the files that differ and the cached
+folders that hold each version's outputs, so you can `diff` them directly.
+
+BC and ON stop during keyword input in every version (bug 5). Their lines show
+only that all versions fail the same way, not that their simulations agree.
+
+## What is compared
+
+The comparator checks which files were produced, program stop codes, all text,
+and every SQLite schema and typed row. It masks only the version, date and
+time fields of recognized header lines and the CaseID identifiers; REAL values
+are compared exactly. In restart files only the run identifiers are masked.
+
+`check_comparator.py` checks the comparator itself against deliberately
+changed IE outputs.
+
+## Single decks
+
+For a focused case that the suite does not reach, the older tools run one
+deck at a time in three versions:
 
 ```sh
 python3 tests/parity/prepare_builds.py \
@@ -30,24 +86,6 @@ python3 tests/parity/compare_outputs.py \
   --report /private/tmp/mfvs-check-results/comparison.json
 ```
 
-Request every affected variant and its cases. Compare all three pairs:
-original/current, original/candidate and current/candidate. Add focused cases
-when the standard deck does not reach the changed branch. The existing
-`--evidence-dir` option names the temporary result directory; it does not
-require retaining those files.
-
-The comparator checks output inventory, exit status, text and every SQLite
-schema/typed row. It normalizes only recognized version/date/time headers and
-known CaseID UUIDs; REAL values are compared exactly. Review program errors
-and simulation progress as well as the comparison result. BC/ON currently
-stop during keyword input, so matching those failures does not demonstrate
-simulation parity. Leave model bug fixes for separate work.
-
-`check_comparator.py` can check the comparator against deliberately changed
-IE outputs using the same temporary paths. Source snapshots omit historical
-generated evidence, and the build preparer rejects output paths inside this
-repository.
-
-When finished, discard both temporary directories. Update the checklist and
-record newly found bugs in [FOUND_BUGS.md](../../FOUND_BUGS.md). Do not create
-another results archive or completion report.
+Discard both temporary directories when finished. Leave model bug fixes for
+separate work, and record newly found bugs in
+[FOUND_BUGS.md](../../FOUND_BUGS.md).

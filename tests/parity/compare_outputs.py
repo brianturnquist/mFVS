@@ -26,6 +26,10 @@ TIME = r"\d{2}:\d{2}:\d{2}"
 # Capture and RETAIN both gaps; only revision/date/time are metadata.
 HEADER_END = re.compile(rf"RV:(?P<revision>.{{10}})(?P<separator>.{{0,2}})(?P<date>{DATE})(?P<clock_separator>.{{2}})(?P<time>{TIME})$")
 SUMMARY_META = re.compile(rf"(?P<prefix>^-999.*? [A-Z]{{2}} )({DATE}) ({TIME}) (.{{10}})")
+# DGDRIV's CALBSTAT header: variant, run date, run time, stand identifiers,
+# four integers and the revision. Only date, time and revision are metadata.
+CALBSTAT_META = re.compile(rf"^(?P<prefix> CALBSTAT [A-Z]{{2}} {{6}}){DATE} {TIME}"
+                           r"(?P<body> .{26} .{4} [ \d]{3} [ \d]{2} [ \d]{3} [ \d]{3} ).*$")
 CASE_META = {"Version", "RV", "RunDateTime"}
 
 
@@ -98,6 +102,9 @@ def normalize_text(data: bytes, aliases: dict[str, str]) -> tuple[bytes, dict[st
         if SUMMARY_META.search(line):
             line = SUMMARY_META.sub(lambda m: m["prefix"] + "<RUN-DATE> <RUN-TIME> " + "<RV>".ljust(10), line, count=1)
             counts["summary_metadata"] += 1
+        if CALBSTAT_META.search(line):
+            line = CALBSTAT_META.sub(lambda m: m["prefix"] + "<RUN-DATE> <RUN-TIME>" + m["body"] + "<RV>", line)
+            counts["calbstat_metadata"] += 1
         for identity, alias in aliases.items():
             occurrences = line.count(identity)
             if occurrences:
