@@ -7,20 +7,15 @@ subroutine ESIN (PASKEY,ARRAY,LNOTBK,KARD,LKECHO)
 
   !     OPTION PROCESSOR FOR ESTABLISHMENT MODEL
 
-  !     THE PARTIAL REGENERATION MODEL (.NOT. LFULLESTAB) DISABLES SEVERAL
-  !     KEYWORDS, ECHOES SOME OF THEM DIFFERENTLY, AND DOES NOT CHECK THE
-  !     RETURN CODE AFTER OPNEWC.  THOSE DIFFERENCES ARE KEPT DELIBERATELY.
-  !     LMETRICVAR BRANCHES CONVERT METRIC INPUT FOR BC AND ON.
-
   ! Common blocks
   include 'PRGPRM.f90'
+  include 'ESPARM.f90'
   include 'ESCOMN.f90'
   include 'ESHAP.f90'
   include 'ESHAP2.f90'
   include 'CONTRL.f90'
   include 'PLOT.f90'
   include 'ESWSBW.f90'
-  include 'METRIC.f90'
 
   !     INTERNAL STORAGE
 
@@ -33,11 +28,6 @@ subroutine ESIN (PASKEY,ARRAY,LNOTBK,KARD,LKECHO)
   logical :: DEBUG,LNOTBK(12),LTALLY,LMODE,LKECHO
   integer :: IPPR(MAXPLT)
   equivalence (PNN,IPPR)
-
-  !     PLOTINFO SITE-PREP CODES ARE HELD IN IPPR, WHICH OVERLAYS PNN IN
-  !     /ESHAP2/, IN THE FULL MODEL, AND IN THE LOCAL ARRAY IPPRL IN THE
-  !     PARTIAL MODEL (WHOSE PNN WAS A LOCAL).  KEPT DELIBERATELY.
-  integer :: IPPRL(MAXPLT)
   character(len=1) :: IBK
   character(len=1) :: ISLBK
   character(len=8) :: TABLE(IKYSIZ)
@@ -200,11 +190,6 @@ subroutine ESIN (PASKEY,ARRAY,LNOTBK,KARD,LKECHO)
 
   !     OPTION NUMBER 2 -- PLANT                                   PLANT
 
-  if (LMETRICVAR) then
-     ARRAY(3) = ARRAY(3) / HAtoACR
-     ARRAY(6) = ARRAY(6) * MtoFT
-  end if
-
   IACTK = 430
   1205 continue
   IDT = 1
@@ -216,10 +201,8 @@ subroutine ESIN (PASKEY,ARRAY,LNOTBK,KARD,LKECHO)
   if (IPRMPT.gt.0) then
      call OPNEWC (KODE,JOSTND,IREAD,IDT,IACTK,KEYWRD,KARD,IPRMPT,&
           &IRECNT,ICYC)
-     if (LFULLESTAB) then
-        call fvsGetRtnCode(IRTNCD)
-        if (IRTNCD.ne.0) return
-     end if
+     call fvsGetRtnCode(IRTNCD)
+     if (IRTNCD.ne.0) return
      goto 10
   end if
 
@@ -238,37 +221,18 @@ subroutine ESIN (PASKEY,ARRAY,LNOTBK,KARD,LKECHO)
   if (KODE.gt.0) goto 10
   ILEN = 3
   if (IS.lt.0)ILEN = ISPGRP(-IS,92)
-  if (LMETRICVAR) then
-     if (LKECHO)write(JOSTND,91220) KEYWRD,IDT,KARD(2)(1:ILEN),IS,&
-          &ARRAY(3) /ACRtoHA,&
-          &ARRAY(4),&
-          &ARRAY(5),&
-          &ARRAY(6) *FTtoM,&
-          &ARRAY(7)
-     91220 format(/A8,'   DATE/CYCLE=',I5,'; SPECIES= ',A,' (CODE= ',I3,&
-          &'); TREES/HA=',F6.0,'; % SURVIVAL=',F6.2,/,T12,&
-          &'AGE=',F5.1,'; AVE. HEIGHT=',F5.1,'; SHADE CODE=',F5.1)
-  else
-     if (LKECHO)write(JOSTND,1220) KEYWRD,IDT,KARD(2)(1:ILEN),IS,&
-          &(ARRAY(I),I = 3,7)
-     1220 format(/A8,'   DATE/CYCLE=',I5,'; SPECIES= ',A,' (CODE= ',I3,&
-          &'); TREES/ACRE=',F6.0,'; % SURVIVAL=',F6.2,/,T12,&
-          &'AGE=',F5.1,'; AVE. HEIGHT=',F5.1,'; SHADE CODE=',F5.1)
-  end if
-  if (LFULLESTAB) then
-     if ((IACTK.eq.431).and.LKECHO)write(JOSTND,1230)
-     1230 format(11X,'NATURAL IMPLIES: STOCKADJ = 0.0, NOAUTALY, ',&
-          &'AND NOINGROW.')
-  end if
+  if (LKECHO)write(JOSTND,1220) KEYWRD,IDT,KARD(2)(1:ILEN),IS,&
+       &(ARRAY(I),I = 3,7)
+  1220 format(/A8,'   DATE/CYCLE=',I5,'; SPECIES= ',A,' (CODE= ',I3,&
+       &'); TREES/ACRE=',F6.0,'; % SURVIVAL=',F6.2,/,T12,&
+       &'AGE=',F5.1,'; AVE. HEIGHT=',F5.1,'; SHADE CODE=',F5.1)
+  if ((IACTK.eq.431).and.LKECHO)write(JOSTND,1230)
+  1230 format(11X,'NATURAL IMPLIES: STOCKADJ = 0.0, NOAUTALY, ',&
+       &'AND NOINGROW.')
   goto 10
   1300 continue
 
   !     OPTION NUMBER 3 -- NATURAL                               NATURAL
-
-  if (LMETRICVAR) then
-     ARRAY(3) = ARRAY(3) / HAtoACR
-     ARRAY(6) = ARRAY(6) * MtoFT
-  end if
 
   IACTK = 431
   STOADJ = 0.0
@@ -313,10 +277,8 @@ subroutine ESIN (PASKEY,ARRAY,LNOTBK,KARD,LKECHO)
   if (IPRMPT.gt.0) then
      call OPNEWC (KODE,JOSTND,IREAD,IDT,95,KEYWRD,KARD,IPRMPT,&
           &IRECNT,ICYC)
-     if (LFULLESTAB) then
-        call fvsGetRtnCode(IRTNCD)
-        if (IRTNCD.ne.0) return
-     end if
+     call fvsGetRtnCode(IRTNCD)
+     if (IRTNCD.ne.0) return
      goto 10
   end if
 
@@ -337,28 +299,17 @@ subroutine ESIN (PASKEY,ARRAY,LNOTBK,KARD,LKECHO)
   if (KODE.gt.0) goto 10
   ILEN = 3
   if (IS.lt.0)ILEN = ISPGRP(-IS,92)
-  if (LFULLESTAB) then
-     if (LKECHO)write(JOSTND,1730) KEYWRD,IDT,KARD(2)(1:ILEN),IS,&
-          &ARRAY(3)
-  else
-     write(JOSTND,1731) KEYWRD,IDT,KARD(2)(1:ILEN),IS,ARRAY(3)
-  end if
+  if (LKECHO)write(JOSTND,1730) KEYWRD,IDT,KARD(2)(1:ILEN),IS,&
+       &ARRAY(3)
   1730 format (/A8,'   DATE/CYCLE=',I5,'; SPECIES= ',A,' (CODE= ',&
        &I3,'); MULTIPLIER=',F10.4)
-  1731 format (/A8,'   DATE/CYCLE=',I5,'; SPECIES= ',A,' (CODE= ',&
-       &I3,'); MULTIPLIER=',F10.4,/,T12,'SPECMULT KEYWORD IS',&
-       &' DISABLED IN THIS VARIANT.')
   goto 10
   1800 continue
 
   !     OPTION NUMBER 8 -- BUDWORM                               BUDWORM
 
   if (NBWHST.ge.20) then
-     if (LFULLESTAB) then
-        if (LKECHO)write(JOSTND,1810) NBWHST
-     else
-        write(JOSTND,1810) NBWHST
-     end if
+     if (LKECHO)write(JOSTND,1810) NBWHST
      1810 format (/T12,'EXCEEDED MAX. #BUDWORM RECS=',I3)
      call ERRGRO (.true.,1)
      goto 10
@@ -421,11 +372,7 @@ subroutine ESIN (PASKEY,ARRAY,LNOTBK,KARD,LKECHO)
   2025 continue
   if (IPPREP(I).eq.-1) IPR = -1
   2026 continue
-  if (LFULLESTAB) then
-     IPPR(N) = IPR
-  else
-     IPPRL(N) = IPR
-  end if
+  IPPR(N) = IPR
   goto 2029
   2028 continue
   IPPREP(N) = IPR
@@ -459,11 +406,7 @@ subroutine ESIN (PASKEY,ARRAY,LNOTBK,KARD,LKECHO)
 
   if (NPTIDS.le.0) goto 2060
   do I = 1,N
-     if (LFULLESTAB) then
-        IPPREP(I) = IPPR(I)
-     else
-        IPPREP(I) = IPPRL(I)
-     end if
+     IPPREP(I) = IPPR(I)
      2055 continue
   end do
   goto 10
@@ -516,25 +459,20 @@ subroutine ESIN (PASKEY,ARRAY,LNOTBK,KARD,LKECHO)
 
   !     OPTION NUMBER 13 -- STOCKADJ                            STOCKADJ
 
-  if (LFULLESTAB) then
-     IDT = 1
-     if (LNOTBK(1)) IDT = IFIX(ARRAY(1))
-     if (IPRMPT.gt.0) then
-        call OPNEWC (KODE,JOSTND,IREAD,IDT,440,KEYWRD,KARD,IPRMPT,&
-             &IRECNT,ICYC)
-        call fvsGetRtnCode(IRTNCD)
-        if (IRTNCD.ne.0) return
-     else
-        call OPNEW (KODE,IDT,440,1,ARRAY(2))
-        if (KODE.gt.0) goto 10
-        if (LKECHO)write(JOSTND,2310) KEYWRD,IDT,ARRAY(2)
-        2310 format(/A8,'   DATE/CYCLE=',I5,'; MULTIPLIER=',F6.2)
-        if ((ARRAY(2).le.0.).and.LKECHO)write(JOSTND,2320)
-        2320 format (T12,'PREDICTION OF NATURAL REGENERATION IS CANCELLED.')
-     end if
+  IDT = 1
+  if (LNOTBK(1)) IDT = IFIX(ARRAY(1))
+  if (IPRMPT.gt.0) then
+     call OPNEWC (KODE,JOSTND,IREAD,IDT,440,KEYWRD,KARD,IPRMPT,&
+          &IRECNT,ICYC)
+     call fvsGetRtnCode(IRTNCD)
+     if (IRTNCD.ne.0) return
   else
-     if (LKECHO)write(JOSTND,2330) KEYWRD
-     2330 format (/A8,'  PREDICTION OF NATURAL REGENERATION DISABLED.')
+     call OPNEW (KODE,IDT,440,1,ARRAY(2))
+     if (KODE.gt.0) goto 10
+     if (LKECHO)write(JOSTND,2310) KEYWRD,IDT,ARRAY(2)
+     2310 format(/A8,'   DATE/CYCLE=',I5,'; MULTIPLIER=',F6.2)
+     if ((ARRAY(2).le.0.).and.LKECHO)write(JOSTND,2320)
+     2320 format (T12,'PREDICTION OF NATURAL REGENERATION IS CANCELLED.')
   end if
   goto 10
   2400 continue
@@ -555,10 +493,8 @@ subroutine ESIN (PASKEY,ARRAY,LNOTBK,KARD,LKECHO)
   if (IPRMPT.gt.0) then
      call OPNEWC (KODE,JOSTND,IREAD,IDT,442,KEYWRD,KARD,IPRMPT,&
           &IRECNT,ICYC)
-     if (LFULLESTAB) then
-        call fvsGetRtnCode(IRTNCD)
-        if (IRTNCD.ne.0) return
-     end if
+     call fvsGetRtnCode(IRTNCD)
+     if (IRTNCD.ne.0) return
      goto 10
   end if
 
@@ -566,9 +502,6 @@ subroutine ESIN (PASKEY,ARRAY,LNOTBK,KARD,LKECHO)
      call KEYDMP (JOSTND,IRECNT,KEYWRD,ARRAY,KARD)
      call ERRGRO (.true.,4)
      goto 10
-  end if
-  if (LMETRICVAR) then
-     ARRAY(3) = ARRAY(3) * MtoFT
   end if
 
   !     SPECIES CODE PROCESSING.
@@ -580,13 +513,8 @@ subroutine ESIN (PASKEY,ARRAY,LNOTBK,KARD,LKECHO)
   if (KODE.gt.0) goto 10
   ILEN = 3
   if (IS.lt.0)ILEN = ISPGRP(-IS,92)
-  if (LMETRICVAR) then
-     if (LKECHO)write(JOSTND,2530) KEYWRD,IDT,KARD(2)(1:ILEN),IS,&
-          &ARRAY(3) * FTtoM
-  else
-     if (LKECHO)write(JOSTND,2530) KEYWRD,IDT,KARD(2)(1:ILEN),IS,&
-          &ARRAY(3)
-  end if
+  if (LKECHO)write(JOSTND,2530) KEYWRD,IDT,KARD(2)(1:ILEN),IS,&
+       &ARRAY(3)
   2530 format(/A8,'   DATE/CYCLE=',I5,'; SPECIES= ',A,' (CODE= ',&
        &I3,'); ADJUSTMENT VALUE=',F10.4)
   goto 10
@@ -627,10 +555,8 @@ subroutine ESIN (PASKEY,ARRAY,LNOTBK,KARD,LKECHO)
   if (IPRMPT.gt.0) then
      call OPNEWC (KODE,JOSTND,IREAD,IDT,443,KEYWRD,KARD,IPRMPT,&
           &IRECNT,ICYC)
-     if (LFULLESTAB) then
-        call fvsGetRtnCode(IRTNCD)
-        if (IRTNCD.ne.0) return
-     end if
+     call fvsGetRtnCode(IRTNCD)
+     if (IRTNCD.ne.0) return
   else
      call OPNEW (KODE,IDT,443,1,ARRAY(2))
      if ((KODE.eq.0).and.LKECHO)write(JOSTND,2910) KEYWRD,IDT,&
@@ -654,13 +580,8 @@ subroutine ESIN (PASKEY,ARRAY,LNOTBK,KARD,LKECHO)
 
   !     OPTION NUMBER 21 -- INGROW                                INGROW
 
-  !     IN THE PARTIAL MODEL INGROW AND AUTALLY DO NOTHING, AND NOINGROW
-  !     AND NOAUTALY ARE NOT ECHOED.
-
-  if (LFULLESTAB) then
-     LINGRW = .true.
-     if (LKECHO)write(JOSTND,3110) KEYWRD,'INGROWTH',' '
-  end if
+  LINGRW = .true.
+  if (LKECHO)write(JOSTND,3110) KEYWRD,'INGROWTH',' '
   3110 format (/A8,3X,A,' WILL',A,'BE ADDED AUTOMATICALLY.')
   goto 10
   3200 continue
@@ -668,54 +589,42 @@ subroutine ESIN (PASKEY,ARRAY,LNOTBK,KARD,LKECHO)
   !     OPTION NUMBER 22 -- NOINGROW                            NOINGROW
 
   LINGRW = .false.
-  if (LFULLESTAB) then
-     if (LKECHO)write(JOSTND,3110) KEYWRD,'INGROWTH',' NOT '
-  end if
+  if (LKECHO)write(JOSTND,3110) KEYWRD,'INGROWTH',' NOT '
   goto 10
   3300 continue
 
   !     OPTION NUMBER 23 -- NOAUTALY                            NOAUTALY
 
   LAUTAL = .false.
-  if (LFULLESTAB) then
-     if (LKECHO)write(JOSTND,3110) KEYWRD,'TALLIES',' NOT '
-  end if
+  if (LKECHO)write(JOSTND,3110) KEYWRD,'TALLIES',' NOT '
   goto 10
   3400 continue
 
   !     OPTION NUMBER 24 -- AUTALLY                              AUTALLY
 
-  if (LFULLESTAB) then
-     LAUTAL = .true.
-     if (LKECHO)write(JOSTND,3110) KEYWRD,'TALLIES',' '
-  end if
+  LAUTAL = .true.
+  if (LKECHO)write(JOSTND,3110) KEYWRD,'TALLIES',' '
   goto 10
   3500 continue
 
   !     OPTION NUMBER 25 -- THRSHOLD                            THRSHOLD
 
-  if (LFULLESTAB) then
-     if (LNOTBK(1)) then
-        THRES1 = ARRAY(1)/100.0
-        if (THRES1.lt.0.025) THRES1 = 0.025
-        if (THRES1.gt.0.950) THRES1 = 0.950
-     end if
-     if (LNOTBK(2)) then
-        THRES2 = ARRAY(2)/100.0
-        if (THRES2.lt.0.050) THRES2 = 0.050
-        if (THRES2.gt.0.975) THRES2 = 0.975
-     end if
-     TH1 = THRES1*100.0
-     TH2 = THRES2*100.0
-     if (LKECHO)write(JOSTND,3510) KEYWRD,TH1,TH2
-     3510 format(/A8,'   THRESHOLD VALUES FOR AUTOMATIC TALLIES ',&
-          &'FOLLOWING THINNINGS:',/,T12,'LOWER PERCENT=',F6.1,&
-          &'   UPPER PERCENT=',F6.1)
-  else
-     if (LKECHO)write(JOSTND,3520) KEYWRD
-     3520 format(/A8,'   THRESHOLD VALUES FOR AUTOMATIC TALLIES ',&
-          &'DISABLED.')
+  if (LNOTBK(1)) then
+     THRES1 = ARRAY(1)/100.0
+     if (THRES1.lt.0.025) THRES1 = 0.025
+     if (THRES1.gt.0.950) THRES1 = 0.950
   end if
+  if (LNOTBK(2)) then
+     THRES2 = ARRAY(2)/100.0
+     if (THRES2.lt.0.050) THRES2 = 0.050
+     if (THRES2.gt.0.975) THRES2 = 0.975
+  end if
+  TH1 = THRES1*100.0
+  TH2 = THRES2*100.0
+  if (LKECHO)write(JOSTND,3510) KEYWRD,TH1,TH2
+  3510 format(/A8,'   THRESHOLD VALUES FOR AUTOMATIC TALLIES ',&
+       &'FOLLOWING THINNINGS:',/,T12,'LOWER PERCENT=',F6.1,&
+       &'   UPPER PERCENT=',F6.1)
   goto 10
   3600 continue
 
@@ -725,10 +634,6 @@ subroutine ESIN (PASKEY,ARRAY,LNOTBK,KARD,LKECHO)
   IACTK = 450
   IDT = 1
   if (LNOTBK(1)) IDT = IFIX(ARRAY(1))
-  if (LMETRICVAR) then
-     ARRAY(5) = ARRAY(5) * CMtoIN
-     ARRAY(6) = ARRAY(6) * CMtoIN
-  end if
 
   !     IF THE PARMS FEATURE IS BEING USED PROCESS OPTION USING
   !     OPNEWC, OTHERWISE, PROCESS "NORMALLY".
@@ -736,10 +641,8 @@ subroutine ESIN (PASKEY,ARRAY,LNOTBK,KARD,LKECHO)
   if (IPRMPT.gt.0) then
      call OPNEWC (KODE,JOSTND,IREAD,IDT,IACTK,KEYWRD,KARD,IPRMPT,&
           &IRECNT,ICYC)
-     if (LFULLESTAB) then
-        call fvsGetRtnCode(IRTNCD)
-        if (IRTNCD.ne.0) return
-     end if
+     call fvsGetRtnCode(IRTNCD)
+     if (IRTNCD.ne.0) return
      goto 10
   end if
 
@@ -794,40 +697,16 @@ subroutine ESIN (PASKEY,ARRAY,LNOTBK,KARD,LKECHO)
   if (.not.LNOTBK(3))ARRAY(3) = 1.
   if (.not.LNOTBK(4))ARRAY(4) = 1.
   if (.not.LNOTBK(5))ARRAY(5) = 0.
-  if (LMETRICVAR) then
-     if (.not.LNOTBK(6))ARRAY(6) = 999. * CMtoIN
-  else
-     if (.not.LNOTBK(6))ARRAY(6) = 999.
-  end if
+  if (.not.LNOTBK(6))ARRAY(6) = 999.
 
   call OPNEW(KODE,IDT,IACTK,5,ARRAY(2))
   if (KODE.gt.0) goto 10
   ILEN = 3
   if (IS.lt.0)ILEN = ISPGRP(-IS,92)
-
-  !     THE PARTIAL MODEL'S ECHO (3607) INDENTS THE SECOND LINE ONE MORE
-  !     COLUMN (T13) THAN THE FULL MODEL'S (3606).
-
-  if (LMETRICVAR) then
-     if (LKECHO)write(JOSTND,3607) KEYWRD,IDT,KARD(2)(1:ILEN),IS,&
-          &ARRAY(3),&
-          &ARRAY(4),&
-          &ARRAY(5) * INtoCM,&
-          &ARRAY(6) * INtoCM
-  else if (LFULLESTAB) then
-     if (LKECHO)write(JOSTND,3606) KEYWRD,IDT,KARD(2)(1:ILEN),IS,&
-          &(ARRAY(I),I = 3,6)
-  else
-     if (LKECHO)write(JOSTND,3607) KEYWRD,IDT,KARD(2)(1:ILEN),IS,&
-          &(ARRAY(I),I = 3,6)
-  end if
+  if (LKECHO)write(JOSTND,3606) KEYWRD,IDT,KARD(2)(1:ILEN),IS,&
+       &(ARRAY(I),I = 3,6)
   3606 format(/A8,'   DATE/CYCLE=',I5,'; SPROUTING WILL BE SIMULATED.'&
        &,'ADJUSTMENTS FOR SPECIES= ',A,' (CODE= ',I3,') ARE;',/T12,&
-       &'SPROUT NUMBER MULTIPLIER VALUE= ',F10.4,';  HEIGHT MULTIPLIER',&
-       &' VALUE= ',F10.4,';',/T12,'LOWER DBH LIMIT= ',F10.2,';  UPPER',&
-       &' DBH LIMIT= ',F10.2)
-  3607 format(/A8,'   DATE/CYCLE=',I5,'; SPROUTING WILL BE SIMULATED.'&
-       &,'ADJUSTMENTS FOR SPECIES= ',A,' (CODE= ',I3,') ARE;',/T13,&
        &'SPROUT NUMBER MULTIPLIER VALUE= ',F10.4,';  HEIGHT MULTIPLIER',&
        &' VALUE= ',F10.4,';',/T12,'LOWER DBH LIMIT= ',F10.2,';  UPPER',&
        &' DBH LIMIT= ',F10.2)
@@ -871,10 +750,8 @@ subroutine ESIN (PASKEY,ARRAY,LNOTBK,KARD,LKECHO)
         else
            call OPNEWC (KODE,JOSTND,IREAD,IDT,IACTK,KEYWRD,KARD,&
                 &IPRMPT,IRECNT,ICYC)
-           if (LFULLESTAB) then
-              call fvsGetRtnCode(IRTNCD)
-              if (IRTNCD.ne.0) return
-           end if
+           call fvsGetRtnCode(IRTNCD)
+           if (IRTNCD.ne.0) return
         end if
      else
         call OPNEW (KODE,IDT,IACTK,2,ARRAY(2))
@@ -896,14 +773,9 @@ subroutine ESIN (PASKEY,ARRAY,LNOTBK,KARD,LKECHO)
   LSPRUT = .false.
   STOADJ = 0.0
   if (LKECHO)write(JOSTND,3110) PASKEY,'TALLIES AND INGROWTH',' NOT '
-  if (LFULLESTAB) then
-     if (LKECHO)write(JOSTND,9010)
-  else
-     if (LKECHO)write(JOSTND,9020)
-  end if
+  if (LKECHO)write(JOSTND,9010)
   9010 format (T12,'STOCKADJ IS SET TO ZERO, AND NO SPROUTING ',&
        &'WILL BE SIMULATED.')
-  9020 format (T12,'NO SPROUTING WILL BE SIMULATED.')
   return
 
   !     SPECIAL ENTRY TO RETRIEVE KEYWORDS.

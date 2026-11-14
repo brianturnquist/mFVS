@@ -9,31 +9,24 @@ subroutine ESUCKR
   !  ASSUMPTION: THE TREE LIST HAS BEEN COMPRESSED TO ABOUT 1/2 THE
   !  VALUE OF MAXTRE. COMPRS IS CALLED IN ESNUTR.
 
-  !  LMETRICVAR BRANCHES REPRODUCE THE FORMER METRIC COPY USED BY BC AND
-  !  ON (METRIC/STRP/ESUCKR): METRIC REPORT UNITS, A LEADING BLANK ON
-  !  DEBUG AND ERROR LINES, AND NO INITIALIZATION OF SOME FIELDS OF NEW
-  !  SPROUT RECORDS.  THOSE DIFFERENCES ARE KEPT DELIBERATELY.
-
   ! Common blocks
   include 'PRGPRM.f90'
   include 'ARRAYS.f90'
   include 'COEFFS.f90'
   include 'CONTRL.f90'
   include 'PLOT.f90'
+  include 'ESPARM.f90'
   include 'ESHOOT.f90'
   include 'ESCOMN.f90'
   include 'ESHAP.f90'
   include 'ESTREE.f90'
   include 'STDSTK.f90'
   include 'VARCOM.f90'
-  include 'METRIC.f90'
 
   external ESRANN
   ! Variables
   logical :: DEBUG
-
-  !  THE METRIC COPY DECLARED CLABEL (PASSED TO DBSSPRT) WITH LENGTH 3.
-  character(len=merge(3,2,LMETRICVAR)) :: CLABEL
+  character(len=2) :: CLABEL
   character(len=3) :: FINAL
   integer :: NUMSPR,I,ICL,ISSP,IPLOT,ISPSTO,II,MXRR,J,MXTODO
   integer :: ITRGT,INDXAS
@@ -83,13 +76,8 @@ subroutine ESUCKR
   !  PROCESS SPROUT KEYWORD OPTIONS.
 
   call OPFIND (1,MYACTS(1),NTODO)
-  if (LMETRICVAR) then
-     if (DEBUG) write (JOSTND,6) NTODO,ITRNRM
-  else
-     if (DEBUG) write (JOSTND,5) NTODO,ITRNRM
-  end if
+  if (DEBUG) write (JOSTND,5) NTODO,ITRNRM
   5 format ('IN ESUCKR: OPTS NTODO,ITRNRM=',I2,2X,I4)
-  6 format (' IN ESUCKR: OPTS NTODO,ITRNRM=',I2,2X,I4)
   if (NTODO.le.0)go to 60
 
   do IT = 1,NTODO
@@ -168,25 +156,13 @@ subroutine ESUCKR
         go to 201
         200 continue
      end do
-     if (LMETRICVAR) then
-        write (JOREGT,1001) ISSP,ITRNRM
-     else
-        write (JOREGT,1000) ISSP,ITRNRM
-     end if
+     write (JOREGT,1000) ISSP,ITRNRM
      1000 format('IN ESPROT: NO SPECIES MATCH WHEN DECODING ISHOOT(',&
-          &'ITRNRM). ISSP=',I5,'; ITRNRM=',I5)
-     1001 format(' IN ESPROT: NO SPECIES MATCH WHEN DECODING ISHOOT(',&
           &'ITRNRM). ISSP=',I5,'; ITRNRM=',I5)
      go to 900
      201 continue
-     if (LMETRICVAR) then
-        if (DEBUG) write(JOSTND,301) I,IPLOT,ISSP,ICL,PREM
-     else
-        if (DEBUG) write(JOSTND,300) I,IPLOT,ISSP,ICL,PREM
-     end if
+     if (DEBUG) write(JOSTND,300) I,IPLOT,ISSP,ICL,PREM
      300 format('IN ESUCKR: I=',I5,'; IPLOT=',I5,'; ISSP=',I5,&
-          &'; ICL=',I5,'; PREM=',F6.2)
-     301 format(' IN ESUCKR: I=',I5,'; IPLOT=',I5,'; ISSP=',I5,&
           &'; ICL=',I5,'; PREM=',F6.2)
 
      !  MAKE SURE THAT THERE IS ROOM IN THE TREE LIST FOR SPROUTS.
@@ -221,11 +197,7 @@ subroutine ESUCKR
      NSPRT = 0
      call NSPREC(VARACD,ISSP,NSPRT,DSTMP)
      NUMSPR = NSPRT
-     if (LMETRICVAR) then
-        if (DEBUG)write(JOSTND,*)' AFTER NSPREC NUMSPR = ',NUMSPR
-     else
-        if (DEBUG)write(JOSTND,*)'AFTER NSPREC NUMSPR = ',NUMSPR
-     end if
+     if (DEBUG)write(JOSTND,*)'AFTER NSPREC NUMSPR = ',NUMSPR
 
      !  IF QUAKING ASPEN IS PART OF THIS VARIANT, DETERMINE THE TREES-PER-ACRE
      !  REPRESENTED BY EACH ASPEN CUT.
@@ -237,13 +209,8 @@ subroutine ESUCKR
         call ASSPTN (ISHAG,ASBAR,ASTPAR,PREM,ASPRTR)
         PREM = ASPRTR
      end if
-     if (LMETRICVAR) then
-        if (DEBUG)write(JOSTND,*)' AFTER ASSPTN INDXAS,ASPRTR= ',&
-             &INDXAS,ASPRTR
-     else
-        if (DEBUG)write(JOSTND,*)'AFTER ASSPTN INDXAS,ASPRTR= ',&
-             &INDXAS,ASPRTR
-     end if
+     if (DEBUG)write(JOSTND,*)'AFTER ASSPTN INDXAS,ASPRTR= ',&
+          &INDXAS,ASPRTR
 
      !  CHECK TO SEE IF THERE ARE OTHER VARIANT AND SPECIES SPECIFIC RULES
      !  FOR THE TREES-PER-ACRE A SPROUT RECORD WILL REPRESENT
@@ -275,28 +242,21 @@ subroutine ESUCKR
         ISP(ITRN) = ISSP
         ITRE(ITRN) = IPLOT
         CFV(ITRN) = 0.0
+        MCFV(ITRN) = 0.0
+        SCFV(ITRN) = 0.0
 
-        !  THE METRIC VARIANTS DO NOT INITIALIZE MCFV, SCFV, CULL, DECAYCD,
-        !  WDLDSTEM OR THE BIOMASS AND CARBON FIELDS (ADDED 2025) FOR NEW
-        !  SPROUT RECORDS (NOR PSCFV BELOW).  KEPT DELIBERATELY.
-
-        if (.not. LMETRICVAR) then
-           MCFV(ITRN) = 0.0
-           SCFV(ITRN) = 0.0
-
-           CULL(ITRN) = 0.
-           DECAYCD(ITRN) = 0
-           WDLDSTEM(ITRN) = 0
-           ABVGRD_BIO(ITRN) = 0.
-           ABVGRD_CARB(ITRN) = 0.
-           MERCH_BIO(ITRN) = 0.
-           MERCH_CARB(ITRN) = 0.
-           CUBSAW_BIO(ITRN) = 0.
-           CUBSAW_CARB(ITRN) = 0.
-           FOLI_BIO(ITRN) = 0.
-           FOLI_CARB(ITRN) = 0.
-           CARB_FRAC(ITRN) = 0.
-        end if
+        CULL(ITRN) = 0.
+        DECAYCD(ITRN) = 0
+        WDLDSTEM(ITRN) = 0
+        ABVGRD_BIO(ITRN) = 0.
+        ABVGRD_CARB(ITRN) = 0.
+        MERCH_BIO(ITRN) = 0.
+        MERCH_CARB(ITRN) = 0.
+        CUBSAW_BIO(ITRN) = 0.
+        CUBSAW_CARB(ITRN) = 0.
+        FOLI_BIO(ITRN) = 0.
+        FOLI_CARB(ITRN) = 0.
+        CARB_FRAC(ITRN) = 0.
 
         ITRUNC(ITRN) = 0
         NORMHT(ITRN) = 0
@@ -305,19 +265,10 @@ subroutine ESUCKR
 
         PROB(ITRN) = PREM*SMULT
         HTI = 0.
-        if (LMETRICVAR) then
-           if (DEBUG)write(JOSTND,*)' BEFORE SPRTHT VARACD,ISSP,SI,ISHAG= ',&
-                &VARACD,ISSP,SITEAR(ISSP),ISHAG
-        else
-           if (DEBUG)write(JOSTND,*)'BEFORE SPRTHT VARACD,ISSP,SI,ISHAG= ',&
-                &VARACD,ISSP,SITEAR(ISSP),ISHAG
-        end if
+        if (DEBUG)write(JOSTND,*)'BEFORE SPRTHT VARACD,ISSP,SI,ISHAG= ',&
+             &VARACD,ISSP,SITEAR(ISSP),ISHAG
         call SPRTHT (VARACD,ISSP,SITEAR(ISSP),ISHAG,HTI)
-        if (LMETRICVAR) then
-           if (DEBUG)write(JOSTND,*)' AFTER SPRTHT HTI= ',HTI
-        else
-           if (DEBUG)write(JOSTND,*)'AFTER SPRTHT HTI= ',HTI
-        end if
+        if (DEBUG)write(JOSTND,*)'AFTER SPRTHT HTI= ',HTI
         HT(ITRN) = HTI*HMULT
         162 RANDEV = BACHLO(0.,0.5,ESRANN)
         if (RANDEV.lt.-1.0.or. RANDEV.gt.1.0) go to 162
@@ -365,7 +316,7 @@ subroutine ESUCKR
         OLDRN(ITRN) = 0.
         PTOCFV(ITRN) = 0.
         PMRCFV(ITRN) = 0.
-        if (.not. LMETRICVAR) PSCFV(ITRN) = 0.
+        PSCFV(ITRN) = 0.
         PMRBFV(ITRN) = 0.
         NCFDEF(ITRN) = 0
         NBFDEF(ITRN) = 0
@@ -381,18 +332,10 @@ subroutine ESUCKR
      500 continue
   end do
   if (IPRINT.ne.0) then
-     if (LMETRICVAR) then
-        write(JOREGT,1101) NPLT,MGMID,IY(ICYC+1)-1
-     else
-        write(JOREGT,1100) NPLT,MGMID,IY(ICYC+1)-1
-     end if
+     write(JOREGT,1100) NPLT,MGMID,IY(ICYC+1)-1
      1100 format(54('-'),/,'REGENERATION FROM STUMP & ROOT SPROUTS',&
           &//,'STAND ID: ',A26,'  MANAGEMENT CODE: ',A4,'  YEAR: ',I5,//,&
           &T14,'TREES  AVERAGE',/,T5,'SPECIES  /ACRE  HEIGHT',/,T5,&
-          &'-------  -----  -------')
-     1101 format(54('-'),/,' REGENERATION FROM STUMP & ROOT SPROUTS',&
-          &//,' STAND ID: ',A26,'  MANAGEMENT CODE: ',A4,'  YEAR: ',I5,//,&
-          &T14,'TREES  AVERAGE',/,T5,'SPECIES  /HA    HEIGHT',/,T5,&
           &'-------  -----  -------')
      WTAVEHT = 0.0
      do I = 1,NSPSPE
@@ -400,53 +343,22 @@ subroutine ESUCKR
         HTAVE(I) = HTAVE(I)/(COUNTR(I)+.00001)
         IYEAR = IY(ICYC+1)-1
         if (TPASUM(I).gt.0.0) then
-           if (LMETRICVAR) then
-              write(JOREGT,1200) CLABEL,&
-                   &TPASUM(I) /ACRtoHA,&
-                   &HTAVE(I)  *FTtoM
-           else
-              write(JOREGT,1200) CLABEL,TPASUM(I),HTAVE(I)
-           end if
+           write(JOREGT,1200) CLABEL,TPASUM(I),HTAVE(I)
            1200 format(T8,A2,T13,F6.0,T21,F6.1)
            WTAVEHT = HTAVE(I)*TPASUM(I)+WTAVEHT
-           if (LMETRICVAR) then
-              call DBSSPRT(CLABEL,&
-                   &TPASUM(I) /ACRtoHA,&
-                   &HTAVE(I)  *FTtoM,&
-                   &TPATOT    /ACRtoHA,&
-                   &WTAVEHT   *FTtoM,&
-                   &1,IYEAR)
-           else
-              call DBSSPRT(CLABEL,TPASUM(I),HTAVE(I),TPATOT,&
-                   &WTAVEHT,1,IYEAR)
-           end if
+           call DBSSPRT(CLABEL,TPASUM(I),HTAVE(I),TPATOT,&
+                &WTAVEHT,1,IYEAR)
         end if
         700 continue
      end do
-
-     !  THE METRIC VARIANTS DO NOT GUARD AGAINST TPATOT = 0, AND PASS
-     !  TPASUM(1) AND HTAVE(1) FOR THE 'ALL' ROW WHERE THE OTHERS PASS
-     !  ELEMENT NSPSPE+1 (I AFTER THE LOOP).  BOTH KEPT DELIBERATELY.
-
-     if (LMETRICVAR) then
-        WTAVEHT = WTAVEHT/TPATOT
-        call DBSSPRT(FINAL,&
-             &TPASUM(1) /ACRtoHA,&
-             &HTAVE(1)  *FTtoM,&
-             &TPATOT    /ACRtoHA,&
-             &WTAVEHT   *FTtoM,&
-             &2,IYEAR)
-        write(JOREGT,1300) TPATOT/ACRtoHA
+     if (TPATOT .eq.0.0) then
+        WTAVEHT = 0.0
      else
-        if (TPATOT .eq.0.0) then
-           WTAVEHT = 0.0
-        else
-           WTAVEHT = WTAVEHT/TPATOT
-        end if
-        call DBSSPRT(FINAL,TPASUM(I),HTAVE(I),TPATOT,&
-             &WTAVEHT,2,IYEAR)
-        write(JOREGT,1300) TPATOT
+        WTAVEHT = WTAVEHT/TPATOT
      end if
+     call DBSSPRT(FINAL,TPASUM(I),HTAVE(I),TPATOT,&
+          &WTAVEHT,2,IYEAR)
+     write(JOREGT,1300) TPATOT
      1300 format(T14,'-----',/,T13,F6.0,/,54('-') )
   end if
   900 continue

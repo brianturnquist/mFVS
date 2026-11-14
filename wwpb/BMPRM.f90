@@ -1,0 +1,39 @@
+!==================!
+!   wwpb : BMPRM   !
+!==================!
+! WWPB $Id$
+
+!     PARAMETERS FOR THE PINE BEETLE MODEL ARE:
+
+! Variables
+integer :: MXDWHC,MXDWPC,MXDWHZ,MXDWSZ,MXDWAG,MXSPTT
+integer :: NPBSP,NSCL,NUMRV
+real    :: PIE,V2T
+
+parameter (MXDWHC = 2)
+parameter (MXDWPC = 3)
+parameter (MXDWHZ = 3)
+parameter (MXDWSZ = 2)
+parameter (MXDWAG = 5)
+parameter (MXSPTT = 5)
+parameter (NPBSP = 4)
+parameter (NUMRV = 9)
+parameter (NSCL = 10)
+parameter (PIE = 3.14159)
+parameter (V2T = 0.01)
+
+!     MXDWHC= THE MAX NUMBER OF CATEGORIES FOR HOST DEAD WOODY
+!             POOLS FOR IPS (1=STANDING; 2=DEAD)
+!     MXDWPC= THE MAX NUMBER OF CATEGORIES FOR DEAD WOODY
+!             POOLS
+!     MXDWHZ= THE MAX NUMBER OF DEAD WOODY HOST SIZE CLASSES (HOST ONLY)
+!     MXDWSZ= THE MAX NUMBER OF DOWNED DEAD POOL SIZE CLASSES (1=<3",2=>3")
+!             (STANDING SWP HAS MXDWHZ+1 SIZE CLASSES)
+!     MXDWAG= THE MAX NUMBER OF DEAD WOODY POOL AGE CLASSES
+!     MXSPTT= THE MAXIMUM NUMBER OF "SPECIAL TREE" TYPES FOR EACH PB
+!     NUMRV:  Number of pieces (DVs) that go into calculating an overall RV
+!     NPBSP=  THE NUMBER OF PINE BEETLE SPECIE(S) TYPES SIMULATED
+!     NSCL=   THE NUMBER OF DBH SIZE CLASSES CONSIDERED BY PINE BEETLE
+!             MODEL
+!     PIE=    THE VALUE OF PI
+!     V2T=    CONVERSION FROM CUBIC FT TO TONS: .01=20/2000

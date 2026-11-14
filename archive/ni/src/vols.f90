@@ -1,0 +1,344 @@
+!===========================!
+!   archive/ni/src : vols   !
+!===========================!
+! NI $Id: vols.f 2132 2018-03-06 22:32:41Z gedixon $
+subroutine VOLS
+  implicit none
+
+  !  THIS SUBROUTINE CALCULATES TREE VOLUMES TO THREE MERCHANTABILITY
+  !  STANDARDS, AND COMPUTES DISTRIBUTION AND COMPOSITION VECTORS FOR
+  !  TOTAL CUBIC VOLUME AND ACCRETION.  TOTAL CUBIC FOOT VOLUME AND
+  !  MERCHANTABLE CUBIC FOOT VOLUME ARE COMPUTED IN **CFVOL**,
+  !  **NATCRS**, OR **OCFVOL**.  BOARD FOOT VOLUME IS COMPUTED IN
+  !  **BFVOL**, **NATCRS**, OR **OBFVOL**.  ADJUSTMENTS ARE MADE FOR
+  !  TOP DAMAGE AS APPROPRIATE.  ALL VOLUMES ARE THEN ADJUSTED FOR
+  !  DEFECT.
+
+  !  NATCRS, OCFVOL, AND OBFVOL ARE ENTRY POINTS IN SUBROUTINE
+  !  **VARVOL**, WHICH IS VARIANT SPECIFIC.
+
+  ! Common blocks
+  include 'PRGPRM.f90'
+  include 'ARRAYS.f90'
+  include 'COEFFS.f90'
+  include 'CONTRL.f90'
+  include 'OUTCOM.f90'
+  include 'PLOT.f90'
+  include 'VOLSTD.f90'
+  include 'GGCOM.f90'
+
+  !  DIMENSIONS FOR INTERNAL VARIABLES.
+
+  !  SPCCC -- TOTAL CUBIC VOLUME BY SPECIES AND TREE CLASS.
+  !  SPCAC -- TOTAL CUBIC VOLUME ACCRETION BY SPECIES AND TREE CLASS.
+  !  SPCMC -- MERCH CUBIC VOLUME BY SPECIES AND TREE CLASS.
+  !  SPCBV -- MERCH BOARD VOLUME BY SPECIES AND TREE CLASS.
+
+  !  THESE VALUES DO NOT INCLUDE CYCLE 0 DEAD TREES.
+  !  IPASS=1 FOR LIVE TREES;  IPASS=2 FOR CYCLE 0 DEAD TREES.
+
+  !  BTKFLG - LOGICAL VARIABLES TO INDICATE WHETHER THE VOLUME ESTIMATE
+  !  CTKFLG   NEEDS TO BE ADJUSTED FOR TOPKILL OR NOT.
+  !           BTKFLG FOR BOARD FOOT VOLUME
+  !           CTKFLG FOR CUBIC FOOT VOLUME
+  !           .TRUE.  = ADJUST ESTIMATE FOR TOPKILL
+  !           .FALSE. = NO ADJUSTMENT NEEDED (ALREADY ACCOUNTED FOR).
+
+  ! Variables
+  integer :: DLIEQN,DLLMOD
+  logical :: DEBUG
+  real    :: SPCCC(MAXSP,3),SPCAC(MAXSP,3),SPCBV(MAXSP,3),SPCMC(MAXSP,3)
+  real    :: DBHCLS(9),P,D,H,BARK,BRATIO
+  real    :: D2H,VM,VN,VMAX,BBFV,ALGSLP,VOLCOR
+  integer :: I,J,IPASS,ILOW,IHI,ISPC,IT,IM,ICDF,IBDF
+  logical :: TKILL,LCONE,BTKFLG,CTKFLG
+
+  !  INITIALIZE DBH CLASSES.
+
+  data DBHCLS/0.0,5.0,10.0,15.0,20.0,25.0,30.0,35.0,40.0/
+
+  !  CHECK FOR DEBUG.
+
+  call DBCHK (DEBUG,'VOLS',4,ICYC)
+  do J = 1,2
+     do I = 1,MAXTRE
+        HT2TD(I,J) = 0.
+     end do
+  end do
+  if (ITRN.le.0) goto 2
+  do I = 1,MAXSP
+     do J = 1,3
+        SPCCC(I,J) = 0.0
+        SPCAC(I,J) = 0.0
+        SPCMC(I,J) = 0.0
+        SPCBV(I,J) = 0.0
+        1 continue
+     end do
+  end do
+  2 continue
+  IPASS = 1
+  ILOW = 1
+  IHI = ITRN
+
+  !  CALL VOLKEY TO PROCESS KEYWORDS USED TO CHANGE VOLUME STANDARDS AND
+  !  EQUATIONS.
+
+  call VOLKEY (DEBUG)
+  do J = 1,MAXSP
+     if (BFMIND(J).lt.2.0) BFMIND(J) = 2.0
+     if (BFTOPD(J).lt.2.0) BFTOPD(J) = 2.0
+  end do
+
+  if (ITRN.le.0) goto 205
+
+  !  ENTER TREE BY TREE LOOP TO CALCULATE VOLUMES AND COMPILE
+  !  SUMMARY ARRAYS.
+
+  !  I -- SUBSCRIPT TO TREE RECORD.
+  !  P -- NUMBER OF TREES PER ACRE REPRESENTED BY TREE I.
+  !  D -- DIAMETER OF TREE I.
+  !  H -- HEIGHT OF TREE I.
+  !  ISPC -- SPECIES OF TREE I.
+  !  WK5 -- ARRAY CONTAINING TOTAL ANNUAL CUBIC VOLUME ACCRETION
+  !    PER ACRE FOR EACH TREE.  THIS ARRAY IS NOT LOADED
+  !    IF LSTART IS TRUE.
+  !  VN -- USED TO TEMPORARILY STORE TOTAL CUBIC VOLUME FOR TREE I.
+
+  10 continue
+  do I = ILOW,IHI
+     WK5(I) = 0.0
+     P = PROB(I)
+     if (P.le.0.0) go to 200
+     ISPC = ISP(I)
+     D = DBH(I)
+     H = HT(I)
+
+     !  INITIALIZE TOP KILL FLAG FOR NEXT TREE; IF TOPKILLED, ASSIGN H TO
+     !  NORMHT.
+
+     TKILL = H.ge.4.5.and. ITRUNC(I).gt.0
+     if (TKILL) H = NORMHT(I)/100.0
+
+     !  IF NOT INITIAL SUMMARY, ADD DG TO DBH; ASSIGN D2H.
+
+     BARK = BRATIO(ISPC,D,H)
+     if (.not.LSTART) D = D+DG(I)/BARK
+     D2H = D*D*H
+
+     !              CUBIC VOLUME SECTION               *
+
+     !  INITIALIZE VOLUME ESTIMATES.
+
+     VN = 0.0
+     VM = 0.0
+     VMAX = 0.0
+     BBFV = 0.0
+     if (DEBUG)write(JOSTND,*)' CUBIC SECTION, I,ISPC,METHC= ',&
+          &I,ISPC,METHC(ISPC)
+
+     !  CALCULATE TOTAL CUBIC FOOT VOLUME. CORRECT FOR TOP KILL IF NEEDED.
+
+     IT = I
+     if (METHC(ISPC).eq.6) then
+        call NATCRS (VN,VM,BBFV,ISPC,D,H,TKILL,BARK,ITRUNC(I),VMAX,&
+             &CTKFLG,BTKFLG,IT)
+     else if (METHC(ISPC).eq.8) then
+        call OCFVOL (VN,VM,ISPC,D,H,TKILL,BARK,ITRUNC(I),VMAX,LCONE,&
+             &CTKFLG,IT)
+     else
+        call CFVOL (ISPC,D,H,D2H,VN,VM,VMAX,TKILL,LCONE,BARK,ITRUNC(I),&
+             &CTKFLG)
+     end if
+     if (CTKFLG .and. TKILL .and. VMAX .gt.0.)&
+          &call CFTOPK (ISPC,D,H,VN,VM,VMAX,LCONE,BARK,ITRUNC(I))
+
+     !  LOAD WK1 WITH MERCH CUBIC VOLUME PER TREE.
+
+     WK1(I) = VM
+
+     !  SUMMARIZE VOLUME BY SPECIES AND TREE CLASS.  IF LSTART IS
+     !  FALSE, LOAD WK5 AND SUMMARIZE ACCRETION BY SPECIES AND TREE
+     !  CLASS. DO NOT DO THIS FOR CYCLE 0 DEAD TREES.
+
+     if (IPASS .eq.2) go to 15
+     IM = IMC(I)
+     if (.not.LSTART) then
+        if (CFV(I).gt.VN) then
+           WK5(I) = 0.
+        else
+           WK5(I) = (VN-CFV(I))*P/FINT
+        end if
+        SPCAC(ISPC,IM) = SPCAC(ISPC,IM)+WK5(I)
+     end if
+     SPCCC(ISPC,IM) = SPCCC(ISPC,IM)+VN*P
+
+     !  LOAD CFV WITH TOTAL CUBIC VOLUME PER TREE.
+
+     15 continue
+     CFV(I) = VN
+     ICDF = DEFECT(I)/1000000
+     if (WK1(I).gt.0.0.and. LCVOLS) then
+
+        !       COMPUTE DEFECT CORRECTION FACTOR FOR CUBIC FOOT VOLUME.
+        !       TAKE LARGEST OF 1) INPUT CF DEFECT PERCENT, 2) COMPUTED LINEAR
+        !       INTERPOLATION VALUE, OR 3) COMPUTED LOG-LINEAR MODEL VALUE.
+
+        DLIEQN = NINT(ALGSLP(D,DBHCLS,CFDEFT(1,ISPC),9) * 100.)
+        if (DLIEQN.gt.ICDF) ICDF = DLIEQN
+        if (CFLA0(ISPC).eq.0.0.and. CFLA1(ISPC).eq.1.0) then
+           VOLCOR = WK1(I)
+        else
+           VOLCOR = EXP(CFLA0(ISPC)+CFLA1(ISPC)*ALOG(WK1(I)))
+        end if
+        DLLMOD = NINT(((WK1(I)-VOLCOR)/WK1(I)) * 100.)
+        if (DLLMOD.gt.ICDF) ICDF = DLLMOD
+        if (ICDF.gt.99) ICDF = 99
+        if (ICDF.lt.0) ICDF = 0
+     end if
+
+     !        CORRECT MERCHANTABLE CUBIC VOLUME FOR FORM AND DEFECT.
+     !        CONSIDER 99% DEFECT AS 100% DEFECT.
+
+     if (ICDF.lt.99) then
+        WK1(I) = WK1(I)*(1.-FLOAT(ICDF)/100.)
+     else
+        WK1(I) = 0.
+     end if
+     if (IPASS .eq.1) SPCMC(ISPC,IM) = SPCMC(ISPC,IM)+WK1(I)*P
+
+     !  CALL ECON EXTENSION TO PROCESS VOLUME INFORMATION
+
+     if (WK1(I) .gt.0.0) call ECVOL(IT,LOGDIA,LOGVOL,.true.)
+     !      CALL ECVOL(ISPC,IT,LOGDIA,LOGVOL,.TRUE.)
+
+     !           BOARD VOLUME SECTION                  *
+
+     !  COMPUTE SCRIBNER BOARD FOOT VOLUME TO A VARIABLE TOP FOR TREES
+     !  OF MINIMUM MERCHANTABLE DBH AND LARGER.
+
+     BFV(I) = 0.0
+     IBDF = DEFECT(I)/10000 - (DEFECT(I)/1000000)*100
+     if (D.lt.BFMIND(ISPC).or.D.le.BFTOPD(ISPC)) go to 150
+
+     !   CALCULATE SCRIBNER BOARD FOOT VOLUME.
+
+     if (DEBUG)write(JOSTND,*)' BOARD SECTION, I,ISPC,D,H,METHB= ',&
+          &I,ISPC,D,H,METHB(ISPC)
+     if (METHB(ISPC).eq.6.or. METHB(ISPC).eq.9) then
+        if (METHC(ISPC).eq.6) then
+           go to 100
+        else
+           call NATCRS (VN,VM,BBFV,ISPC,D,H,TKILL,BARK,ITRUNC(I),VMAX,&
+                &CTKFLG,BTKFLG,IT)
+        end if
+     else if (METHB(ISPC).eq.8) then
+        IT = I
+        call OBFVOL (BBFV,ISPC,D,H,TKILL,BARK,ITRUNC(I),VMAX,LCONE,&
+             &BTKFLG,IT)
+     else
+        call BFVOL (ISPC,D,H,D2H,BBFV,TKILL,LCONE,BARK,VMAX,ITRUNC(I),&
+             &BTKFLG)
+     end if
+
+     !  CORRECT FOR TOPKILL IF NEEDED.
+     !  LOAD BFV WITH SCRIBNER BOARD FOOT VOLUME CORRECTED FOR TOPKILL.
+
+     100 continue
+     if (BTKFLG .and. TKILL .and. VMAX .gt.0.)&
+          &call BFTOPK (ISPC,D,H,BBFV,LCONE,BARK,VMAX,ITRUNC(I))
+     BFV(I) = BBFV
+     if (BFV(I).gt.0.0.and. LBVOLS) then
+
+        !     COMPUTE DEFECT CORRECTION FACTOR FOR BOARD FOOT VOLUME.
+        !     TAKE LARGEST OF 1) INPUT BF DEFECT PERCENT, 2) COMPUTED LINEAR
+        !     INTERPOLATION BF VALUE, OR 3) COMPUTED LOG-LINEAR MODEL BF VALUE.
+
+        DLIEQN = NINT(ALGSLP(D,DBHCLS,BFDEFT(1,ISPC),9) * 100.)
+        if (DLIEQN.gt.IBDF)IBDF = DLIEQN
+        if (BFLA0(ISPC).eq.0.0.and. BFLA1(ISPC).eq.1.0) then
+           VOLCOR = BFV(I)
+        else
+           VOLCOR = EXP(BFLA0(ISPC)+BFLA1(ISPC)*ALOG(BFV(I)))
+        end if
+        DLLMOD = NINT(((BFV(I)-VOLCOR)/BFV(I)) * 100.)
+        if (DLLMOD.gt.IBDF)IBDF = DLLMOD
+        if (IBDF.gt.99)IBDF = 99
+        if (IBDF.lt.0)IBDF = 0
+     end if
+
+     !        CORRECT MERCHANTABLE BOARD FOOT VOLUME FOR FORM AND DEFECT.
+     !        CONSIDER 99% DEFECT AS 100% DEFECT.
+
+     if (IBDF.lt.99) then
+        BFV(I) = BFV(I)*(1.-FLOAT(IBDF)/100.)
+     else
+        BFV(I) = 0.
+     end if
+
+     !  CALL ECON EXTENSION TO PROCESS VOLUME INFORMATION
+
+     if (BFV(I) .gt.0.0) call ECVOL(IT,LOGDIA,LOGVOL,.false.)
+     !      CALL ECVOL(ISPC,IT,LOGDIA,LOGVOL,.FALSE.)
+
+     !  RESET NEGATIVE VOLUMES TO ZERO AND COMPILE TOTAL.
+
+     if (BFV(I).lt.0.0) BFV(I) = 0.0
+     150 continue
+     if (IPASS .eq.1) SPCBV(ISPC,IM) = SPCBV(ISPC,IM)+BFV(I)*P
+
+     !  SET VALUES IN CODED DEFECT NUMBER TO INDICATE THE ACTUAL DEFECT
+     !  PERCENTAGES APPLIED THIS CYCLE.
+     !  DEFECT CODED AS 11223344, WHERE 11=INPUT MC DEFECT %, 22=INPUT BF
+     !  DEFECT PERCENT, 33=MC DEFECT % USED THIS CYCLE, 44=BF DEFECT % USED
+     !  THIS CYCLE.
+
+     DEFECT(I) = ((DEFECT(I)/10000)*10000) + ICDF*100 + IBDF
+     if (DEBUG)write(JOSTND,*)' IN VOLS, I= ',I,' DEFECT= ',DEFECT(I)
+
+     !  PRINT DEBUG OUTPUT IF DESIRED
+
+     if (.not.DEBUG) go to 200
+     write(JOSTND,9000)I,VN,WK1(I),WK5(I),CFV(I),&
+          &SPCAC(ISPC,1),SPCAC(ISPC,2),SPCAC(ISPC,3),SPCCC(ISPC,1),&
+          &SPCCC(ISPC,2),SPCCC(ISPC,3),ISPC,D,H
+     9000 format(' IN VOLS, I=',I4,' VN=',E15.6,' WK1=',E15.6,/,&
+          &'  WK5=',E15.6,' CFV=',E15.6,&
+          &' SPCAC=',3(E15.6,',')/'  SPCCC=',3(E15.6,','),' ISPC=',I2,&
+          &' DBH=',E11.2,' NORMAL HT=',E11.2)
+
+     !  END OF TREE LOOP.
+
+     200 continue
+  end do
+  205 continue
+  if (IPASS .eq.2) go to 250
+
+  !  DETERMINE SPECIES-TREE CLASS COMPOSITION FOR ALL VOLUME STANDARDS.
+
+  call COMP(OSPCV,IOSPCV,SPCCC)
+  call COMP(OSPBV,IOSPBV,SPCBV)
+  call COMP(OSPMC,IOSPMC,SPCMC)
+
+  !  DETERMINE SPECIES-TREE CLASS COMPOSITION AND PERCENTILE POINTS IN
+  !  THE DISTRIBUTION OF DIAMETERS FOR ANNUAL TOTAL CUBIC FOOT ACCRETION.
+  !  BYPASS IF LSTART IS TRUE.
+
+  if (LSTART) go to 210
+  call COMP(OSPAC,IOSPAC,SPCAC)
+  call PCTILE(ITRN,IND,WK5,WK3,OACC(7))
+  call DIST(ITRN,OACC,WK3)
+  210 continue
+
+  !  CALCULATE VOLUMES FOR CYCLE 0 DEAD TREES.
+
+  if (IREC2.gt. MAXTRE) go to 250
+  IPASS = 2
+  ILOW = IREC2
+  IHI = MAXTRE
+  go to 10
+
+  !  END OF VOLS.
+
+  250 continue
+  return
+end

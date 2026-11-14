@@ -22,11 +22,10 @@ subroutine FMIN (ICALL,NSP,LKECHO)
   include 'FMCOM.f90'
   include 'FMFCOM.f90'
   include 'CONTRL.f90'
-  include 'METRIC.f90'
 
   ! Variables
   integer :: KWCNT
-  parameter (KWCNT = 56)
+  parameter (KWCNT = 54)
 
   character(len=4) :: NSP(MAXSP,3)
   character(len=8) :: TABLE(KWCNT)
@@ -55,12 +54,7 @@ subroutine FMIN (ICALL,NSP,LKECHO)
        &'POTFTEMP','SNAGPSFT','FUELMODL','DEFULMOD','CANCALC ',&
        &'POTFSEAS','POTFPAB ','SOILHEAT','CARBREPT','CARBCUT ',&
        &'CARBCALC','CANFPROF','FUELFOTO','FIRECALC','FMODLIST',&
-       &'DWDVLOUT','DWDCVOUT','FUELSOFT','FMORTMLT','USECFIM ',&
-       &'CFIMCALC'/
-
-  !     USECFIM AND CFIMCALC (THE LAST TWO TABLE ENTRIES) ARE RECOGNIZED ONLY
-  !     BY THE METRIC VARIANTS (BC, ON); THE OTHER VARIANTS SEARCH THE FIRST
-  !     KWCNT-2 ENTRIES, AS BEFORE.
+       &'DWDVLOUT','DWDCVOUT','FUELSOFT','FMORTMLT'/
 
   data PHOTOREF / 'Fischer INT-96                      ',&
        &'Fischer INT-97                      ',&
@@ -127,11 +121,7 @@ subroutine FMIN (ICALL,NSP,LKECHO)
   call ERRGRO (.true.,6)
   goto 10
   30 continue
-  if (LMETRICVAR) then
-     call FNDKEY (NUMBER,KEYWRD,TABLE,KWCNT,KODE,.false.,JOSTND)
-  else
-     call FNDKEY (NUMBER,KEYWRD,TABLE,KWCNT-2,KODE,.false.,JOSTND)
-  end if
+  call FNDKEY (NUMBER,KEYWRD,TABLE,KWCNT,KODE,.false.,JOSTND)
 
   !     RETURN KODES 0=NO ERROR,1=KEYWORD NOT FOUND,2=MISSPELLING.
 
@@ -154,7 +144,7 @@ subroutine FMIN (ICALL,NSP,LKECHO)
        &2100,2200,2300,2400,2500,2600,2700,2800,2900,3000,&
        &3100,3200,3300,3400,3500,3600,3700,3800,3900,4000,&
        &4100,4200,4300,4400,4500,4600,4700,4800,4900,5000,&
-       &5100,5200,5300,5400,5500,5600), NUMBER
+       &5100,5200,5300,5400), NUMBER
 
   100 continue
   !                        OPTION NUMBER 1 -- SALVSP
@@ -341,15 +331,9 @@ subroutine FMIN (ICALL,NSP,LKECHO)
   PRMS(5) = 100.0
   PRMS(6) = 1
 
-  if (LMETRICVAR) then
-     if (LNOTBK(2)) PRMS(1) = ARRAY(2) * KMtoMI
-     if (LNOTBK(3)) PRMS(2) = ARRAY(3)
-     if (LNOTBK(4)) PRMS(3) = ARRAY(4) * CtoF1 + CtoF2
-  else
-     if (LNOTBK(2)) PRMS(1) = ARRAY(2)
-     if (LNOTBK(3)) PRMS(2) = ARRAY(3)
-     if (LNOTBK(4)) PRMS(3) = ARRAY(4)
-  end if
+  if (LNOTBK(2)) PRMS(1) = ARRAY(2)
+  if (LNOTBK(3)) PRMS(2) = ARRAY(3)
+  if (LNOTBK(4)) PRMS(3) = ARRAY(4)
   if (LNOTBK(5)) PRMS(4) = ARRAY(5)
   if (LNOTBK(6)) PRMS(5) = ARRAY(6)
   if (LNOTBK(7)) PRMS(6) = ARRAY(7)
@@ -360,30 +344,14 @@ subroutine FMIN (ICALL,NSP,LKECHO)
   if (PRMS(6) .lt.1) PRMS(6) = 1
   if (PRMS(6) .gt.4) PRMS(6) = 4
 
-  if (LMETRICVAR) then
-     if (LKECHO)write(JOSTND,9610) KEYWRD, IDT, PRMS(1) * MItoKM,&
-          &PRMS(2),PRMS(3)*FtoC1+FtoC2,PRMS(4),PRMS(5),PRMS(6)
-  else
-     if (LKECHO)write(JOSTND,610) KEYWRD, IDT, PRMS(1), PRMS(2),&
-          &PRMS(3), PRMS(4), PRMS(5), PRMS(6)
-  end if
+  if (LKECHO)write(JOSTND,610) KEYWRD, IDT, PRMS(1), PRMS(2),&
+       &PRMS(3), PRMS(4), PRMS(5), PRMS(6)
 
   610 format(/A8,T12,'FIRE CONDITIONS IN DATE/CYCLE ',&
        &I4,' WILL BE: WIND: ',F5.1,' MPH.'&
        &/T12,'FUEL MOISTURE VALUES WILL USE THE ',&
        &'PRESET MOISTURE CONDITION ',F3.0&
        &/T12,'TEMPERATURE: ',F5.0,' DEGREES F.'&
-       &/T12,'MORTALITY CODE: ',F2.0,' (0 = TURN OFF FFE MORTALITY',&
-       &', 1 = FFE ESTIMATES MORTALITY)'&
-       &/T12,'PERCENTAGE OF THE STAND BURNED: ',F6.1&
-       &/T12,'SEASON OF THE BURN: ',F2.0,' (1 = EARLY SPRING ',&
-       &'(COMPACT LEAVES), 2 = BEFORE GREENUP, 3 = AFTER GREENUP,',&
-       &' 4 = FALL)')
-  9610 format(/A8,T12,'FIRE CONDITIONS IN DATE/CYCLE ',&
-       &I4,' WILL BE: WIND: ',F5.1,' KM/HR'&
-       &/T12,'FUEL MOISTURE VALUES WILL USE THE ',&
-       &'PRESET MOISTURE CONDITION ',F3.0&
-       &/T12,'TEMPERATURE: ',F5.0,' DEGREES C.'&
        &/T12,'MORTALITY CODE: ',F2.0,' (0 = TURN OFF FFE MORTALITY',&
        &', 1 = FFE ESTIMATES MORTALITY)'&
        &/T12,'PERCENTAGE OF THE STAND BURNED: ',F6.1&
@@ -430,22 +398,12 @@ subroutine FMIN (ICALL,NSP,LKECHO)
   PRMS(3) = -1.0
   PRMS(4) = -1.0
 
-  if (LMETRICVAR) then
-     if (LNOTBK(2)) PRMS(1) = ARRAY(2)
-     if (LNOTBK(3)) PRMS(2) = ARRAY(3) * MtoFT
-     if (LNOTBK(4)) PRMS(3) = ARRAY(4)
-     if (LNOTBK(5)) then
-        PRMS(4) = ARRAY(5) * MtoFT
-        NPARMS = 4
-     end if
-  else
-     if (LNOTBK(2)) PRMS(1) = ARRAY(2)
-     if (LNOTBK(3)) PRMS(2) = ARRAY(3)
-     if (LNOTBK(4)) PRMS(3) = ARRAY(4)
-     if (LNOTBK(5)) then
-        PRMS(4) = ARRAY(5)
-        NPARMS = 4
-     end if
+  if (LNOTBK(2)) PRMS(1) = ARRAY(2)
+  if (LNOTBK(3)) PRMS(2) = ARRAY(3)
+  if (LNOTBK(4)) PRMS(3) = ARRAY(4)
+  if (LNOTBK(5)) then
+     PRMS(4) = ARRAY(5)
+     NPARMS = 4
   end if
 
   !     SET BOUNDS FOR SOME OF THE VALUES
@@ -456,15 +414,9 @@ subroutine FMIN (ICALL,NSP,LKECHO)
   if (PRMS(3) .gt.100.0) PRMS(3) = 100.
 
   if (PRMS(2) .gt.0.0) then
-     if (LMETRICVAR) then
-        if (LKECHO)write(JOSTND,9717) KEYWRD, IDT, PRMS(2) * FTtoM
-     else
-        if (LKECHO)write(JOSTND,717) KEYWRD, IDT, PRMS(2)
-     end if
+     if (LKECHO)write(JOSTND,717) KEYWRD, IDT, PRMS(2)
      717 format (/A8,T12,'IN DATE/CYCLE ', I4,&
           &' FLAME LENGTH WILL BE: ',F6.1,' FT.')
-     9717 format (/A8,T12,'IN DATE/CYCLE ', I4,&
-          &' FLAME LENGTH WILL BE: ',F6.1,' M.')
   else
      if (LKECHO)write(JOSTND,719) KEYWRD, IDT, PRMS(1)
      719 format (/A8,T12,'IN DATE/CYCLE ', I4,&
@@ -479,13 +431,8 @@ subroutine FMIN (ICALL,NSP,LKECHO)
      722 format (T12,F5.1,' % OF THE CROWN WILL UNDERGO CROWNING.')
   end if
   if (NPARMS.ge.4) then
-     if (LMETRICVAR) then
-        if (LKECHO)write(JOSTND,9723) PRMS(4) * FTtoM
-     else
-        if (LKECHO)write(JOSTND,723) PRMS(4)
-     end if
+     if (LKECHO)write(JOSTND,723) PRMS(4)
      723 format (T12,'SCORCH HEIGHT =',F10.2)
-     9723 format (T12,'SCORCH HEIGHT =',F10.2,' M.')
   end if
 
   call OPNEW(KODE,IDT,MYACT,NPARMS,PRMS)
@@ -760,11 +707,7 @@ subroutine FMIN (ICALL,NSP,LKECHO)
   ICHNG = 0
   do ICLS = 1,6
      if (LNOTBK(ICLS)) then
-        if (LMETRICVAR) then
-           SNPRCL(ICLS) = ARRAY(ICLS) * CMtoIN
-        else
-           SNPRCL(ICLS) = ARRAY(ICLS)
-        end if
+        SNPRCL(ICLS) = ARRAY(ICLS)
         ICHNG = ICLS
         if (SNPRCL(ICLS) .gt.36.0.and. SNPRCL(ICLS) .ne.999.0)&
              &SNPRCL(ICLS) = 36.0
@@ -778,18 +721,10 @@ subroutine FMIN (ICALL,NSP,LKECHO)
      end do
   end if
 
-  if (LMETRICVAR) then
-     if (LKECHO)write(JOSTND,91350) KEYWRD,&
-          &(ICLS,SNPRCL(ICLS)*INtoCM,ICLS = 1,6)
-  else
-     if (LKECHO)write(JOSTND,1350) KEYWRD,(ICLS,SNPRCL(ICLS),ICLS = 1,6)
-  end if
+  if (LKECHO)write(JOSTND,1350) KEYWRD,(ICLS,SNPRCL(ICLS),ICLS = 1,6)
   1350 format (/A8,'   THE LOWER BOUNDARY FOR EACH DBH CLASS FOR ',&
        &'PRINTING THE SNAG OUTPUT (IN INCHES): ',&
        &/T12,6('CLASS',I2,'=',F4.1:'; '))
-  91350 format (/A8,'   THE LOWER BOUNDARY FOR EACH DBH CLASS FOR ',&
-       &'PRINTING THE SNAG OUTPUT (IN CM): ',&
-       &/T12,6('CLASS',I2,'=',F7.1:'; '))
   goto 10
   1400 continue
   !                        OPTION NUMBER 14 -- LANDOUT
@@ -816,13 +751,8 @@ subroutine FMIN (ICALL,NSP,LKECHO)
   if (LNOTBK(1)) JLOUT(1) = IFIX(ARRAY(1))
   if (LNOTBK(2)) JLOUT(2) = IFIX(ARRAY(2))
   if (LNOTBK(3)) JLOUT(3) = IFIX(ARRAY(3))
-  if (LMETRICVAR) then
-     if (LNOTBK(4)) PLSIZ(1) = IFIX(ARRAY(4) * MtoFT)
-     if (LNOTBK(5)) PLSIZ(2) = IFIX(ARRAY(5) * MtoFT)
-  else
-     if (LNOTBK(4)) PLSIZ(1) = IFIX(ARRAY(4))
-     if (LNOTBK(5)) PLSIZ(2) = IFIX(ARRAY(5))
-  end if
+  if (LNOTBK(4)) PLSIZ(1) = IFIX(ARRAY(4))
+  if (LNOTBK(5)) PLSIZ(2) = IFIX(ARRAY(5))
   if (LNOTBK(6)) IHEAD = IFIX(ARRAY(6))
   if (IHEAD .ne.0) LANHED = .false.
 
@@ -833,13 +763,8 @@ subroutine FMIN (ICALL,NSP,LKECHO)
 
      if ((JLOUT(1).gt.0).and.LKECHO)write(JOSTND,1420) JLOUT(1)
      if ((JLOUT(2).gt.0).and.LKECHO)write(JOSTND,1430) JLOUT(2)
-     if (LMETRICVAR) then
-        if ((JLOUT(3) .gt.0).and.LKECHO)write(JOSTND,91440) JLOUT(3),&
-             &PLSIZ(1), PLSIZ(2)
-     else
-        if ((JLOUT(3).gt.0).and.LKECHO)write(JOSTND,1440) JLOUT(3),&
-             &PLSIZ(1), PLSIZ(2)
-     end if
+     if ((JLOUT(3).gt.0).and.LKECHO)write(JOSTND,1440) JLOUT(3),&
+          &PLSIZ(1), PLSIZ(2)
 
      1420 format(T17,'LOADING CATEGORIES FOR FUEL AND SNAGS, UNIT: ',I3)
      1430 format(T17,'PERCENT OF LANDSCAPE USING EACH FUEL MODEL, ',&
@@ -848,10 +773,6 @@ subroutine FMIN (ICALL,NSP,LKECHO)
           &'UNIT: ',I3,/T17,'THE AREA WILL BE GROUPED INTO ',&
           &'FLAME LENGTHS THAT ARE ABOVE OR BELOW ',I3,' FEET',&
           &' AND ABOVE ',I3,' FEET.')
-     91440 format(T17,'FIRE EFFECTS & POTENTIAL FLAME LENGTH INFO, ',&
-          &'UNIT: ',I3,/T17,'THE AREA WILL BE GROUPED INTO ',&
-          &'FLAME LENGTHS THAT ARE ABOVE OR BELOW ',I3,' M',&
-          &' AND ABOVE ',I3,' M.')
 
      if ((.not.LANHED).and.LKECHO)write(JOSTND,1450)
      1450 format(T12,'TABLE HEADINGS WILL NOT BE PRINTED.')
@@ -928,13 +849,8 @@ subroutine FMIN (ICALL,NSP,LKECHO)
            TODUFF(I,IDEC) = DKR(I,IDEC) * PRDUFF(I,IDEC)
            1620 continue
         end do
-        if (LMETRICVAR) then
-           if (LKECHO)write(JOSTND,91650) KEYWRD,IDEC,DKR(10,IDEC),&
-                &DKR(11,IDEC),(DKR(I,IDEC),I = 1,4)
-        else
-           if (LKECHO)write(JOSTND,1650) KEYWRD,IDEC,DKR(10,IDEC),&
-                &DKR(11,IDEC),(DKR(I,IDEC),I = 1,4)
-        end if
+        if (LKECHO)write(JOSTND,1650) KEYWRD,IDEC,DKR(10,IDEC),&
+             &DKR(11,IDEC),(DKR(I,IDEC),I = 1,4)
      else
         do IDEC = 1,4
            do J = 1,11
@@ -949,13 +865,8 @@ subroutine FMIN (ICALL,NSP,LKECHO)
            1635 continue
         end do
 
-        if (LMETRICVAR) then
-           if (LKECHO)write(JOSTND,91655) KEYWRD,DKR(10,4),DKR(11,4),&
-                &(DKR(I,4),I = 1,4)
-        else
-           if (LKECHO)write(JOSTND,1655) KEYWRD,DKR(10,4),DKR(11,4),&
-                &(DKR(I,4),I = 1,4)
-        end if
+        if (LKECHO)write(JOSTND,1655) KEYWRD,DKR(10,4),DKR(11,4),&
+             &(DKR(I,4),I = 1,4)
      end if
 
      1650 format (/A8,'   THE TOTAL DECAY RATES FOR DECAY CLASS',I2,&
@@ -964,12 +875,6 @@ subroutine FMIN (ICALL,NSP,LKECHO)
      1655 format (/A8,'   THE TOTAL DECAY RATES FOR ALL DECAY CLAS',&
           &'SES WILL BE',/T12,'LITTER: ',F5.3,' DUFF: ',F5.3,' 0-.25: ',&
           &F5.3,' .25-1: ',F5.3,' 1-3: ',F5.3,' >3: ',F5.3)
-     91650 format (/A8,'   THE TOTAL DECAY RATES FOR DECAY CLASS',I2,&
-          &' WILL BE',/T12,'LITTER: ',F5.3,' DUFF: ',F5.3,' 0-0.6: ',&
-          &F5.3,' 0.6-2.5: ',F5.3,' 2.5-7.6: ',F5.3,' >7.6: ',F5.3)
-     91655 format (/A8,'   THE TOTAL DECAY RATES FOR ALL DECAY CLAS',&
-          &'SES WILL BE',/T12,'LITTER: ',F5.3,' DUFF: ',F5.3,' 0-0.6: ',&
-          &F5.3,' 0.6-2.5: ',F5.3,' 2.5-7.6: ',F5.3,' >7.6: ',F5.3)
 
   else
 
@@ -1022,21 +927,12 @@ subroutine FMIN (ICALL,NSP,LKECHO)
            1720 continue
         end do
 
-        if (LMETRICVAR) then
-           if (LKECHO)write(JOSTND,91750) KEYWRD,IDEC,&
-                &PRDUFF(10,IDEC), (PRDUFF(I,IDEC),I = 1,4)
-        else
-           if (LKECHO)write(JOSTND,1750) KEYWRD,IDEC,&
-                &PRDUFF(10,IDEC), (PRDUFF(I,IDEC),I = 1,4)
-        end if
+        if (LKECHO)write(JOSTND,1750) KEYWRD,IDEC,&
+             &PRDUFF(10,IDEC), (PRDUFF(I,IDEC),I = 1,4)
         1750 format (/A8,'   THE PROPORTION OF THE DECOMPOSING ',&
              &' MATERIAL WHICH GOES TO DUFF IN DECAY POOL ',I2,' IS:',&
              &/T12,'LITTER: ',F4.2,&
              &' 0-.25: ',F4.2,' .25-1: ',F4.2,' 1-3: ',F4.2,' >3: ',F4.2)
-        91750 format (/A8,'   THE PROPORTION OF THE DECOMPOSING ',&
-             &' MATERIAL WHICH GOES TO DUFF IN DECAY POOL ',I2,' IS:',&
-             &/T12,'LITTER: ',F4.2,' 0-0.6: ',F4.2,&
-             &' 0.6-2.5: ',F4.2,' 2.5-7.6: ',F4.2,' >7.6: ',F4.2)
      else
         do I = 1,10
            do IDEC = 1,4
@@ -1049,20 +945,11 @@ subroutine FMIN (ICALL,NSP,LKECHO)
            1735 continue
         end do
 
-        if (LMETRICVAR) then
-           if (LKECHO)write(JOSTND,91755) KEYWRD, PRDUFF(10,4),&
-                &(PRDUFF(I,4),I = 1,4)
-        else
-           if (LKECHO)write(JOSTND,1755) KEYWRD, PRDUFF(10,4),&
-                &(PRDUFF(I,4),I = 1,4)
-        end if
+        if (LKECHO)write(JOSTND,1755) KEYWRD, PRDUFF(10,4),&
+             &(PRDUFF(I,4),I = 1,4)
         1755 format (/A8,'   THE PROPORTION OF THE DECOMPOSING ',&
              &' MATERIAL WHICH GOES TO DUFF IS',/T12,'LITTER: ',F4.2,&
              &' 0-.25: ',F4.2,' .25-1: ',F4.2,' 1-3: ',F4.2,' >3: ',F4.2)
-        91755 format (/A8,'   THE PROPORTION OF THE DECOMPOSING ',&
-             &' MATERIAL WHICH GOES TO DUFF IS',/T12,'LITTER: ',F4.2,&
-             &' 0-0.6: ',F4.2,&
-             &' 0.6-2.5: ',F4.2,' 2.5-7.6: ',F4.2,' >7.6: ',F4.2)
      end if
   else
      write(JOSTND,1760) KEYWRD
@@ -1145,13 +1032,8 @@ subroutine FMIN (ICALL,NSP,LKECHO)
   PRMS(5) = 0.9
   PRMS(6) = 0.0
 
-  if (LMETRICVAR) then
-     if (LNOTBK(2)) PRMS(1) = ARRAY(2) * CMtoIN
-     if (LNOTBK(3)) PRMS(2) = ARRAY(3) * CMtoIN
-  else
-     if (LNOTBK(2)) PRMS(1) = ARRAY(2)
-     if (LNOTBK(3)) PRMS(2) = ARRAY(3)
-  end if
+  if (LNOTBK(2)) PRMS(1) = ARRAY(2)
+  if (LNOTBK(3)) PRMS(2) = ARRAY(3)
   if (LNOTBK(4)) PRMS(3) = ARRAY(4)
   if (LNOTBK(5)) PRMS(4) = ARRAY(5)
   if (LNOTBK(6)) PRMS(5) = ARRAY(6)
@@ -1164,19 +1046,10 @@ subroutine FMIN (ICALL,NSP,LKECHO)
   PRMS(5) = MIN(1.0,MAX(0.0,PRMS(5)))
   PRMS(6) = MIN(1.0,MAX(0.0,PRMS(6)))
 
-  if (LMETRICVAR) then
-     if (LKECHO)write(JOSTND,92010) KEYWRD, IDT,&
-          &PRMS(1)*INtoCM, PRMS(2)*INtoCM, PRMS(3)
-  else
-     if (LKECHO)write(JOSTND,2010) KEYWRD, IDT,(PRMS(I),I = 1,3)
-  end if
+  if (LKECHO)write(JOSTND,2010) KEYWRD, IDT,(PRMS(I),I = 1,3)
   2010 format(/A8,'   IN DATE/CYCLE ', I4,' THE PROPORTION OF SNAGS ',&
        &'THAT ARE BETWEEN ',F4.0,' AND ',F4.0,/T12,&
        &'INCHES DBH AND HAVE BEEN DEAD LESS THAN ',F4.0,' YEARS ',&
-       &'AND ARE ')
-  92010 format(/A8,'   IN DATE/CYCLE ', I4,' THE PROPORTION OF SNAGS ',&
-       &'THAT ARE BETWEEN ',F4.0,' AND ',F4.0,/T12,&
-       &'CM DBH AND HAVE BEEN DEAD LESS THAN ',F4.0,' YEARS ',&
        &'AND ARE ')
 
   if (PRMS(4) .eq.1.0) then
@@ -1236,11 +1109,7 @@ subroutine FMIN (ICALL,NSP,LKECHO)
   if (LNOTBK(11)) PRMS(11) = ARRAY(11)
   if (LNOTBK(12)) PRMS(12) = ARRAY(12)
 
-  if (LMETRICVAR) then
-     if (LKECHO)write(JOSTND,92110) KEYWRD,(PRMS(I),I = 1,12)
-  else
-     if (LKECHO)write(JOSTND,2110) KEYWRD,(PRMS(I),I = 1,12)
-  end if
+  if (LKECHO)write(JOSTND,2110) KEYWRD,(PRMS(I),I = 1,12)
   2110 format(/A8,'   INITIAL HARD FUEL VALUES (TONS/ACRE) ARE',&
        &' (-1.0=NO VALUE SPECIFIED): FUELS <1"=',F5.1,&
        &'; FUELS 1-3"=',F5.1/T12,'FUELS 3-6"=',F5.1,&
@@ -1248,20 +1117,6 @@ subroutine FMIN (ICALL,NSP,LKECHO)
        &F5.1,'; DUFF=',F5.1/T12,'FUELS <.25"=',F5.1,&
        &'; FUELS .25-1"=',F5.1/T12,'FUELS 20-35"=',F5.1,&
        &'; FUELS 35-50"=',F5.1,'; FUELS >50"=',F5.1)
-  92110 format(/A8,'   INITIAL HARD FUEL VALUES (TONNES/HA) ARE',&
-       &' (-1.0=NO VALUE SPECIFIED): FUELS <2.5cm=',F5.1,&
-       &'; FUELS 2.5-7.6cm=',F5.1/T12,'FUELS 7.6-15.2cm=',F5.1,&
-       &'; FUELS 15.2-30.5cm=',F5.1,'; FUELS 30.5-50.8cm=',F5.1,&
-       &'; LITT=',F5.1,'; DUFF=',F5.1/T12,'FUELS <0.6cm=',F5.1,&
-       &'; FUELS 0.6-2.5cm=',F5.1/T12,'FUELS 50.8-89.0cm=',F5.1,&
-       &'; FUELS 89.0-127.1cm=',F5.1,'; FUELS >127.1cm=',F5.1)
-
-  if (LMETRICVAR) then
-     do I = 1,NPARMS
-        if (PRMS(I) .gt.0.0) PRMS(I) = PRMS(I) * TMtoTI / HAtoACR
-        2115 continue
-     end do
-  end if
 
   MYACT = 2521
   call OPNEW(KODE,IDT,MYACT,NPARMS,PRMS)
@@ -1298,28 +1153,12 @@ subroutine FMIN (ICALL,NSP,LKECHO)
   if (LNOTBK(5)) PRMS(5) = ARRAY(5)
   if (LNOTBK(6)) PRMS(6) = ARRAY(6)
 
-  if (LMETRICVAR) then
-     if (LKECHO)write(JOSTND,92210) KEYWRD,KARD(1)(1:3),(PRMS(I),I = 2,6)
-  else
-     if (LKECHO)write(JOSTND,2210) KEYWRD,KARD(1)(1:3),(PRMS(I),I = 2,6)
-  end if
+  if (LKECHO)write(JOSTND,2210) KEYWRD,KARD(1)(1:3),(PRMS(I),I = 2,6)
   2210 format(/A8,'   INITIAL SNAG CHARACTERISTICS ',&
        &'(-1.0=NO VALUE SPECIFIED): SPECIES: ',A,&
        &'; DBH AT DEATH (IN): ',F5.1,&
        &/T12,'HEIGHT AT DEATH (FT): ',F5.1,'; CURRENT HEIGHT: ',&
        &F5.1,'; AGE: ',F4.0,'; DENSITY (STEMS/ACRE): ',F6.1)
-  92210 format(/A8,'   INITIAL SNAG CHARACTERISTICS ',&
-       &'(-1.0=NO VALUE SPECIFIED): SPECIES: ',A,&
-       &'; DBH AT DEATH (CM): ',F5.1,&
-       &/T12,'HEIGHT AT DEATH (M): ',F5.1,'; CURRENT HEIGHT: ',&
-       &F5.1,'; AGE: ',F4.0,'; DENSITY (STEMS/HA): ',F6.1)
-
-  if (LMETRICVAR) then
-     if (PRMS(2) .gt.0.0) PRMS(2) = PRMS(2) * CMtoIN
-     if (PRMS(3) .gt.0.0) PRMS(3) = PRMS(3) * MtoFT
-     if (PRMS(4) .gt.0.0) PRMS(4) = PRMS(4) * MtoFT
-     if (PRMS(6) .gt.0.0) PRMS(6) = PRMS(6) / HAtoACR
-  end if
 
   MYACT = 2522
   call OPNEW(KODE,IDT,MYACT,NPARMS,PRMS)
@@ -1405,13 +1244,8 @@ subroutine FMIN (ICALL,NSP,LKECHO)
   if (LNOTBK(1)) PBSOFT = ARRAY(1)
   if (LNOTBK(2)) PBSMAL = ARRAY(2)
   if (LNOTBK(3)) PBTIME = ARRAY(3)
-  if (LMETRICVAR) then
-     if (LNOTBK(4)) PBSIZE = ARRAY(4) * CMtoIN
-     if (LNOTBK(5)) PBSCOR = ARRAY(5) * MtoFT
-  else
-     if (LNOTBK(4)) PBSIZE = ARRAY(4)
-     if (LNOTBK(5)) PBSCOR = ARRAY(5)
-  end if
+  if (LNOTBK(4)) PBSIZE = ARRAY(4)
+  if (LNOTBK(5)) PBSCOR = ARRAY(5)
 
   if (PBSOFT .lt.0.0) PBSOFT = 0.0
   if (PBSOFT .gt.1.0) PBSOFT = 1.0
@@ -1421,23 +1255,12 @@ subroutine FMIN (ICALL,NSP,LKECHO)
   if (PBSIZE .lt.0.0) PBSIZE = 0.0
   if (PBSCOR .lt.0.0) PBSCOR = 0.0
 
-  if (LMETRICVAR) then
-     if (LKECHO)write(JOSTND,92420) KEYWRD,PBSOFT,PBSMAL,PBTIME,&
-          &PBSIZE*INtoCM,PBSCOR*FTtoM
-  else
-     if (LKECHO)write(JOSTND,2420) KEYWRD,PBSOFT,PBSMAL,PBTIME,PBSIZE,&
-          &PBSCOR
-  end if
+  if (LKECHO)write(JOSTND,2420) KEYWRD,PBSOFT,PBSMAL,PBTIME,PBSIZE,&
+       &PBSCOR
   2420 format(/A8,'   THE PROPORTIONS OF SOFT OR SMALL SNAGS TO ',&
        &'FALL AFTER A BURN ARE (RESPECTIVELY): ',F4.2,F5.2,&
        &/T12,'THE NUMBER OF YEARS IN WHICH THEY FALL IS: ',F4.0,&
        &' SMALL SNAGS ARE THOSE LESS THAN: ',F4.0,' INCHES DBH.',&
-       &/T12,'THE THRESHOLD SCORCH HEIGHT FOR THE POST-BURN ',&
-       &'FALLING IS: ',F5.1)
-  92420 format(/A8,'   THE PROPORTIONS OF SOFT OR SMALL SNAGS TO ',&
-       &'FALL AFTER A BURN ARE (RESPECTIVELY): ',F4.2,F5.2,&
-       &/T12,'THE NUMBER OF YEARS IN WHICH THEY FALL IS: ',F4.0,&
-       &' SMALL SNAGS ARE THOSE LESS THAN: ',F4.0,' CM DBH.',&
        &/T12,'THE THRESHOLD SCORCH HEIGHT FOR THE POST-BURN ',&
        &'FALLING IS: ',F5.1)
 
@@ -1519,13 +1342,8 @@ subroutine FMIN (ICALL,NSP,LKECHO)
 
   if (IDFUL .eq.0) call GETID (IDFUL)
 
-  if (LMETRICVAR) then
-     IFMFLB = -1
-     IFMFLE = -1
-  else
-     IFMFLB = IY(1)
-     IFMFLE = IY(1) + 999
-  end if
+  IFMFLB = IY(1)
+  IFMFLE = IY(1) + 999
 
   if (LKECHO)write(JOSTND,2705) KEYWRD
   2705 format(/A8,'   THE FUEL CONSUMPTION AND PHYSICAL EFFECTS',&
@@ -1542,13 +1360,8 @@ subroutine FMIN (ICALL,NSP,LKECHO)
 
   if (IDMRT .eq.0) call GETID (IDMRT)
 
-  if (LMETRICVAR) then
-     IFMMRB = -1
-     IFMMRE = -1
-  else
-     IFMMRB = IY(1)
-     IFMMRE = IY(1) + 999
-  end if
+  IFMMRB = IY(1)
+  IFMMRE = IY(1) + 999
 
   if (LKECHO)write(JOSTND,2805) KEYWRD
   2805 format(/A8,'   THE TREE MORTALITY REPORT WILL BE WRITTEN',&
@@ -1618,31 +1431,16 @@ subroutine FMIN (ICALL,NSP,LKECHO)
   end do
 
   if (IFIRE .eq.1) then
-     if (LMETRICVAR) then
-        if (LKECHO)write(JOSTND,93050) KEYWRD, 'SEVERE',&
-             &(PRESVL(IFIRE,IARRY)*100.0,IARRY = 2,8)
-     else
-        if (LKECHO)write(JOSTND,3050) KEYWRD, 'SEVERE',&
-             &(PRESVL(IFIRE,IARRY)*100.0,IARRY = 2,8)
-     end if
+     if (LKECHO)write(JOSTND,3050) KEYWRD, 'SEVERE',&
+          &(PRESVL(IFIRE,IARRY)*100.0,IARRY = 2,8)
      3050 format (/A8,'   FIRE MOISTURE CONDITIONS FOR CALCULATING ',&
           &A,' POTENTIAL FLAME LENGTHS ARE: '&
           &/T12,'% MOISTURE FOR 0-.25"= ',F4.0,'; 0.25-1"= ',F4.0,&
           &'; 1-3"= ',F4.0,'; 3+"= ',F4.0,'; DUFF=',F4.0,&
           &'; LIVE WOODY =',F4.0,'; LIVE HERB =',F4.0)
-     93050 format (/A8,'   FIRE MOISTURE CONDITIONS FOR CALCULATING ',&
-          &A,' POTENTIAL FLAME LENGTHS ARE: '&
-          &/T12,'% MOISTURE FOR 0-0.6cm= ',F4.0,'; 0.6-2.5cm= ',F4.0,&
-          &'; 2.5-7.6cm= ',F4.0,'; 7.6+cm= ',F4.0,'; DUFF=',F4.0,&
-          &'; LIVE WOODY =',F4.0,'; LIVE HERB =',F4.0)
   else
-     if (LMETRICVAR) then
-        if (LKECHO)write(JOSTND,93050) KEYWRD, 'MODERATE',&
-             &(PRESVL(IFIRE,IARRY)*100.0,IARRY = 2,8)
-     else
-        if (LKECHO)write(JOSTND,3050) KEYWRD, 'MODERATE',&
-             &(PRESVL(IFIRE,IARRY)*100.0,IARRY = 2,8)
-     end if
+     if (LKECHO)write(JOSTND,3050) KEYWRD, 'MODERATE',&
+          &(PRESVL(IFIRE,IARRY)*100.0,IARRY = 2,8)
   end if
 
   goto 10
@@ -1668,21 +1466,12 @@ subroutine FMIN (ICALL,NSP,LKECHO)
   !     SET-UP THE SIZE CLASSES FOR REPORTING FIRE-BASED MORTALITY
 
   do IARRY = 1,7
-     if (LMETRICVAR) then
-        if (LNOTBK(IARRY)) LOWDBH(IARRY) = ARRAY(IARRY) * CMtoIN
-     else
-        if (LNOTBK(IARRY)) LOWDBH(IARRY) = ARRAY(IARRY)
-     end if
+     if (LNOTBK(IARRY)) LOWDBH(IARRY) = ARRAY(IARRY)
      3210 continue
   end do
 
-  if (LMETRICVAR) then
-     if (LKECHO)write(JOSTND,3250) KEYWRD,&
-          &(IARRY, LOWDBH(IARRY)*INtoCM,IARRY = 1,7)
-  else
-     if (LKECHO)write(JOSTND,3250) KEYWRD,&
-          &(IARRY, LOWDBH(IARRY),IARRY = 1,7)
-  end if
+  if (LKECHO)write(JOSTND,3250) KEYWRD,&
+       &(IARRY, LOWDBH(IARRY),IARRY = 1,7)
   3250 format (/A8,'   THE LOWER BOUND OF EACH SIZE CLASS USED ',&
        &'IN THE MORTALITY REPORT IS:',&
        &/T12,7('CLASS',I2,'=',F4.1:'; '))
@@ -1768,11 +1557,11 @@ subroutine FMIN (ICALL,NSP,LKECHO)
   !     *SOURCE* CWD POOL - MUST HAVE A VALID ENTRY (0,1-11)
   !     DEFAULT 6 (>12")
   !       0 = IMPORTED (EXPORTED IN *TARGET* CONTEXT)
-  !       1 = <0.25"         (<0.6 CM)
-  !       2 =  0.25 TO   1"  ( 0.6 TO  2.5 CM)
-  !       3 =  1    TO   3"  ( 2.5 TO  7.6 CM)
-  !       4 =  3    TO   6"  ( 7.6 TO 15.2 CM)
-  !       5 =  6    TO  12"  (15.2 TO 30.5 CM)
+  !       1 = <0.25"
+  !       2 =  0.25 TO   1"
+  !       3 =  1    TO   3"
+  !       4 =  3    TO   6"
+  !       5 =  6    TO  12"
   !       6 =  12   TO  20"
   !       7 =  20   TO  35"
   !       8 =  35   TO  50"
@@ -1805,16 +1594,12 @@ subroutine FMIN (ICALL,NSP,LKECHO)
 
   if (INT(PRMS(1)) .eq. INT(PRMS(2))) II = II + 1
 
-  !     AMOUNT TO MOVE (TONS/ACRE; TONNES/HA IN METRIC VARIANTS) - MUST BE >=0
+  !     AMOUNT TO MOVE (TONS/ACRE) - MUST BE >=0
 
   PRMS(3) = 0.0
   if (LNOTBK(4)) then
      if (ARRAY(4) .ge.0.0) then
-        if (LMETRICVAR) then
-           PRMS(3) = ARRAY(4) * TMtoTI / HAtoACR
-        else
-           PRMS(3) = ARRAY(4)
-        end if
+        PRMS(3) = ARRAY(4)
      else
         II = II + 1
      end if
@@ -1831,31 +1616,23 @@ subroutine FMIN (ICALL,NSP,LKECHO)
      end if
   end if
 
-  !     RESIDUAL AMOUNT (TONS/ACRE; TONNES/HA IN METRIC VARIANTS) - MUST BE >=0
+  !     RESIDUAL AMOUNT (TONS/ACRE) - MUST BE >=0
 
   PRMS(5) = 9999.0
   if (LNOTBK(6)) then
      if (ARRAY(6) .ge.0.0) then
-        if (LMETRICVAR) then
-           PRMS(5) = ARRAY(6) * TMtoTI / HAtoACR
-        else
-           PRMS(5) = ARRAY(6)
-        end if
+        PRMS(5) = ARRAY(6)
      else
         II = II + 1
      end if
   end if
 
-  !     TARGET AMOUNT (TONS/ACRE; TONNES/HA IN METRIC VARIANTS): UNSET= 0.0; ELSE >=0
+  !     TARGET AMOUNT (TONS/ACRE): UNSET= 0.0; ELSE >=0
 
   PRMS(6) = 0.0
   if (LNOTBK(7)) then
      if (ARRAY(7) .ge.0.0) then
-        if (LMETRICVAR) then
-           PRMS(6) = ARRAY(7) * TMtoTI / HAtoACR
-        else
-           PRMS(6) = ARRAY(7)
-        end if
+        PRMS(6) = ARRAY(7)
      else
         II = II + 1
      end if
@@ -1868,24 +1645,14 @@ subroutine FMIN (ICALL,NSP,LKECHO)
           &'CATEGORY',I3,' WILL BE MOVED TO',/T12,'SIZE CATEGORY ',&
           &I2,'. WHICHEVER OF THE FOLLOWING 4 CRITERIA',/T12,&
           &'MOVES THE MOST FUEL, WILL BE USED:')
-     if (LMETRICVAR) then
-        if (LKECHO)write(JOSTND, 93406) PRMS(3) * TItoTM / ACRtoHA
-        if (LKECHO)write(JOSTND, 3407) PRMS(4)
-        if (LKECHO)write(JOSTND, 93408) PRMS(5) * TItoTM / ACRtoHA
-        if (LKECHO)write(JOSTND, 93409) PRMS(6) * TItoTM / ACRtoHA
-     else
-        if (LKECHO)write(JOSTND, 3406) PRMS(3)
-        if (LKECHO)write(JOSTND, 3407) PRMS(4)
-        if (LKECHO)write(JOSTND, 3408) PRMS(5)
-        if (LKECHO)write(JOSTND, 3409) PRMS(6)
-     end if
+     if (LKECHO)write(JOSTND, 3406) PRMS(3)
+     if (LKECHO)write(JOSTND, 3407) PRMS(4)
+     if (LKECHO)write(JOSTND, 3408) PRMS(5)
+     if (LKECHO)write(JOSTND, 3409) PRMS(6)
      3406 format(T12,'TONS/ACRE MOVED FROM SOURCE CATEGORY:    ',F12.3)
      3407 format(T12,'PROPORTION MOVED FROM SOURCE CATEGORY:   ',F12.3)
      3408 format(T12,'TONS/ACRE REMAINING IN SOURCE CATEGORY:  ',F12.3)
      3409 format(T12,'FINAL TONS/ACRE IN TARGET CATEGORY:      ',F12.3)
-     93406 format(T12,'TONNES/HA MOVED FROM SOURCE CATEGORY:    ',F12.3)
-     93408 format(T12,'TONNES/HA REMAINING IN SOURCE CATEGORY:  ',F12.3)
-     93409 format(T12,'FINAL TONNES/HA IN TARGET CATEGORY:      ',F12.3)
      call OPNEW(KODE,IDT,MYACT,NPARMS,PRMS)
   else
      call FMKEYDMP (JOSTND,IRECNT,KEYWRD,ARRAY,KARD,NVALS)
@@ -1897,46 +1664,26 @@ subroutine FMIN (ICALL,NSP,LKECHO)
 
   !                        OPTION NUMBER 35 -- POTFWIND
 
-  if (LMETRICVAR) then
-     if (LNOTBK(1)) PREWND(1) = ARRAY(1) * KMtoMI
-     if (LNOTBK(2)) PREWND(2) = ARRAY(2) * KMtoMI
+  if (LNOTBK(1)) PREWND(1) = ARRAY(1)
+  if (LNOTBK(2)) PREWND(2) = ARRAY(2)
 
-     if (LKECHO)write(JOSTND,93550) KEYWRD, PREWND * MItoKM
-  else
-     if (LNOTBK(1)) PREWND(1) = ARRAY(1)
-     if (LNOTBK(2)) PREWND(2) = ARRAY(2)
-
-     if (LKECHO)write(JOSTND,3550) KEYWRD, PREWND
-  end if
+  if (LKECHO)write(JOSTND,3550) KEYWRD, PREWND
   3550 format (/A8,'   FIRE WIND SPEEDS USED FOR CALCULATING ',&
        &'POTENTIAL FLAME LENGTHS ARE',/T11,' FOR SEVERE FIRE: ',F5.0,&
        &' AND FOR MODERATE FIRE: ',F5.0,' MPH')
-  93550 format (/A8,'   FIRE WIND SPEEDS USED FOR CALCULATING ',&
-       &'POTENTIAL FLAME LENGTHS ARE',/T11,' FOR SEVERE FIRE: ',F5.0,&
-       &' AND FOR MODERATE FIRE: ',F5.0,' KM/H')
 
   goto 10
   3600 continue
 
   !                        OPTION NUMBER 36 -- POTFTEMP
 
-  if (LMETRICVAR) then
-     if (LNOTBK(1)) POTEMP(1) = ARRAY(1) * CtoF1 + CtoF2
-     if (LNOTBK(2)) POTEMP(2) = ARRAY(2) * CtoF1 + CtoF2
+  if (LNOTBK(1)) POTEMP(1) = ARRAY(1)
+  if (LNOTBK(2)) POTEMP(2) = ARRAY(2)
 
-     if (LKECHO)write(JOSTND,93650) KEYWRD, POTEMP * FtoC1 + FtoC2
-  else
-     if (LNOTBK(1)) POTEMP(1) = ARRAY(1)
-     if (LNOTBK(2)) POTEMP(2) = ARRAY(2)
-
-     if (LKECHO)write(JOSTND,3650) KEYWRD, POTEMP
-  end if
+  if (LKECHO)write(JOSTND,3650) KEYWRD, POTEMP
   3650 format (/A8,'   FIRE TEMPERATURES USED FOR CALCULATING ',&
        &'POTENTIAL FLAME LENGTHS ARE',/T11,' FOR SEVERE FIRE: ',F5.0,&
        &' AND FOR MODERATE FIRE: ',F5.0,' DEGREES F')
-  93650 format (/A8,'   FIRE TEMPERATURES USED FOR CALCULATING ',&
-       &'POTENTIAL FLAME LENGTHS ARE',/T11,' FOR SEVERE FIRE: ',F5.0,&
-       &' AND FOR MODERATE FIRE: ',F5.0,' DEGREES C')
 
   goto 10
   3700 continue
@@ -2114,122 +1861,57 @@ subroutine FMIN (ICALL,NSP,LKECHO)
 
   if (LOK) then
 
-     if (LMETRICVAR) then
-        do I = 2,4
-           if (LNOTBK(I+1)) then
-              PRMS(I) = ARRAY(I+1) / MtoFT
-           else
-              PRMS(I) = SURFVL(IFMD,1,I-1)
-           end if
-        end do
-
-        I = 5
+     do I = 2,4
         if (LNOTBK(I+1)) then
-           PRMS(I) = ARRAY(I+1) / MtoFT
+           PRMS(I) = ARRAY(I+1)
         else
-           PRMS(I) = SURFVL(IFMD,2,1)
+           PRMS(I) = SURFVL(IFMD,1,I-1)
         end if
+     end do
 
-        I = 6
-        if (LNOTBK(I+1)) then
-           PRMS(I) = ARRAY(I+1) * FT2toM2/LBtoKG
-        else
-           PRMS(I) = FMLOAD(IFMD,1,1)
-        end if
-
-        do I = 7,8
-           if (PRMS(I) .lt.0.0) then
-              PRMS(I) = FMLOAD(IFMD,1,I-5)
-           else
-              PRMS(I) = PRMS(I) * FT2toM2/LBtoKG
-           end if
-        end do
-
-        I = 9
-        if (PRMS(I) .lt.0.0) then
-           PRMS(I) = FMLOAD(IFMD,2,1)
-        else
-           PRMS(I) = PRMS(I) * FT2toM2/LBtoKG
-        end if
-
-        I = 10
-        if (PRMS(I) .lt.0.0) then
-           PRMS(I) = FMDEP(IFMD)
-        else
-           PRMS(I) = PRMS(I) * MtoFT
-        end if
-
-        I = 11
-        if (PRMS(I) .lt.0.0) then
-           PRMS(I) = MOISEX(IFMD)
-        end if
-
-        I = 12
-        if (PRMS(I) .lt.0.0) then
-           PRMS(I) = SURFVL(IFMD,2,2)
-        else
-           PRMS(I) = PRMS(I) / MtoFT
-        end if
-
-        I = 13
-        if (PRMS(I) .lt.0.0) then
-           PRMS(I) = FMLOAD(IFMD,2,2)
-        else
-           PRMS(I) = PRMS(I) * FT2toM2/LBtoKG
-        end if
+     I = 5
+     if (LNOTBK(I+1)) then
+        PRMS(I) = ARRAY(I+1)
      else
-        do I = 2,4
-           if (LNOTBK(I+1)) then
-              PRMS(I) = ARRAY(I+1)
-           else
-              PRMS(I) = SURFVL(IFMD,1,I-1)
-           end if
-        end do
+        PRMS(I) = SURFVL(IFMD,2,1)
+     end if
 
-        I = 5
-        if (LNOTBK(I+1)) then
-           PRMS(I) = ARRAY(I+1)
-        else
-           PRMS(I) = SURFVL(IFMD,2,1)
-        end if
+     I = 6
+     if (LNOTBK(I+1)) then
+        PRMS(I) = ARRAY(I+1)
+     else
+        PRMS(I) = FMLOAD(IFMD,1,1)
+     end if
 
-        I = 6
-        if (LNOTBK(I+1)) then
-           PRMS(I) = ARRAY(I+1)
-        else
-           PRMS(I) = FMLOAD(IFMD,1,1)
-        end if
-
-        do I = 7,8
-           if (PRMS(I) .lt.0.0) then
-              PRMS(I) = FMLOAD(IFMD,1,I-5)
-           end if
-        end do
-
-        I = 9
+     do I = 7,8
         if (PRMS(I) .lt.0.0) then
-           PRMS(I) = FMLOAD(IFMD,2,1)
+           PRMS(I) = FMLOAD(IFMD,1,I-5)
         end if
+     end do
 
-        I = 10
-        if (PRMS(I) .lt.0.0) then
-           PRMS(I) = FMDEP(IFMD)
-        end if
+     I = 9
+     if (PRMS(I) .lt.0.0) then
+        PRMS(I) = FMLOAD(IFMD,2,1)
+     end if
 
-        I = 11
-        if (PRMS(I) .lt.0.0) then
-           PRMS(I) = MOISEX(IFMD)
-        end if
+     I = 10
+     if (PRMS(I) .lt.0.0) then
+        PRMS(I) = FMDEP(IFMD)
+     end if
 
-        I = 12
-        if (PRMS(I) .lt.0.0) then
-           PRMS(I) = SURFVL(IFMD,2,2)
-        end if
+     I = 11
+     if (PRMS(I) .lt.0.0) then
+        PRMS(I) = MOISEX(IFMD)
+     end if
 
-        I = 13
-        if (PRMS(I) .lt.0.0) then
-           PRMS(I) = FMLOAD(IFMD,2,2)
-        end if
+     I = 12
+     if (PRMS(I) .lt.0.0) then
+        PRMS(I) = SURFVL(IFMD,2,2)
+     end if
+
+     I = 13
+     if (PRMS(I) .lt.0.0) then
+        PRMS(I) = FMLOAD(IFMD,2,2)
      end if
 
   end if
@@ -2264,17 +1946,9 @@ subroutine FMIN (ICALL,NSP,LKECHO)
        &LOK = .false.
 
   if (LOK) then
-     if (LMETRICVAR) then
-        if (LKECHO)write(JOSTND,93910) KEYWRD,IDT,INT(PRMS(1)),&
-             &(PRMS(I) / FTtoM, I = 2,5),PRMS(12)/FTtoM,&
-             &(PRMS(I) * LBtoKG/FT2toM2, I = 6,9),&
-             &PRMS(13) * LBtoKG/FT2toM2,&
-             &PRMS(10) * FTtoM, PRMS(11)
-     else
-        if (LKECHO)write(JOSTND,3910) KEYWRD,IDT,INT(PRMS(1)),&
-             &(PRMS(I),I = 2,5),PRMS(12),(PRMS(I),I = 6,9),PRMS(13),&
-             &PRMS(10),PRMS(11)
-     end if
+     if (LKECHO)write(JOSTND,3910) KEYWRD,IDT,INT(PRMS(1)),&
+          &(PRMS(I),I = 2,5),PRMS(12),(PRMS(I),I = 6,9),PRMS(13),&
+          &PRMS(10),PRMS(11)
      3910 format(/A8,'   IN DATE/CYCLE ',I4,' THE VALUES FOR FUEL',&
           &' MODEL', I3,' WILL BE: ',&
           &/T12, 'SURFACE TO VOL RATIO:',&
@@ -2287,22 +1961,6 @@ subroutine FMIN (ICALL,NSP,LKECHO)
           &/T14, '    (<0.25") = ', F7.4,&
           &/T14, '   (0.25-1") = ', F7.4,&
           &/T14, '      (1-3") = ', F7.4,&
-          &/T14, '(LIVE WOODY) = ', F7.4,&
-          &/T14, ' (LIVE HERB) = ', F7.4,&
-          &/T12,'DEPTH = ', F6.3,&
-          &/T12,'MOISTURE OF EXTINCTION =', F7.4)
-     93910 format(/A8,'   IN DATE/CYCLE ',I4,' THE VALUES FOR FUEL',&
-          &' MODEL', I3,' WILL BE: ',&
-          &/T12, 'SURFACE TO VOL RATIO (/M):',&
-          &/T14, '    (<0.6cm) = ', F6.0,&
-          &/T14, ' (0.6-2.5cm) = ', F6.0,&
-          &/T14, ' (2.5-7.6cm) = ', F6.0,&
-          &/T14, '(LIVE WOODY) = ', F6.0,&
-          &/T14, ' (LIVE HERB) = ', F6.0,&
-          &/T12,'FUEL LOADING (KG/SQ M):',&
-          &/T14, '    (<0.6cm) = ', F7.4,&
-          &/T14, ' (0.6-2.5cm) = ', F7.4,&
-          &/T14, ' (2.5-7.6cm) = ', F7.4,&
           &/T14, '(LIVE WOODY) = ', F7.4,&
           &/T14, ' (LIVE HERB) = ', F7.4,&
           &/T12,'DEPTH = ', F6.3,&
@@ -2331,29 +1989,16 @@ subroutine FMIN (ICALL,NSP,LKECHO)
   end if
 
   if (LNOTBK(1)) ICBHMT = IFIX(ARRAY(1))
-  if (LMETRICVAR) then
-     if (LNOTBK(2)) CANMHT = ARRAY(2) * MtoFT
-  else
-     if (LNOTBK(2)) CANMHT = ARRAY(2)
-  end if
+  if (LNOTBK(2)) CANMHT = ARRAY(2)
   if (LNOTBK(3)) ICANSP = IFIX(ARRAY(3))
   if (LNOTBK(4)) CBHCUT = ARRAY(4)
   if (LNOTBK(5)) FOLMC = ARRAY(5)
 
-  if (LMETRICVAR) then
-     if (LKECHO)write(JOSTND,94010) KEYWRD, ICBHMT, CANMHT * FTtoM,&
-          &ICANSP, CBHCUT, FOLMC
-  else
-     if (LKECHO)write(JOSTND,4010) KEYWRD, ICBHMT, CANMHT, ICANSP,&
-          &CBHCUT, FOLMC
-  end if
+  if (LKECHO)write(JOSTND,4010) KEYWRD, ICBHMT, CANMHT, ICANSP,&
+       &CBHCUT, FOLMC
   4010 format(/A8,T12,'CALCULATION OF CANOPY BASE HEIGHT AND CANOPY ',&
        &'BULK DENSITY WILL USE METHOD ',I1,',',/T12,'TREES ',&
        &'ATLEAST ',F5.1,' FT TALL, SPECIES CATEGORY ',I1,&
-       &', A CUTOFF VALUE OF ',F5.1,',',/T12,'AND A FMC OF ',F5.1)
-  94010 format(/A8,T12,'CALCULATION OF CANOPY BASE HEIGHT AND CANOPY ',&
-       &'BULK DENSITY WILL USE METHOD ',I1,',',/T12,'TREES ',&
-       &'AT LEAST ',F5.1,' M TALL, SPECIES CATEGORY ',I1,&
        &', A CUTOFF VALUE OF ',F5.1,',',/T12,'AND A FMC OF ',F5.1)
 
   goto 10
@@ -2387,13 +2032,8 @@ subroutine FMIN (ICALL,NSP,LKECHO)
 
   if (IDSHEAT .eq.0) call GETID (IDSHEAT)
 
-  if (LMETRICVAR) then
-     ISHEATB = -1
-     ISHEATE = -1
-  else
-     ISHEATB = -IY(1) ! WHEN NEGATIVE, A HEADING IS NEEDED.
-     ISHEATE = IY(1) + 999
-  end if
+  ISHEATB = -IY(1) ! WHEN NEGATIVE, A HEADING IS NEEDED.
+  ISHEATE = IY(1) + 999
   SOILTP = 3
   if (LNOTBK(3)) SOILTP = INT(ARRAY(3))
   if (SOILTP .lt.1) SOILTP = 1
@@ -2417,13 +2057,8 @@ subroutine FMIN (ICALL,NSP,LKECHO)
 
   if (IDCRPT .eq.0) call GETID (IDCRPT)
 
-  if (LMETRICVAR) then
-     ICRPTB = -1
-     ICRPTE = -1
-  else
-     ICRPTB = IY(1)
-     ICRPTE = IY(1) + 999
-  end if
+  ICRPTB = IY(1)
+  ICRPTE = IY(1) + 999
 
   if (LKECHO)write(JOSTND,4410) KEYWRD
   4410 format(/A8,'   THE MAIN CARBON REPORT WILL BE PRINTED.')
@@ -2442,13 +2077,8 @@ subroutine FMIN (ICALL,NSP,LKECHO)
 
   if (IDCHRV .eq.0) call GETID (IDCHRV)
 
-  if (LMETRICVAR) then
-     ICHRVB = -1
-     ICHRVE = -1
-  else
-     ICHRVB = IY(1)
-     ICHRVE = IY(1) + 999
-  end if
+  ICHRVB = IY(1)
+  ICHRVE = IY(1) + 999
 
   if (LKECHO)write(JOSTND,4510) KEYWRD
   4510 format(/A8,T12,'THE HARVESTED PRODUCTS REPORT WILL BE PRINTED.')
@@ -2475,32 +2105,16 @@ subroutine FMIN (ICALL,NSP,LKECHO)
   if (LNOTBK(1)) ICMETH = MAX(0,MIN(1,INT(ARRAY(1))))
   if (LNOTBK(2)) ICMETRC = MAX(0,MIN(2,INT(ARRAY(2))))
   if (LNOTBK(3)) CRDCAY = MAX(0.0,MIN(1.0,ARRAY(3)))
-  if (LMETRICVAR) then
-     if (LNOTBK(4)) CDBRK(1) = MAX(0.0,MIN(999.0,ARRAY(4)))*CMtoIN
-     if (LNOTBK(5)) CDBRK(2) = MAX(0.0,MIN(999.0,ARRAY(5)))*CMtoIN
+  if (LNOTBK(4)) CDBRK(1) = MAX(0.0,MIN(999.0,ARRAY(4)))
+  if (LNOTBK(5)) CDBRK(2) = MAX(0.0,MIN(999.0,ARRAY(5)))
 
-     if (LKECHO)write(JOSTND,94610) KEYWRD,ICMETH,ICMETRC,&
-          &CRDCAY,CDBRK(1)*INtoCM,CDBRK(2)*INtoCM
-  else
-     if (LNOTBK(4)) CDBRK(1) = MAX(0.0,MIN(999.0,ARRAY(4)))
-     if (LNOTBK(5)) CDBRK(2) = MAX(0.0,MIN(999.0,ARRAY(5)))
-
-     if (LKECHO)write(JOSTND,4610) KEYWRD,ICMETH,ICMETRC,&
-          &CRDCAY,CDBRK(1),CDBRK(2)
-  end if
+  if (LKECHO)write(JOSTND,4610) KEYWRD,ICMETH,ICMETRC,&
+       &CRDCAY,CDBRK(1),CDBRK(2)
 
   4610 format(/A8,T12,'CARBON REPORTS WILL BE BASED ON METHOD',&
        &I2, ' (0=FFE, 1=JENKINS)',/T12, 'REPORT UNITS WILL BE',&
        &I2, ' (0=US(TONS/ACRE), 1=METRIC(METRIC TONS/HA)',&
        &' 2=COMBINED(METRIC TONS/ACRE))',/T12,&
-       &'PROPORTION OF DEAD ROOTS DECAYING ANNUALLY WILL BE: ',&
-       &F7.4,' (<0 = NO DEAD ROOTS)',/T12,&
-       &'SOFTWOOD DIAMETER BREAKPOINT: ', F5.1,/T12,&
-       &'HARDWOOD DIAMETER BREAKPOINT: ', F5.1)
-  94610 format(/A8,T12,'CARBON REPORTS WILL BE BASED ON METHOD',&
-       &I2, ' (0=FFE, 1=JENKINS)',/T12, 'REPORT UNITS WILL BE',&
-       &I2, ' (0=US(TONS/ACRE), 1=METRIC(METRIC TONS/HA)',&
-       &' 2= METRIC TONS/ACRE))',/T12,&
        &'PROPORTION OF DEAD ROOTS DECAYING ANNUALLY WILL BE: ',&
        &F7.4,' (<0 = NO DEAD ROOTS)',/T12,&
        &'SOFTWOOD DIAMETER BREAKPOINT: ', F5.1,/T12,&
@@ -2518,13 +2132,8 @@ subroutine FMIN (ICALL,NSP,LKECHO)
 
   ICANPR = 1
   call DBSFMLINK(ICANPR)
-  if (LMETRICVAR) then
-     ICFPB = -1
-     ICFPE = -1
-  else
-     ICFPB = IY(1)
-     ICFPE = IY(1) + 999
-  end if
+  ICFPB = IY(1)
+  ICFPE = IY(1) + 999
 
   if (LKECHO)write(JOSTND,4710) KEYWRD
   4710 format(/A8,'   CANOPY FUELS PROFILE TABLE SENT ',&
@@ -2724,8 +2333,6 @@ subroutine FMIN (ICALL,NSP,LKECHO)
   !     PRM6: BULK DENSITY - LIVE (LBS/FT3) = 0.10 (*)
   !     PRM7: BULK DENSITY - DEAD (LBS/FT3) = 0.75 (*)
   !     PRM8: DEAD AND LIVE HEAT CONTENT (BTU/LB) = 8000 (*)
-  !     (THE METRIC VARIANTS READ PRM3-5 IN /M, PRM6-7 IN KG/M**3 AND PRM8
-  !     IN KJ/KG, AND CONVERT THEM TO THE INTERNAL UNITS ABOVE.)
 
   !     PRM 2 IS USED WITH THE NEW FM LOGIC OPTION
   !     PRMS 3 - 7 ARE USED WITH THE NEW FM LOGIC AND MODELLED LOADS OPTIONS
@@ -2743,29 +2350,15 @@ subroutine FMIN (ICALL,NSP,LKECHO)
 
   if (LNOTBK(2)) PRMS(1) = MAX(0,MIN(2,INT(ARRAY(2))))
   if (LNOTBK(3)) PRMS(2) = MAX(0,MIN(2,INT(ARRAY(3))))
-  if (LMETRICVAR) then
-     if (LNOTBK(4)) PRMS(3) = MAX(0.0,ARRAY(4)) / FTtoM
-     if (LNOTBK(5)) PRMS(4) = MAX(0.0,ARRAY(5)) / FTtoM
-     if (LNOTBK(6)) PRMS(5) = MAX(0.0,ARRAY(6)) / FTtoM
-     if (LNOTBK(7)) PRMS(6) = MAX(0.0,ARRAY(7)) * KGtoLB/M3toFT3
-     if (LNOTBK(8)) PRMS(7) = MAX(0.0,ARRAY(8)) * KGtoLB/M3toFT3
-     if (LNOTBK(9)) PRMS(8) = MAX(0.0,ARRAY(9)) * KJtoBTU/KGtoLB
+  if (LNOTBK(4)) PRMS(3) = MAX(0.0,ARRAY(4))
+  if (LNOTBK(5)) PRMS(4) = MAX(0.0,ARRAY(5))
+  if (LNOTBK(6)) PRMS(5) = MAX(0.0,ARRAY(6))
+  if (LNOTBK(7)) PRMS(6) = MAX(0.0,ARRAY(7))
+  if (LNOTBK(8)) PRMS(7) = MAX(0.0,ARRAY(8))
+  if (LNOTBK(9)) PRMS(8) = MAX(0.0,ARRAY(9))
 
-     if (LKECHO)write(JOSTND,94910) KEYWRD,IDT,INT(PRMS(1)),INT(PRMS(2)),&
-          &PRMS(3)/MtoFT, PRMS(4)/MtoFT, PRMS(5)/MtoFT,&
-          &PRMS(6)*(LBtoKG/FT3toM3), PRMS(7)*(LBtoKG/FT3toM3),&
-          &PRMS(8)/(BTUtoKJ/LBtoKG)
-  else
-     if (LNOTBK(4)) PRMS(3) = MAX(0.0,ARRAY(4))
-     if (LNOTBK(5)) PRMS(4) = MAX(0.0,ARRAY(5))
-     if (LNOTBK(6)) PRMS(5) = MAX(0.0,ARRAY(6))
-     if (LNOTBK(7)) PRMS(6) = MAX(0.0,ARRAY(7))
-     if (LNOTBK(8)) PRMS(7) = MAX(0.0,ARRAY(8))
-     if (LNOTBK(9)) PRMS(8) = MAX(0.0,ARRAY(9))
-
-     if (LKECHO)write(JOSTND,4910) KEYWRD,IDT,INT(PRMS(1)),INT(PRMS(2)),&
-          &PRMS(3), PRMS(4), PRMS(5), PRMS(6), PRMS(7), PRMS(8)
-  end if
+  if (LKECHO)write(JOSTND,4910) KEYWRD,IDT,INT(PRMS(1)),INT(PRMS(2)),&
+       &PRMS(3), PRMS(4), PRMS(5), PRMS(6), PRMS(7), PRMS(8)
 
   4910 format(/A8,T12,'FIRE CALCULATIONS IN DATE/CYCLE ',&
        &I4,' WILL BE:'&
@@ -2779,18 +2372,6 @@ subroutine FMIN (ICALL,NSP,LKECHO)
        &'LIVE FUEL BULK DENSITY (LBS/FT3) WILL BE: ',F4.2,/T12,&
        &'DEAD FUEL BULK DENSITY (LBS/FT3) WILL BE: ',F4.2,/T12,&
        &'HEAT CONTENT (BTU/LB) WILL BE: ',F6.0)
-  94910 format(/A8,T12,'FIRE CALCULATIONS IN DATE/CYCLE ',&
-       &I4,' WILL BE:'&
-       &/T12, 'BASED ON METHOD',I2,' ',&
-       &'(0=OLD FM LOGIC, 1=NEW FM LOGIC, 2=USE MODELLED LOADS DIRECTLY)',&
-       &/T12, 'FUEL MODEL SET (IF USING NEW FM LOGIC) WILL BE',&
-       &I2, ' (0=13, 1=40, 2=53)',/T12,&
-       &'ONE-HOUR SAV (1/M) WILL BE: ',F6.0,/T12,&
-       &'HERB SAV (1/M) WILL BE: ',F6.0,/T12,&
-       &'LIVE WOODY SAV (1/M) WILL BE: ',F6.0,/T12,&
-       &'LIVE FUEL BULK DENSITY (KG/M3) WILL BE: ',F6.3,/T12,&
-       &'DEAD FUEL BULK DENSITY (KG/M3) WILL BE: ',F6.3,/T12,&
-       &'HEAT CONTENT (KJ/KG) WILL BE: ',F6.0)
 
   call OPNEW(KODE,IDT,MYACT,NPARMS,PRMS)
 
@@ -2853,13 +2434,8 @@ subroutine FMIN (ICALL,NSP,LKECHO)
 
   if (IDDWRP .eq.0) call GETID (IDDWRP)
 
-  if (LMETRICVAR) then
-     IDWRPB = -1
-     IDWRPE = -1
-  else
-     IDWRPB = IY(1)
-     IDWRPE = IY(1) + 999
-  end if
+  IDWRPB = IY(1)
+  IDWRPE = IY(1) + 999
 
   if (LKECHO)write(JOSTND,5115) KEYWRD
   5115 format(/A8,'   THE DOWN WOOD VOLUME REPORT WILL BE PRINTED.')
@@ -2877,13 +2453,8 @@ subroutine FMIN (ICALL,NSP,LKECHO)
 
   if (IDDWCV .eq.0) call GETID (IDDWCV)
 
-  if (LMETRICVAR) then
-     IDWCVB = -1
-     IDWCVE = -1
-  else
-     IDWCVB = IY(1)
-     IDWCVE = IY(1) + 999
-  end if
+  IDWCVB = IY(1)
+  IDWCVE = IY(1) + 999
 
   if (LKECHO)write(JOSTND,5215) KEYWRD
   5215 format(/A8,'   THE DOWN WOOD COVER REPORT WILL BE PRINTED.')
@@ -2925,30 +2496,13 @@ subroutine FMIN (ICALL,NSP,LKECHO)
   if (LNOTBK(8)) PRMS(8) = ARRAY(8)
   if (LNOTBK(9)) PRMS(9) = ARRAY(9)
 
-  if (LMETRICVAR) then
-     if (LKECHO)write(JOSTND,95310) KEYWRD,(PRMS(I),I = 1,9)
-  else
-     if (LKECHO)write(JOSTND,5310) KEYWRD,(PRMS(I),I = 1,9)
-  end if
+  if (LKECHO)write(JOSTND,5310) KEYWRD,(PRMS(I),I = 1,9)
   5310 format(/A8,'   INITIAL SOFT FUEL VALUES (TONS/ACRE) ARE',&
        &' (-1.0=NO VALUE SPECIFIED): FUELS <.25"=',F5.1/T12,&
        &'FUELS .25-1"=',F5.1,'; FUELS 1-3"=',F5.1,&
        &'; FUELS 3-6"=',F5.1,'; FUELS 6-12"=',F5.1,&
        &'; FUELS 12-20"=',F5.1/T12,'FUELS 20-35"=',F5.1,&
        &'; FUELS 35-50"=',F5.1,'; FUELS >50"=',F5.1)
-  95310 format(/A8,'   INITIAL SOFT FUEL VALUES (TONNES/HA) ARE',&
-       &' (-1.0=NO VALUE SPECIFIED): FUELS <0.6cm=',F5.1/T12,&
-       &'FUELS 0.6-2.5cm=',F5.1,'; FUELS 2.5-7.6cm=',F5.1,&
-       &'; FUELS 7.6-15.2cm=',F5.1,'; FUELS 15.2-30.5cm=',F5.1,&
-       &'; FUELS 30.5-50.8cm=',F5.1/T12,'FUELS 50.8-89.0cm=',F5.1,&
-       &'; FUELS 89.0-127.1cm=',F5.1,'; FUELS >127.1cm=',F5.1)
-
-  if (LMETRICVAR) then
-     do I = 1,NPARMS
-        if (PRMS(I) .gt.0.0) PRMS(I) = PRMS(I) * TMtoTI / HAtoACR
-        5315 continue
-     end do
-  end if
 
   MYACT = 2553
   call OPNEW(KODE,IDT,MYACT,NPARMS,PRMS)
@@ -2980,174 +2534,21 @@ subroutine FMIN (ICALL,NSP,LKECHO)
        &ARRAY,KARD)
   if (JSP.eq.-999) goto 10
   ARRAY(3) = JSP
-  if (LMETRICVAR) then
-
-     !     THE METRIC VARIANTS (BC, ON) SCHEDULE PRMS INSTEAD OF ARRAY(2:5),
-     !     AS IN THE FORMER METRIC COPY; KEPT DELIBERATELY.
-
-     NPARMS = 4
-     PRMS(1) = 1.0
-     PRMS(2) = JSP
-     PRMS(3) = 0.0
-     PRMS(4) = 999.0
-
-     if (.not.LNOTBK(4)) PRMS(3) = ARRAY(4) * CMtoIN
-     if (.not.LNOTBK(5)) PRMS(4) = ARRAY(5) * CMtoIN
-
-  else
-     if (.not.LNOTBK(4)) ARRAY(4) = 0.0
-     if (.not.LNOTBK(5)) ARRAY(5) = 999.0
-  end if
+  if (.not.LNOTBK(4)) ARRAY(4) = 0.0
+  if (.not.LNOTBK(5)) ARRAY(5) = 999.0
   if (ARRAY(4).ge.ARRAY(5)) then
      call ERRGRO (.true.,4)
      call KEYDMP (JOSTND,IRECNT,KEYWRD,ARRAY,KARD)
   else
-     if (LMETRICVAR) then
-        call OPNEW (KODE,IDT,MYACT,4,PRMS)
-     else
-        call OPNEW (KODE,IDT,MYACT,4,ARRAY(2))
-     end if
+     call OPNEW (KODE,IDT,MYACT,4,ARRAY(2))
      if (KODE.gt.0) goto 10
-     if (LMETRICVAR) then
-        if (LKECHO)write(JOSTND,95410) KEYWRD,IDT,ARRAY(2),&
-             &KARD(3)(1:3),JSP,ARRAY(4)*INtoCM,ARRAY(5)*INtoCM
-     else
-        if (LKECHO)write(JOSTND,5410) KEYWRD,IDT,ARRAY(2),&
-             &KARD(3)(1:3),JSP,ARRAY(4),ARRAY(5)
-     end if
+     if (LKECHO)write(JOSTND,5410) KEYWRD,IDT,ARRAY(2),&
+          &KARD(3)(1:3),JSP,ARRAY(4),ARRAY(5)
      5410 format(/A8,'   DATE/CYCLE=',I5,&
           &'; FIRE-CAUSED MORTALITY MULTIPLIER=',F10.2,'; SPECIES= ',A,&
           &' (CODE= ',I3,')',/T12,'ONLY TREES GREATER THAN OR EQUAL TO',&
           &F7.2,' AND LESS THAN ',F7.2,' DBH ARE AFFECTED.')
-     95410 format(/A8,'   DATE/CYCLE=',I5,&
-          &'; FIRE-CAUSED MORTALITY MULTIPLIER=',F10.2'; SPECIES= ',A,&
-          &' (CODE= ',I3,')'/T12,'ONLY TREES GREATER THAN OR EQUAL TO',&
-          &F7.2,' AND LESS THAN ',F7.2,' DBH ARE AFFECTED.')
   end if
-  goto 10
-
-  5500 continue
-
-  !                        OPTION NUMBER 55 -- USECFIM (METRIC VARIANTS ONLY)
-
-  !     THIS KEYWORD TELLS THE MODEL TO USE THE CFIM FIRE CALCULATIONS INSTEAD
-  !     OF THE DEFAULT FFE FIRE CALCULATIONS
-
-  if (ICALL .eq.2) then
-     write(JOSTND,5504) KEYWRD
-     5504 format(/A8,'   KEYWORD IS A STAND-LEVEL KEYWORD ONLY',&
-          &' AND CANNOT BE INCLUDED WITH THE LANDSCAPE-LEVEL KEYWORDS')
-     goto 10
-  end if
-
-  NPARMS = 7
-  !     BULK DENSITY
-  PRMS(1) = 80.0
-  !     DROUGHT CODE
-  PRMS(2) = 300
-  !     fuel_density(kg/m^3)---rho_surf                   398.0
-  PRMS(3) = 398.0
-  !     surface_area_to_volume_ratio(1/m)---sigma_surf   3092.0
-  PRMS(4) = 3092
-  !     surface_area_to_volume_ratio(1/m)---sigma_can    5401.0
-  PRMS(5) = 5401.0
-  !     canopy_fuel_particle_diameter(m)---diameter     0.00074
-  PRMS(6) = 0.00074
-  !     canopy_fuel_particle_length(m)---length            0.10
-  PRMS(7) = 0.10
-
-  IDT = 1
-  if (LNOTBK(1)) PRMS(1) = ARRAY(1)
-  if (LNOTBK(2)) PRMS(2) = ARRAY(2)
-  if (LNOTBK(3)) PRMS(3) = ARRAY(3)
-  if (LNOTBK(4)) PRMS(4) = ARRAY(4)
-  if (LNOTBK(5)) PRMS(5) = ARRAY(5)
-  if (LNOTBK(6)) PRMS(6) = ARRAY(6)
-  if (LNOTBK(7)) PRMS(7) = ARRAY(7)
-
-  do I = 1,NPARMS
-     if (PRMS(I) .lt.0) PRMS(I) = 0
-     5509 continue
-  end do
-
-  CFIM_ON = .true.
-
-  !           BULK DENSITY
-  CFIM_BD = PRMS(1)
-
-  !           DROUGHT CODE
-  CFIM_DC = PRMS(2)
-
-  !           fuel_density(kg/m^3)---rho_surf                 398.0
-  CFIM_INPUT(17) = PRMS(3)
-
-  !           surface_area_to_volume_ratio(1/m)---sigma_surf          3092.0
-  CFIM_INPUT(16) = PRMS(4)
-
-  !           surface_area_to_volume_ratio(1/m)---sigma_can               5401.0
-  CFIM_INPUT(19) = PRMS(5)
-
-  !           canopy_fuel_particle_diameter(m)---diameter             0.00074
-  CFIM_INPUT(21) = PRMS(6)
-
-  !           canopy_fuel_particle_length(m)---length             0.10
-  CFIM_INPUT(23) = PRMS(7)
-
-  if (LKECHO)write(JOSTND,5510) KEYWRD,(PRMS(I),I = 1,7)
-  5510 format(/A8,'   THE CFIM MODEL WILL BE USED FOR FIRE ',&
-       &'CALCULATIONS.', /T12,&
-       &'BULK DENSITY=',F4.0, '; DROUGHT CODE=',I3/T12,&
-       &'FUEL DENS(KG/M3)=',F5.1,&
-       &'; SAV SURF=',F5.0,'; SAV CANOPY=',F5.0/T12,&
-       &'CAN. PARTICLE DIAM (M)=',F7.5,&
-       &'; CAN. PARTICLE LENGTH(M)=',F7.3)
-
-  goto 10
-
-  5600 continue
-
-  !                        OPTION NUMBER 56 -- CFIMCALC (METRIC VARIANTS ONLY)
-
-  !     THIS KEYWORD SETS SOME PARAMETERS THAT CONTROL THE MINI-SIMULATION
-  !     INSIDE THE CFIM MODEL.
-
-  if (ICALL .eq.2) then
-     write(JOSTND,5605) KEYWRD
-     5605 format(/A8,'   KEYWORD IS A STAND-LEVEL KEYWORD ONLY',&
-          &' AND CANNOT BE INCLUDED WITH THE LANDSCAPE-LEVEL KEYWORDS')
-     goto 10
-  end if
-
-  NPARMS = 3
-  !     time_step(s)---tstep                      1
-  PRMS(1) = 1.0
-  !     iterations---iters                        150
-  PRMS(2) = 150.0
-  !     x_starting_position(m)---xstart                   8.0
-  PRMS(3) = 8.0
-
-  IDT = 1
-  if (LNOTBK(1)) PRMS(1) = ARRAY(1)
-  if (LNOTBK(2)) PRMS(2) = ARRAY(2)
-  if (LNOTBK(3)) PRMS(3) = ARRAY(3)
-
-  !     time_step(s)---tstep                      1
-  if (PRMS(1) .lt.1) PRMS(1) = 1
-  CFIM_INPUT(7) = PRMS(1)
-
-  !     iterations---iters                        150
-  if (PRMS(2) .lt.1) PRMS(2) = 1
-  CFIM_INPUT(8) = PRMS(2)
-
-  !     x_starting_position(m)---xstart                   8.0
-  if (PRMS(3) .lt.1) PRMS(3) = 1
-  CFIM_INPUT(9) = PRMS(3)
-
-  if (LKECHO)write(JOSTND,5610) KEYWRD,(PRMS(I),I = 1,3)
-  5610 format(/A8,'   THE INTERNAL CFIM FIRE CALCULATION WILL USE THE'&
-       &' FOLLOWING PARAMETERS:', /T13,&
-       &'TIME STEP=',F3.0,' ITERATIONS=',F5.0,' START POS=',F5.0)
-
   goto 10
 
   !.... Special entry to retrieve keywords.
@@ -3163,9 +2564,6 @@ subroutine FMKEYDMP (IOUT,IRECNT,KEYWRD,ARRAY,KARD,NVALS)
 
   !  **FMKEYDMP DATE OF LAST REVISION:   08/03/05
 
-  ! Common blocks
-  include 'PRGPRM.f90'
-
   ! Variables
   character(len=10) :: KARD(*)
   character(len=8) :: KEYWRD
@@ -3173,21 +2571,12 @@ subroutine FMKEYDMP (IOUT,IRECNT,KEYWRD,ARRAY,KARD,NVALS)
   real    :: ARRAY(NVALS)
 
   !  THIS CODE ASSUMES NVALS IS LESS THAN OR EQUAL TO 12.
-  !  (THE METRIC VARIANTS INDENT THE DUMP BY ONE MORE COLUMN; KEPT DELIBERATELY.)
 
-  if (LMETRICVAR) then
-     write (IOUT,9070) IRECNT,KEYWRD,(ARRAY(I),I = 1,NVALS)
-     write (IOUT,9071) (KARD(I),I = 1,NVALS)
-  else
-     write (IOUT,70) IRECNT,KEYWRD,(ARRAY(I),I = 1,NVALS)
-     write (IOUT,71) (KARD(I),I = 1,NVALS)
-  end if
+  write (IOUT,70) IRECNT,KEYWRD,(ARRAY(I),I = 1,NVALS)
+  write (IOUT,71) (KARD(I),I = 1,NVALS)
   70 format (/'CARD NUM =',I8,'; KEYWORD FIELD = ''',A8,''''/&
        &'     NUMBERS=',12F13.7)
   71 format ('     CHARS  =',12('''',A10,'''':','))
-  9070 format (/' CARD NUM =',I8,'; KEYWORD FIELD = ''',A8,''''/&
-       &'      NUMBERS=',12F13.7)
-  9071 format ('      CHARS  =',12('''',A10,'''':','))
 
   return
 end
@@ -3198,12 +2587,7 @@ subroutine FMKEYRDR (INUNIT,IOUT,LDEBUG,KEYWRD,LNOTBK,&
 
   !  **FMKEYRDR DATE OF LAST REVISION:  10/20/09
 
-  !     KEYWORD CARD READER FOR THE FIRE MODEL. THE RECORD IS READ BY
-  !     KEYRDRN (base/keyrdr.f90), THE READER SHARED WITH KEYRDR, IN ITS
-  !     FMKEYRDR MODE (LFMRDR=.TRUE.) SO THAT FIRE KEYWORD RECORDS ARE READ
-  !     AND ECHOED EXACTLY AS BEFORE: NO STOP RECORD, THE OLDER OPTIONS
-  !     HEADING, COMMENT BLOCKS ALWAYS ECHOED, THE FMKEYRDR PARMS DETECTION,
-  !     AND ALL NVALS FIELDS CLEARED AFTER A PARMS FIELD.
+  !     KEYWORD CARD READER FOR THE STAND PROGNOSIS SYSTEM
 
   !     ARGUMENTS:
   !     INUNIT= READER REFERENCE NUMBER
@@ -3229,17 +2613,131 @@ subroutine FMKEYRDR (INUNIT,IOUT,LDEBUG,KEYWRD,LNOTBK,&
 
   ! Variables
   integer :: NVALS
+  character(len=130) :: RECORD
   character(len=10) :: KARD(NVALS)
   character(len=8) :: KEYWRD
-  logical :: LDEBUG,LNOTBK(NVALS),LFLAG
-  integer :: IOUT,IRECNT,INUNIT,KODE
+  character(len=8) :: TMP
+  logical :: LDEBUG,LNOTBK(NVALS),LCOM,LFLAG
+  integer :: IOUT,IRECNT,INUNIT,KODE,NF,IP,I,J,K,ISTLNB
   real    :: ARRAY(NVALS)
 
-  call KEYRDRN (INUNIT,IOUT,KEYWRD,LNOTBK,ARRAY,IRECNT,KODE,KARD,&
-       &LFLAG,.true.,NVALS,.true.)
+  !  READ KEYWORD AND LOCATE BLANK PARAMETER FIELDS.
 
-  !     KODE <= 0 MEANS A KEYWORD RECORD WAS DECODED (NOT END-OF-FILE).
+  LCOM = .false.
+  5 continue
+  read (INUNIT,'(A)',end = 30) RECORD
 
-  if ( LDEBUG .and. KODE.le.0 ) call FMKEYDMP (IOUT,IRECNT,KEYWRD,ARRAY,KARD,NVALS)
+  IRECNT = IRECNT + 1
+  if (RECORD(1:1).eq.'!') goto 5
+  if (LFLAG .and. RECORD.eq.' ') goto 5
+
+  !     CHECK FOR "COMMENT" KEYWORD AND PROCESS.
+
+  TMP = RECORD(1:8)
+  do I = 1,8
+     call UPCASE (TMP(I:I))
+  end do
+  if (LFLAG) then
+     call GROHED (IOUT)
+     write (IOUT,12)
+     12 format (/130('-')//T49,'OPTIONS SELECTED BY INPUT'//&
+          &130('-')/' KEYWORD    PARAMETERS:'/&
+          &'--------   ',119('-'))
+     LFLAG = .false.
+  end if
+  if (RECORD(1:1).eq.'*'.or. RECORD.eq.' ') then
+     if (.not.LCOM) then
+        write (IOUT,'(/)')
+        LCOM = .true.
+     end if
+     write (IOUT,'(T12,A)') RECORD(1:MAX(1,ISTLNB(RECORD)))
+     goto 5
+  else
+     LCOM = .false.
+  end if
+  if (TMP.eq.'COMMENT') then
+     write (IOUT,'(/A)') TMP
+     14 continue
+     read (INUNIT,'(A)',end = 30) RECORD
+     IRECNT = IRECNT+1
+     TMP = RECORD (1:4)
+     do I = 1,4
+        call UPCASE (TMP(I:I))
+     end do
+     if (TMP(1:4).eq.'END ') then
+        write (IOUT,'(/A4)') TMP(1:4)
+        goto 5
+     else
+        write (IOUT,'(T12,A)') RECORD(1:ISTLNB(RECORD))
+        goto 14
+     end if
+  end if
+
+  !     CHECK FOR THE PRESENCE OF A 'P' SO THAT THE PARMS STATEMENT
+  !     MAY BE DETECTED.
+
+  NF = NVALS
+  IP = INDEX(RECORD(11:),'P')
+  if (IP.gt.0) then
+
+     !        BORROW THE USE OF KEYWRD TO HOLD "PARMS" IN MIXED, THEN UPPER
+     !        CASE...
+
+     KEYWRD(1:5) = RECORD(IP+10:IP+14)
+     do I = 1,5
+        call UPCASE (KEYWRD(I:I))
+     end do
+     if (KEYWRD(1:5).eq.'PARMS') then
+        if (MOD(IP,10).eq.0) then
+           NF = IP/10-1
+        else
+           NF = IP/10
+        end if
+     end if
+  end if
+
+  !     LOAD THE KEYWORD INTO KEYWRD...DECODE THE FIELDS.
+
+  KEYWRD = RECORD(1:8)
+  J = 1
+  do I = 1,NF
+     J = J+10
+     KARD(I) = RECORD(J:J+9)
+     ARRAY(I) = 0.0
+
+     !     MAKE SURE ALL OF THE CHARACTERS IN KARD ARE NUMBERS...
+
+     do K = 1,10
+        if (INDEX(' .+-eE0123456789',KARD(I)(K:K)).eq.0) goto 25
+        15 continue
+     end do
+     read (KARD(I),'(G10.0)',ERR = 25) ARRAY(I)
+     25 continue
+  end do
+  goto 40
+
+  30 continue
+  KODE = 2
+  return
+
+  40 continue
+  call UPKEY(KEYWRD)
+  KODE = 0
+  do I = 1,NF
+     LNOTBK(I) = KARD(I).ne.' '
+     50 continue
+  end do
+  if (NF.lt.NVALS) then
+     KODE = -(NF+1)
+     do I = NF+1,NVALS
+        LNOTBK(I) = .false.
+        ARRAY(I) = 0.0
+        J = I*10+1
+        KARD(I) = RECORD(J:J+9)
+        55 continue
+     end do
+  end if
+
+  if ( LDEBUG ) call FMKEYDMP (IOUT,IRECNT,KEYWRD,ARRAY,KARD,NVALS)
   return
 end

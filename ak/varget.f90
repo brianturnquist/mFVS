@@ -11,6 +11,7 @@ subroutine VARGET (WK3,IPNT,ILIMIT,REALS,LOGICS,INTS)
 
   ! Common blocks
   include 'PRGPRM.f90'
+  include 'ESPARM.f90'
   include 'ESCOMN.f90'
   include 'PLOT.f90'
   include 'VARCOM.f90'

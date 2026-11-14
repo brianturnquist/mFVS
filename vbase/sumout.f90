@@ -34,11 +34,6 @@ subroutine SUMOUT(IOSUM,I20,ICALLF,JOPRT,JSTND2,JSUM2,&
   !             21: CUBIC SAW VOLUME               START OF PERIOD
   !             22: REMOVED CUBIC SAW VOLUME
 
-  !     THE METRIC VARIANTS (BC, ON) STORE THE SAME IMPERIAL VALUES IN
-  !     ROWS 1-20 AND CONVERT THEM TO METRIC WHEN WRITING (TREES/HA,
-  !     CU M/HA, M2/HA, M, CM). IN ON, ROWS 6 AND 10 ARE NET MERCHANTABLE
-  !     VOLUME WITH CULL. ROWS 21-22 ARE NOT USED.
-
   !     ICALLF= CALL FLAG, 0=NORMAL
   !     JSTND2= DATA SET REFERENCE NUMBER FOR 'PRINTED' COPY (WITH
   !             HEADINGS AND CARRAGE CONTROL BYTE).  IF JSTND2=0, NO
@@ -56,7 +51,6 @@ subroutine SUMOUT(IOSUM,I20,ICALLF,JOPRT,JSTND2,JSUM2,&
   include 'PRGPRM.f90'
   include 'CONTRL.f90'
   include 'SUMTAB.f90'
-  include 'METRIC.f90'
 
   ! Variables
   logical :: LCONN,LDSK,LPRT
@@ -115,130 +109,47 @@ subroutine SUMOUT(IOSUM,I20,ICALLF,JOPRT,JSTND2,JSUM2,&
      write (JSTND2,5) NPLT,MGMID,ITITLE(1:ISTLNB(ITITLE))
      5 format(/'STAND ID: ',A26,4X,'MGMT ID: ',A4,4X,A/)
 
-     if (LMETRICVAR) then
+     select case (VARACD)
 
-        select case (VARACD)
+        !  WRITE HEADER FOR CS, LS, NE, SN
 
-           !  WRITE HEADER FOR CS, LS, NE, SN
+        !       CASE ('CS','LS','NE','SN')
+        !       WRITE (JSTND2,12)
+        !   12  FORMAT(//32X,'SUMMARY STATISTICS (PER ACRE OR STAND BASED ON TOTAL
+        !      & STAND AREA)',/,
+        !      &  134(1H-),/15X,'START OF SIMULATION PERIOD',21X,'REMOVALS',13X,
+        !      &  'AFTER TREATMENT',4X,'GROWTH THIS PERIOD',/9X,45(1H-),1X,
+        !      &  23(1H-),1X,21(1H-),2X,18(1H-),3X,'MAI  ------',/9X,
+        !      &  'NO OF',14X,'TOP',
+        !      &  6X,'MERCH SAWLG SAWLG NO OF MERCH SAWLG SAWLG',14X,'TOP  RES  ',
+        !      &  'PERIOD ACCRE MORT   MERCH FOR SS',/,
+        !      &  'YEAR AGE TREES  BA  SDI CCF ',
+        !      &  'HT  QMD  CU FT CU FT BD FT TREES CU FT CU FT BD FT  BA  SDI ',
+        !      &  'CCF HT   QMD  YEARS   PER  YEAR   CU FT TYP ZT',
+        !      &  /'---- --- ----- ',
+        !      &  '--- ---- --- --- ---- ',7('----- '),'--- ---- --- --- ----  ',
+        !      &  '------ ---- -----   ----- ------')
 
-        case ('CS','LS','NE','SN')
-           write (JSTND2,12)
-           12 FORMAT(//32X,'SUMMARY STATISTICS (PER HA OR STAND BASED ON TOTAL  &
-                & STAND AREA)',/,&
-                &134(1H-),/15X,'START OF SIMULATION PERIOD',21X,'REMOVALS',13X,&
-                &'AFTER TREATMENT',4X,'GROWTH THIS PERIOD',/9X,45(1H-),1X,&
-                &23(1H-),1X,21(1H-),2X,18(1H-),3X,'MAI  ------',/9X,&
-                &'NO OF',14X,'TOP',&
-                &6X,'MERCH SAWLG SAWLG NO OF MERCH SAWLG SAWLG',14X,'TOP  RES  ',&
-                &'PERIOD ACCRE MORT   MERCH FOR SS',/,&
-                &'YEAR AGE TREES  BA  SDI CCF ',&
-                &'HT  QMD  CU M  CU M  BD FT TREES CU M  CU M  BD FT  BA  SDI ',&
-                &'CCF HT   QMD  YEARS   PER  YEAR   CU M  TYP ZT',&
-                &/'---- --- ----- ',&
-                &'--- ---- --- --- ---- ',7('----- '),'--- ---- --- --- ----  ',&
-                &'------ ---- -----   ----- ------')
+        !  WRITE HEADER FOR ALL OTHER VARIANTS
 
-           !  WRITE HEADER FOR BC, ON
-
-        case ('ON')
-           write (JSTND2,15)
-           15 FORMAT(//32X,'SUMMARY STATISTICS (PER HA OR STAND BASED ON TOTAL  &
-                & STAND AREA)',/,&
-                &134(1H-),/15X,'START OF SIMULATION PERIOD',21X,'REMOVALS',13X,&
-                &'AFTER TREATMENT',4X,'GROWTH THIS PERIOD',/9X,45(1H-),1X,&
-                &23(1H-),1X,21(1H-),2X,18(1H-),3X,' MAI ------',/9X,&
-                &'NO OF',14X,'TOP',&
-                &6X,'  GTV   GMV   NMV NO OF   GTV   GMV   NMV',14X,'TOP  RES ',&
-                &'PERIOD  ACCRE MORT     GTV FOR SS',/,&
-                &'YEAR AGE TREES  BA  SDI CCF  ',&
-                &'HT  QMD  CU M  CU M  CU M TREES  CU M  CU M  CU M  BA  SDI ',&
-                &'CCF  HT  QMD  YEARS   PER  YEAR    CU M TYP ZT',&
-                &/'---- --- ----- ',&
-                &'--- ---- --- --- ---- ',7('----- '),'--- ---- --- --- ----  ',&
-                &'------ ---- -----   ----- ------')
-
-        case ('BC')
-           write (JSTND2,13)
-           13 FORMAT(//32X,'SUMMARY STATISTICS (PER HA OR STAND BASED ON TOTAL  &
-                & STAND AREA)',/,&
-                &134(1H-),/15X,'START OF SIMULATION PERIOD',21X,'REMOVALS',12X,&
-                &'AFTER TREATMENT',5X,'GROWTH THIS PERIOD',/9X,45(1H-),1X,&
-                &23(1H-),1X,21(1H-),2X,18(1H-),2X,'  MAI ------',/9X,&
-                &'NO OF',14X,'TOP',&
-                &6X,'TOTAL MERCH   N/A NO OF TOTAL MERCH   N/A',14X,&
-                &'TOP  RES ',' PERIOD ACCRE MORT   TOTAL FOR SS',/,&
-                &'YEAR AGE TREES  BA  SDI CCF ',&
-                &' HT  QMD  CU M  CU M       TREES  CU M  CU M        BA  SDI ',&
-                &'CCF  HT  QMD   YEARS  PER  YEAR    CU M TYP ZT',&
-                &/'---- --- ----- ',&
-                &'--- ---- --- --- ---- ',7('----- '),'--- ---- --- --- ----  ',&
-                &'------ ---- -----   ----- ------')
-
-           !  WRITE HEADER FOR ALL OTHER VARIANTS
-
-        case default
-           write (JSTND2,16)
-           16 FORMAT(//32X,'SUMMARY STATISTICS (PER HA OR STAND BASED ON TOTAL  &
-                & STAND AREA)',/,&
-                &134(1H-),/15X,'START OF SIMULATION PERIOD',21X,'REMOVALS',13X,&
-                &'AFTER TREATMENT',4X,'GROWTH THIS PERIOD',/9X,45(1H-),1X,&
-                &23(1H-),1X,21(1H-),2X,18(1H-),3X,'MAI  ------',/9X,&
-                &'NO OF',14X,'TOP',&
-                &6X,'TOTAL MERCH MERCH NO OF TOTAL MERCH MERCH',14X,'TOP  RES  ',&
-                &'PERIOD ACCRE MORT   MERCH FOR SS',/,&
-                &'YEAR AGE TREES  BA  SDI CCF ',&
-                &'HT  QMD  CU M  CU M  BD FT TREES CU M  CU M  BD FT  BA  SDI ',&
-                &'CCF HT   QMD  YEARS   PER  YEAR   CU M  TYP ZT',&
-                &/'---- --- ----- ',&
-                &'--- ---- --- --- ---- ',7('----- '),'--- ---- --- --- ----  ',&
-                &'------ ---- -----   ----- ------')
-        end select
-
-     else
-
-        select case (VARACD)
-
-           !  WRITE HEADER FOR CS, LS, NE, SN
-
-           !       CASE ('CS','LS','NE','SN')
-           !       WRITE (JSTND2,12)
-           !   12  FORMAT(//32X,'SUMMARY STATISTICS (PER ACRE OR STAND BASED ON TOTAL
-           !      & STAND AREA)',/,
-           !      &  134(1H-),/15X,'START OF SIMULATION PERIOD',21X,'REMOVALS',13X,
-           !      &  'AFTER TREATMENT',4X,'GROWTH THIS PERIOD',/9X,45(1H-),1X,
-           !      &  23(1H-),1X,21(1H-),2X,18(1H-),3X,'MAI  ------',/9X,
-           !      &  'NO OF',14X,'TOP',
-           !      &  6X,'MERCH SAWLG SAWLG NO OF MERCH SAWLG SAWLG',14X,'TOP  RES  ',
-           !      &  'PERIOD ACCRE MORT   MERCH FOR SS',/,
-           !      &  'YEAR AGE TREES  BA  SDI CCF ',
-           !      &  'HT  QMD  CU FT CU FT BD FT TREES CU FT CU FT BD FT  BA  SDI ',
-           !      &  'CCF HT   QMD  YEARS   PER  YEAR   CU FT TYP ZT',
-           !      &  /'---- --- ----- ',
-           !      &  '--- ---- --- --- ---- ',7('----- '),'--- ---- --- --- ----  ',
-           !      &  '------ ---- -----   ----- ------')
-
-           !  WRITE HEADER FOR ALL OTHER VARIANTS
-
-        case default
-           write (JSTND2,14)
-           14 FORMAT(//41X,'SUMMARY STATISTICS (PER ACRE OR STAND BASED ON TOTAL&
-                & STAND AREA)',/,&
-                &146(1H-),/22X,'START OF SIMULATION PERIOD',23X,'REMOVALS',15X,&
-                &'AFTER TREATMENT',5X,'GROWTH THIS PERIOD',/9X,51(1H-),1X,&
-                &29(1H-),1X,21(1H-),2X,18(1H-),3X,'MAI  ------',/9X,&
-                &'NO OF',14X,'TOP',&
-                &6X,'TOTAL MERCH SAWLG MERCH NO OF TOTAL MERCH SAWLG MERCH',14X,&
-                &'TOP  RES  PERIOD ACCRE MORT   MERCH FOR SS',/,&
-                &'YEAR AGE TREES  BA  SDI CCF ',&
-                &'HT  QMD  CU FT CU FT CU FT BD FT TREES CU FT CU FT CU FT ',&
-                &'BD FT  BA  SDI ',&
-                &'CCF HT   QMD  YEARS   PER  YEAR   CU FT TYP ZT',&
-                &/'---- --- ----- ',&
-                &'--- ---- --- --- ---- ',9('----- '),'--- ---- --- --- ----  ',&
-                &'------ ---- -----   ----- ------')
-        end select
-
-     end if
+     case default
+        write (JSTND2,14)
+        14 FORMAT(//41X,'SUMMARY STATISTICS (PER ACRE OR STAND BASED ON TOTAL&
+             & STAND AREA)',/,&
+             &146(1H-),/22X,'START OF SIMULATION PERIOD',23X,'REMOVALS',15X,&
+             &'AFTER TREATMENT',5X,'GROWTH THIS PERIOD',/9X,51(1H-),1X,&
+             &29(1H-),1X,21(1H-),2X,18(1H-),3X,'MAI  ------',/9X,&
+             &'NO OF',14X,'TOP',&
+             &6X,'TOTAL MERCH SAWLG MERCH NO OF TOTAL MERCH SAWLG MERCH',14X,&
+             &'TOP  RES  PERIOD ACCRE MORT   MERCH FOR SS',/,&
+             &'YEAR AGE TREES  BA  SDI CCF ',&
+             &'HT  QMD  CU FT CU FT CU FT BD FT TREES CU FT CU FT CU FT ',&
+             &'BD FT  BA  SDI ',&
+             &'CCF HT   QMD  YEARS   PER  YEAR   CU FT TYP ZT',&
+             &/'---- --- ----- ',&
+             &'--- ---- --- --- ---- ',9('----- '),'--- ---- --- --- ----  ',&
+             &'------ ---- -----   ----- ------')
+     end select
   end if
 
   !     STEP3: LOOP THRU ALL ROWS IN IOSUM...WRITE OUTPUT.
@@ -248,215 +159,59 @@ subroutine SUMOUT(IOSUM,I20,ICALLF,JOPRT,JSTND2,JSUM2,&
   I12 = I20-8
   do I = 1,LENG
 
-     if (LMETRICVAR) then
+     select case (VARACD)
 
-        select case (VARACD)
+        !       CASE ('CS','LS','NE','SN')
+        ! C
+        !         IF(LPRT)
+        !      &    WRITE(JSTND2,20) (IOSUM(K,I),K=1,3),IOLDBA(I),ISDI(I),
+        !      &      IBTCCF(I),IBTAVH(I),QSDBT(I),(IOSUM(K,I),K=4,11),
+        !      &      ISDIAT(I),IOSUM(12,I),IOSUM(13,I),QDBHAT(I),
+        !      &      (IOSUM(K,I),K=14,16),BCYMAI(I),(IOSUM(K,I),K=18,20)
+        ! C
+        !         IF(LDSK)
+        !      &    WRITE(JSUM2,9014) (IOSUM(K,I),K=1,3),IOLDBA(I),ISDI(I),
+        !      &      IBTCCF(I),IBTAVH(I),QSDBT(I),(IOSUM(K,I),K=4,11),
+        !      &      ISDIAT(I),IOSUM(12,I),IOSUM(13,I),QDBHAT(I),
+        !      &      (IOSUM(K,I),K=14,16),BCYMAI(I),(IOSUM(K,I),K=18,20)
 
-        case ('CS','LS','NE','SN','ON')
+     case default
 
-           if (LPRT)&
-                &write(JSTND2,21)&
-                &IOSUM(1,I),&
-                &IOSUM(2,I),&
-                &INT(IOSUM(3,I)/ACRtoHA),&
-                &INT(IOLDBA(I)*FT2pACRtoM2pHA),&
-                &INT(ISDI(I)/ACRtoHA),&
-                &IBTCCF(I),&
-                &INT(IBTAVH(I)*FTtoM),&
-                &QSDBT(I)*INtoCM,&
-                &INT(IOSUM(4,I)*FT3pACRtoM3pHA),&
-                &INT(IOSUM(5,I)*FT3pACRtoM3pHA),&
-                &INT(IOSUM(6,I)*FT3pACRtoM3pHA),&
-                &INT(IOSUM(7,I)/ACRtoHA),&
-                &INT(IOSUM(8,I)*FT3pACRtoM3pHA),&
-                &INT(IOSUM(9,I)*FT3pACRtoM3pHA),&
-                &INT(IOSUM(10,I)*FT3pACRtoM3pHA),&
-                &INT(IOSUM(11,I)*FT2pACRtoM2pHA),&
-                &INT(ISDIAT(I)/ACRtoHA),&
-                &IOSUM(12,I),&
-                &INT(IOSUM(13,I)*FTtoM),&
-                &QDBHAT(I)*INtoCM,&
-                &IOSUM(14,I),&
-                &INT(IOSUM(15,I)*FT3pACRtoM3pHA),&
-                &INT(IOSUM(16,I)*FT3pACRtoM3pHA),&
-                &BCYMAI(I)*FT3pACRtoM3pHA,&
-                &(IOSUM(K,I),K = 18,20)
+        if (LPRT)&
+             &write(JSTND2,20) (IOSUM(K,I),K = 1,3),IOLDBA(I),ISDI(I),&
+             &IBTCCF(I),IBTAVH(I),QSDBT(I),(IOSUM(K,I),K = 4,5),&
+             &IOSUM(21,I),(IOSUM(K,I),K = 6,9),IOSUM(22,I),&
+             &(IOSUM(K,I),K = 10,11),&
+             &ISDIAT(I),IOSUM(12,I),IOSUM(13,I),QDBHAT(I),&
+             &(IOSUM(K,I),K = 14,16),BCYMAI(I),(IOSUM(K,I),K = 18,20)
 
-           if (LDSK)&
-                &write(JSUM2,9015) IOSUM(1,I),IOSUM(2,I),&
-                &INT(IOSUM(3,I)/ACRtoHA),&
-                &INT(IOLDBA(I)*FT2pACRtoM2pHA),&
-                &INT(ISDI(I)/ACRtoHA),&
-                &IBTCCF(I),&
-                &INT(IBTAVH(I)*FTtoM),&
-                &QSDBT(I)*INtoCM,&
-                &INT(IOSUM(4,I)*FT3pACRtoM3pHA),&
-                &INT(IOSUM(5,I)*FT3pACRtoM3pHA),&
-                &INT(IOSUM(6,I)*FT3pACRtoM3pHA),&
-                &INT(IOSUM(7,I)/ACRtoHA),&
-                &INT(IOSUM(8,I)*FT3pACRtoM3pHA),&
-                &INT(IOSUM(9,I)*FT3pACRtoM3pHA),&
-                &INT(IOSUM(10,I)*FT3pACRtoM3pHA),&
-                &INT(IOSUM(11,I)*FT2pACRtoM2pHA),&
-                &INT(ISDIAT(I)/ACRtoHA),&
-                &IOSUM(12,I),&
-                &INT(IOSUM(13,I)*FTtoM),&
-                &QDBHAT(I)*INtoCM,&
-                &IOSUM(14,I),&
-                &INT(IOSUM(15,I)*FT3pACRtoM3pHA),&
-                &INT(IOSUM(16,I)*FT3pACRtoM3pHA),&
-                &BCYMAI(I)*FT3pACRtoM3pHA,&
-                &(IOSUM(K,I),K = 18,20)
+        if (LDSK)&
+             &write(JSUM2,9014) (IOSUM(K,I),K = 1,3),IOLDBA(I),ISDI(I),&
+             &IBTCCF(I),IBTAVH(I),QSDBT(I),(IOSUM(K,I),K = 4,5),&
+             &IOSUM(21,I),(IOSUM(K,I),K = 6,9),IOSUM(22,I),&
+             &(IOSUM(K,I),K = 10,11),&
+             &ISDIAT(I),IOSUM(12,I),IOSUM(13,I),QDBHAT(I),&
+             &(IOSUM(K,I),K = 14,16),BCYMAI(I),(IOSUM(K,I),K = 18,20)
 
-        case default
+     end select
 
-           if (LPRT)&
-                &write(JSTND2,21) IOSUM(1,I),IOSUM(2,I),&
-                &INT(IOSUM(3,I)/ACRtoHA),&
-                &INT(IOLDBA(I)*FT2pACRtoM2pHA),&
-                &INT(ISDI(I)/ACRtoHA),&
-                &IBTCCF(I),&
-                &INT(IBTAVH(I)*FTtoM),&
-                &QSDBT(I)*INtoCM,&
-                &INT(IOSUM(4,I)*FT3pACRtoM3pHA),&
-                &INT(IOSUM(5,I)*FT3pACRtoM3pHA),&
-                &INT(IOSUM(6,I)*FT3pACRtoM3pHA),&
-                &INT(IOSUM(7,I)/ACRtoHA),&
-                &INT(IOSUM(8,I)*FT3pACRtoM3pHA),&
-                &INT(IOSUM(9,I)*FT3pACRtoM3pHA),&
-                &INT(IOSUM(10,I)*FT3pACRtoM3pHA),&
-                &INT(IOSUM(11,I)*FT2pACRtoM2pHA),&
-                &INT(ISDIAT(I)/ACRtoHA),&
-                &IOSUM(12,I),&
-                &INT(IOSUM(13,I)*FTtoM),&
-                &QDBHAT(I)*INtoCM,&
-                &IOSUM(14,I),&
-                &INT(IOSUM(15,I)*FT3pACRtoM3pHA),&
-                &INT(IOSUM(16,I)*FT3pACRtoM3pHA),&
-                &BCYMAI(I)*FT3pACRtoM3pHA,&
-                &(IOSUM(K,I),K = 18,20)
+     !      CALL THE DBSSUMRY FOR POPULATING THE DATABASE WITH
+     !      THE SUMMARY INFORMATION
 
-           if (LDSK)&
-                &write(JSUM2,9015) IOSUM(1,I),IOSUM(2,I),&
-                &INT(IOSUM(3,I)/ACRtoHA),&
-                &INT(IOLDBA(I)*FT2pACRtoM2pHA),&
-                &INT(ISDI(I)/ACRtoHA),&
-                &IBTCCF(I),&
-                &INT(IBTAVH(I)*FTtoM),&
-                &QSDBT(I)*INtoCM,&
-                &INT(IOSUM(4,I)*FT3pACRtoM3pHA),&
-                &INT(IOSUM(5,I)*FT3pACRtoM3pHA),&
-                &INT(IOSUM(6,I)*FT3pACRtoM3pHA),&
-                &INT(IOSUM(7,I)/ACRtoHA),&
-                &INT(IOSUM(8,I)*FT3pACRtoM3pHA),&
-                &INT(IOSUM(9,I)*FT3pACRtoM3pHA),&
-                &INT(IOSUM(10,I)*FT3pACRtoM3pHA),&
-                &INT(IOSUM(11,I)*FT2pACRtoM2pHA),&
-                &INT(ISDIAT(I)/ACRtoHA),&
-                &IOSUM(12,I),&
-                &INT(IOSUM(13,I)*FTtoM),&
-                &QDBHAT(I)*INtoCM,&
-                &IOSUM(14,I),&
-                &INT(IOSUM(15,I)*FT3pACRtoM3pHA),&
-                &INT(IOSUM(16,I)*FT3pACRtoM3pHA),&
-                &BCYMAI(I)*FT3pACRtoM3pHA,&
-                &(IOSUM(K,I),K = 18,20)
-
-        end select
-
-        !      CALL THE DBSSUMRY FOR POPULATING THE DATABASE WITH
-        !      THE SUMMARY INFORMATION. THE METRIC DBSSUMRY HAS A SHORTER
-        !      ARGUMENT LIST, SO IT IS REACHED THROUGH DBSSUMRYM.
-
-        if (ICALLF.eq.0) call DBSSUMRYM(IOSUM(1,I),IOSUM(2,I),&
-             &NPLT,&
-             &INT(IOSUM(3,I)/ACRtoHA),&
-             &INT(IOLDBA(I)*FT2pACRtoM2pHA),&
-             &INT(ISDI(I)/ACRtoHA),&
-             &IBTCCF(I),&
-             &INT(IBTAVH(I)*FTtoM),&
-             &QSDBT(I)*INtoCM,&
-             &INT(IOSUM(4,I)*FT3pACRtoM3pHA),&
-             &INT(IOSUM(5,I)*FT3pACRtoM3pHA),&
-             &INT(IOSUM(6,I)*FT3pACRtoM3pHA),&
-             &INT(IOSUM(7,I)/ACRtoHA),&
-             &INT(IOSUM(8,I)*FT3pACRtoM3pHA),&
-             &INT(IOSUM(9,I)*FT3pACRtoM3pHA),&
-             &INT(IOSUM(10,I)*FT3pACRtoM3pHA),&
-             &INT(IOSUM(11,I)*FT2pACRtoM2pHA),&
-             &INT(ISDIAT(I)/ACRtoHA),&
-             &IOSUM(12,I),&
-             &INT(IOSUM(13,I)*FTtoM),&
-             &QDBHAT(I)*INtoCM,&
-             &IOSUM(14,I),&
-             &INT(IOSUM(15,I)*FT3pACRtoM3pHA),&
-             &INT(IOSUM(16,I)*FT3pACRtoM3pHA),&
-             &BCYMAI(I)*FT3pACRtoM3pHA,&
-             &IOSUM(18,I),IOSUM(19,I),IOSUM(20,I))
-
-     else
-
-        select case (VARACD)
-
-           !       CASE ('CS','LS','NE','SN')
-           ! C
-           !         IF(LPRT)
-           !      &    WRITE(JSTND2,20) (IOSUM(K,I),K=1,3),IOLDBA(I),ISDI(I),
-           !      &      IBTCCF(I),IBTAVH(I),QSDBT(I),(IOSUM(K,I),K=4,11),
-           !      &      ISDIAT(I),IOSUM(12,I),IOSUM(13,I),QDBHAT(I),
-           !      &      (IOSUM(K,I),K=14,16),BCYMAI(I),(IOSUM(K,I),K=18,20)
-           ! C
-           !         IF(LDSK)
-           !      &    WRITE(JSUM2,9014) (IOSUM(K,I),K=1,3),IOLDBA(I),ISDI(I),
-           !      &      IBTCCF(I),IBTAVH(I),QSDBT(I),(IOSUM(K,I),K=4,11),
-           !      &      ISDIAT(I),IOSUM(12,I),IOSUM(13,I),QDBHAT(I),
-           !      &      (IOSUM(K,I),K=14,16),BCYMAI(I),(IOSUM(K,I),K=18,20)
-
-        case default
-
-           if (LPRT)&
-                &write(JSTND2,20) (IOSUM(K,I),K = 1,3),IOLDBA(I),ISDI(I),&
-                &IBTCCF(I),IBTAVH(I),QSDBT(I),(IOSUM(K,I),K = 4,5),&
-                &IOSUM(21,I),(IOSUM(K,I),K = 6,9),IOSUM(22,I),&
-                &(IOSUM(K,I),K = 10,11),&
-                &ISDIAT(I),IOSUM(12,I),IOSUM(13,I),QDBHAT(I),&
-                &(IOSUM(K,I),K = 14,16),BCYMAI(I),(IOSUM(K,I),K = 18,20)
-
-           if (LDSK)&
-                &write(JSUM2,9014) (IOSUM(K,I),K = 1,3),IOLDBA(I),ISDI(I),&
-                &IBTCCF(I),IBTAVH(I),QSDBT(I),(IOSUM(K,I),K = 4,5),&
-                &IOSUM(21,I),(IOSUM(K,I),K = 6,9),IOSUM(22,I),&
-                &(IOSUM(K,I),K = 10,11),&
-                &ISDIAT(I),IOSUM(12,I),IOSUM(13,I),QDBHAT(I),&
-                &(IOSUM(K,I),K = 14,16),BCYMAI(I),(IOSUM(K,I),K = 18,20)
-
-        end select
-
-        !      CALL THE DBSSUMRY FOR POPULATING THE DATABASE WITH
-        !      THE SUMMARY INFORMATION
-
-        if (ICALLF.eq.0) call DBSSUMRY(IOSUM(1,I),&
-             &IOSUM(2,I),NPLT,IOSUM(3,I),IOLDBA(I),&
-             &ISDI(I),IBTCCF(I),IBTAVH(I),QSDBT(I),IOSUM(4,I),IOSUM(5,I),&
-             &IOSUM(21,I),&
-             &IOSUM(6,I),IOSUM(7,I),IOSUM(8,I),IOSUM(9,I),&
-             &IOSUM(22,I),IOSUM(10,I),&
-             &IOSUM(11,I),ISDIAT(I),IOSUM(12,I),IOSUM(13,I),QDBHAT(I),&
-             &IOSUM(14,I),IOSUM(15,I),IOSUM(16,I),BCYMAI(I),IOSUM(18,I),&
-             &IOSUM(19,I),IOSUM(20,I))
-
-     end if
+     if (ICALLF.eq.0) call DBSSUMRY(IOSUM(1,I),&
+          &IOSUM(2,I),NPLT,IOSUM(3,I),IOLDBA(I),&
+          &ISDI(I),IBTCCF(I),IBTAVH(I),QSDBT(I),IOSUM(4,I),IOSUM(5,I),&
+          &IOSUM(21,I),&
+          &IOSUM(6,I),IOSUM(7,I),IOSUM(8,I),IOSUM(9,I),&
+          &IOSUM(22,I),IOSUM(10,I),&
+          &IOSUM(11,I),ISDIAT(I),IOSUM(12,I),IOSUM(13,I),QDBHAT(I),&
+          &IOSUM(14,I),IOSUM(15,I),IOSUM(16,I),BCYMAI(I),IOSUM(18,I),&
+          &IOSUM(19,I),IOSUM(20,I))
 
      20 format(2I4,I6,I4,I5,2I4,F5.1,9I6,I4,I5,2I4,F5.1,2X,I6,&
           &I5,I6,2X,F6.1,1X,I3,1X,2I1)
 
      9014 format(2I4,I6,I4,I5,2I4,F5.1,9I6,I4,I5,2I4,F5.1,2X,I6,&
-          &I5,I6,2X,F6.1,1X,I3,1X,2I1)
-
-     21 format(2I4,I6,I4,I5,2I4,F5.1,7I6,I4,I5,2I4,F5.1,2X,I6,&
-          &I5,I6,2X,F6.1,1X,I3,1X,2I1)
-
-     9015 format(2I4,I6,I4,I5,2I4,F5.1,7I6,I4,I5,2I4,F5.1,2X,I6,&
           &I5,I6,2X,F6.1,1X,I3,1X,2I1)
      50 continue
   end do

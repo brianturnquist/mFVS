@@ -11,6 +11,7 @@ subroutine SITSET
   ! CALLED BY INITRE
 
   ! Common blocks
+  include 'ESPARM.f90'
   include 'PRGPRM.f90'
   include 'ESCOMN.f90'
   include 'CONTRL.f90'

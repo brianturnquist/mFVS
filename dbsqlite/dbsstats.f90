@@ -10,13 +10,6 @@ subroutine DBSSTATS(SPECCD,TPA,BAREA,CFVOL,BFVOL,AGBIO,AGCARB,&
   !     PURPOSE: TO POPULATE A DATABASE WITH THE PROGNOSIS MODEL
   !              CRUISE STATISTICS OUTPUT
   !     AUTH: M. SHETTLES -- FMSC -- JULY 2019
-  !
-  !     THE METRIC VARIANTS (BC, ON; LMETRICVAR) WRITE THE SPECIES SUMMARY TO
-  !     FVS_Stats_Species_Metric, WHICH HAS NO BIOMASS OR CARBON COLUMNS:
-  !     AGBIO AND AGCARB ARE NOT USED THERE. THEIR CALLER PASSES VALUES
-  !     ALREADY CONVERTED TO METRIC UNITS. THE STAND TABLE IS THE SAME FOR
-  !     ALL VARIANTS. LABEL IS 19 CHARACTERS FROM THE IMPERIAL CALLER AND
-  !     16 FROM THE METRIC ONE.
 
   ! Common blocks
   include 'PRGPRM.f90'
@@ -37,7 +30,7 @@ subroutine DBSSTATS(SPECCD,TPA,BAREA,CFVOL,BFVOL,AGBIO,AGCARB,&
   character(len=8) :: CSP1
   character(len=8) :: CSP2
   character(len=8) :: CSP3
-  character(len=*) :: LABEL
+  character(len=19) :: LABEL
 
   !OMMONS END
 
@@ -52,44 +45,24 @@ subroutine DBSSTATS(SPECCD,TPA,BAREA,CFVOL,BFVOL,AGBIO,AGCARB,&
 
   !     DEFINE TABLENAME
 
-  if (LMETRICVAR) then
-     iRet1 = fsql3_tableexists(IoutDBref,'FVS_Stats_Species_Metric'&
-          &//CHAR(0))
-  else
-     iRet1 = fsql3_tableexists(IoutDBref,'FVS_Stats_Species'//CHAR(0))
-  end if
+  iRet1 = fsql3_tableexists(IoutDBref,'FVS_Stats_Species'//CHAR(0))
 
-  !       GENERAL SPECIES SUMMARY FOR THE CRUISE (PER ACRE, OR PER HA FOR
-  !       METRIC VARIANTS)
+  !       GENERAL SPECIES SUMMARY FOR THE CRUISE (PER ACRE)
 
   if (iRet1.eq.0) then
-     if (LMETRICVAR) then
-        SQLStmtStr = 'CREATE TABLE FVS_Stats_Species_Metric('//&
-             &'CaseID text not null,'//&
-             &'StandID text not null,'//&
-             &'Year int null,'//&
-             &'SpeciesFVS    text null,'//&
-             &'SpeciesPLANTS text null,'//&
-             &'SpeciesFIA    text null,'//&
-             &'BoardM real,'//&
-             &'CubicM real,'//&
-             &'TreesPerHa real,'//&
-             &'BasalArea real);'//CHAR(0)
-     else
-        SQLStmtStr = 'CREATE TABLE FVS_Stats_Species('//&
-             &'CaseID text not null,'//&
-             &'StandID text not null,'//&
-             &'Year int null,'//&
-             &'SpeciesFVS    text null,'//&
-             &'SpeciesPLANTS text null,'//&
-             &'SpeciesFIA    text null,'//&
-             &'TreesPerAcre real,'//&
-             &'BasalArea real,'//&
-             &'CubicFeet real,'//&
-             &'BoardFeet real,'//&
-             &'FIA_AbvGrdBio real,'//&
-             &'FIA_AbvGrdCarb real);'//CHAR(0)
-     end if
+     SQLStmtStr = 'CREATE TABLE FVS_Stats_Species('//&
+          &'CaseID text not null,'//&
+          &'StandID text not null,'//&
+          &'Year int null,'//&
+          &'SpeciesFVS    text null,'//&
+          &'SpeciesPLANTS text null,'//&
+          &'SpeciesFIA    text null,'//&
+          &'TreesPerAcre real,'//&
+          &'BasalArea real,'//&
+          &'CubicFeet real,'//&
+          &'BoardFeet real,'//&
+          &'FIA_AbvGrdBio real,'//&
+          &'FIA_AbvGrdCarb real);'//CHAR(0)
 
      iRet1 = fsql3_exec(IoutDBref,SQLStmtStr)
      if (iRet1.ne.0) then
@@ -98,22 +71,14 @@ subroutine DBSSTATS(SPECCD,TPA,BAREA,CFVOL,BFVOL,AGBIO,AGCARB,&
      end if
   end if
 
-  if (LMETRICVAR) then
-     write(SQLStmtStr,*)'INSERT INTO FVS_Stats_Species_Metric',&
-          &' (CaseID,StandID,Year,',&
-          &'SpeciesFVS,SpeciesPLANTS,SpeciesFIA,',&
-          &'BoardM,CubicM,TreesPerHa,BasalArea)',&
-          &'VALUES(''',CASEID,''',''',TRIM(NPLT),''',?,?,?,?,?,?,?,?);'
-  else
-     write(SQLStmtStr,*)'INSERT INTO FVS_Stats_Species',&
-          &' (CaseID,StandID,Year,',&
-          &'SpeciesFVS,SpeciesPLANTS,SpeciesFIA,',&
-          &'TreesPerAcre,BasalArea,',&
-          &'CubicFeet,BoardFeet,',&
-          &'FIA_AbvGrdBio,FIA_AbvGrdCarb)',&
-          &'VALUES(''',CASEID,''',''',TRIM(NPLT),''',?,',&
-          &'?,?,?,?,?,?,?,?,?);'
-  end if
+  write(SQLStmtStr,*)'INSERT INTO FVS_Stats_Species',&
+       &' (CaseID,StandID,Year,',&
+       &'SpeciesFVS,SpeciesPLANTS,SpeciesFIA,',&
+       &'TreesPerAcre,BasalArea,',&
+       &'CubicFeet,BoardFeet,',&
+       &'FIA_AbvGrdBio,FIA_AbvGrdCarb)',&
+       &'VALUES(''',CASEID,''',''',TRIM(NPLT),''',?,',&
+       &'?,?,?,?,?,?,?,?,?);'
 
   iRet1 = fsql3_prepare(IoutDBref,trim(SQLStmtStr)//CHAR(0))
   if (iRet1.ne.0) then
@@ -137,10 +102,8 @@ subroutine DBSSTATS(SPECCD,TPA,BAREA,CFVOL,BFVOL,AGBIO,AGCARB,&
   CFVOL1 = CFVOL
   TPA1 = TPA
   BAREA1 = BAREA
-  if (.not. LMETRICVAR) then
-     CARBON = AGCARB
-     BIOMASS = AGBIO
-  end if
+  CARBON = AGCARB
+  BIOMASS = AGBIO
 
   ColNumber = 1
   iRet1 = fsql3_bind_int(IoutDBref,ColNumber,IYEAR)
@@ -153,29 +116,18 @@ subroutine DBSSTATS(SPECCD,TPA,BAREA,CFVOL,BFVOL,AGBIO,AGCARB,&
   ColNumber = ColNumber+1
   iRet1 = fsql3_bind_text(IoutDBref,ColNumber,CSP3,&
        &LEN_TRIM(CSP3))
-  if (LMETRICVAR) then
-     ColNumber = ColNumber+1
-     iRet1 = fsql3_bind_double(IoutDBref,ColNumber,BFVOL1)
-     ColNumber = ColNumber+1
-     iRet1 = fsql3_bind_double(IoutDBref,ColNumber,CFVOL1)
-     ColNumber = ColNumber+1
-     iRet1 = fsql3_bind_double(IoutDBref,ColNumber,TPA1)
-     ColNumber = ColNumber+1
-     iRet1 = fsql3_bind_double(IoutDBref,ColNumber,BAREA1)
-  else
-     ColNumber = ColNumber+1
-     iRet1 = fsql3_bind_double(IoutDBref,ColNumber,TPA1)
-     ColNumber = ColNumber+1
-     iRet1 = fsql3_bind_double(IoutDBref,ColNumber,BAREA1)
-     ColNumber = ColNumber+1
-     iRet1 = fsql3_bind_double(IoutDBref,ColNumber,CFVOL1)
-     ColNumber = ColNumber+1
-     iRet1 = fsql3_bind_double(IoutDBref,ColNumber,BFVOL1)
-     ColNumber = ColNumber+1
-     iRet1 = fsql3_bind_double(IoutDBref,ColNumber,BIOMASS)
-     ColNumber = ColNumber+1
-     iRet1 = fsql3_bind_double(IoutDBref,ColNumber,CARBON)
-  end if
+  ColNumber = ColNumber+1
+  iRet1 = fsql3_bind_double(IoutDBref,ColNumber,TPA1)
+  ColNumber = ColNumber+1
+  iRet1 = fsql3_bind_double(IoutDBref,ColNumber,BAREA1)
+  ColNumber = ColNumber+1
+  iRet1 = fsql3_bind_double(IoutDBref,ColNumber,CFVOL1)
+  ColNumber = ColNumber+1
+  iRet1 = fsql3_bind_double(IoutDBref,ColNumber,BFVOL1)
+  ColNumber = ColNumber+1
+  iRet1 = fsql3_bind_double(IoutDBref,ColNumber,BIOMASS)
+  ColNumber = ColNumber+1
+  iRet1 = fsql3_bind_double(IoutDBref,ColNumber,CARBON)
   iRet1 = fsql3_step(IoutDBref)
   iRet1 = fsql3_finalize(IoutDBref)
   if (iRet1.ne.0) then

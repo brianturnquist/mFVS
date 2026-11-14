@@ -12,16 +12,8 @@ subroutine MISPRT
 
   !  Call list definitions:
 
-  !  BC, THE ONLY METRIC VARIANT WITH THE DWARF MISTLETOE MODEL, WRITES
-  !  THE TABLES IN METRIC UNITS WITH 5 CM DBH CLASSES (LMETRICVAR
-  !  BRANCHES; ON DOES NOT COMPILE THIS ROUTINE). BC ALSO WRITES THE TWO
-  !  DATABASE TABLES OF ITS SPATIAL (NISI) MODEL. THE NISI FLAG NEWMOD IS
-  !  IN DMCOM, WHICH ONLY BC HAS, SO IT IS READ THROUGH DMNEWM
-  !  (CANADA/NEWMIST/DMNEWM.F90).
-
   !  Local variable definitions:
   !     CFMT:   Character array to hold write formats for DBH class loop.
-  !     CFMTM:  CFMT for 5 CM DBH classes (metric).
   !     CSP:    Array to hold 2 char. rep. of top 4 infected species.
   !     DCDMI:  Array - average DMRs inf. trees only by 2" DBH class.
   !     DCDMR:  Array - average DMRs by 2" DBH classes.
@@ -203,7 +195,6 @@ subroutine MISPRT
   include 'CONTRL.f90'
   include 'PLOT.f90'
   include 'MISCOM.f90'
-  include 'METRIC.f90'
 
   !     Variable declarations.
 
@@ -220,20 +211,14 @@ subroutine MISPRT
        &SDDMI(MAXSP,20),SDIN0(MAXSP,20),SDIN12(MAXSP,20),SDIN34(MAXSP,20),SDIN56(MAXSP,20),SDTT0(MAXSP),&
        &SDTT12(MAXSP),SDTT34(MAXSP),SDTT56(MAXSP),SORTSP(4),SPDMRS(MAXSP),SPTPAI(MAXSP),SPTPAT(MAXSP),&
        &SPTPAX(MAXSP)
-  real    :: DCTPA_M(20),DCMRT_M(20),DCINF_M(20)
-  real    :: SPINF4_M(4),SPMRT4_M(4)
-  logical :: DMNEWM
 
   character(len=2) :: CSP(4)
   character(len=3) :: NLABS(5)
-  character(len=3) :: NLABM(5)
   character(len=42) :: CFMT(20)
-  character(len=42) :: CFMTM(20)
 
   !     Data statements.
 
   data NLABS  /'TPA','INF','MRT','DMR','DMI'/
-  data NLABM  /'TPH','INF','MRT','DMR','DMI'/
 
   !     These are formats for writing out the species/DBH class data
   !     to the DM detail output file within a DBH class loop.
@@ -260,28 +245,6 @@ subroutine MISPRT
        &'(1X,I5,'' 35-36.9" '',7(6X,F7.1),2(4X,F3.1))',&
        &'(1X,I5,'' 37-38.9" '',7(6X,F7.1),2(4X,F3.1))',&
        &'(1X,I5,'' 39+    " '',7(6X,F7.1),2(4X,F3.1))'/
-  data (CFMTM(I),I = 1,10)&
-       &/'(1X,I5,''   0- 5cm '',7(6X,F7.1),2(4X,F3.1))',&
-       &'(1X,I5,''   5-10cm '',7(6X,F7.1),2(4X,F3.1))',&
-       &'(1X,I5,''  10-15cm '',7(6X,F7.1),2(4X,F3.1))',&
-       &'(1X,I5,''  15-20cm '',7(6X,F7.1),2(4X,F3.1))',&
-       &'(1X,I5,''  20-25cm '',7(6X,F7.1),2(4X,F3.1))',&
-       &'(1X,I5,''  25-30cm '',7(6X,F7.1),2(4X,F3.1))',&
-       &'(1X,I5,''  30-35cm '',7(6X,F7.1),2(4X,F3.1))',&
-       &'(1X,I5,''  35-40cm '',7(6X,F7.1),2(4X,F3.1))',&
-       &'(1X,I5,''  40-45cm '',7(6X,F7.1),2(4X,F3.1))',&
-       &'(1X,I5,''  45-50cm '',7(6X,F7.1),2(4X,F3.1))'/
-  data (CFMTM(I),I = 11,20)&
-       &/'(1X,I5,''  50-55cm '',7(6X,F7.1),2(4X,F3.1))',&
-       &'(1X,I5,''  55-60cm '',7(6X,F7.1),2(4X,F3.1))',&
-       &'(1X,I5,''  60-65cm '',7(6X,F7.1),2(4X,F3.1))',&
-       &'(1X,I5,''  65-70cm '',7(6X,F7.1),2(4X,F3.1))',&
-       &'(1X,I5,''  70-75cm '',7(6X,F7.1),2(4X,F3.1))',&
-       &'(1X,I5,''  75-80cm '',7(6X,F7.1),2(4X,F3.1))',&
-       &'(1X,I5,''  80-85cm '',7(6X,F7.1),2(4X,F3.1))',&
-       &'(1X,I5,''  85-90cm '',7(6X,F7.1),2(4X,F3.1))',&
-       &'(1X,I5,''  90-95cm '',7(6X,F7.1),2(4X,F3.1))',&
-       &'(1X,I5,''  95+  cm '',7(6X,F7.1),2(4X,F3.1))'/
 
   data MYACTS /2007/
 
@@ -427,11 +390,7 @@ subroutine MISPRT
   !     If DMFLAG is false, there is no mistletoe in any species
   !     in this cycle. Skip the printing.
 
-  if (LMETRICVAR) then
-     if (.not.DMFLAG .and..not.DMNEWM()) goto 9000
-  else
-     if (.not.DMFLAG) goto 9000
-  end if
+  if (.not.DMFLAG) goto 9000
 
   !     Process MISTABLE keyword (activity code 2007).
 
@@ -531,13 +490,8 @@ subroutine MISPRT
      !        Classification into DBH classes made consistent with
      !        other models; 0-2.9, 3.0-4.9, etc.
 
-     if (LMETRICVAR) then
-        IVAL = IFIX(DBH(ITREE)*INtoCM)
-        IDBH = IVAL / 5 + MOD(IVAL,5)
-     else
-        IVAL = IFIX(DBH(ITREE))
-        IDBH = IVAL / 2 + MOD(IVAL,2)
-     end if
+     IVAL = IFIX(DBH(ITREE))
+     IDBH = IVAL / 2 + MOD(IVAL,2)
      IDBH = MAX(1,MIN(20,IDBH))
      P = PROB(ITREE)
      IDMR = IMIST(ITREE)
@@ -695,72 +649,26 @@ subroutine MISPRT
      if (INFNO.ne.0) CSP(I) = CSPARR(INFNO)
   end do
 
-  if (LMETRICVAR) then
-
-     !  ONLY ELEMENTS 1-10 OF DCTPA_M, DCINF_M AND DCMRT_M ARE SET; DBSMIS3
-     !  READS ONLY THOSE.
-
-     do I = 1,4
-        SPINF4_M(I) = SPINF4(I)/ACRtoHA
-        SPMRT4_M(I) = SPMRT4(I)/ACRtoHA
-     end do
-     do I = 1,10
-        DCTPA_M(I) = DCTPA(I)/ACRtoHA
-        DCINF_M(I) = DCINF(I)/ACRtoHA
-        DCMRT_M(I) = DCMRT(I)/ACRtoHA
-     end do
-  end if
-
   !     CALL THE DBS MODULE TO OUTPUT DMDATA TO A DATABASE
 
   IDBSKODE = 1
-  if (LMETRICVAR) then
-     call DBSMIS1(NYEAR,NPLT,CSP,&
-          &SPDMR4,SPDMI4,SPINF4_M,SPMRT4_M,SPPIN4,SPPMR4,SPPOC4,&
+  call DBSMIS1(NYEAR,NPLT,CSP,&
+       &SPDMR4,SPDMI4,SPINF4,SPMRT4,SPPIN4,SPPMR4,SPPOC4,&
+       &IDBSKODE)
+
+  call DBSMIS2(NYEAR,NPLT,NAGE,&
+       &NINT(STTPAT),NINT(BA),&
+       &NINT(STVOL),NINT(STTPAI),&
+       &NINT(STBAI),NINT(STVOLI),&
+       &NINT(STTPAM),NINT(STBAM),&
+       &NINT(STVOLM),NINT(STPIT),&
+       &NINT(STPIV),NINT(STPMT),NINT(STPMV),STDMR,STDMI,&
+       &IDBSKODE)
+
+  if (PRTMIS) then
+     call DBSMIS3(NYEAR,NPLT,NLABS,&
+          &DCTPA,DCINF,DCMRT,DCDMR,DCDMI,&
           &IDBSKODE)
-
-     call DBSMIS2(NYEAR,NPLT,NAGE,&
-          &NINT(STTPAT/ACRtoHA),NINT(BA*FT2pACRtoM2pHA),&
-          &NINT(STVOL*FT3pACRtoM3pHA),NINT(STTPAI/ACRtoHA),&
-          &NINT(STBAI*FT2pACRtoM2pHA),NINT(STVOLI*FT3pACRtoM3pHA),&
-          &NINT(STTPAM/ACRtoHA),NINT(STBAM*FT2pACRtoM2pHA),&
-          &NINT(STVOLM*FT3pACRtoM3pHA),NINT(STPIT),&
-          &NINT(STPIV),NINT(STPMT),NINT(STPMV),STDMR,STDMI,&
-          &IDBSKODE)
-
-     if (PRTMIS) then
-        call DBSMIS3(NYEAR,NPLT,NLABM,&
-             &DCTPA_M,DCINF_M,DCMRT_M,DCDMR,DCDMI,&
-             &IDBSKODE)
-
-        !     PRINT SPATIAL MODEL TABLES IF THE SPATIAL MODEL IS ALSO
-        !     ACTIVE. THESE TABLES ARE NOT AVAILABLE IN TEXT OUTPUT
-        !     FORM (UNLIKE THE 3 TABLES OF THE NON-SPATIAL MODEL.
-
-        if (DMNEWM()) then
-           call DBSMIS5(NYEAR,IDBSKODE)
-           call DBSMIS6(NYEAR,IDBSKODE)
-        end if
-     end if
-  else
-     call DBSMIS1(NYEAR,NPLT,CSP,&
-          &SPDMR4,SPDMI4,SPINF4,SPMRT4,SPPIN4,SPPMR4,SPPOC4,&
-          &IDBSKODE)
-
-     call DBSMIS2(NYEAR,NPLT,NAGE,&
-          &NINT(STTPAT),NINT(BA),&
-          &NINT(STVOL),NINT(STTPAI),&
-          &NINT(STBAI),NINT(STVOLI),&
-          &NINT(STTPAM),NINT(STBAM),&
-          &NINT(STVOLM),NINT(STPIT),&
-          &NINT(STPIV),NINT(STPMT),NINT(STPMV),STDMR,STDMI,&
-          &IDBSKODE)
-
-     if (PRTMIS) then
-        call DBSMIS3(NYEAR,NPLT,NLABS,&
-             &DCTPA,DCINF,DCMRT,DCDMR,DCDMI,&
-             &IDBSKODE)
-     end if
   end if
 
   !     BRANCH AROUND MAIN OUTPUT IF THAT OUTPUT STREAM IS SILENCED
@@ -788,21 +696,12 @@ subroutine MISPRT
      write(IMOUT1,615) IDMSOUT(1)
      write(IMOUT1,620) IDMSOUT(1),NPLT,MGMID
      write(IMOUT1,615) IDMSOUT(1)
-     if (LMETRICVAR) then
-        write(IMOUT1,720) IDMSOUT(1),DMRMIN*INtoCM
-     else
-        write(IMOUT1,720) IDMSOUT(1),DMRMIN
-     end if
+     write(IMOUT1,720) IDMSOUT(1),DMRMIN
      write(IMOUT1,625) IDMSOUT(1)
      write(IMOUT1,630) IDMSOUT(1)
      write(IMOUT1,615) IDMSOUT(1)
-     if (LMETRICVAR) then
-        write(IMOUT1,1635) IDMSOUT(1)
-        write(IMOUT1,1640) IDMSOUT(1)
-     else
-        write(IMOUT1,635) IDMSOUT(1)
-        write(IMOUT1,640) IDMSOUT(1)
-     end if
+     write(IMOUT1,635) IDMSOUT(1)
+     write(IMOUT1,640) IDMSOUT(1)
      write(IMOUT1,645) IDMSOUT(1)
 
      write(IMOUT1,650) IDMSOUT(1),((CSP(I),I = 1,4),J = 1,7)
@@ -811,36 +710,19 @@ subroutine MISPRT
      write(IMOUT2,'(2(/1X,I5))') IDMSOUT(2),IDMSOUT(2)
      write(IMOUT2,610) IDMSOUT(2)
      write(IMOUT2,700) IDMSOUT(2)
-     if (LMETRICVAR) then
-        write(IMOUT2,1705) IDMSOUT(2)
-     else
-        write(IMOUT2,705) IDMSOUT(2)
-     end if
+     write(IMOUT2,705) IDMSOUT(2)
      write(IMOUT2,710) IDMSOUT(2)
      write(IMOUT2,615) IDMSOUT(2)
      write(IMOUT2,620) IDMSOUT(2),NPLT,MGMID
      write(IMOUT2,615) IDMSOUT(2)
-     if (LMETRICVAR) then
-        write(IMOUT2,720) IDMSOUT(2),DMRMIN*INtoCM
-     else
-        write(IMOUT2,720) IDMSOUT(2),DMRMIN
-     end if
-     if (LMETRICVAR) then
-        write(IMOUT2,1725) IDMSOUT(2)
-     else
-        write(IMOUT2,725) IDMSOUT(2)
-     end if
+     write(IMOUT2,720) IDMSOUT(2),DMRMIN
+     write(IMOUT2,725) IDMSOUT(2)
      write(IMOUT2,730) IDMSOUT(2)
      write(IMOUT2,615) IDMSOUT(2)
      write(IMOUT2,735) IDMSOUT(2)
      write(IMOUT2,740) IDMSOUT(2)
-     if (LMETRICVAR) then
-        write(IMOUT2,1745) IDMSOUT(2)
-        write(IMOUT2,1750) IDMSOUT(2)
-     else
-        write(IMOUT2,745) IDMSOUT(2)
-        write(IMOUT2,750) IDMSOUT(2)
-     end if
+     write(IMOUT2,745) IDMSOUT(2)
+     write(IMOUT2,750) IDMSOUT(2)
      write(IMOUT2,755) IDMSOUT(2)
 
      if (PRTMIS) then
@@ -851,86 +733,41 @@ subroutine MISPRT
         write(IMOUT3,'(2(/1X,I5))') IDMSOUT(3),IDMSOUT(3)
         write(IMOUT3,610) IDMSOUT(3)
         write(IMOUT3,800) IDMSOUT(3)
-        if (LMETRICVAR) then
-           write(IMOUT3,1805) IDMSOUT(3)
-        else
-           write(IMOUT3,805) IDMSOUT(3)
-        end if
+        write(IMOUT3,805) IDMSOUT(3)
         write(IMOUT3,810) IDMSOUT(3)
         write(IMOUT3,615) IDMSOUT(3)
         write(IMOUT3,620) IDMSOUT(3),NPLT,MGMID
         write(IMOUT3,615) IDMSOUT(3)
-        if (LMETRICVAR) then
-           write(IMOUT3,720) IDMSOUT(3),DMRMIN*INtoCM
-        else
-           write(IMOUT3,720) IDMSOUT(3),DMRMIN
-        end if
+        write(IMOUT3,720) IDMSOUT(3),DMRMIN
         write(IMOUT3,825) IDMSOUT(3)
         write(IMOUT3,830) IDMSOUT(3)
         write(IMOUT3,615) IDMSOUT(3)
-        if (LMETRICVAR) then
-           write(IMOUT3,1835) IDMSOUT(3)
-           write(IMOUT3,840) IDMSOUT(3)
-           write(IMOUT3,1845) IDMSOUT(3)
-        else
-           write(IMOUT3,835) IDMSOUT(3)
-           write(IMOUT3,840) IDMSOUT(3)
-           write(IMOUT3,845) IDMSOUT(3)
-        end if
+        write(IMOUT3,835) IDMSOUT(3)
+        write(IMOUT3,840) IDMSOUT(3)
+        write(IMOUT3,845) IDMSOUT(3)
         write(IMOUT3,850) IDMSOUT(3)
      end if
   end if
 
-  if (LMETRICVAR) then
-     write(IMOUT1,660) IDMSOUT(1),NYEAR,&
-          &(SPDMR4(I),I = 1,4),(SPDMI4(J),J = 1,4),&
-          &(NINT(SPINF4(K)/ACRtoHA),K = 1,4),&
-          &(NINT(SPMRT4(L)/ACRtoHA),L = 1,4),&
-          &(NINT(SPPIN4(M)),M = 1,4),(NINT(SPPMR4(N)),N = 1,4),&
-          &(NINT(SPPOC4(II)),II = 1,4)
+  write(IMOUT1,660) IDMSOUT(1),NYEAR,&
+       &(SPDMR4(I),I = 1,4),(SPDMI4(J),J = 1,4),&
+       &(NINT(SPINF4(K)),K = 1,4),(NINT(SPMRT4(L)),L = 1,4),&
+       &(NINT(SPPIN4(M)),M = 1,4),(NINT(SPPMR4(N)),N = 1,4),&
+       &(NINT(SPPOC4(II)),II = 1,4)
 
-     write(IMOUT2,760) IDMSOUT(2),NYEAR,NAGE,&
-          &NINT(STTPAT/ACRtoHA),&
-          &NINT(BA*FT2pACRtoM2pHA),NINT(STVOL*FT3pACRtoM3pHA),&
-          &NINT(STTPAI/ACRtoHA),&
-          &NINT(STBAI*FT2pACRtoM2pHA),NINT(STVOLI*FT3pACRtoM3pHA),&
-          &NINT(STTPAM/ACRtoHA),&
-          &NINT(STBAM*FT2pACRtoM2pHA),NINT(STVOLM*FT3pACRtoM3pHA),&
-          &NINT(STPIT),&
-          &NINT(STPIV),NINT(STPMT),NINT(STPMV),STDMR,STDMI
+  write(IMOUT2,760) IDMSOUT(2),NYEAR,NAGE,&
+       &NINT(STTPAT),NINT(BA),&
+       &NINT(STVOL),NINT(STTPAI),NINT(STBAI),NINT(STVOLI),&
+       &NINT(STTPAM),NINT(STBAM),NINT(STVOLM),NINT(STPIT),&
+       &NINT(STPIV),NINT(STPMT),NINT(STPMV),STDMR,STDMI
 
-     if (PRTMIS) then
-        write(IMOUT3,855) IDMSOUT(3),NYEAR
-        write(IMOUT3,860) IDMSOUT(3),NLABM(1),&
-             &((DCTPA(I)/ACRtoHA),I = 1,10)
-        write(IMOUT3,860) IDMSOUT(3),NLABM(2),&
-             &((DCINF(I)/ACRtoHA),I = 1,10)
-        write(IMOUT3,860) IDMSOUT(3),NLABM(3),&
-             &((DCMRT(I)/ACRtoHA),I = 1,10)
-        write(IMOUT3,861) IDMSOUT(3),NLABM(4),(DCDMR(I),I = 1,10)
-        write(IMOUT3,861) IDMSOUT(3),NLABM(5),(DCDMI(I),I = 1,10)
-     end if
-  else
-     write(IMOUT1,660) IDMSOUT(1),NYEAR,&
-          &(SPDMR4(I),I = 1,4),(SPDMI4(J),J = 1,4),&
-          &(NINT(SPINF4(K)),K = 1,4),(NINT(SPMRT4(L)),L = 1,4),&
-          &(NINT(SPPIN4(M)),M = 1,4),(NINT(SPPMR4(N)),N = 1,4),&
-          &(NINT(SPPOC4(II)),II = 1,4)
-
-     write(IMOUT2,760) IDMSOUT(2),NYEAR,NAGE,&
-          &NINT(STTPAT),NINT(BA),&
-          &NINT(STVOL),NINT(STTPAI),NINT(STBAI),NINT(STVOLI),&
-          &NINT(STTPAM),NINT(STBAM),NINT(STVOLM),NINT(STPIT),&
-          &NINT(STPIV),NINT(STPMT),NINT(STPMV),STDMR,STDMI
-
-     if (PRTMIS) then
-        write(IMOUT3,855) IDMSOUT(3), NYEAR
-        write(IMOUT3,860) IDMSOUT(3),NLABS(1),(DCTPA(I),I = 1,10)
-        write(IMOUT3,860) IDMSOUT(3),NLABS(2),(DCINF(I),I = 1,10)
-        write(IMOUT3,860) IDMSOUT(3),NLABS(3),(DCMRT(I),I = 1,10)
-        write(IMOUT3,861) IDMSOUT(3),NLABS(4),(DCDMR(I),I = 1,10)
-        write(IMOUT3,861) IDMSOUT(3),NLABS(5),(DCDMI(I),I = 1,10)
-     end if
+  if (PRTMIS) then
+     write(IMOUT3,855) IDMSOUT(3), NYEAR
+     write(IMOUT3,860) IDMSOUT(3),NLABS(1),(DCTPA(I),I = 1,10)
+     write(IMOUT3,860) IDMSOUT(3),NLABS(2),(DCINF(I),I = 1,10)
+     write(IMOUT3,860) IDMSOUT(3),NLABS(3),(DCMRT(I),I = 1,10)
+     write(IMOUT3,861) IDMSOUT(3),NLABS(4),(DCDMR(I),I = 1,10)
+     write(IMOUT3,861) IDMSOUT(3),NLABS(5),(DCDMI(I),I = 1,10)
   end if
 
   !     CHECK FOR PRINTING THE DETAILED OUTPUT TABLES.
@@ -949,20 +786,12 @@ subroutine MISPRT
         write(IMOUT4,'(2(/1X,I5))') IDMSOUT(4),IDMSOUT(4)
         write(IMOUT4,610) IDMSOUT(4)
         write(IMOUT4,900) IDMSOUT(4)
-        if (LMETRICVAR) then
-           write(IMOUT4,1905) IDMSOUT(4)
-        else
-           write(IMOUT4,905) IDMSOUT(4)
-        end if
+        write(IMOUT4,905) IDMSOUT(4)
         write(IMOUT4,910) IDMSOUT(4)
         write(IMOUT4,615) IDMSOUT(4)
         write(IMOUT4,620) IDMSOUT(4),NPLT,MGMID
         write(IMOUT4,615) IDMSOUT(4)
-        if (LMETRICVAR) then
-           write(IMOUT4,720) IDMSOUT(4),DMRMIN*INtoCM
-        else
-           write(IMOUT4,720) IDMSOUT(4),DMRMIN
-        end if
+        write(IMOUT4,720) IDMSOUT(4),DMRMIN
         write(IMOUT4,925) IDMSOUT(4)
         write(IMOUT4,930) IDMSOUT(4)
         write(IMOUT4,615) IDMSOUT(4)
@@ -981,11 +810,7 @@ subroutine MISPRT
            !           WRITE SUBHEADINGS.
 
            write(IMOUT4,615) IDMSOUT(4)
-           if (LMETRICVAR) then
-              write(IMOUT4,1945) IDMSOUT(4)
-           else
-              write(IMOUT4,945) IDMSOUT(4)
-           end if
+           write(IMOUT4,945) IDMSOUT(4)
            write(IMOUT4,950) IDMSOUT(4)
            write(IMOUT4,955) IDMSOUT(4)
 
@@ -997,45 +822,25 @@ subroutine MISPRT
                  SDDMI(ISPC,IDCLAS) = 0.0
               end if
 
-              if (LMETRICVAR) then
-                 write(IMOUT4,CFMTM(IDCLAS)) IDMSOUT(4),&
-                      &SDTPA(ISPC,IDCLAS)/ACRtoHA,&
-                      &SDINF(ISPC,IDCLAS)/ACRtoHA,&
-                      &SDIN0(ISPC,IDCLAS)/ACRtoHA,&
-                      &SDIN12(ISPC,IDCLAS)/ACRtoHA,&
-                      &SDIN34(ISPC,IDCLAS)/ACRtoHA,&
-                      &SDIN56(ISPC,IDCLAS)/ACRtoHA,&
-                      &SDMRT(ISPC,IDCLAS)/ACRtoHA,&
-                      &SDDMR(ISPC,IDCLAS),SDDMI(ISPC,IDCLAS)
-              else
-                 write(IMOUT4,CFMT(IDCLAS)) IDMSOUT(4),&
-                      &SDTPA(ISPC,IDCLAS),&
-                      &SDINF(ISPC,IDCLAS),&
-                      &SDIN0(ISPC,IDCLAS),&
-                      &SDIN12(ISPC,IDCLAS),&
-                      &SDIN34(ISPC,IDCLAS),&
-                      &SDIN56(ISPC,IDCLAS),&
-                      &SDMRT(ISPC,IDCLAS),&
-                      &SDDMR(ISPC,IDCLAS),SDDMI(ISPC,IDCLAS)
-              end if
+              write(IMOUT4,CFMT(IDCLAS)) IDMSOUT(4),&
+                   &SDTPA(ISPC,IDCLAS),&
+                   &SDINF(ISPC,IDCLAS),&
+                   &SDIN0(ISPC,IDCLAS),&
+                   &SDIN12(ISPC,IDCLAS),&
+                   &SDIN34(ISPC,IDCLAS),&
+                   &SDIN56(ISPC,IDCLAS),&
+                   &SDMRT(ISPC,IDCLAS),&
+                   &SDDMR(ISPC,IDCLAS),SDDMI(ISPC,IDCLAS)
            end do
 
            !           WRITE COLUMN TOTALS AND AVERAGES.
 
            write(IMOUT4,955) IDMSOUT(4)
-           if (LMETRICVAR) then
-              write(IMOUT4,960) IDMSOUT(4),SPTPAT(ISPC)/ACRtoHA,&
-                   &SPTPAI(ISPC)/ACRtoHA,SDTT0(ISPC)/ACRtoHA,&
-                   &SDTT12(ISPC)/ACRtoHA,SDTT34(ISPC)/ACRtoHA,&
-                   &SDTT56(ISPC)/ACRtoHA,SPTPAM(ISPC)/ACRtoHA,&
-                   &SPDMR(ISPC),SPDMI(ISPC)
-           else
-              write(IMOUT4,960) IDMSOUT(4),SPTPAT(ISPC),&
-                   &SPTPAI(ISPC),SDTT0(ISPC),&
-                   &SDTT12(ISPC),SDTT34(ISPC),&
-                   &SDTT56(ISPC),SPTPAM(ISPC),&
-                   &SPDMR(ISPC),SPDMI(ISPC)
-           end if
+           write(IMOUT4,960) IDMSOUT(4),SPTPAT(ISPC),&
+                &SPTPAI(ISPC),SDTT0(ISPC),&
+                &SDTT12(ISPC),SDTT34(ISPC),&
+                &SDTT56(ISPC),SPTPAM(ISPC),&
+                &SPDMR(ISPC),SPDMI(ISPC)
            write(IMOUT4,615) IDMSOUT(4)
         end if
      end do
@@ -1069,11 +874,6 @@ subroutine MISPRT
   650 format(1X,I5,' ',4X,9(2X,A),7(3X,A),1X,12(2X,A))
   655 format(1X,I5,' ',4X,8(1X,3('-')),8(1X,4('-')),12(1X,3('-')))
   660 format(1X,I5,' ',I4,8(1X,F3.1),8(1X,I4),12(1X,I3))
-  1635 format(1X,I5,' ',41X,'TPH INFECTED',7X,'TPH MORTALITY',9X,&
-       &'% TPH',11X,'% TPH',8X,'COMPOSITION')
-  1640 format(1X,I5,' ','YEAR',4X,'MEAN DMR',8X,'MEAN DMI',11X,&
-       &'WITH DM',13X,'FROM DM',11X,'INFECTED',7X,'MORTALITY',4X,&
-       &'OF STAND (%TPH)')
 
   !     FORMAT STATEMENTS FOR STAND STATISTICS TABLE
 
@@ -1097,14 +897,6 @@ subroutine MISPRT
        &3('-----',2X,'----',2X,'-----',3X),3('----',2X,'----',3X))
   760 format(1X,I5,' ',I4,3X,I3,3(3X,I5,2X,I4,2X,I5),2(3X,I4,2X,I4),&
        &4X,F3.1,3X,F3.1)
-  1705 format(1X,I5,' ',42X,'(STAND COMPOSITE; PER HA)')
-  1725 format(1X,I5,' ','MEAN DMR = Average dwarf mistletoe rating for',&
-       &'  all trees in the stand.',14X,&
-       &'* --WARNING-- Calculation may')
-  1745 format(1X,I5,' ',9X,3(4X,'TREES',3X,'BA',4X,'VOL'),4X,2('%TPH',2X,&
-       &'%VOL',3X),'MEAN',2X,'MEAN')
-  1750 format(1X,I5,' ','YEAR',3X,'AGE',3X,3(' /HA ',2X,'SQ M',2X,&
-       &'CU  M',3X),1X,2('INF',3X),2('MORT',2X),2X,'DMR',3X,'DMI')
 
   !     FORMAT STATEMENTS FOR 2" DBH CLASS STATISTICS TABLE
 
@@ -1125,11 +917,6 @@ subroutine MISPRT
   855 format(1X,I5,' ',I4)
   860 format(1X,I5,' ',7X,A3,10(4X,F7.1))
   861 format(1X,I5,' ',7X,A3,10(8X,F3.1))
-  1805 format(1X,I5,' ',46X,'(BY 5 CM DIAMETER CLASSES)')
-  1835 format(1X,I5,' ','YEAR',51X,'5 CM DIAMETER CLASSES')
-  1845 format(1X,I5,' ',14X,'  0-5cm',4X,' 5-10cm',4X,'10-15cm',4X,&
-       &'15-20cm',4X,'20-25cm',4X,'25-30cm',4X,'30-35cm',4X,&
-       &'35-40cm',4X,'40-45cm',4X,' 45+ cm')
 
   !     FORMAT STATEMENTS FOR SPECIES/DBH CLASS STATISTICS TABLE
 
@@ -1150,9 +937,6 @@ subroutine MISPRT
        &'MORTALITY',4X,'DMR',4X,'DMI')
   955 format(1X,I5,' ',9('-'),7(3X,10('-')),2(3X,4('-')))
   960 format(1X,I5,' ',' SUM/AVG ',7(6X,F7.1),2(4X,F3.1))
-  1905 format(1X,I5,' ',32X,'(BY SPECIES, BY 5 CM DIAMETER CLASS,'&
-       &' BY CYCLE)')
-  1945 format(1X,I5,' ',8X,7(5X,'TREES/HA'),1X,2(3X,'MEAN'))
 
   !     COMMON RETURN.
 

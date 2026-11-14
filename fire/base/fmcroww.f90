@@ -83,9 +83,6 @@ subroutine FMCROWW (SPI,D,H,ITRNC,IC,HP,SG,XV)
 
   !.... Parameter statements.
   !.... Parameter include files.
-
-  include 'PRGPRM.f90'
-
   !.... Variable declarations.
 
   ! Variables
@@ -95,10 +92,6 @@ subroutine FMCROWW (SPI,D,H,ITRNC,IC,HP,SG,XV)
   integer :: J,CRDUM,DCYDUM,WDSTDUM
 
   logical :: LDDUM,CTKFDUM,BTKDUM
-
-  !.... Dummies for the BC CFVOL call (see aspen, case 2)
-  logical :: LDUM1
-  real    :: XDUM2,XDUM3
 
   real    :: C,DEADWT,DOMPCT,DP1,DP2,DP3
   real    :: LIVEWT,TEMP,P1,P2,P3,P4,R,TOTWT,DRC,X,X0
@@ -414,41 +407,24 @@ subroutine FMCROWW (SPI,D,H,ITRNC,IC,HP,SG,XV)
      !         aspen
   case (2)
 
-     !           BC GETS ASPEN VOLUME FROM ITS OWN CFVOL; THE OTHER VARIANTS
-     !           USE NATCRS. DIFFERENCE PRESERVED DELIBERATELY FROM THE
-     !           FORMER BC COPY (canada/fire/bc/fmcroww.f90). BC LINKS A
-     !           NATCRS STUB (canada/bc/natcrs.f90) THAT IS NEVER CALLED.
+     SCFDUM = 0
+     BFDUM = 0
+     CRDUM = 0
+     BRKDUM = 0
+     VMDUM = 0
+     BFVDUM = 0
+     RCDUM = 0
+     DCYDUM = 0
+     WDSTDUM = 0
+     BIODUM = 0
+     LDDUM = .false.
+     CTKFDUM = .false.
+     BTKDUM = .false.
 
-     if (VARIANTCD .eq. 'BC') then
-
-        !            CALL NATCRS (V,VM,XDUM1,SPI,D,H,.FALSE.,XDUM2,ITRNC,
-        !     &          XDUM3,LDUM1,LDUM2,-1)
-
-        call CFVOL (SPI,D,H,D*D*H,V,VM,XDUM3,.false.,.false.,XDUM2,&
-             &ITRNC,LDUM1)
-
-     else
-
-        SCFDUM = 0
-        BFDUM = 0
-        CRDUM = 0
-        BRKDUM = 0
-        VMDUM = 0
-        BFVDUM = 0
-        RCDUM = 0
-        DCYDUM = 0
-        WDSTDUM = 0
-        BIODUM = 0
-        LDDUM = .false.
-        CTKFDUM = .false.
-        BTKDUM = .false.
-
-        call NATCRS (V,VM,SCFDUM,BFDUM,SPI,D,H,.false.,&
-             &CRDUM,BRKDUM,ITRNC,VMDUM,BFVDUM,&
-             &RCDUM,DCYDUM,WDSTDUM,BIODUM,&
-             &LDDUM,CTKFDUM,BTKDUM,-1)
-
-     end if
+     call NATCRS (V,VM,SCFDUM,BFDUM,SPI,D,H,.false.,&
+          &CRDUM,BRKDUM,ITRNC,VMDUM,BFVDUM,&
+          &RCDUM,DCYDUM,WDSTDUM,BIODUM,&
+          &LDDUM,CTKFDUM,BTKDUM,-1)
 
      !           INPUT   D (IN) CONVERTED TO (M)
      !           INPUT   V (FT**3)CONVERTED TO (M**3);

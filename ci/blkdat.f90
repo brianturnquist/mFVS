@@ -11,6 +11,7 @@ block data BLKDAT
   include 'PRGPRM.f90'
   include 'COEFFS.f90'
   include 'PDEN.f90'
+  include 'ESPARM.f90'
   include 'ESCOMN.f90'
   include 'ECON.f90'
   include 'HTCAL.f90'

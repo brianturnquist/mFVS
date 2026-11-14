@@ -21,12 +21,14 @@ subroutine DENSE
   include 'HTCAL.f90'
   include 'PDEN.f90'
   include 'VARCOM.f90'
+  include 'METRIC.f90'
 
   ! Variables
-  integer :: I,IS,IP,ISPC,I1,I2,I3
-  real    :: TEMP1,TEMP2,RAT,TOTAL,CCFT,CW,BATREE,DP,P,BAT,RELDT
+  integer :: I,IS,IP,ISPC,I1,I2,I3,II
+  real    :: SSUMN,TEMP1,TEMP2,RAT,TOTAL,CCFT,CW,BATREE,DP,P,BAT,RELDT
   real    :: TSUMD2,R,BRATIO,D,G,SN,BAGR
   real    :: SUMDR0
+  real :: TARG
   logical :: LREDO
   logical :: DEBUG
 
@@ -282,9 +284,34 @@ subroutine DENSE
   call PTBAL
 
   !     CALCULATE TOP HEIGHT: AVERAGE HEIGHT OF THE 40 TREES PER ACRE
-  !     WITH THE LARGEST DBH'S (METRIC VARIANTS: 100 TREES PER HECTARE).
+  !     WITH THE LARGEST DBH'S.
 
-  call AVHT40
+  AVH = 0.
+  if (ITRN.le.0) goto 70
+  SSUMN = 0.
+  if (LMETRICVAR) then
+     TARG = 100.0/HAtoACR ! METRIC VERSION = 40.47/AC
+  end if
+  do I = 1,ITRN
+     II = IND(I)
+     P = PROB(II)
+     if (LMETRICVAR) then
+        if (SSUMN+P.gt.TARG) P = TARG-SSUMN
+     else
+        if (SSUMN+P.gt.40.0) P = 40.0-SSUMN
+     end if
+     SSUMN = SSUMN+P
+     AVH = AVH+HT(II)*P
+     if (LMETRICVAR) then
+        if (SSUMN.ge.TARG) go to 65
+     else
+        if (SSUMN.ge.40.0) go to 65
+     end if
+     60 continue
+  end do
+  65 continue
+  if (SSUMN .gt. 0.) AVH = AVH/SSUMN
+  70 continue
   if (DEBUG) write(JOSTND,9002) GROSPC,TPROB,TSUMD2,RELDEN,BA, &
        & RMSQD,AVH,DR016
   9002 format(' IN DENSE, GROSPC = ',F10.4,', TPROB = ',F10.4, &

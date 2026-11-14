@@ -15,7 +15,7 @@ subroutine EXRD
   integer :: ICODES(6),I3(*),I2(*),ITN1,ITN2,II,I,I1,II1
   integer :: ILIMIT,IPNT,II2,III2,KEY
   real    :: ARRAY(12),R1(*),RR2,RR1,OLD,WK3
-  logical :: L,LNOTBK(12),LTR,LTEE,LKECHO
+  logical :: L,LNOTBK(12),LTR,LTEE,LDUM,LKECHO
   character(len=8) :: KEYWRD
   character(len=8) :: NORR
   real    :: RDANUW
@@ -81,6 +81,11 @@ subroutine EXRD
 
   if (.true.)return
   LDANUW = LTR
+  return
+
+  !  ENTRY RDROUT CALLED FROM MAIN
+
+  entry RDROUT
   return
 
   !  ENTRY RDPRIN CALLED FROM NOTRE
@@ -202,6 +207,16 @@ subroutine EXRD
 
   if (.true.)return
   IDANUW = KEY
+  return
+
+  !  ENTRY RDPPATV - PPE -
+
+  entry RDPPATV (LDUM)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  LDANUW = LDUM
   return
 
   !  ENTRY RDPPPT - PPE -

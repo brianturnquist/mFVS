@@ -11,6 +11,7 @@ subroutine ESGENT (ITRNIN)
   include 'PRGPRM.f90'
   include 'ARRAYS.f90'
   include 'CONTRL.f90'
+  include 'ESPARM.f90'
   include 'ESCOMN.f90'
   include 'ESCOM2.f90'
   include 'ESHAP.f90'
@@ -45,21 +46,12 @@ subroutine ESGENT (ITRNIN)
            DG(I) = 0.0
         else
            DBH(I) = DBH(I)*(HT(I)/HTEMP)
-
-           !     THE PARTIAL MODEL SCALES THE NEW DBH, NOT DG, AND DOES NOT
-           !     RESET DBH AT THE HEIGHT CAP BELOW.  BOTH DIFFERENCES ARE
-           !     KEPT DELIBERATELY.
-
-           if (LFULLESTAB) then
-              DG(I) = DG(I)*(HT(I)/HTEMP)
-           else
-              DG(I) = DBH(I)*(HT(I)/HTEMP)
-           end if
+           DG(I) = DG(I)*(HT(I)/HTEMP)
         end if
      end if
      if (HT(I).gt.HHTMAX(N)) then
         HT(I) = HHTMAX(N)
-        if (LFULLESTAB) DBH(I) = 2.95
+        DBH(I) = 2.95
      end if
      if (DEBUG) write(JOSTND,20) I,N,HT(I),HTG(I),DBH(I),DG(I),WK4(I)
      20 format('IN ESGENT: RECORD#',I5,'  SPECIES=',I3,'  HT=',F5.1,&

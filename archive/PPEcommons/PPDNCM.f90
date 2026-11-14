@@ -1,0 +1,15 @@
+!=================================!
+!   archive/PPEcommons : PPDNCM   !
+!=================================!
+! COMMON $Id$
+
+! Variables
+logical :: LNEDNS
+real    :: PDCCFN,PDBAN
+common /PPDNCM/ PDCCFN,PDBAN,LNEDNS
+
+!     PDCCFN=THE ADDITIONAL AMOUNT OF CCF FROM NEIGHBORS THAT
+!            INFLUENCE THE GROWTH OF THE CURRENT STAND (SET BY PPE).
+!     PDBAN =THE ADDITIONAL AMOUNT OF BASAL AREA FROM NEIGHBORS.
+!     LNEDNS=TRUE IF NEIGHBOR DENSITY IS BEING APPLIED TO THE STAND,
+!            FALSE IF NOT (STAND LEVEL).

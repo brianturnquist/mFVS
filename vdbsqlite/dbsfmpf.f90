@@ -37,10 +37,6 @@ subroutine DBSFMPF(IYEAR,NPLT,SFLMSU,MFLMSU,SFLMTO,MFLMTO,SFTYPE,&
   !             21: FUEL MODEL
   !             22: FUEL WEIGHT
   !             23: KODE FOR WHETHER OR NOT THE REPORT ALSO DUMPS TO FILE
-  !
-  !     THE METRIC VARIANTS (BC, ON; LMETRICVAR) WRITE TABLES
-  !     FVS_PotFire_Metric AND FVS_PotFire_East_Metric (ON). THEIR CALLER
-  !     PASSES THE VALUES ALREADY CONVERTED TO METRIC UNITS.
 
   ! Common blocks
   include 'PRGPRM.f90'
@@ -106,7 +102,6 @@ subroutine DBSFMPF(IYEAR,NPLT,SFLMSU,MFLMSU,SFLMTO,MFLMTO,SFTYPE,&
   double precision,dimension(4)::BFUELWT,BSFUELWT
   dimension FUELMOD(4),FUELWT(4),SFUELMOD(4),SFUELWT(4)
   character(len=2000) :: SQLStmtStr
-  character(len=23) :: TBLNAME
   character(len=8) :: SFTYPE
   character(len=8) :: MFTYPE
   character(len=26) :: NPLT
@@ -123,19 +118,11 @@ subroutine DBSFMPF(IYEAR,NPLT,SFLMSU,MFLMSU,SFLMTO,MFLMTO,SFTYPE,&
 
   call DBSCASE(1)
 
-  !     EASTERN VARIANTS (SN, CS, AND THE METRIC ON) WRITE THE EAST TABLE.
-
-  if ((VARACD .eq. 'SN') .or. (VARACD .eq. 'CS')&
-       &.or. (VARACD .eq. 'ON')) then
-     if (LMETRICVAR) then
-        TBLNAME = 'FVS_PotFire_East_Metric'
-     else
-        TBLNAME = 'FVS_PotFire_East'
-     end if
+  if ((VARACD .eq. 'SN') .or. (VARACD .eq. 'CS')) then
      iRet = fsql3_tableexists(IoutDBref,&
-          &TRIM(TBLNAME)//CHAR(0))
+          &"FVS_PotFire_East"//CHAR(0))
      if (iRet.eq.0) then
-        SQLStmtStr = 'CREATE TABLE '//TRIM(TBLNAME)//'('//&
+        SQLStmtStr = 'CREATE TABLE FVS_PotFire_East('//&
              &'CaseID text not null,'//&
              &'StandID text not null,'//&
              &'Year int null,'//&
@@ -168,30 +155,17 @@ subroutine DBSFMPF(IYEAR,NPLT,SFLMSU,MFLMSU,SFLMTO,MFLMTO,SFTYPE,&
         iRet = fsql3_exec(IoutDBref,SQLStmtStr)
         if (iRet.ne.0) then
            iRet = fsql3_errmsg(IinDBref, Msg, MxMsg)
-           print *,TRIM(TBLNAME)//" exec direct east error:",&
+           print *,"FVS_PotFire_East exec direct east error:",&
                 &Msg(:iRet)
            IPOTFIRE = 0
            return
         end if
      end if
   else !NOT SN VARIANT
-     if (LMETRICVAR) then
-        TBLNAME = 'FVS_PotFire_Metric'
-     else
-        TBLNAME = 'FVS_PotFire'
-     end if
      iRet = fsql3_tableexists(IoutDBref,&
-          &TRIM(TBLNAME)//CHAR(0))
+          &"FVS_PotFire"//CHAR(0))
      if (iRet.eq.0) then
-        !        THE IMPERIAL CREATE STATEMENT HAS A BLANK BEFORE "(" AND THE
-        !        METRIC ONE DOES NOT; THE TEXT IS STORED IN THE DATABASE, SO
-        !        BOTH ARE KEPT AS THEY WERE.
-        if (LMETRICVAR) then
-           SQLStmtStr = 'CREATE TABLE FVS_PotFire_Metric('
-        else
-           SQLStmtStr = 'CREATE TABLE FVS_PotFire ('
-        end if
-        SQLStmtStr = TRIM(SQLStmtStr)//&
+        SQLStmtStr = 'CREATE TABLE FVS_PotFire ('//&
              &'CaseID text not null,'//&
              &'StandID text not null,'//&
              &'Year int null,'//&
@@ -224,7 +198,7 @@ subroutine DBSFMPF(IYEAR,NPLT,SFLMSU,MFLMSU,SFLMTO,MFLMTO,SFTYPE,&
         iRet = fsql3_exec(IoutDBref,SQLStmtStr)
         if (iRet.ne.0) then
            iRet = fsql3_errmsg(IinDBref, Msg, MxMsg)
-           print *,TRIM(TBLNAME)//" west exec direct error:",Msg(:iRet)
+           print *,"FVS_PotFire west exec direct error:",Msg(:iRet)
            IPOTFIRE = 0
            return
         end if
@@ -259,13 +233,12 @@ subroutine DBSFMPF(IYEAR,NPLT,SFLMSU,MFLMSU,SFLMTO,MFLMTO,SFTYPE,&
   BFUELWT(3) = DBLE(INT((FUELWT(3)*100.)+0.5))
   BFUELWT(4) = DBLE(INT((FUELWT(4)*100.)+0.5))
 
-  if ((VARACD .eq. 'SN') .or. (VARACD .eq. 'CS')&
-       &.or. (VARACD .eq. 'ON')) then
+  if ((VARACD .eq. 'SN') .or. (VARACD .eq. 'CS')) then
      BSFUELWT(1) = DBLE(INT((SFUELWT(1)*100.)+0.5))
      BSFUELWT(2) = DBLE(INT((SFUELWT(2)*100.)+0.5))
      BSFUELWT(3) = DBLE(INT((SFUELWT(3)*100.)+0.5))
      BSFUELWT(4) = DBLE(INT((SFUELWT(4)*100.)+0.5))
-     write(SQLStmtStr,*)'INSERT INTO ',TRIM(TBLNAME),' (CaseID,',&
+     write(SQLStmtStr,*)'INSERT INTO FVS_PotFire_East (CaseID,',&
           &'StandID,Year,Flame_Len_Sev,Flame_Len_Mod,',&
           &'Canopy_Ht,Canopy_Density,Mortality_BA_Sev,',&
           &'Mortality_BA_Mod,Mortality_VOL_Sev,Mortality_VOL_Mod,',&
@@ -278,7 +251,7 @@ subroutine DBSFMPF(IYEAR,NPLT,SFLMSU,MFLMSU,SFLMTO,MFLMTO,SFTYPE,&
           &''',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? ',&
           &',?,?,?,?);'
   else
-     write(SQLStmtStr,*)'INSERT INTO ',TRIM(TBLNAME),' (CaseID,',&
+     write(SQLStmtStr,*)'INSERT INTO FVS_PotFire (CaseID,',&
           &'StandID,Year,Surf_Flame_Sev,Surf_Flame_Mod,',&
           &'Tot_Flame_Sev,Tot_Flame_Mod,Fire_Type_Sev,Fire_Type_Mod,',&
           &'PTorch_Sev,PTorch_Mod,Torch_Index,Crown_Index,',&
@@ -295,11 +268,7 @@ subroutine DBSFMPF(IYEAR,NPLT,SFLMSU,MFLMSU,SFLMTO,MFLMTO,SFTYPE,&
 
   if (iRet.ne.0) then
      iRet = fsql3_errmsg(IinDBref, Msg, MxMsg)
-     if (LMETRICVAR) then
-        print *,"FVS_PotFire_Metric prepare error:",Msg(:iRet)
-     else
-        print *,"FVS_PotFire prepare error:",Msg(:iRet)
-     end if
+     print *,"FVS_PotFire prepare error:",Msg(:iRet)
      IPOTFIRE = 0
      return
   end if
@@ -313,8 +282,7 @@ subroutine DBSFMPF(IYEAR,NPLT,SFLMSU,MFLMSU,SFLMTO,MFLMTO,SFTYPE,&
   ColNumber = ColNumber+1
   iRet = fsql3_bind_double(IoutDBref,ColNumber,BMFLMSU)
 
-  if ((VARACD .ne. 'SN') .and. (VARACD .ne. 'CS')&
-       &.and. (VARACD .ne. 'ON')) then
+  if ((VARACD .ne. 'SN') .and. (VARACD .ne. 'CS')) then
      ColNumber = ColNumber+1
      iRet = fsql3_bind_double(IoutDBref,ColNumber,BSFLMTO)
 
@@ -382,8 +350,7 @@ subroutine DBSFMPF(IYEAR,NPLT,SFLMSU,MFLMSU,SFLMTO,MFLMTO,SFTYPE,&
   ColNumber = ColNumber+1
   iRet = fsql3_bind_double(IoutDBref,ColNumber,BFUELWT(4))
 
-  if ((VARACD .eq. 'SN') .or. (VARACD .eq. 'CS')&
-       &.or. (VARACD .eq. 'ON')) then
+  if ((VARACD .eq. 'SN') .or. (VARACD .eq. 'CS')) then
      ColNumber = ColNumber+1
      iRet = fsql3_bind_int(IoutDBref,ColNumber,SFUELMOD(1))
 

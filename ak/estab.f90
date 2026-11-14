@@ -9,6 +9,7 @@ subroutine ESTAB (KDT)
 
   ! Common blocks
   include 'PRGPRM.f90'
+  include 'ESPARM.f90'
   include 'ARRAYS.f90'
   include 'CALDEN.f90'
   include 'CONTRL.f90'

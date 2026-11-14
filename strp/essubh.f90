@@ -8,6 +8,7 @@ subroutine ESSUBH (I,HHT,EMSQR,DILATE,DELAY,ELEV,IHTSER,GENTIM,&
 
   ! Common blocks
   include 'PRGPRM.f90'
+  include 'ESPARM.f90'
   include 'ESCOMN.f90'
 
   !     ASSIGNS HEIGHTS TO SUBSEQUENT AND PLANTED TREE RECORDS

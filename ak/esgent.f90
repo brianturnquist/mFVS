@@ -16,6 +16,7 @@ subroutine ESGENT (ITRNIN)
   include 'PRGPRM.f90'
   include 'ARRAYS.f90'
   include 'CONTRL.f90'
+  include 'ESPARM.f90'
   include 'ESCOMN.f90'
   include 'ESCOM2.f90'
   include 'ESHAP.f90'

@@ -24,8 +24,8 @@ subroutine FMSHRUB (IYR,FMD)
   !     BOTH ARE PRESENT. THE ACTUAL AMOUNT TO REARRANGE CHANGES WITH THE
   !     PREDICTED AMOUNT OF THE SHRUB MODEL (5 AND/OR 26). SINCE FUEL
   !     MODEL WEIGHT AND NUMBER MAY CHANGE WHEN THIS ROUTINE IS CALLED
-  !     FWT(), FMOD() & NFMODS MUST ALL BE RE-COMPUTED. **FMMODSEL**, THE
-  !     FINAL STEP OF **FMDYN**, IS USED TO DO THIS
+  !     FWT(), FMOD() & NFMODS MUST ALL BE RE-COMPUTED. A CUT/PASTE FROM
+  !     **FMDYN** IS USED TO DO THIS
 
   !  CALL LIST DEFINITIONS:
   !     IYR:     CURRENT YEAR
@@ -211,11 +211,67 @@ subroutine FMSHRUB (IYR,FMD)
         FWT(I) = FWT2(J)
      end do
 
-     !       TRUNCATE TO 4 MODELS AND REWEIGHT, SELECT THE DOMINANT MODEL
-     !       FMD, COUNT THE ACTIVE MODELS AND APPLY THE STATIC FUEL MODEL
-     !       OPTION (SHARED WITH **FMDYN**)
+     !       BEGINNING OF COPY FROM **FMDYN**
 
-     call FMMODSEL (LDYNFM,FMD)
+     !       TRUNCATE NUMBER OF FUEL MODELS TO 4 AND REWEIGHT,
+     !       IN THE RARE CASE THAT >4 MODELS HAVE BEEN SELECTED
+     !       THIS SOMETIMES HAPPENS IN THE EC, WITH THE 5TH MODEL
+     !       WEIGHT AT 2-3% OF THE TOTAL.
+     !       (CONVERSATION WITH NICK; 3 DECEMBER 2002)
+
+     X = 0.0
+     do I = 1,4
+        X = X + FWT(I)
+     end do
+     if (X .gt.1.0E-6) then
+        do I = 1,4
+           FWT(I) = FWT(I) / X
+        end do
+        do I = 5,MXFMOD
+           FMOD(I) = 0
+           FWT(I) = 0.0
+        end do
+     end if
+
+     !       SELECT NON-DYNAMIC MODEL BASED ON MOST HEAVILY WEIGHTED MODEL
+     !       `FAILSAFE IS TO NAME MODEL 8 AND ISSUE A WARNING
+
+     FMD = -1
+     if (FWT(1) .gt.1.0E-6) FMD = FMOD(1)
+     if (FMD .lt.0) then
+        FMOD(1) = 8
+        FWT(1) = 1.0
+        NFMODS = 1
+        do I = 2,MXFMOD
+           FMOD(I) = 0
+           FWT(I) = 0.0
+        end do
+        call RCDSET(2, .true.)
+     end if
+
+     !       COMPUTE THE NUMBER OF ACTIVE MODELS
+
+     do I = 1,MXFMOD
+        if (FWT(I) .le.1.0E-6) then
+           NFMODS = I-1
+           exit
+        end if
+     end do
+     NFMODS = MIN(NFMODS,4)
+
+     !       IF STATIC FUEL MODEL IS DESIRED, UNSET ALL OTHER WEIGHTS
+
+     if (.not. LDYNFM) then
+        FMOD(1) = FMD
+        FWT(1) = 1.0
+        NFMODS = 1
+        do I = 2, MXFMOD
+           FMOD(I) = 0
+           FWT(I) = 0.0
+        end do
+     end if
+
+     !       END OF COPY FROM **FMDYN**
 
      !       TURN OFF SHRUB MODEL WHEN THERE ARE NO MORE SPECIAL
      !       WEIGHTS TO PROCESS

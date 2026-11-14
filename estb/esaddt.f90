@@ -30,12 +30,6 @@ subroutine ESADDT(ICALL)
   real    :: PRMS(2),SUM,SUMSP(8)
   integer :: IDANUW
 
-  !     SPECIES INDEX BINNED AS PSME (DOUGLAS-FIR) IN THE .ES1 FILE.  THE FULL
-  !     MODEL (LFULLESTAB) USED 5 AND THE PARTIAL MODEL USED 3.  THE
-  !     DIFFERENCE IS KEPT DELIBERATELY; SEE FOUND_BUGS.MD BUG 3.
-  integer :: IPSME
-  parameter (IPSME = merge(5,3,LFULLESTAB))
-
   !     ADDTREES CODE = 432
 
   data MYACT/432/
@@ -169,7 +163,7 @@ subroutine ESADDT(ICALL)
                     SUMSP(6) = SUMSP(6) + PROB(I)
                  case (10) ! PIPO
                     SUMSP(7) = SUMSP(7) + PROB(I)
-                 case (IPSME) ! PSME (5 FULL MODEL, 3 PARTIAL; BUG 3)
+                 case (5) ! PSME
                     SUMSP(8) = SUMSP(8) + PROB(I)
                  end select
               end if

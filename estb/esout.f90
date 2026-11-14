@@ -44,17 +44,10 @@ subroutine ESOUT (LFG)
      30 format (132('-'))
   end if
 
-  !     THE FULL MODEL WRITES BLANK RECORDS AS EMPTY LINES; THE PARTIAL
-  !     MODEL WRITES THEM AS ONE BLANK.  KEPT DELIBERATELY.
-
-  if (LFULLESTAB) then
-     if (RECORD.ne.' ') then
-        write (JOSTND,20) RECORD(1:MAX0(1,ISTLNB(RECORD)))
-     else
-        write (JOSTND,20)
-     end if
-  else
+  if (RECORD.ne.' ') then
      write (JOSTND,20) RECORD(1:MAX0(1,ISTLNB(RECORD)))
+  else
+     write (JOSTND,20)
   end if
   goto 10
   40 continue
@@ -66,11 +59,7 @@ subroutine ESOUT (LFG)
   ICOUNT = 0
   do while (ISTAT /= 0)
      ICOUNT = ICOUNT + 1
-     if (LFULLESTAB) then
-        call SLEEP(100)
-     else
-        call SLEEP(1)
-     end if
+     call SLEEP(100)
      close (JOREGT, STATUS = "DELETE",IOSTAT = ISTAT)
      if (ICOUNT .ge.5) then
         write(*,*) 'ATTEMPT TO CLOSE FILE AT ESOUT LINE 60 FAILED'

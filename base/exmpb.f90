@@ -11,10 +11,11 @@ subroutine EXMPB
   logical :: L,LNOTBK,LKECHO
   character(len=8) :: KEYWRD
   character(len=8) :: NOMPB
+  character(len=26) :: NPLT
   dimension LNOTBK(12)
   integer :: ICODES(6)
   real    :: ARRAY(12)
-  integer :: II,KEY
+  integer :: MGMID,II,KEY
   real    :: RDANUW
   integer :: IDANUW
   character(len=8) :: CDANUW
@@ -27,6 +28,16 @@ subroutine EXMPB
   entry MPBINT
   return
 
+  !  ENTRY MPBHED
+
+  entry MPBHED (NPLT,MGMID)
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  if (.true.)return
+  CDANUW(1:8) = NPLT(1:8)
+  IDANUW = MGMID
+  return
 
   !  ENTRY MPBIN
 

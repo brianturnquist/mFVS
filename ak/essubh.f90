@@ -20,6 +20,7 @@ subroutine ESSUBH (I,HHT,DELAY,GENTIM,TRAGE,JOSTND,DEBUG)
 
   ! Common blocks
   include 'PRGPRM.f90'
+  include 'ESPARM.f90'
   include 'ESCOM2.f90'
   include 'ESCOMN.f90'
   include 'ESHAP.f90'
