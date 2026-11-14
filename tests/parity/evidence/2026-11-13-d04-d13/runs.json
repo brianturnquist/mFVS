@@ -1,0 +1,522 @@
+{
+  "cases": {
+    "ie-iet01": {
+      "variant": "ie",
+      "deck": "iet01",
+      "inputs": {
+        "iet01.key": "da901f73d99a81dab8d50eb9d7d77eaf4ae958691fa69e90987d0a99bcc573a1",
+        "iet01.tre": "dbf3e8f3c665e4f20c44417fb4b4ab56c19e3f79398db1e2b91bbfb1ff218530"
+      },
+      "source_inputs": {
+        "iet01.key": "da901f73d99a81dab8d50eb9d7d77eaf4ae958691fa69e90987d0a99bcc573a1",
+        "iet01.tre": "dbf3e8f3c665e4f20c44417fb4b4ab56c19e3f79398db1e2b91bbfb1ff218530"
+      }
+    },
+    "sn-snt01": {
+      "variant": "sn",
+      "deck": "snt01",
+      "inputs": {
+        "snt01.key": "109ff46adc74c627482cf6732a6d89d2a6ec854ee3e82b401dbb741801bd72ac",
+        "snt01.tre": "389220f1e8e211892b90e9a11810134377d87eadc8e8aec289ec3b64eec05288"
+      },
+      "source_inputs": {
+        "snt01.key": "109ff46adc74c627482cf6732a6d89d2a6ec854ee3e82b401dbb741801bd72ac",
+        "snt01.tre": "389220f1e8e211892b90e9a11810134377d87eadc8e8aec289ec3b64eec05288"
+      }
+    },
+    "bc-StandStructure": {
+      "variant": "bc",
+      "deck": "StandStructure",
+      "inputs": {
+        "StandStructure.key": "55af80b62b90f69918468fdf711a4be4682443c973acd6d934e88eef800036fd",
+        "FVS-BC.Stand.Structure.Data.db": "86c91f2fc7c2b876fa9f7e9b77cf90adaf0c773d3067704e437c93fe81ce9668"
+      },
+      "source_inputs": {
+        "StandStructure.key": "55af80b62b90f69918468fdf711a4be4682443c973acd6d934e88eef800036fd",
+        "FVS-BC.Stand.Structure.Data.db": "86c91f2fc7c2b876fa9f7e9b77cf90adaf0c773d3067704e437c93fe81ce9668"
+      }
+    },
+    "bc-YSM-SkyRanch": {
+      "variant": "bc",
+      "deck": "YSM-SkyRanch",
+      "inputs": {
+        "YSM-SkyRanch.key": "93e9169bd6605c828196137d2d1bcc6f6b3654e8f62f8a4f6920837b973316e3",
+        "FVS-BC.YSM-SkyRanch.db": "d91ed285bf0505f0dd6de80f65e00c3f25bd449497384b53d72738c81bc35d09"
+      },
+      "source_inputs": {
+        "YSM-SkyRanch.key": "93e9169bd6605c828196137d2d1bcc6f6b3654e8f62f8a4f6920837b973316e3",
+        "FVS-BC.YSM-SkyRanch.db": "d91ed285bf0505f0dd6de80f65e00c3f25bd449497384b53d72738c81bc35d09"
+      }
+    },
+    "on-Hardwood": {
+      "variant": "on",
+      "deck": "Hardwood",
+      "inputs": {
+        "Hardwood.key": "12ec3f4911390ac2c839b86c3f472cf019fb99c827a8de645380d49372a23fc1",
+        "FVSDataHardwood.db": "8d0db1656d0bb0069bc09f882d4ff3e65d3dbe9d51125041e94bd4e4fcf5bb11"
+      },
+      "source_inputs": {
+        "Hardwood.key": "12ec3f4911390ac2c839b86c3f472cf019fb99c827a8de645380d49372a23fc1",
+        "FVSDataHardwood.db": "8d0db1656d0bb0069bc09f882d4ff3e65d3dbe9d51125041e94bd4e4fcf5bb11"
+      }
+    }
+  },
+  "runs": [
+    {
+      "state": "original",
+      "case": "ie-iet01",
+      "directory": "/private/tmp/mfvs-d04-d13-20261113/runs/original/ie-iet01",
+      "command": [
+        "/private/tmp/mfvs-d04-d13-20261113/original/bin/FVSie",
+        "--keywordfile=iet01.key"
+      ],
+      "returncode": 20,
+      "seconds": 0.974,
+      "binary_sha256": "724766b5902dd58ab0096b90191e9a2f66bfa2acee48a8a152cbb1b2b4bf0204",
+      "outputs": {
+        "iet01.out": {
+          "sha256": "a2eb3a50df075241b008aeb10d1616129170ad78643d16f86f59445dfd50dfe2",
+          "bytes": 393508
+        },
+        "iet01.sum": {
+          "sha256": "481a87d18a5cb08be08bfb03b9fb1694d70bb162428e8230ab2d5b57d6be130e",
+          "bytes": 7774
+        },
+        "iet01.trl": {
+          "sha256": "800e790ee50fc07ce1bdf78c8341d851c14c9ea5b66c3f999619aaf1565e4ea3",
+          "bytes": 2014152
+        },
+        "iet01_Out.db": {
+          "sha256": "ac3825703d41133ad4a174fc1682dfdc0b5761d7e3f9de1bf7becb44db57b487",
+          "bytes": 2887680
+        },
+        "returncode.txt": {
+          "sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "d14dade1b367a6f37b0687de096971e2ddefc68fce70cd01054baffa82141c1a",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "3de1a09d2ba60a2621fd83c60d78a1bb57aa72d422cea008fd39c88a2116a6dd",
+          "bytes": 6648
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "current",
+      "case": "ie-iet01",
+      "directory": "/private/tmp/mfvs-d04-d13-20261113/runs/current/ie-iet01",
+      "command": [
+        "/private/tmp/mfvs-d04-d13-20261113/current/bin/FVSie",
+        "--keywordfile=iet01.key"
+      ],
+      "returncode": 20,
+      "seconds": 0.865,
+      "binary_sha256": "ac0691db0c649e000853520f601580f262acb9a4562928a7b5a22d4f42c2e506",
+      "outputs": {
+        "iet01.out": {
+          "sha256": "51b2349952fbacdf11e1c2af6d7b031d86a552ed99dab6353cab0a292b93a9ed",
+          "bytes": 393508
+        },
+        "iet01.sum": {
+          "sha256": "4b5b183135f6f14d318a3a558a67cbb6039dbefcb4d4fd6192bb7ff8bac70619",
+          "bytes": 7774
+        },
+        "iet01.trl": {
+          "sha256": "e09085c92d03e4dc8cc6c2223dde29ba62adc756a6bc6d5d4982bac03a758fc8",
+          "bytes": 2014152
+        },
+        "iet01_Out.db": {
+          "sha256": "f3f2c220cc7f6e84264e467610ef7ff45842d1d4b92864d1fc770adfbd6c5ba3",
+          "bytes": 2887680
+        },
+        "returncode.txt": {
+          "sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "d14dade1b367a6f37b0687de096971e2ddefc68fce70cd01054baffa82141c1a",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "3de1a09d2ba60a2621fd83c60d78a1bb57aa72d422cea008fd39c88a2116a6dd",
+          "bytes": 6648
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "candidate",
+      "case": "ie-iet01",
+      "directory": "/private/tmp/mfvs-d04-d13-20261113/runs/candidate/ie-iet01",
+      "command": [
+        "/private/tmp/mfvs-d04-d13-20261113/candidate/bin/FVSie",
+        "--keywordfile=iet01.key"
+      ],
+      "returncode": 20,
+      "seconds": 1.741,
+      "binary_sha256": "ac0691db0c649e000853520f601580f262acb9a4562928a7b5a22d4f42c2e506",
+      "outputs": {
+        "iet01.out": {
+          "sha256": "643c24cc43a485b674e2b52120e4ba82e7c767bc7deeb3dd2bbae923b4990479",
+          "bytes": 393508
+        },
+        "iet01.sum": {
+          "sha256": "ce9dc1c61d0b3e8eee3548d594bb13cd1bde4d51dd51688398b9848661a5ef46",
+          "bytes": 7774
+        },
+        "iet01.trl": {
+          "sha256": "f8724a453f31a43a06a4bfc3f93388e9fa089edef7f4d2f73f2e93d8d95a6c1e",
+          "bytes": 2014152
+        },
+        "iet01_Out.db": {
+          "sha256": "78369888d9f029f9dd43a5c86e33b36efe3632e05ce2d51bfcc69676deb9c22c",
+          "bytes": 2887680
+        },
+        "returncode.txt": {
+          "sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "d14dade1b367a6f37b0687de096971e2ddefc68fce70cd01054baffa82141c1a",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "3de1a09d2ba60a2621fd83c60d78a1bb57aa72d422cea008fd39c88a2116a6dd",
+          "bytes": 6648
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "original",
+      "case": "sn-snt01",
+      "directory": "/private/tmp/mfvs-d04-d13-20261113/runs/original/sn-snt01",
+      "command": [
+        "/private/tmp/mfvs-d04-d13-20261113/original/bin/FVSsn",
+        "--keywordfile=snt01.key"
+      ],
+      "returncode": 10,
+      "seconds": 4.451,
+      "binary_sha256": "5c6dc80e8b32af0de55142b5077e55bcbac7f9a30ac361f60d83342b05dc9b0e",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "62b8e891bcdb8d714404dbfa07855f4d713fdef36b09681319d7f82a8d040c09",
+          "bytes": 81920
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "snt01.out": {
+          "sha256": "43e0b2dc55a035e2194aa438e857be886895ba0c4b735bfe09791df8f02ed3db",
+          "bytes": 212653
+        },
+        "snt01.sng": {
+          "sha256": "80f04d0afe27c1623b7368e350cb09062db002fa6f1e0657d69224ec8c9e9057",
+          "bytes": 17569
+        },
+        "snt01.sum": {
+          "sha256": "07258fc11e4820d9649a1e171d5b395ed31c87343b8feb1f0ce7a60e1759fa68",
+          "bytes": 8615
+        },
+        "snt01.trl": {
+          "sha256": "9b64899b4f538d7423d1b2f86c97cc0754f7cb48faae9a85e9f4ac5378335ac7",
+          "bytes": 1136018
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "b8e908c72b6d609a1ec12600123f3d070810f3365b746799b41c6a83226baa75",
+          "bytes": 7709
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "current",
+      "case": "sn-snt01",
+      "directory": "/private/tmp/mfvs-d04-d13-20261113/runs/current/sn-snt01",
+      "command": [
+        "/private/tmp/mfvs-d04-d13-20261113/current/bin/FVSsn",
+        "--keywordfile=snt01.key"
+      ],
+      "returncode": 10,
+      "seconds": 4.419,
+      "binary_sha256": "e6049a71d4b9784fc2bf7239e2813353cf10e512cbdbb76597059194ce1beb6a",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "1dfd52ec7cfff0994ffe9015abfe3835f0be245461d7adbef04fc661477d41b3",
+          "bytes": 81920
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "snt01.out": {
+          "sha256": "27ee35fd574a602888b0247e25116399b38ae97ef005232853e3ef856b22e22c",
+          "bytes": 212653
+        },
+        "snt01.sng": {
+          "sha256": "80f04d0afe27c1623b7368e350cb09062db002fa6f1e0657d69224ec8c9e9057",
+          "bytes": 17569
+        },
+        "snt01.sum": {
+          "sha256": "2fada288356f3558150c8c8b44b7cdc1f84d207fe0e0cf75d3152261d3ce3ae9",
+          "bytes": 8615
+        },
+        "snt01.trl": {
+          "sha256": "2b8d52114f250c3a7cc766c95c3f69d75c6c20769ff59548d02e595559fe87ed",
+          "bytes": 1136018
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "b8e908c72b6d609a1ec12600123f3d070810f3365b746799b41c6a83226baa75",
+          "bytes": 7709
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "candidate",
+      "case": "sn-snt01",
+      "directory": "/private/tmp/mfvs-d04-d13-20261113/runs/candidate/sn-snt01",
+      "command": [
+        "/private/tmp/mfvs-d04-d13-20261113/candidate/bin/FVSsn",
+        "--keywordfile=snt01.key"
+      ],
+      "returncode": 10,
+      "seconds": 4.288,
+      "binary_sha256": "e6049a71d4b9784fc2bf7239e2813353cf10e512cbdbb76597059194ce1beb6a",
+      "outputs": {
+        "FVSOut.db": {
+          "sha256": "555bc0cc1539667e2f24d676e584af10ff2fc2af0d9249022c4a62c1add4882f",
+          "bytes": 81920
+        },
+        "returncode.txt": {
+          "sha256": "917df3320d778ddbaa5c5c7742bc4046bf803c36ed2b050f30844ed206783469",
+          "bytes": 3
+        },
+        "snt01.out": {
+          "sha256": "bb5f726ca88fd5db272f696092599806418659a7b0a744cde4a63529c02aee4e",
+          "bytes": 212653
+        },
+        "snt01.sng": {
+          "sha256": "80f04d0afe27c1623b7368e350cb09062db002fa6f1e0657d69224ec8c9e9057",
+          "bytes": 17569
+        },
+        "snt01.sum": {
+          "sha256": "78f68291f9d9ec59ca7d813e87a59d456b5a2618e50dd886d8d329feb6d31c8b",
+          "bytes": 8615
+        },
+        "snt01.trl": {
+          "sha256": "19cf6f39088f2380a80ea83571d84f942e22b7e9aa258155be5f462b41975792",
+          "bytes": 1136018
+        },
+        "stderr.txt": {
+          "sha256": "e15955e1d14735f9bf405ae2c5a05385acc1a00b021f59fff110ad11036398f9",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "b8e908c72b6d609a1ec12600123f3d070810f3365b746799b41c6a83226baa75",
+          "bytes": 7709
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "original",
+      "case": "bc-StandStructure",
+      "directory": "/private/tmp/mfvs-d04-d13-20261113/runs/original/bc-StandStructure",
+      "command": [
+        "/private/tmp/mfvs-d04-d13-20261113/original/bin/FVSbc",
+        "--keywordfile=StandStructure.key"
+      ],
+      "returncode": 20,
+      "seconds": 0.84,
+      "binary_sha256": "f014e3727b074852841f4a95819de1926ae70c0cba54c53b3e24553a7a072eed",
+      "outputs": {
+        "StandStructure.out": {
+          "sha256": "fe5e3ac689e7ea46a99019bc5f58b0a874ca9ac728a318e3b5dc9e4191447df0",
+          "bytes": 42743
+        },
+        "returncode.txt": {
+          "sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "d14dade1b367a6f37b0687de096971e2ddefc68fce70cd01054baffa82141c1a",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "current",
+      "case": "bc-StandStructure",
+      "directory": "/private/tmp/mfvs-d04-d13-20261113/runs/current/bc-StandStructure",
+      "command": [
+        "/private/tmp/mfvs-d04-d13-20261113/current/bin/FVSbc",
+        "--keywordfile=StandStructure.key"
+      ],
+      "returncode": 20,
+      "seconds": 0.818,
+      "binary_sha256": "6167731f037c0c9b2da7dfc341b5bcd38d4766d957ba341e4db84b13329e94a0",
+      "outputs": {
+        "StandStructure.out": {
+          "sha256": "4c79b7a148a22410defb59f436c5519e1f61d0f4ef000a8f38b4d2a19d96654b",
+          "bytes": 42743
+        },
+        "returncode.txt": {
+          "sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "d14dade1b367a6f37b0687de096971e2ddefc68fce70cd01054baffa82141c1a",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "original",
+      "case": "bc-YSM-SkyRanch",
+      "directory": "/private/tmp/mfvs-d04-d13-20261113/runs/original/bc-YSM-SkyRanch",
+      "command": [
+        "/private/tmp/mfvs-d04-d13-20261113/original/bin/FVSbc",
+        "--keywordfile=YSM-SkyRanch.key"
+      ],
+      "returncode": 20,
+      "seconds": 0.057,
+      "binary_sha256": "f014e3727b074852841f4a95819de1926ae70c0cba54c53b3e24553a7a072eed",
+      "outputs": {
+        "YSM-SkyRanch.out": {
+          "sha256": "77fdf1f3318a64ede91d74d2bedb45bb6c95e6237fcd906429e4b07b19603d37",
+          "bytes": 55137
+        },
+        "returncode.txt": {
+          "sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "d14dade1b367a6f37b0687de096971e2ddefc68fce70cd01054baffa82141c1a",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "current",
+      "case": "bc-YSM-SkyRanch",
+      "directory": "/private/tmp/mfvs-d04-d13-20261113/runs/current/bc-YSM-SkyRanch",
+      "command": [
+        "/private/tmp/mfvs-d04-d13-20261113/current/bin/FVSbc",
+        "--keywordfile=YSM-SkyRanch.key"
+      ],
+      "returncode": 20,
+      "seconds": 0.052,
+      "binary_sha256": "6167731f037c0c9b2da7dfc341b5bcd38d4766d957ba341e4db84b13329e94a0",
+      "outputs": {
+        "YSM-SkyRanch.out": {
+          "sha256": "77fdf1f3318a64ede91d74d2bedb45bb6c95e6237fcd906429e4b07b19603d37",
+          "bytes": 55137
+        },
+        "returncode.txt": {
+          "sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "d14dade1b367a6f37b0687de096971e2ddefc68fce70cd01054baffa82141c1a",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "original",
+      "case": "on-Hardwood",
+      "directory": "/private/tmp/mfvs-d04-d13-20261113/runs/original/on-Hardwood",
+      "command": [
+        "/private/tmp/mfvs-d04-d13-20261113/original/bin/FVSon",
+        "--keywordfile=Hardwood.key"
+      ],
+      "returncode": 20,
+      "seconds": 0.821,
+      "binary_sha256": "eba143f4939c7c93be38a363160873142fa673716d15616e8716ceecf0a1f1a9",
+      "outputs": {
+        "Hardwood.out": {
+          "sha256": "bf4619f3fc8fa8afd9f0c3617fcae486ed166dc1dd68e1c3b69583ce74a7b575",
+          "bytes": 4087
+        },
+        "returncode.txt": {
+          "sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "d14dade1b367a6f37b0687de096971e2ddefc68fce70cd01054baffa82141c1a",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      },
+      "modified_inputs": []
+    },
+    {
+      "state": "current",
+      "case": "on-Hardwood",
+      "directory": "/private/tmp/mfvs-d04-d13-20261113/runs/current/on-Hardwood",
+      "command": [
+        "/private/tmp/mfvs-d04-d13-20261113/current/bin/FVSon",
+        "--keywordfile=Hardwood.key"
+      ],
+      "returncode": 20,
+      "seconds": 0.835,
+      "binary_sha256": "dcd1f798d65ee003d18d386fdf7e4178c9165a0e76e68caecc22cc08f451815a",
+      "outputs": {
+        "Hardwood.out": {
+          "sha256": "1a822459b7ae874b8dd3e435e583533fb6760c2cee14f48847ddcbf86c7301dc",
+          "bytes": 4087
+        },
+        "returncode.txt": {
+          "sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3",
+          "bytes": 3
+        },
+        "stderr.txt": {
+          "sha256": "d14dade1b367a6f37b0687de096971e2ddefc68fce70cd01054baffa82141c1a",
+          "bytes": 92
+        },
+        "stdout.txt": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      },
+      "modified_inputs": []
+    }
+  ]
+}

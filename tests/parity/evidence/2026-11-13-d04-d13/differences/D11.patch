@@ -1,0 +1,76 @@
+--- retired/volume/r9clark_fvsMod.f90
++++ retained/volume/NVEL/r9clark.f90
+@@ -1,5 +1,5 @@
+ !=============================!
+-!   volume : r9clark_fvsMod   !
++!   VolumeLibrary : r9clark   !
+ !=============================!
+   !  Region 9 Profile Model Volume Calculation
+   !  revised TDH 01/12/2010  Added code for calculating log volumes and
+@@ -76,7 +76,7 @@
+   ! Variables
+   character(len=2) :: forst
+   character(len=2) :: prod
+-  character(len=11) :: volEq
++  character(len=10) :: volEq
+   integer :: geog,iProd,cutFlg,bfpFlg,cupFlg,spFlg,cdpFlg
+   integer :: errFlg,REGN
+   real    :: minBfD,maxLen,minLen,merchL,mTopP,mTopS,stump,trim
+@@ -516,7 +516,7 @@
+   real    :: mTopP,mTopS,trim,minBfD,ht1Prd,ht2Prd,htTot
+   TYPE(CLKCOEF):: COEFFS
+   real    :: plpDib,sawDib,shrtHt,dbhIb
+-  character(len=11) :: volEq
++  character(len=10) :: volEq
+   character(len=2) :: forst
+   character(len=2) :: prod
+   character(len=2) :: tmpStr
+@@ -836,7 +836,7 @@
+   integer :: errFlg
+   real    :: dbhOb,topHt,topDib,ht1Prd,ht2Prd,htTot,upsHt1
+   real    :: sawDib,plpDib
+-  character(len=11) :: volEq
++  character(len=10) :: volEq
+   !...  Local variables
+   integer :: I
+   real    :: dbhIb,dib17,a4,b4,a17,b17
+@@ -1135,7 +1135,7 @@
+   !...  Local variables
+   integer :: i
+   real    :: r,c,e,p,b,a,totHt,dbhIb,dib17
+-  real    :: Is,Ib,It,Im,StTot,Y
++  real    :: Is,Ib,It,Im,StTot
+   real    :: Ds,Db,Dt
+ 
+   !...  reassign the coefficients to local variables to keep things tidy
+@@ -1209,16 +1209,10 @@
+           &(1-(1-4.5/TOTHT)**R)))
+   end if
+   if (Ib.eq.1.0) then
+-     if ((1.0-17.3/totht).lt.0.005748.and.p.gt.14) then
+-        Y = 0
+-     else
+-        Y = (1.0-17.3/totht)**p
+-     end if
+-
+      Db = (DBHIB**2-(DBHIB**2-DIB17**2)*&
+           &((1-4.5/TOTHT)**P&
+           &-(1-stemHt/TOTHT)**P)/((1-4.5/TOTHT)&
+-          &**P-Y))
++          &**P-(1-17.3/TOTHT)**P))
+   end if
+   if (It.eq.1.0) then
+      Dt = (DIB17**2*(B*(((stemHt-17.3)/&
+@@ -1288,11 +1282,7 @@
+   G = (1.0-4.5/totHt)**r
+   W = (c+e/dbhIb**3)/(1-G)
+   X = (1.0-4.5/totHt)**p
+-  if ((1.0-17.3/totht).lt.0.005748.and.p.gt.14) then
+-     Y = 0
+-  else
+-     Y = (1.0-17.3/totht)**p
+-  end if
++  Y = (1.0-17.3/totHt)**p
+   Z = (dbhIb**2-dib17**2)/(X-Y)
+ 
+   !-----Set height indicator variables

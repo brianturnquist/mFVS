@@ -1,0 +1,32 @@
+--- retired/canada/bc/unblnk.f90
++++ retained/base/unblnk.f90
+@@ -1,7 +1,7 @@
+ !==========================================!
+ !   Remove blanks from character strings   !
+ !==========================================!
+-! CANADA-BC $Id$
++! BASE $Id$
+ subroutine UNBLNK (RECORD,IRLEN)
+   implicit none
+ 
+@@ -16,11 +16,14 @@
+ 
+   IRLEN = 0
+ 
+-  ! if ON or BC then allow embedded spaces with path/file names
+-  ! could also strip CHR(33) quotation marks with this sub.
+-
+-  RECORD = ADJUSTL(RECORD)
+-  IRLEN = LEN_TRIM(RECORD)
++  LENREC = LEN(RECORD)
++  do I = 1,LENREC
++     if (RECORD(I:I).ne.' ') then
++        IRLEN = IRLEN+1
++        if (IRLEN.lt.I) RECORD(IRLEN:IRLEN) = RECORD(I:I)
++     end if
++  end do
++  if (IRLEN.lt.LENREC) RECORD(IRLEN+1:LENREC) = ' '
+ 
+   return
+-end
++end subroutine UNBLNK

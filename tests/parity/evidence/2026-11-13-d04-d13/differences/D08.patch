@@ -1,0 +1,132 @@
+--- retired/canada/fire/on/fmcrowe.f90
++++ retained/fire/vbase/fmcrowe.f90
+@@ -1,7 +1,7 @@
+-!==============================!
+-!   canada/fire/on : fmcrowe   !
+-!==============================!
+-! CAMADA-FIRE-ON $Id$
++!==========================!
++!   fire/vbase : fmcrowe   !
++!==========================!
++! FIRE-VBASE $Id$
+ subroutine FMCROWE (SPILS,SPIYV,D,H,IC,SG,XV)
+   implicit none
+ 
+@@ -117,10 +117,6 @@
+   !     66  diamond willow
+   !     67  sassafras
+   !     68  American mountain ash
+-  !     69 = PLANTED JACK PINE (JP) (was jack pine (plantation))
+-  !     70 = PLANTED WHITE PINE (WP) (was white pine (plantation))
+-  !     71 = PLANTED WHITE SPRUCE (SP) (was white spruce (plantation))
+-  !     72 = PLANTED BLACK SPRUCE (BP) (was black spruce (plantation))
+ 
+   ! Common blocks
+   include 'PRGPRM.f90'
+@@ -143,16 +139,11 @@
+   real    :: LILPCE,DIB,DOBF,HTLP,TEMPD,BRATIO,VT,VT1,VT2
+   real    :: DX,HX
+   logical :: DEBUG,LMERCH
+-  character(len=7) :: VVER
+ 
+   data MYPI/3.14159/
+ 
+   call DBCHK (DEBUG,'FMCROWE',7,ICYC)
+   if (DEBUG) write(JOSTND,'('' ENTERING FMCROWE'')')
+-
+-  !     FIND VARIANT - ROUTINES VARY FOR HT/DBH AND HT-AT-DIAMETER CALCULATIONS
+-
+-  call VARVER(VVER)
+ 
+   !     GET SOME VARIABLES YOU'LL NEED.
+ 
+@@ -180,6 +171,12 @@
+   if (D .lt.1.0) then
+      D = 1.0
+   end if
++  TOTABV = 0.
++  FOL = 0.
++  BARK = 0.
++  WOOD = 0.
++  BRANCH = 0.
++
+   select case (SPILS)
+ 
+      !       aspen/alder/cottonwood/willow
+@@ -207,11 +204,11 @@
+      TOTABV = EXP(-2.5384 + 2.4814*LOG(D*2.54))
+ 
+      !       pine
+-  case (1:5,69,70)
++  case (1:5)
+      TOTABV = EXP(-2.5356 + 2.4349*LOG(D*2.54))
+ 
+      !       spruce
+-  case (6,7,9,71,72)
++  case (6,7,9)
+      TOTABV = EXP(-2.0773 + 2.3323*LOG(D*2.54))
+ 
+   end select
+@@ -227,7 +224,7 @@
+      WOOD = EXP(-0.3065 - 5.4240/(D*2.54))
+ 
+      !       softwoods
+-  case (1:14,69:72)
++  case (1:14)
+      FOL = EXP(-2.9584 + 4.4766/(D*2.54))
+      BARK = EXP(-2.0980 - 1.1432/(D*2.54))
+      WOOD = EXP(-0.3737 - 1.8055/(D*2.54))
+@@ -264,9 +261,9 @@
+ 
+   TEMP = 0.0
+   if ((DX .lt. DBHMIN(SPIYV)) .and.&
+-       &((VVER(1:2) .eq. 'SN') .or. (VVER(1:2) .eq. 'LS') .or.&
+-       &(VVER(1:2) .eq. 'NE') .or. (VVER(1:2) .eq. 'CS') .or.&
+-       &(VVER(1:2) .eq. 'ON'))) then
++       &((VARACD .eq. 'SN') .or. (VARACD .eq. 'LS') .or.&
++       &(VARACD .eq. 'NE') .or. (VARACD .eq. 'CS') .or.&
++       &(VARACD .eq. 'ON'))) then
+ 
+      D = DBHMIN(SPIYV)
+ 
+@@ -274,7 +271,8 @@
+ 
+      XNEG1 = -1.0
+      LMERCH = .false.
+-     call FMSVL2(SPIYV,D,H,XNEG1,VT,LMERCH,DEBUG,JOSTND)
++     call FMSVL2(SPIYV,D,H,XNEG1,VT,0,&
++          &' ',LMERCH,DEBUG,JOSTND)
+      VT1 = 0.0015*DX*DX*HX !!! MVD eqn. - volume of a cone minus some % for loss of tip volume
+      VT2 = 0.0015*D*D*H
+      VT = (VT/VT2)*VT1
+@@ -328,7 +326,7 @@
+      P3 = 28.2916*(D**(-0.8658))*(C**(-0.4084))
+ 
+      !       shortleaf pine
+-  case (1:14,69:72) ! ALL THE CONIFERS
++  case (1:14) ! ALL THE CONIFERS
+      P1 = 3.525*(D**(-0.778))*(C**(-0.412))
+      P2 = 5.989*(D**(-0.565))*(C**(-0.346))
+      P3 = 8.585*(D**(-0.517))*(C**(-0.223))
+@@ -403,9 +401,9 @@
+      !       TTOPW CALCULATION. LATER IT WILL
+      !       BE ADDED BACK INTO CROWNW, SO THE PIECE IS NOT EXCLUDED.
+ 
+-     if ((VVER(1:2) .eq. 'SN') .or. (VVER(1:2) .eq. 'LS') .or.&
+-          &(VVER(1:2) .eq. 'NE') .or. (VVER(1:2) .eq. 'CS') .or.&
+-          &(VVER(1:2) .eq. 'ON')) then
++     if ((VARACD .eq. 'SN') .or. (VARACD .eq. 'LS') .or.&
++          &(VARACD .eq. 'NE') .or. (VARACD .eq. 'CS') .or.&
++          &(VARACD .eq. 'ON')) then
+         DIB = 4 * BRATIO(SPIYV,D,H)
+         HTLP = 4.5 + (H - 4.5)/D*(D - 4.0) !assumes constant taper
+         if ((HTLP - HTF) .gt.0) then
+@@ -513,7 +511,7 @@
+      XV(4) = (TTOPW-UMBTW(4))*(1-F4)+(UMBTW(4)-UMBTW(3))
+      XV(5) = 0
+ 
+-  case (1:14,69:72) ! shortleaf pine
++  case (1:14) ! shortleaf pine
+      if (TTOPW .lt. UMBTW(4)) TTOPW = UMBTW(4)
+      XV(0) = FOL
+      XV(1) = (TTOPW-UMBTW(4))*P1+UMBTW(1)

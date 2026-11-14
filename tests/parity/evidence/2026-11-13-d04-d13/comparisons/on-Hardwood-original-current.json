@@ -1,0 +1,49 @@
+{
+  "equal": true,
+  "errors": [],
+  "files": {
+    "Hardwood.out": {
+      "kind": "bytes/text",
+      "equal": true,
+      "left_sha256": "642f4280e3bcbbe5cc1f4d9c0e8ef0cea4d660742fdc19785a8ff424485d260b",
+      "right_sha256": "642f4280e3bcbbe5cc1f4d9c0e8ef0cea4d660742fdc19785a8ff424485d260b",
+      "left_normalizations": {
+        "grohed_metadata": 1
+      },
+      "right_normalizations": {
+        "grohed_metadata": 1
+      }
+    },
+    "returncode.txt": {
+      "kind": "bytes/text",
+      "equal": true,
+      "left_sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3",
+      "right_sha256": "5378796307535df3ec8d8b15a2e2dc5641419c3d3060cfe32238c0fa973f7aa3",
+      "left_normalizations": {},
+      "right_normalizations": {}
+    },
+    "stderr.txt": {
+      "kind": "bytes/text",
+      "equal": true,
+      "left_sha256": "d14dade1b367a6f37b0687de096971e2ddefc68fce70cd01054baffa82141c1a",
+      "right_sha256": "d14dade1b367a6f37b0687de096971e2ddefc68fce70cd01054baffa82141c1a",
+      "left_normalizations": {},
+      "right_normalizations": {}
+    },
+    "stdout.txt": {
+      "kind": "bytes/text",
+      "equal": true,
+      "left_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "right_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "left_normalizations": {},
+      "right_normalizations": {}
+    }
+  },
+  "case": "on-Hardwood",
+  "left": "original",
+  "right": "current",
+  "returncodes": [
+    20,
+    20
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "before_revision": "9bc35a16d6dec5fc79f513ae524297077e5298e3",
+  "candidate_model_identity": "pre-deletion revision plus the 28 separately listed removals; no other model changes",
+  "retired_paths": [
+    "base/myopen_pc.f90",
+    "ca/estump.f90",
+    "canada/bc/unblnk.f90",
+    "canada/fire/on/fmcrowe.f90",
+    "canada/newmist/dmcwak.f90",
+    "canada/newmist/dmcwbm.f90",
+    "canada/newmist/dmcwci.f90",
+    "canada/newmist/dmcwcr.f90",
+    "canada/newmist/dmcwec.f90",
+    "canada/newmist/dmcwem.f90",
+    "canada/newmist/dmcwib.f90",
+    "canada/newmist/dmcwkt.f90",
+    "canada/newmist/dmcwnc.f90",
+    "canada/newmist/dmcwni.f90",
+    "canada/newmist/dmcwso.f90",
+    "canada/newmist/dmcwtt.f90",
+    "canada/newmist/dmcwut.f90",
+    "canada/newmist/dmcwwc.f90",
+    "canada/newmist/dmcwws.f90",
+    "canada/on/findag_for.f90",
+    "canada/on/r9init.f90",
+    "canada/on/unblnk.f90",
+    "cr/estump.f90",
+    "metric/dbsqlite/dbstreesin.f90",
+    "tt/estump.f90",
+    "ut/estump.f90",
+    "volume/r9clark_fvsMod.f90",
+    "wc/estump.f90"
+  ],
+  "model_deletion_diff_sha256": "1ad53df377c0f9092c5f99d6ee0c550b1a3caecfd0c1cdd88d12fea4c6bca06f",
+  "model_deletion_diff_bytes": 200467,
+  "tools": {
+    "tests/parity/prepare_builds.py": "860b52363887fcbd5b883bf124cdda2d70394b5aec5dee3903f0c54bc4536de5",
+    "tests/parity/run_cases.py": "674adea661c249430a65ef0a8fea0ee6b3163fafeca839dced1aa8186095b4d3",
+    "tests/parity/compare_outputs.py": "faff9728470d90aee388c08f4115d310924d0b0e528e350dd229b56e1f84b626",
+    "tests/parity/record_evidence.py": "7301bf720e316216725f56e4e844a1e9d8c4f393c8dd05ba6f25198cbb31a24f",
+    "tests/parity/verify_retirement.py": "d1ebc25afed0ba9cc9e7a8aa558d2845d1e82776ef50f36ade4ba884ef1e0561"
+  },
+  "comparison_contract_unchanged": true,
+  "existing_test_decks_unchanged": true,
+  "tracker": {
+    "total": 120,
+    "complete": 35,
+    "pending": 85
+  },
+  "model_changes_committed": false
+}

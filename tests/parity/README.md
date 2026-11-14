@@ -161,3 +161,28 @@ python3 tests/parity/compare_outputs.py \
 Raw simulator binaries and build directories remain temporary. Their hashes,
 exact source identities, input hashes, build patch, logs, and replayable run
 artifacts are retained in the repository.
+
+## Bounded retirement verification
+
+For a retirement batch, store a separate `plan.json` entry for each file before
+removal. Name its pre-change commit, selected replacement, historical purpose,
+and meaningful scientific or platform differences. After preparing the three
+snapshots, run the shared verifier:
+
+```sh
+python3 tests/parity/verify_retirement.py \
+  --evidence-dir tests/parity/evidence/2026-11-13-d04-d13
+```
+
+This requires unchanged complete build inputs for all 24 variants, checks every
+other tracked model source/include, verifies original/current and live NVEL
+archive integrity, and records each retired Git blob, SHA256, recovery command,
+DATA statement, and full replacement diff. Historical Canadian source-list
+references are reported separately with their missing-input counts and recipe
+consumers. Output comparisons and their raw replay artifacts remain separate
+evidence; unchanged build selection does not imply coverage of every model
+branch.
+
+`record_evidence.py` accepts the absence of the retired, unselected D07 metric
+reader when inspecting later snapshots. Its live shared callee and metric
+caller signature checks remain strict. A missing selected reader still fails.

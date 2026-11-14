@@ -82,6 +82,31 @@ def signature(path: Path, kind: str, name: str) -> dict:
             "source_sha256": sha256(path)}
 
 
+def inspect_signature(snapshot: Path, relative: str, kind: str, name: str, expected: int) -> dict:
+    """Keep live interface checks strict after the unused metric reader retires.
+
+    D07 removes one historical comparison source, not its selected replacement
+    or its callers. Only that exact unselected file may be absent. A missing
+    live source or a manifest that selects the retired reader still fails.
+    """
+    path = snapshot / relative
+    if relative == "metric/dbsqlite/dbstreesin.f90" and not path.exists():
+        manifests = sorted((snapshot / "bin").glob("FVS*_sourceList.txt"))
+        if len(manifests) != 24:
+            raise RuntimeError("Reassess build selection before accepting a retired interface")
+        for manifest in manifests:
+            if any((manifest.parent / entry).resolve() == path.resolve()
+                   for entry in manifest.read_text().split()):
+                raise RuntimeError(f"Missing selected interface: {relative}")
+        return {"file": relative, "status": "retired_unselected", "kind": kind, "name": name,
+                "former_argument_count": expected, "selected_by": [],
+                "replacement": "dbsqlite/dbstreesin.f90"}
+    found = signature(path, kind, name)
+    if found["argument_count"] != expected:
+        raise RuntimeError(f"Unexpected interface: {relative}: {found}")
+    return {"file": relative, **found}
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--evidence-dir", type=Path, required=True)
@@ -136,10 +161,7 @@ def main() -> int:
             ("base/svcwd", "call", "FMSVL2", 10),
         ):
             relative = stem + suffix
-            found = signature(snapshot / relative, kind, name)
-            if found["argument_count"] != expected:
-                raise RuntimeError(f"Unexpected interface: {state}/{relative}: {found}")
-            signatures.append({"file": relative, **found})
+            signatures.append(inspect_signature(snapshot, relative, kind, name, expected))
         declarations = []
         for stem in ("base/keyrdr", "canada/bc/initre", "metric/vbase/initre", "metric/dbsqlite/dbsin", "metric/newmist/misin"):
             path = snapshot / (stem + suffix)
@@ -152,7 +174,7 @@ def main() -> int:
 
     boundaries = []
     for run in runs["runs"]:
-        if run["case"] == "ie-iet01":
+        if runs["cases"][run["case"]]["variant"] not in ("bc", "on"):
             continue
         directory = Path(run["directory"])
         listing_name = next(name for name in run["outputs"] if name.endswith(".out"))

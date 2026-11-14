@@ -1,0 +1,21 @@
+--- retired/canada/newmist/dmcwib.f90
++++ retained/canada/newmist/dmcw.f90
+@@ -1,6 +1,6 @@
+-!=============================!
+-!   canada/newmist : dmcwib   !
+-!=============================!
++!===========================!
++!   canada/newmist : dmcw   !
++!===========================!
+ ! CANADA-NEWMIST $Id$
+ subroutine DMCW(DMTRCW)
+   implicit none
+@@ -64,6 +64,8 @@
+   ! Local variables.
+ 
+   logical :: DEBUG
++  integer :: I,ISPI
++  real    :: D,H,CL,BAREA
+ 
+   !  CHECK FOR DEBUG.
+ 

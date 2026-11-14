@@ -1,6 +1,6 @@
 # Found Bugs
 
-These defects were found during the 2026-11 consolidation of duplicated routines. Every one is already present in the pre-modernization source (commit `c2105365`), so none was introduced by the conversion to free-form Fortran or by the consolidation. They are **deliberately left unfixed** for now so that model outputs stay identical to `c2105365` while modernization is finished. Each fix below will change outputs for the variants listed, so each should be made as its own commit with a before/after comparison.
+The five confirmed defects below were found during the 2026-11 consolidation of duplicated routines. Every one is already present in the pre-modernization source (commit `c2105365`), so none was introduced by the conversion to free-form Fortran or by the consolidation. They are **deliberately left unfixed** for now so that model outputs stay identical to `c2105365` while modernization is finished. Each fix below will change outputs for the variants listed, so each should be made as its own commit with a before/after comparison. Section 6 separately records an unconfirmed historical numerical concern for later investigation.
 
 File and line references are to the tree at commit `b5657da3` plus the uncommitted `VARIANTCD` change. Bugs 1 and 2 have the same root cause: FVS calls external procedures with no explicit interface, so gfortran cannot check argument lists across files. Moving these routines into modules would let the compiler catch this class of bug.
 
@@ -30,12 +30,12 @@ Here the callee reads the crown ratio as the merchantable-volume switch, the `'L
 
 The behavior is undefined in both cases. The most likely visible effect is that snag and down-wood volumes switch between merchantable and total volume according to an unrelated value. Because the BC and ON test decks never get past keyword input (see bug 5), no test has exercised these paths.
 
-A third copy of the eight-argument call, in `canada/fire/on/fmcrowe.f90:277`, is not compiled by any variant and can be deleted.
+A third copy of the eight-argument call, formerly in `canada/fire/on/fmcrowe.f90:277`, was not compiled by any variant and was retired under D08 on 13 November 2026. Its exact recovery identity and replacement diff are in the [D04–D13 report](tests/parity/evidence/2026-11-13-d04-d13/README.md). The live mismatched calls above remain unchanged.
 
 **Suggested fix:**
 1. Give the BC `FMSVL2` the ten-argument interface; it can accept `CRWNRTO` and `LIVEDEAD` and ignore them.
 2. Change the metric `fmdout` call to the ten-argument form, passing `ICR(I)` and `'L'` as `fire/base/fmdout.f90:244` does.
-3. Merge the `fmdout` twin and delete the unused ON `fmcrowe`.
+3. Merge the `fmdout` twin after the interface fix. The unused ON `fmcrowe` retirement is already complete under D08.
 
 Merging `fmdout` before this fix is a compile error, because one file cannot call the same external two different ways. That is why the twin was kept.
 
@@ -50,7 +50,7 @@ Merging `fmdout` before this fix is a compile error, because one file cannot cal
 
 `DBSTREESIN` sets all three to zero unconditionally (lines 78–80) and reads them from the `Cull`, `DecayCd` and `WdldStem` columns when present (lines 217–225). In BC and ON those writes go through addresses that were never passed. A scratch build confirmed the effect. With bug 5 fixed, ON crashed with a segmentation fault while reading tree records from the database. When the three arguments were also passed, the ON test ran to completion.
 
-The metric copy also lacks the decay-code correction that `base/intree.f90:141–146` applies after the call. `metric/dbsqlite/dbstreesin.f90`, an older 30-argument version, is not compiled by any variant and can be deleted.
+The metric copy also lacks the decay-code correction that `base/intree.f90:141–146` applies after the call. `metric/dbsqlite/dbstreesin.f90`, an older 30-argument version, was not compiled by any variant and was retired under D07 on 13 November 2026. Its exact recovery identity and replacement diff are in the [D04–D13 report](tests/parity/evidence/2026-11-13-d04-d13/README.md). The live caller and shared callee remain unchanged.
 
 P03 source tracing on 13 November 2026 confirmed 33 versus 30 arguments in both the original `c2105365` source and current mFVS. Earlier documentation counted 31 versus 28, omitting `ABIRTH` and `LBIRTH` from both totals. This is a documentation correction only; the missing trailing arguments and the model code are unchanged. See the [P01–P03 verification report](tests/parity/evidence/2026-11-13-p01-p03/README.md).
 
@@ -148,3 +148,18 @@ A scratch build with bugs 5 and 2 fixed showed two further, unexplained problems
 - **BC:** both tests still end with exit status 127. `StandStructure` writes no output, and `YSM-SkyRanch` output stops right after the mistletoe keywords (`NEWSPRED`).
 
 Neither has been traced. Expect more BC/ON defects once these five are fixed and the test decks can run.
+
+---
+
+## 6. Deferred investigation: historical R9 Clark power guard
+
+**Status:** unconfirmed numerical concern; no demonstrated failure on valid tree inputs and no fix authorized.
+**Potential scope:** variants selecting NVEL `r9clark.f90` (all current variants except BC), when the relevant R9 equation path is used.
+
+D11 found that the formerly selected `volume/r9clark_fvsMod.f90` guards the power term in `r9dib` and `r9ht`: when `(1.0-17.3/totht) < 0.005748` and `p > 14`, it sets `Y=0` instead of evaluating `(1.0-17.3/totht)**p`. The selected NVEL implementation evaluates that power directly at these two sites. Related guards exist elsewhere in NVEL; this is not evidence that the whole library lacks underflow handling. The pinned original NVEL `38548071` also evaluates these two powers directly.
+
+The local workaround entered build selection in `a19c41b4` (4 March 2024); ON selected it in `d495d604` (26 June 2024). The lists returned to canonical NVEL in `08e833b2` (28 August 2025), before the pinned original F77 reference. The available history establishes that selection change, but does not explain whether these two guards were deliberately dropped, made unnecessary, or overlooked.
+
+Before proposing a fix, reproduce a reachable valid-input case, measure any exception or output effect, and establish why the library selection changed. A small positive power base and large exponent can motivate an underflow investigation, but this cleanup does not establish a model bug or a safe replacement threshold. Keep any eventual correction separate from original-F77 parity work.
+
+The [D04–D13 report](tests/parity/evidence/2026-11-13-d04-d13/README.md), D11 replacement diff, historical selection receipt, and exact pre-deletion Git recovery command preserve the workaround. No guard was added to NVEL and no active model code changed.

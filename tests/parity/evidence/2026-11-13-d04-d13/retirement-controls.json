@@ -1,0 +1,28 @@
+{
+  "controls": [
+    {
+      "control": "selected_source_change",
+      "path_in_temporary_candidate": "base/unblnk.f90",
+      "rejected": true,
+      "expected_error": "Selected build inputs changed",
+      "returncode": 1
+    },
+    {
+      "control": "unselected_model_change",
+      "path_in_temporary_candidate": "ca/esuckr.f90",
+      "rejected": true,
+      "expected_error": "Unexpected model edit",
+      "returncode": 1
+    },
+    {
+      "control": "retired_source_reintroduced",
+      "path_in_temporary_candidate": "canada/on/findag_for.f90",
+      "rejected": true,
+      "expected_error": "Retirement is not isolated",
+      "returncode": 1
+    }
+  ],
+  "working_model_modified": false,
+  "temporary_candidate_restored": true,
+  "passed": true
+}

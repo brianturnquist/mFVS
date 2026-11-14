@@ -1,0 +1,203 @@
+{
+  "before_revision": "9bc35a16d6dec5fc79f513ae524297077e5298e3",
+  "before_nvel": "a73e697e220ffd0f792aa7ac10d84c911edb7ad7",
+  "scope": "D04-D13 including five D12 and fifteen D13 files; D14 excluded; no active model or bug fix authorized",
+  "tasks": [
+    {
+      "id": "D04",
+      "path": "canada/on/findag_for.f90",
+      "replacement": "canada/on/findag.f90",
+      "historical_classification": "Superseded ON FINDAG alternative; no explicit abandonment note found.",
+      "scientific_or_behavioral_differences": "The retired HTCALC call omits basal area, DBH and diameter percentile supplied by the selected routine. Selected FINDAG also initializes AGET and HTMAX. Preserve as a different historical implementation, not an equivalent copy."
+    },
+    {
+      "id": "D05",
+      "path": "canada/on/unblnk.f90",
+      "replacement": "base/unblnk.f90",
+      "historical_classification": "Intentional Canadian utility clone, now excluded; already excluded in the pinned original upstream build.",
+      "scientific_or_behavioral_differences": "ADJUSTL plus LEN_TRIM preserves embedded spaces. The selected shared utility removes every space. This difference predates cleanup and is not changed here."
+    },
+    {
+      "id": "D06",
+      "path": "canada/bc/unblnk.f90",
+      "replacement": "base/unblnk.f90",
+      "historical_classification": "Intentional BC utility clone, now excluded; independently checked against BC selection.",
+      "scientific_or_behavioral_differences": "Same historical embedded-space behavior as D05. BC already selected shared base/unblnk in the pinned original upstream build."
+    },
+    {
+      "id": "D07",
+      "path": "metric/dbsqlite/dbstreesin.f90",
+      "replacement": "dbsqlite/dbstreesin.f90",
+      "historical_classification": "Older metric SQLite reader superseded in build selection by the shared reader.",
+      "scientific_or_behavioral_differences": "Old interface has 30 arguments; selected shared interface has 33, adding RCULL, IDECAY and IWDLDSTMS. Old ABIRTH uses colreal rather than shared colint. Intel DLLIMPORT/ALIAS directives are also historical. The live 30-argument metric caller remains unchanged; bug 2 stays open."
+    },
+    {
+      "id": "D08",
+      "path": "canada/fire/on/fmcrowe.f90",
+      "replacement": "fire/vbase/fmcrowe.f90",
+      "historical_classification": "Unselected ON eastern-crown alternative; shared eastern routine is selected.",
+      "scientific_or_behavioral_differences": "Old planted-species mapping includes indices 69-72, VARVER/VVER branches and an eight-argument FMSVL2 call. Shared code has a ten-argument call and additional initialization. Bug 1 remains unfixed."
+    },
+    {
+      "id": "D09",
+      "path": "base/myopen_pc.f90",
+      "replacement": "base/myopen.f90",
+      "historical_classification": "Legacy PC/compiler-specific OPEN implementation; current Windows and CMake recipes also select generic MYOPEN.",
+      "scientific_or_behavioral_differences": "Old ISTAT=5 maps REPLACE to UNKNOWN and activates CARRIAGECONTROL=CCNTRL. Generic MYOPEN retains REPLACE. Retiring the unused alternative does not change current platform selection; no claim is made about unsupported historical compiler behavior."
+    },
+    {
+      "id": "D10",
+      "path": "canada/on/r9init.f90",
+      "replacement": "volume/NVEL/r9init.f90",
+      "historical_classification": "Older ON volume initializer superseded by selected NVEL library implementation.",
+      "scientific_or_behavioral_differences": "Retired R9_MHTS lacks MTOPP, declares VOLEQ length 11 rather than 10, uses forest-3 softwood BFMIND=7 rather than 9 and fixed BFTOPD values 7.6/9.6 rather than MTOPP-derived defaults. Full coefficient/DATA and replacement diff are retained."
+    },
+    {
+      "id": "D11",
+      "path": "volume/r9clark_fvsMod.f90",
+      "replacement": "volume/NVEL/r9clark.f90",
+      "historical_classification": "Former operational NVEL workaround, later superseded by explicit return to canonical NVEL; not established as abandoned research.",
+      "scientific_or_behavioral_differences": "Introduced and selected in a19c41b48da27e74585218ac3cd6e91bb86c8fc8 (2024-03-04); ON switched in d495d604f5afa481ce90c396f7834f0e8f9d8012 (2024-06-26). Source lists returned to NVEL in 08e833b2855133d9f01dff48307d7932a8a34433 (2025-08-28). Local r9dib and r9ht guard Y=0 when (1-17.3/totht)<0.005748 and p>14; selected versions evaluate the power directly there. Other NVEL routines already have related guards. VOLEQ lengths differ (11/10). Preserve exact diff; deferred numerical investigation is not a fix or a demonstrated model-impact claim."
+    },
+    {
+      "id": "D12a",
+      "path": "ca/estump.f90",
+      "replacement": "estb/estump.f90",
+      "historical_classification": "Older variant-specific stump bookkeeping superseded by the selected shared ESTUMP.",
+      "scientific_or_behavioral_differences": "Hard-coded aspen species index 44; selected ESTUMP uses ESASID(VARACD,INDXAS), records stump age, and handles a full MAXTRE list by matching/accumulating records. Retired code does not implement that complete shared capacity logic. Preserve each individual diff and DATA statement."
+    },
+    {
+      "id": "D12b",
+      "path": "cr/estump.f90",
+      "replacement": "estb/estump.f90",
+      "historical_classification": "Older variant-specific stump bookkeeping superseded by the selected shared ESTUMP.",
+      "scientific_or_behavioral_differences": "Hard-coded aspen species index 20; selected ESTUMP uses ESASID(VARACD,INDXAS), records stump age, and handles a full MAXTRE list by matching/accumulating records. Retired code does not implement that complete shared capacity logic. Preserve each individual diff and DATA statement."
+    },
+    {
+      "id": "D12c",
+      "path": "tt/estump.f90",
+      "replacement": "estb/estump.f90",
+      "historical_classification": "Older variant-specific stump bookkeeping superseded by the selected shared ESTUMP.",
+      "scientific_or_behavioral_differences": "Hard-coded aspen species index 6; selected ESTUMP uses ESASID(VARACD,INDXAS), records stump age, and handles a full MAXTRE list by matching/accumulating records. Retired code does not implement that complete shared capacity logic. Preserve each individual diff and DATA statement."
+    },
+    {
+      "id": "D12d",
+      "path": "ut/estump.f90",
+      "replacement": "estb/estump.f90",
+      "historical_classification": "Older variant-specific stump bookkeeping superseded by the selected shared ESTUMP.",
+      "scientific_or_behavioral_differences": "Hard-coded aspen species index 6; selected ESTUMP uses ESASID(VARACD,INDXAS), records stump age, and handles a full MAXTRE list by matching/accumulating records. Retired code does not implement that complete shared capacity logic. Preserve each individual diff and DATA statement."
+    },
+    {
+      "id": "D12e",
+      "path": "wc/estump.f90",
+      "replacement": "estb/estump.f90",
+      "historical_classification": "Older variant-specific stump bookkeeping superseded by the selected shared ESTUMP.",
+      "scientific_or_behavioral_differences": "Hard-coded aspen species index 26; selected ESTUMP uses ESASID(VARACD,INDXAS), records stump age, and handles a full MAXTRE list by matching/accumulating records. Retired code does not implement that complete shared capacity logic. Preserve each individual diff and DATA statement."
+    },
+    {
+      "id": "D13",
+      "path": "canada/newmist/dmcwak.f90",
+      "replacement": "canada/newmist/dmcw.f90",
+      "historical_classification": "Unselected regional crown-width implementation in the Canadian newmist collection; the BC mistletoe pathway itself remains active.",
+      "scientific_or_behavioral_differences": "Recalculates crown width using Moeur/CVCW-derived equations, BH1/BINT2/BH2 species coefficient tables and factors 1.02479/1.03064; selected BC generic DMCW copies CRWDTH. Each coefficient table is preserved separately; regional coefficients are not interchangeable."
+    },
+    {
+      "id": "D13-02",
+      "path": "canada/newmist/dmcwbm.f90",
+      "replacement": "canada/newmist/dmcw.f90",
+      "historical_classification": "Unselected regional crown-width implementation in the Canadian newmist collection; the BC mistletoe pathway itself remains active.",
+      "scientific_or_behavioral_differences": "Recalculates crown width using Moeur/CVCW-derived equations, BH1/BINT2/BH2 species coefficient tables and factors 1.02479/1.03064; selected BC generic DMCW copies CRWDTH. Each coefficient table is preserved separately; regional coefficients are not interchangeable."
+    },
+    {
+      "id": "D13-03",
+      "path": "canada/newmist/dmcwci.f90",
+      "replacement": "canada/newmist/dmcw.f90",
+      "historical_classification": "Unselected regional crown-width implementation in the Canadian newmist collection; the BC mistletoe pathway itself remains active.",
+      "scientific_or_behavioral_differences": "Recalculates crown width using Moeur/CVCW-derived equations, BH1/BINT2/BH2 species coefficient tables and factors 1.02479/1.03064; selected BC generic DMCW copies CRWDTH. Each coefficient table is preserved separately; regional coefficients are not interchangeable."
+    },
+    {
+      "id": "D13-04",
+      "path": "canada/newmist/dmcwcr.f90",
+      "replacement": "canada/newmist/dmcw.f90",
+      "historical_classification": "Unselected regional crown-width implementation in the Canadian newmist collection; the BC mistletoe pathway itself remains active.",
+      "scientific_or_behavioral_differences": "Recalculates crown width using Moeur/CVCW-derived equations, BH1/BINT2/BH2 species coefficient tables and factors 1.02479/1.03064; selected BC generic DMCW copies CRWDTH. Each coefficient table is preserved separately; regional coefficients are not interchangeable. This CR file also retains commented subvariant initialization history; full diff/Git recovery includes those comments."
+    },
+    {
+      "id": "D13-05",
+      "path": "canada/newmist/dmcwec.f90",
+      "replacement": "canada/newmist/dmcw.f90",
+      "historical_classification": "Unselected regional crown-width implementation in the Canadian newmist collection; the BC mistletoe pathway itself remains active.",
+      "scientific_or_behavioral_differences": "Recalculates crown width using Moeur/CVCW-derived equations, BH1/BINT2/BH2 species coefficient tables and factors 1.02479/1.03064; selected BC generic DMCW copies CRWDTH. Each coefficient table is preserved separately; regional coefficients are not interchangeable."
+    },
+    {
+      "id": "D13-06",
+      "path": "canada/newmist/dmcwem.f90",
+      "replacement": "canada/newmist/dmcw.f90",
+      "historical_classification": "Unselected regional crown-width implementation in the Canadian newmist collection; the BC mistletoe pathway itself remains active.",
+      "scientific_or_behavioral_differences": "Recalculates crown width using Moeur/CVCW-derived equations, BH1/BINT2/BH2 species coefficient tables and factors 1.02479/1.03064; selected BC generic DMCW copies CRWDTH. Each coefficient table is preserved separately; regional coefficients are not interchangeable."
+    },
+    {
+      "id": "D13-07",
+      "path": "canada/newmist/dmcwib.f90",
+      "replacement": "canada/newmist/dmcw.f90",
+      "historical_classification": "Unselected regional crown-width implementation in the Canadian newmist collection; the BC mistletoe pathway itself remains active.",
+      "scientific_or_behavioral_differences": "Already copies CRWDTH rather than recalculating crown width. Unlike selected generic DMCW, this historical copy lacks local I/ISPI/D/H/CL/BAREA declarations despite IMPLICIT NONE. It is uncompiled, not a newly introduced live defect."
+    },
+    {
+      "id": "D13-08",
+      "path": "canada/newmist/dmcwkt.f90",
+      "replacement": "canada/newmist/dmcw.f90",
+      "historical_classification": "Unselected regional crown-width implementation in the Canadian newmist collection; the BC mistletoe pathway itself remains active.",
+      "scientific_or_behavioral_differences": "Recalculates crown width using Moeur/CVCW-derived equations, BH1/BINT2/BH2 species coefficient tables and factors 1.02479/1.03064; selected BC generic DMCW copies CRWDTH. Each coefficient table is preserved separately; regional coefficients are not interchangeable."
+    },
+    {
+      "id": "D13-09",
+      "path": "canada/newmist/dmcwnc.f90",
+      "replacement": "canada/newmist/dmcw.f90",
+      "historical_classification": "Unselected regional crown-width implementation in the Canadian newmist collection; the BC mistletoe pathway itself remains active.",
+      "scientific_or_behavioral_differences": "Recalculates crown width using Moeur/CVCW-derived equations, BH1/BINT2/BH2 species coefficient tables and factors 1.02479/1.03064; selected BC generic DMCW copies CRWDTH. Each coefficient table is preserved separately; regional coefficients are not interchangeable."
+    },
+    {
+      "id": "D13-10",
+      "path": "canada/newmist/dmcwni.f90",
+      "replacement": "canada/newmist/dmcw.f90",
+      "historical_classification": "Unselected regional crown-width implementation in the Canadian newmist collection; the BC mistletoe pathway itself remains active.",
+      "scientific_or_behavioral_differences": "Recalculates crown width using Moeur/CVCW-derived equations, BH1/BINT2/BH2 species coefficient tables and factors 1.02479/1.03064; selected BC generic DMCW copies CRWDTH. Each coefficient table is preserved separately; regional coefficients are not interchangeable."
+    },
+    {
+      "id": "D13-11",
+      "path": "canada/newmist/dmcwso.f90",
+      "replacement": "canada/newmist/dmcw.f90",
+      "historical_classification": "Unselected regional crown-width implementation in the Canadian newmist collection; the BC mistletoe pathway itself remains active.",
+      "scientific_or_behavioral_differences": "Recalculates crown width using Moeur/CVCW-derived equations, BH1/BINT2/BH2 species coefficient tables and factors 1.02479/1.03064; selected BC generic DMCW copies CRWDTH. Each coefficient table is preserved separately; regional coefficients are not interchangeable."
+    },
+    {
+      "id": "D13-12",
+      "path": "canada/newmist/dmcwtt.f90",
+      "replacement": "canada/newmist/dmcw.f90",
+      "historical_classification": "Unselected regional crown-width implementation in the Canadian newmist collection; the BC mistletoe pathway itself remains active.",
+      "scientific_or_behavioral_differences": "Recalculates crown width using Moeur/CVCW-derived equations, BH1/BINT2/BH2 species coefficient tables and factors 1.02479/1.03064; selected BC generic DMCW copies CRWDTH. Each coefficient table is preserved separately; regional coefficients are not interchangeable."
+    },
+    {
+      "id": "D13-13",
+      "path": "canada/newmist/dmcwut.f90",
+      "replacement": "canada/newmist/dmcw.f90",
+      "historical_classification": "Unselected regional crown-width implementation in the Canadian newmist collection; the BC mistletoe pathway itself remains active.",
+      "scientific_or_behavioral_differences": "Recalculates crown width using Moeur/CVCW-derived equations, BH1/BINT2/BH2 species coefficient tables and factors 1.02479/1.03064; selected BC generic DMCW copies CRWDTH. Each coefficient table is preserved separately; regional coefficients are not interchangeable."
+    },
+    {
+      "id": "D13-14",
+      "path": "canada/newmist/dmcwwc.f90",
+      "replacement": "canada/newmist/dmcw.f90",
+      "historical_classification": "Unselected regional crown-width implementation in the Canadian newmist collection; the BC mistletoe pathway itself remains active.",
+      "scientific_or_behavioral_differences": "Recalculates crown width using Moeur/CVCW-derived equations, BH1/BINT2/BH2 species coefficient tables and factors 1.02479/1.03064; selected BC generic DMCW copies CRWDTH. Each coefficient table is preserved separately; regional coefficients are not interchangeable."
+    },
+    {
+      "id": "D13-15",
+      "path": "canada/newmist/dmcwws.f90",
+      "replacement": "canada/newmist/dmcw.f90",
+      "historical_classification": "Unselected regional crown-width implementation in the Canadian newmist collection; the BC mistletoe pathway itself remains active.",
+      "scientific_or_behavioral_differences": "Recalculates crown width using Moeur/CVCW-derived equations, BH1/BINT2/BH2 species coefficient tables and factors 1.02479/1.03064; selected BC generic DMCW copies CRWDTH. Each coefficient table is preserved separately; regional coefficients are not interchangeable."
+    }
+  ]
+}

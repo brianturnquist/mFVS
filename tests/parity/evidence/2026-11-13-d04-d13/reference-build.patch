@@ -1,0 +1,24 @@
+--- a/bin/FVSbc_sourceList.txt
++++ b/bin/FVSbc_sourceList.txt
+@@ -654,4 +654,9 @@
+ ../canada/newmist/misdam.f
+ ../canada/newmist/misin0.f
+ ../canada/newmist/misputz.f
+-../canada/newmist/mistoe.f
+\ No newline at end of file
++../canada/newmist/mistoe.f
++../vdbsqlite/dbsreference.f
++../dbsqlite/dbs_fiavbc_atrtls.f
++../dbsqlite/dbs_fiavbc_cutlst.f
++../dbsqlite/dbs_fiavbc_trls.f
++../volume/NVEL/wdbkwtdata.inc
+--- a/bin/FVSon_sourceList.txt
++++ b/bin/FVSon_sourceList.txt
+@@ -701,3 +701,7 @@
+ 
+ ../vvolume/twigbf.f
+ ../vvolume/twigcf.f
++../vdbsqlite/dbsreference.f
++../dbsqlite/dbs_fiavbc_atrtls.f
++../dbsqlite/dbs_fiavbc_cutlst.f
++../dbsqlite/dbs_fiavbc_trls.f

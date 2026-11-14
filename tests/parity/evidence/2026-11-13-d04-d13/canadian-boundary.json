@@ -1,0 +1,68 @@
+[
+  {
+    "state": "original",
+    "case": "bc-StandStructure",
+    "returncode": 20,
+    "invalid_keyword_errors": 300,
+    "eight_nul_sequences": 296,
+    "generated_summary_files": [],
+    "generated_databases": [],
+    "simulation_parity": "blocked",
+    "listing_sha256": "fe5e3ac689e7ea46a99019bc5f58b0a874ca9ac728a318e3b5dc9e4191447df0"
+  },
+  {
+    "state": "current",
+    "case": "bc-StandStructure",
+    "returncode": 20,
+    "invalid_keyword_errors": 300,
+    "eight_nul_sequences": 296,
+    "generated_summary_files": [],
+    "generated_databases": [],
+    "simulation_parity": "blocked",
+    "listing_sha256": "4c79b7a148a22410defb59f436c5519e1f61d0f4ef000a8f38b4d2a19d96654b"
+  },
+  {
+    "state": "original",
+    "case": "bc-YSM-SkyRanch",
+    "returncode": 20,
+    "invalid_keyword_errors": 461,
+    "eight_nul_sequences": 461,
+    "generated_summary_files": [],
+    "generated_databases": [],
+    "simulation_parity": "blocked",
+    "listing_sha256": "77fdf1f3318a64ede91d74d2bedb45bb6c95e6237fcd906429e4b07b19603d37"
+  },
+  {
+    "state": "current",
+    "case": "bc-YSM-SkyRanch",
+    "returncode": 20,
+    "invalid_keyword_errors": 461,
+    "eight_nul_sequences": 461,
+    "generated_summary_files": [],
+    "generated_databases": [],
+    "simulation_parity": "blocked",
+    "listing_sha256": "77fdf1f3318a64ede91d74d2bedb45bb6c95e6237fcd906429e4b07b19603d37"
+  },
+  {
+    "state": "original",
+    "case": "on-Hardwood",
+    "returncode": 20,
+    "invalid_keyword_errors": 30,
+    "eight_nul_sequences": 30,
+    "generated_summary_files": [],
+    "generated_databases": [],
+    "simulation_parity": "blocked",
+    "listing_sha256": "bf4619f3fc8fa8afd9f0c3617fcae486ed166dc1dd68e1c3b69583ce74a7b575"
+  },
+  {
+    "state": "current",
+    "case": "on-Hardwood",
+    "returncode": 20,
+    "invalid_keyword_errors": 30,
+    "eight_nul_sequences": 30,
+    "generated_summary_files": [],
+    "generated_databases": [],
+    "simulation_parity": "blocked",
+    "listing_sha256": "1a822459b7ae874b8dd3e435e583533fb6760c2cee14f48847ddcbf86c7301dc"
+  }
+]

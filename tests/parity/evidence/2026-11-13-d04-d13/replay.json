@@ -1,0 +1,52 @@
+{
+  "archive_sha256_verified": true,
+  "raw_input_hashes_verified": true,
+  "comparisons": [
+    {
+      "comparison": "comparisons/bc-StandStructure-original-current.json",
+      "passed": true,
+      "replayed_report_identical": true
+    },
+    {
+      "comparison": "comparisons/bc-YSM-SkyRanch-original-current.json",
+      "passed": true,
+      "replayed_report_identical": true
+    },
+    {
+      "comparison": "comparisons/ie-iet01-current-candidate.json",
+      "passed": true,
+      "replayed_report_identical": true
+    },
+    {
+      "comparison": "comparisons/ie-iet01-original-candidate.json",
+      "passed": true,
+      "replayed_report_identical": true
+    },
+    {
+      "comparison": "comparisons/ie-iet01-original-current.json",
+      "passed": true,
+      "replayed_report_identical": true
+    },
+    {
+      "comparison": "comparisons/on-Hardwood-original-current.json",
+      "passed": true,
+      "replayed_report_identical": true
+    },
+    {
+      "comparison": "comparisons/sn-snt01-current-candidate.json",
+      "passed": true,
+      "replayed_report_identical": true
+    },
+    {
+      "comparison": "comparisons/sn-snt01-original-candidate.json",
+      "passed": true,
+      "replayed_report_identical": true
+    },
+    {
+      "comparison": "comparisons/sn-snt01-original-current.json",
+      "passed": true,
+      "replayed_report_identical": true
+    }
+  ],
+  "passed": true
+}

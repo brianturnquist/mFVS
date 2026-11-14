@@ -1,0 +1,185 @@
+[
+  {
+    "command": [
+      "git",
+      "show",
+      "--no-patch",
+      "--format=fuller",
+      "a19c41b48da27e74585218ac3cd6e91bb86c8fc8"
+    ],
+    "output": "commit a19c41b48da27e74585218ac3cd6e91bb86c8fc8\nAuthor:     Daniel Wagner <daniel.s.wagner@usda.gov>\nAuthorDate: Mon Mar 4 17:58:59 2024 -0500\nCommit:     Daniel Wagner <daniel.s.wagner@usda.gov>\nCommitDate: Mon Mar 4 17:58:59 2024 -0500\n\n    Fixes to NVEL Submodule, using modified R9clark"
+  },
+  {
+    "command": [
+      "git",
+      "show",
+      "--no-patch",
+      "--format=fuller",
+      "d495d604f5afa481ce90c396f7834f0e8f9d8012"
+    ],
+    "output": "commit d495d604f5afa481ce90c396f7834f0e8f9d8012\nAuthor:     lance-david <lance.david@usda.gov>\nAuthorDate: Wed Jun 26 12:33:06 2024 -0600\nCommit:     lance-david <lance.david@usda.gov>\nCommitDate: Wed Jun 26 12:33:06 2024 -0600\n\n    Updated for NVEL submodule."
+  },
+  {
+    "command": [
+      "git",
+      "show",
+      "--no-patch",
+      "--format=fuller",
+      "08e833b2855133d9f01dff48307d7932a8a34433"
+    ],
+    "output": "commit 08e833b2855133d9f01dff48307d7932a8a34433\nAuthor:     DANIEL S. WAGNER <daniel.s.wagner@usda.gov>\nAuthorDate: Thu Aug 28 12:44:54 2025 -0400\nCommit:     GitHub Enterprise <no-reply@techtrend.us>\nCommitDate: Thu Aug 28 12:44:54 2025 -0400\n\n    Fia vbc (#111)\n    "
+  },
+  {
+    "command": [
+      "git",
+      "show",
+      "--format=",
+      "--unified=2",
+      "a19c41b48da27e74585218ac3cd6e91bb86c8fc8",
+      "--",
+      "bin/FVSie_sourceList.txt"
+    ],
+    "r9clark_excerpts": " ../volume/NVEL/r8vlist.f\n ../volume/NVEL/r8prep.f\n-../volume/NVEL/r9clark.f\n+../volume/r9clark_fvsMod.f\n ../volume/NVEL/r9clarkdib.f\n ../volume/NVEL/r9init.f"
+  },
+  {
+    "command": [
+      "git",
+      "show",
+      "--format=",
+      "--unified=2",
+      "d495d604f5afa481ce90c396f7834f0e8f9d8012",
+      "--",
+      "bin/FVSon_sourceList.txt"
+    ],
+    "r9clark_excerpts": "-../volume/r8vol2.f\n-../volume/r8prep.f\n-../volume/r9clark.f\n-../volume/r9clarkdib.f\n-../volume/r9init.f\n-../volume/r9logs.f\n+../volume/NVEL/r8vlist.f\n+../volume/NVEL/r8prep.f\n+../volume/r9clark_fvsMod.f\n+../volume/NVEL/r9clarkdib.f\n+../volume/NVEL/r9init.f\n+../volume/NVEL/r9logs.f"
+  },
+  {
+    "command": [
+      "git",
+      "show",
+      "--format=",
+      "--unified=2",
+      "08e833b2855133d9f01dff48307d7932a8a34433",
+      "--",
+      "bin/FVSie_sourceList.txt"
+    ],
+    "r9clark_excerpts": " ../volume/NVEL/r8vlist.f\n ../volume/NVEL/r8prep.f\n-../volume/r9clark_fvsMod.f\n+../volume/NVEL/r9clark.f\n ../volume/NVEL/r9clarkdib.f\n ../volume/NVEL/r9init.f"
+  },
+  {
+    "command": [
+      "git",
+      "show",
+      "--format=",
+      "--unified=2",
+      "08e833b2855133d9f01dff48307d7932a8a34433",
+      "--",
+      "bin/FVSon_sourceList.txt"
+    ],
+    "r9clark_excerpts": " ../volume/NVEL/r8vlist.f\n ../volume/NVEL/r8prep.f\n-../volume/r9clark_fvsMod.f\n+../volume/NVEL/r9clark.f\n ../volume/NVEL/r9clarkdib.f\n ../volume/NVEL/r9init.f"
+  },
+  {
+    "file": "changeNotes/2018.06.22_gdixon.txt",
+    "excerpts": [
+      {
+        "line": 92,
+        "text": "             svstart.f  Moved to the /vbase subdirectory. "
+      },
+      {
+        "line": 93,
+        "text": ""
+      },
+      {
+        "line": 94,
+        "text": "              unblnk.f  Deleted the VVER variable and Canadian variant-specific code. "
+      },
+      {
+        "line": 95,
+        "text": ""
+      },
+      {
+        "line": 96,
+        "text": "/bin"
+      },
+      {
+        "line": 242,
+        "text": "                        VVER with VARACD. Deleted the obsolete variants OZ and SE."
+      },
+      {
+        "line": 243,
+        "text": ""
+      },
+      {
+        "line": 244,
+        "text": "              unblnk.f  New subroutine cloned from /base version with variant-specific and U.S. variant"
+      },
+      {
+        "line": 245,
+        "text": "                        code deleted."
+      },
+      {
+        "line": 246,
+        "text": ""
+      },
+      {
+        "line": 247,
+        "text": "/canada/bin"
+      },
+      {
+        "line": 248,
+        "text": "   FVSbcc_notReady.txt  Pathnames were adjusted to reflect changes in the directory structure. These include:"
+      },
+      {
+        "line": 249,
+        "text": "                        1) Changed unblnk.f to come from /bc instead of /base. "
+      },
+      {
+        "line": 250,
+        "text": "                        2) from /vbase instead of /base: cuts.f, evpred.f, evtstv.f, fortyp.f, sdical.f,"
+      },
+      {
+        "line": 251,
+        "text": "                           stkval.f, svout.f, and svstart.f"
+      },
+      {
+        "line": 261,
+        "text": ""
+      },
+      {
+        "line": 262,
+        "text": "  FVSon_sourceList.txt  Pathnames were adjusted to reflect changes in the directory structure. These include:"
+      },
+      {
+        "line": 263,
+        "text": "                        1) Changed unblnk.f to come from /on instead of /base. "
+      },
+      {
+        "line": 264,
+        "text": "                        2) from /vbase instead of /base: evpred.f, evtstv.f, fortyp.f, natcrz.f, sdical.f,"
+      },
+      {
+        "line": 265,
+        "text": "                           stkval.f, svout.f, and svstart.f"
+      },
+      {
+        "line": 301,
+        "text": "                        VVER with VARACD. Deleted the obsolete variants OZ and SE."
+      },
+      {
+        "line": 302,
+        "text": ""
+      },
+      {
+        "line": 303,
+        "text": "              unblnk.f  New subroutine cloned from /base version with variant-specific and U.S. variant"
+      },
+      {
+        "line": 304,
+        "text": "                        code deleted."
+      },
+      {
+        "line": 305,
+        "text": ""
+      }
+    ]
+  }
+]

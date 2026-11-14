@@ -1,0 +1,505 @@
+{
+  "original_revision": "c210536536d81fd9b46dccb9a571f0de1e55e944",
+  "variants_checked": 24,
+  "tasks": [
+    {
+      "id": "D04",
+      "original_path": "canada/on/findag.for",
+      "selected_by": [],
+      "original_selected_replacement": "canada/on/findag.f",
+      "replacement_selected_by": [
+        "on"
+      ]
+    },
+    {
+      "id": "D05",
+      "original_path": "canada/on/unblnk.f",
+      "selected_by": [],
+      "original_selected_replacement": "base/unblnk.f",
+      "replacement_selected_by": [
+        "ak",
+        "bc",
+        "bm",
+        "ca",
+        "ci",
+        "cr",
+        "cs",
+        "ec",
+        "em",
+        "ie",
+        "kt",
+        "ls",
+        "nc",
+        "ne",
+        "oc",
+        "on",
+        "op",
+        "pn",
+        "sn",
+        "so",
+        "tt",
+        "ut",
+        "wc",
+        "ws"
+      ]
+    },
+    {
+      "id": "D06",
+      "original_path": "canada/bc/unblnk.f",
+      "selected_by": [],
+      "original_selected_replacement": "base/unblnk.f",
+      "replacement_selected_by": [
+        "ak",
+        "bc",
+        "bm",
+        "ca",
+        "ci",
+        "cr",
+        "cs",
+        "ec",
+        "em",
+        "ie",
+        "kt",
+        "ls",
+        "nc",
+        "ne",
+        "oc",
+        "on",
+        "op",
+        "pn",
+        "sn",
+        "so",
+        "tt",
+        "ut",
+        "wc",
+        "ws"
+      ]
+    },
+    {
+      "id": "D07",
+      "original_path": "metric/dbsqlite/dbstreesin.f",
+      "selected_by": [],
+      "original_selected_replacement": "dbsqlite/dbstreesin.f",
+      "replacement_selected_by": [
+        "ak",
+        "bc",
+        "bm",
+        "ca",
+        "ci",
+        "cr",
+        "cs",
+        "ec",
+        "em",
+        "ie",
+        "kt",
+        "ls",
+        "nc",
+        "ne",
+        "oc",
+        "on",
+        "op",
+        "pn",
+        "sn",
+        "so",
+        "tt",
+        "ut",
+        "wc",
+        "ws"
+      ]
+    },
+    {
+      "id": "D08",
+      "original_path": "canada/fire/on/fmcrowe.f",
+      "selected_by": [],
+      "original_selected_replacement": "fire/vbase/fmcrowe.f",
+      "replacement_selected_by": [
+        "ak",
+        "bc",
+        "bm",
+        "ca",
+        "ci",
+        "cr",
+        "cs",
+        "ec",
+        "em",
+        "ie",
+        "ls",
+        "ne",
+        "oc",
+        "on",
+        "op",
+        "pn",
+        "sn",
+        "so",
+        "tt",
+        "ut",
+        "wc",
+        "ws"
+      ]
+    },
+    {
+      "id": "D09",
+      "original_path": "base/myopen_pc.f",
+      "selected_by": [],
+      "original_selected_replacement": "base/myopen.f",
+      "replacement_selected_by": [
+        "ak",
+        "bc",
+        "bm",
+        "ca",
+        "ci",
+        "cr",
+        "cs",
+        "ec",
+        "em",
+        "ie",
+        "kt",
+        "ls",
+        "nc",
+        "ne",
+        "oc",
+        "on",
+        "op",
+        "pn",
+        "sn",
+        "so",
+        "tt",
+        "ut",
+        "wc",
+        "ws"
+      ]
+    },
+    {
+      "id": "D10",
+      "original_path": "canada/on/r9init.f",
+      "selected_by": [],
+      "original_selected_replacement": "volume/NVEL/r9init.f",
+      "replacement_selected_by": [
+        "ak",
+        "bm",
+        "ca",
+        "ci",
+        "cr",
+        "cs",
+        "ec",
+        "em",
+        "ie",
+        "kt",
+        "ls",
+        "nc",
+        "ne",
+        "oc",
+        "on",
+        "op",
+        "pn",
+        "sn",
+        "so",
+        "tt",
+        "ut",
+        "wc",
+        "ws"
+      ]
+    },
+    {
+      "id": "D11",
+      "original_path": "volume/r9clark_fvsMod.f",
+      "selected_by": [],
+      "original_selected_replacement": "volume/NVEL/r9clark.f",
+      "replacement_selected_by": [
+        "ak",
+        "bm",
+        "ca",
+        "ci",
+        "cr",
+        "cs",
+        "ec",
+        "em",
+        "ie",
+        "kt",
+        "ls",
+        "nc",
+        "ne",
+        "oc",
+        "on",
+        "op",
+        "pn",
+        "sn",
+        "so",
+        "tt",
+        "ut",
+        "wc",
+        "ws"
+      ]
+    },
+    {
+      "id": "D12a",
+      "original_path": "ca/estump.f",
+      "selected_by": [],
+      "original_selected_replacement": "strp/estump.f",
+      "replacement_selected_by": [
+        "bc",
+        "bm",
+        "ca",
+        "cr",
+        "cs",
+        "ec",
+        "ls",
+        "nc",
+        "ne",
+        "oc",
+        "on",
+        "op",
+        "pn",
+        "sn",
+        "so",
+        "tt",
+        "ut",
+        "wc",
+        "ws"
+      ]
+    },
+    {
+      "id": "D12b",
+      "original_path": "cr/estump.f",
+      "selected_by": [],
+      "original_selected_replacement": "strp/estump.f",
+      "replacement_selected_by": [
+        "bc",
+        "bm",
+        "ca",
+        "cr",
+        "cs",
+        "ec",
+        "ls",
+        "nc",
+        "ne",
+        "oc",
+        "on",
+        "op",
+        "pn",
+        "sn",
+        "so",
+        "tt",
+        "ut",
+        "wc",
+        "ws"
+      ]
+    },
+    {
+      "id": "D12c",
+      "original_path": "tt/estump.f",
+      "selected_by": [],
+      "original_selected_replacement": "strp/estump.f",
+      "replacement_selected_by": [
+        "bc",
+        "bm",
+        "ca",
+        "cr",
+        "cs",
+        "ec",
+        "ls",
+        "nc",
+        "ne",
+        "oc",
+        "on",
+        "op",
+        "pn",
+        "sn",
+        "so",
+        "tt",
+        "ut",
+        "wc",
+        "ws"
+      ]
+    },
+    {
+      "id": "D12d",
+      "original_path": "ut/estump.f",
+      "selected_by": [],
+      "original_selected_replacement": "strp/estump.f",
+      "replacement_selected_by": [
+        "bc",
+        "bm",
+        "ca",
+        "cr",
+        "cs",
+        "ec",
+        "ls",
+        "nc",
+        "ne",
+        "oc",
+        "on",
+        "op",
+        "pn",
+        "sn",
+        "so",
+        "tt",
+        "ut",
+        "wc",
+        "ws"
+      ]
+    },
+    {
+      "id": "D12e",
+      "original_path": "wc/estump.f",
+      "selected_by": [],
+      "original_selected_replacement": "strp/estump.f",
+      "replacement_selected_by": [
+        "bc",
+        "bm",
+        "ca",
+        "cr",
+        "cs",
+        "ec",
+        "ls",
+        "nc",
+        "ne",
+        "oc",
+        "on",
+        "op",
+        "pn",
+        "sn",
+        "so",
+        "tt",
+        "ut",
+        "wc",
+        "ws"
+      ]
+    },
+    {
+      "id": "D13",
+      "original_path": "canada/newmist/dmcwak.f",
+      "selected_by": [],
+      "original_selected_replacement": "canada/newmist/dmcw.f",
+      "replacement_selected_by": [
+        "bc"
+      ]
+    },
+    {
+      "id": "D13-02",
+      "original_path": "canada/newmist/dmcwbm.f",
+      "selected_by": [],
+      "original_selected_replacement": "canada/newmist/dmcw.f",
+      "replacement_selected_by": [
+        "bc"
+      ]
+    },
+    {
+      "id": "D13-03",
+      "original_path": "canada/newmist/dmcwci.f",
+      "selected_by": [],
+      "original_selected_replacement": "canada/newmist/dmcw.f",
+      "replacement_selected_by": [
+        "bc"
+      ]
+    },
+    {
+      "id": "D13-04",
+      "original_path": "canada/newmist/dmcwcr.f",
+      "selected_by": [],
+      "original_selected_replacement": "canada/newmist/dmcw.f",
+      "replacement_selected_by": [
+        "bc"
+      ]
+    },
+    {
+      "id": "D13-05",
+      "original_path": "canada/newmist/dmcwec.f",
+      "selected_by": [],
+      "original_selected_replacement": "canada/newmist/dmcw.f",
+      "replacement_selected_by": [
+        "bc"
+      ]
+    },
+    {
+      "id": "D13-06",
+      "original_path": "canada/newmist/dmcwem.f",
+      "selected_by": [],
+      "original_selected_replacement": "canada/newmist/dmcw.f",
+      "replacement_selected_by": [
+        "bc"
+      ]
+    },
+    {
+      "id": "D13-07",
+      "original_path": "canada/newmist/dmcwib.f",
+      "selected_by": [],
+      "original_selected_replacement": "canada/newmist/dmcw.f",
+      "replacement_selected_by": [
+        "bc"
+      ]
+    },
+    {
+      "id": "D13-08",
+      "original_path": "canada/newmist/dmcwkt.f",
+      "selected_by": [],
+      "original_selected_replacement": "canada/newmist/dmcw.f",
+      "replacement_selected_by": [
+        "bc"
+      ]
+    },
+    {
+      "id": "D13-09",
+      "original_path": "canada/newmist/dmcwnc.f",
+      "selected_by": [],
+      "original_selected_replacement": "canada/newmist/dmcw.f",
+      "replacement_selected_by": [
+        "bc"
+      ]
+    },
+    {
+      "id": "D13-10",
+      "original_path": "canada/newmist/dmcwni.f",
+      "selected_by": [],
+      "original_selected_replacement": "canada/newmist/dmcw.f",
+      "replacement_selected_by": [
+        "bc"
+      ]
+    },
+    {
+      "id": "D13-11",
+      "original_path": "canada/newmist/dmcwso.f",
+      "selected_by": [],
+      "original_selected_replacement": "canada/newmist/dmcw.f",
+      "replacement_selected_by": [
+        "bc"
+      ]
+    },
+    {
+      "id": "D13-12",
+      "original_path": "canada/newmist/dmcwtt.f",
+      "selected_by": [],
+      "original_selected_replacement": "canada/newmist/dmcw.f",
+      "replacement_selected_by": [
+        "bc"
+      ]
+    },
+    {
+      "id": "D13-13",
+      "original_path": "canada/newmist/dmcwut.f",
+      "selected_by": [],
+      "original_selected_replacement": "canada/newmist/dmcw.f",
+      "replacement_selected_by": [
+        "bc"
+      ]
+    },
+    {
+      "id": "D13-14",
+      "original_path": "canada/newmist/dmcwwc.f",
+      "selected_by": [],
+      "original_selected_replacement": "canada/newmist/dmcw.f",
+      "replacement_selected_by": [
+        "bc"
+      ]
+    },
+    {
+      "id": "D13-15",
+      "original_path": "canada/newmist/dmcwws.f",
+      "selected_by": [],
+      "original_selected_replacement": "canada/newmist/dmcw.f",
+      "replacement_selected_by": [
+        "bc"
+      ]
+    }
+  ]
+}

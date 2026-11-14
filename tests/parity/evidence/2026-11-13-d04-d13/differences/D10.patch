@@ -1,0 +1,187 @@
+--- retired/canada/on/r9init.f90
++++ retained/volume/NVEL/r9init.f90
+@@ -1,18 +1,19 @@
+-!========================!
+-!   canada/on : r9init   !
+-!========================!
+-! CANADA-ON $Id$
++!============================!
++!   VolumeLibrary : r9init   !
++!============================!
++  !== last modified  6-12-2007
+ 
+ subroutine R9_MHTS(IFORST,VOLEQ,DBH,HTTOT,SI,BA,HT1PRD,HT2PRD,&
+-     &PROD,ERRFLAG)
++     &PROD,ERRFLAG,MTOPP)
+ 
+   ! CALCULATES THE MERCH HTS BASED ON TOTAL TREE HEIGHT BY FORST AND SPECIES
++  ! YW 07/13/2018 Added variable MTOPP to the subroutine and use the variable to replace hardcoded 9.6
+   ! Variables
+-  character(len=11) :: VOLEQ
++  character(len=10) :: VOLEQ
+   character(len=2) :: PROD
+   integer :: SI,BA,VFLAG,ERRFLAG,IFORST
+   real    :: DBH,HTTOT,HT1PRD,HT2PRD,B(6),BFMIND,DBHMIN,BFTOPD,TOPD
+-  real    :: SAWBOL,ESTSHT,FACTOR,PULBOL,ESTCHT,ESTTHT
++  real    :: SAWBOL,ESTSHT,FACTOR,PULBOL,ESTCHT,ESTTHT,MTOPP
+ 
+   if (BA.le.0) BA = 90
+ 
+@@ -35,7 +36,7 @@
+   if (VOLEQ(8:10).lt."300") then
+      if (IFORST .eq.3) then
+         DBHMIN = 4.0
+-        BFMIND = 7.0
++        BFMIND = 9.0
+      else if (IFORST.eq.5) then
+         DBHMIN = 4.0
+         BFMIND = 9.0
+@@ -43,7 +44,9 @@
+         DBHMIN = 5.0
+         BFMIND = 9.0
+      end if
+-     BFTOPD = 7.6
++     !         BFTOPD = 7.6
++     if (MTOPP.lt.0.1) MTOPP = 7.6
++     BFTOPD = MTOPP
+      TOPD = 4.0
+   else
+      if (IFORST.eq.4.or. IFORST.eq.10.or. IFORST.eq.13.or.&
+@@ -87,7 +90,9 @@
+         DBHMIN = 6.0
+         BFMIND = 11.0
+      end if
+-     BFTOPD = 9.6
++     !         BFTOPD = 9.6
++     if (MTOPP.lt.0.1) MTOPP = 9.6
++     BFTOPD = MTOPP
+      TOPD = 4.0
+   end if
+ 
+@@ -150,25 +155,21 @@
+ subroutine R9INIT(VOLEQ,B,VFLAG,ERRFLAG)
+ 
+   ! CREATED  : 11-8-2002
+-  !        MODIFIED FOR ONTARIO VARIANT (LS WITH 72 SPECIES INSTEAD OF 68)
+ 
+   ! PURPOSE  : THIS SUBROUTINE SETS VALUES USED TO CALC THE MERCH HT OF A TREE
+ 
+   !       DECLARE VARIBLES         *
+ 
+   ! Variables
+-  character(len=11) :: VOLEQ
++  character(len=10) :: VOLEQ
+   character(len=3) :: SPEC_LIST(149)
+   character(len=3) :: SPEC
+   integer :: VFLAG,I,ERRFLAG
+-  real    :: B(6),BFMIND,DBHMIN,BFTOPD,TOPD
++  real    :: B(6)
+   real    :: LS_B1(149),LS_B2(149),LS_B3(149),LS_B4(149),LS_B5(149)
+   real    :: CS_B1(149),CS_B2(149),CS_B3(149),CS_B4(149),CS_B5(149)
+   real    :: NE_B1(149),NE_B2(149),NE_B3(149),NE_B4(149),NE_B5(149)
+   real    :: LS_B6(149),CS_B6(149),NE_B6(149)
+-
+-  !     THIS ON-FVS REVISED LIST WILL BE BROKEN IF USED WITH BASE FVS
+-  !     CODE. ENTRIES IN POSITIONS 69-72 HAVE BEEN REPLACED WITH...
+ 
+   data SPEC_LIST/'012','043','057','068','071','090','091','094',&
+        &'095','097','100','105','110','123','125','126','128','129',&
+@@ -186,18 +187,7 @@
+        &'836','837','901','920','922','923','931','935','951','952',&
+        &'970','971','972','974','975','977','990','991','992','993',&
+        &'994'/
+-
+   !     SET TABLES FOR LS VARIANT
+-
+-  !      DATA LS_SPEC  /'105','130','125','125','129','094','091','012',
+-  !     &  '095','071','241','261','290','068','543','544','742','317',
+-  !     &  '316','762','972','975','977','371','951','318','314','531',
+-  !     &  '541','802','804','823','826','833','837','809','402','403',
+-  !     &  '407','743','746','741','375','993','601','602','701','901',
+-  !     &  '994','313','315','319','391','421','462','491','500','660',
+-  !     &  '693','731','761','763','766','920','922','923','931','935',
+-  !     &  '105','129','094','095'/
+-
+   data LS_B1/&
+        &14.30400,16.93400,16.93400,16.93400,13.62000,31.95700,&
+        &31.95700,31.95700,20.03800,16.93400,16.93400,16.93400,&
+@@ -354,6 +344,8 @@
+        &0.08228,0.08228,0.08228,0.08228,0.05841,0.05841,&
+        &0.12594,0.12594,0.12594,0.12594,0.12594,0.12594,&
+        &0.12594,0.12594,0.12594,0.08228,0.08228/
++
++  !     SET TABLES FOR CS VARIANT
+   data CS_B1/&
+        &16.28100, 8.20790, 8.20790, 8.20790,16.28100,16.28100,&
+        &16.28100,16.28100,16.28100,16.28100,16.28100,16.28100,&
+@@ -511,6 +503,7 @@
+        &0.12594,0.12594,0.12594,0.12594,0.12594,0.12594,&
+        &0.12594,0.08228,0.01618,0.10771,0.10771/
+ 
++  !     SET TABLES FOR NE VARIANT
+   data NE_B1/&
+        &14.30400, 8.20790, 8.20790, 8.20790,13.62000,31.95700,&
+        &31.95700,31.95700,31.95700,31.95700,36.85100,36.85100,&
+@@ -671,34 +664,35 @@
+   !     MAIN LOGIC
+ 
+   SPEC = VOLEQ(8:10)
+-  do I = 1,149
+-     if (SPEC.eq.SPEC_LIST(I)) then
+-        if (VFLAG .eq.1) then
+-           B(1) = LS_B1(I)
+-           B(2) = LS_B2(I)
+-           B(3) = LS_B3(I)
+-           B(4) = LS_B4(I)
+-           B(5) = LS_B5(I)
+-           B(6) = LS_B6(I)
+-        else if (VFLAG.eq.2) then
+-           B(1) = CS_B1(I)
+-           B(2) = CS_B2(I)
+-           B(3) = CS_B3(I)
+-           B(4) = CS_B4(I)
+-           B(5) = CS_B5(I)
+-           B(6) = CS_B6(I)
+-        else
+-           B(1) = NE_B1(I)
+-           B(2) = NE_B2(I)
+-           B(3) = NE_B3(I)
+-           B(4) = NE_B4(I)
+-           B(5) = NE_B5(I)
+-           B(6) = NE_B6(I)
+-        end if
+-        return
++  do 100, I = 1,149
++  if (SPEC.eq.SPEC_LIST(I)) then
++     if (VFLAG .eq.1) then
++        B(1) = LS_B1(I)
++        B(2) = LS_B2(I)
++        B(3) = LS_B3(I)
++        B(4) = LS_B4(I)
++        B(5) = LS_B5(I)
++        B(6) = LS_B6(I)
++     else if (VFLAG .eq.2) then
++        B(1) = CS_B1(I)
++        B(2) = CS_B2(I)
++        B(3) = CS_B3(I)
++        B(4) = CS_B4(I)
++        B(5) = CS_B5(I)
++        B(6) = CS_B6(I)
++     else
++        B(1) = NE_B1(I)
++        B(2) = NE_B2(I)
++        B(3) = NE_B3(I)
++        B(4) = NE_B4(I)
++        B(5) = NE_B5(I)
++        B(6) = NE_B6(I)
+      end if
+-     100 continue
+-  end do
++     return
++  end if
++  100 continue
++
+   ERRFLAG = 1
++
+   return
+ end

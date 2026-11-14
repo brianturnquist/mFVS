@@ -9,9 +9,11 @@ This document stores the redundancy and dormant-code findings before cleanup
 begins. The audit was read-only. No builds or simulations were run during the
 audit, and no source, build configuration, source list, test input, or reference
 output was changed. Creating this tracker was a documentation-only step.
-P01–P03 verification preparation and D01–D03 retirement are now complete; see
+P01–P03 verification preparation and D01–D13 retirement are now complete; see
 the [verification report](tests/parity/evidence/2026-11-13-p01-p03/README.md) and
-[retirement report](tests/parity/evidence/2026-11-13-d01-d03/README.md).
+the retirement reports for [D01–D03](tests/parity/evidence/2026-11-13-d01-d03/README.md)
+and [D04–D13](tests/parity/evidence/2026-11-13-d04-d13/README.md).
+D14 remains pending. There are 35 completed and 85 pending checkbox items.
 
 The findings combine repository-wide source-list inventory, targeted source
 comparisons, call/ENTRY inspection, and historical notes. They are not an
@@ -336,62 +338,78 @@ retire it. Unknown historical intent is not evidence of abandoned research.
   13 November 2026: removed only the retired US implementation. The selected
   Canadian stub and historical notes are unchanged. Dormant Canadian source
   lists still contain stale references, documented in the retirement report.
-- [ ] **D04 — `canada/on/findag_for.f90`.** Unselected second FINDAG
-  implementation; ON selects `canada/on/findag.f90`. It appears superseded,
-  but record its scientific differences before removal.
-- [ ] **D05 — `canada/on/unblnk.f90`.** Unselected utility copy; current
-  builds use shared `base/unblnk.f90`.
-- [ ] **D06 — `canada/bc/unblnk.f90`.** Review independently of D05; the
-  shared utility remains active.
-- [ ] **D07 — `metric/dbsqlite/dbstreesin.f90`.** Unselected older
-  30-argument implementation. The selected shared implementation has the
-  newer interface; its relationship to the stale caller is documented in
-  `FOUND_BUGS.md`.
-- [ ] **D08 — `canada/fire/on/fmcrowe.f90`.** Unselected ON implementation
-  with an old FMSVL2 call, also identified as uncompiled in `FOUND_BUGS.md`.
-- [ ] **D09 — `base/myopen_pc.f90`.** Unselected platform-specific MYOPEN
-  alternative. Current builds select `base/myopen.f90`. Establish whether
-  supporting the old alternative remains desirable before removal.
-- [ ] **D10 — `canada/on/r9init.f90`.** Unselected older volume
-  implementation. Current builds select NVEL's `r9init.f90`. Record scientific
-  differences and recovery provenance rather than assuming interchangeability.
-- [ ] **D11 — `volume/r9clark_fvsMod.f90`.** Unselected older profile-volume
-  implementation. Current builds select NVEL's Clark routines. Preserve a
-  historical reference and record meaningful scientific differences.
+- [x] **D04 — `canada/on/findag_for.f90`.** Completed 13 November 2026:
+  retired the unselected FINDAG alternative. ON keeps `canada/on/findag.f90`;
+  HTCALC argument and initialization differences are preserved in the report.
+- [x] **D05 — `canada/on/unblnk.f90`.** Completed 13 November 2026:
+  retired the unselected ON clone. Preserved its embedded-space semantics and
+  historical purpose; original and current builds select `base/unblnk.f90`.
+- [x] **D06 — `canada/bc/unblnk.f90`.** Completed 13 November 2026:
+  independently verified BC exclusion and retired its clone. The shared
+  utility and its existing space-removal behavior are unchanged.
+- [x] **D07 — `metric/dbsqlite/dbstreesin.f90`.** Completed 13 November 2026:
+  retired the older 30-argument reader. Shared DBSTREESIN remains selected;
+  the live 33/30 mismatch stays open in `FOUND_BUGS.md`. Verification tracing
+  now explicitly records this absent unselected historical source.
+- [x] **D08 — `canada/fire/on/fmcrowe.f90`.** Completed 13 November 2026:
+  retired the unselected ON alternative; preserved species mapping and
+  interface differences. The live FMSVL2 mismatch remains unfixed.
+- [x] **D09 — `base/myopen_pc.f90`.** Completed 13 November 2026:
+  retired the unused compiler-specific alternative after checking current
+  Make/Windows/CMake selection of shared MYOPEN. OPEN behavior differences
+  and exact recovery identity are preserved.
+- [x] **D10 — `canada/on/r9init.f90`.** Completed 13 November 2026:
+  retired the unselected initializer. Preserved signature, merchantability,
+  coefficient/DATA and full replacement differences against selected NVEL.
+- [x] **D11 — `volume/r9clark_fvsMod.f90`.** Completed 13 November 2026:
+  retired the formerly active workaround after tracing selection back to
+  NVEL in 2025. Preserved its power guards and exact diff; a separate,
+  unconfirmed numerical concern is logged for later investigation.
+
+The [D04–D13 report](tests/parity/evidence/2026-11-13-d04-d13/README.md)
+contains an individual record, replacement diff, Git blob and recovery command
+for every completed file below as well as D04–D11.
 
 ### D12 — Five separate ESTUMP copies
 
-Every current variant selects `estb/estump.f90`. Review and remove, if approved,
-only one dormant copy per task; keep the shared implementation.
+Every current variant selects `estb/estump.f90`. These five completed reviews
+preserve individual scientific differences and keep that shared implementation.
 
-- [ ] **D12a — `ca/estump.f90`.** Verify build exclusion and replacement.
-- [ ] **D12b — `cr/estump.f90`.** Verify build exclusion and replacement.
-- [ ] **D12c — `tt/estump.f90`.** Verify build exclusion and replacement.
-- [ ] **D12d — `ut/estump.f90`.** Verify build exclusion and replacement.
-- [ ] **D12e — `wc/estump.f90`.** Verify build exclusion and replacement.
+- [x] **D12a — `ca/estump.f90`.** Retired 13 November 2026; preserved aspen
+  index 44 and bookkeeping differences against shared ESTUMP.
+- [x] **D12b — `cr/estump.f90`.** Retired 13 November 2026; preserved aspen
+  index 20 and its separate replacement diff.
+- [x] **D12c — `tt/estump.f90`.** Retired 13 November 2026; preserved aspen
+  index 6 and its separate replacement diff.
+- [x] **D12d — `ut/estump.f90`.** Retired 13 November 2026; preserved aspen
+  index 6 and its separate replacement diff.
+- [x] **D12e — `wc/estump.f90`.** Retired 13 November 2026; preserved aspen
+  index 26 and its separate replacement diff.
 
 ### D13 — DMCW alternatives, one file per task
 
-These unselected files define DMCW implementations. Selected
-`canada/newmist/dmcw.f90` uses `CRWDTH`. Compare and record each old equation
-set before deciding whether it can be retired; do not remove the whole
-`canada/newmist/` directory. D13 retains the original audit's ID for Alaska.
+These retired files defined unselected DMCW implementations. Selected
+`canada/newmist/dmcw.f90` still uses `CRWDTH`; the BC mistletoe pathway remains
+active. Each file's equations, DATA tables, replacement diff and recovery
+identity were recorded separately. No explicit abandonment decision was found
+for these historical regional alternatives. D13 retains the original audit's
+ID for Alaska. All fifteen retirements completed 13 November 2026.
 
-- [ ] **D13 — `canada/newmist/dmcwak.f90`.** First bounded comparison.
-- [ ] **D13-02 — `canada/newmist/dmcwbm.f90`.** Separate comparison.
-- [ ] **D13-03 — `canada/newmist/dmcwci.f90`.** Separate comparison.
-- [ ] **D13-04 — `canada/newmist/dmcwcr.f90`.** Separate comparison.
-- [ ] **D13-05 — `canada/newmist/dmcwec.f90`.** Separate comparison.
-- [ ] **D13-06 — `canada/newmist/dmcwem.f90`.** Separate comparison.
-- [ ] **D13-07 — `canada/newmist/dmcwib.f90`.** Separate comparison.
-- [ ] **D13-08 — `canada/newmist/dmcwkt.f90`.** Separate comparison.
-- [ ] **D13-09 — `canada/newmist/dmcwnc.f90`.** Separate comparison.
-- [ ] **D13-10 — `canada/newmist/dmcwni.f90`.** Separate comparison.
-- [ ] **D13-11 — `canada/newmist/dmcwso.f90`.** Separate comparison.
-- [ ] **D13-12 — `canada/newmist/dmcwtt.f90`.** Separate comparison.
-- [ ] **D13-13 — `canada/newmist/dmcwut.f90`.** Separate comparison.
-- [ ] **D13-14 — `canada/newmist/dmcwwc.f90`.** Separate comparison.
-- [ ] **D13-15 — `canada/newmist/dmcwws.f90`.** Separate comparison.
+- [x] **D13 — `canada/newmist/dmcwak.f90`.** Retired; Alaska coefficient tables preserved.
+- [x] **D13-02 — `canada/newmist/dmcwbm.f90`.** Retired; BM tables preserved separately.
+- [x] **D13-03 — `canada/newmist/dmcwci.f90`.** Retired; CI tables preserved separately.
+- [x] **D13-04 — `canada/newmist/dmcwcr.f90`.** Retired; CR tables and commented subvariant history preserved.
+- [x] **D13-05 — `canada/newmist/dmcwec.f90`.** Retired; EC tables preserved separately.
+- [x] **D13-06 — `canada/newmist/dmcwem.f90`.** Retired; EM tables preserved separately.
+- [x] **D13-07 — `canada/newmist/dmcwib.f90`.** Retired; CRWDTH-copy and declaration differences recorded; no coefficient DATA.
+- [x] **D13-08 — `canada/newmist/dmcwkt.f90`.** Retired; KT tables preserved separately.
+- [x] **D13-09 — `canada/newmist/dmcwnc.f90`.** Retired; NC tables preserved separately.
+- [x] **D13-10 — `canada/newmist/dmcwni.f90`.** Retired; NI tables preserved separately.
+- [x] **D13-11 — `canada/newmist/dmcwso.f90`.** Retired; SO tables preserved separately.
+- [x] **D13-12 — `canada/newmist/dmcwtt.f90`.** Retired; TT tables preserved separately.
+- [x] **D13-13 — `canada/newmist/dmcwut.f90`.** Retired; UT tables preserved separately.
+- [x] **D13-14 — `canada/newmist/dmcwwc.f90`.** Retired; WC tables preserved separately.
+- [x] **D13-15 — `canada/newmist/dmcwws.f90`.** Retired; WS tables preserved separately.
 
 ### D14 — Dormant ESUCKR copies, one file per task
 
@@ -654,3 +672,45 @@ for historical purpose, preservation decisions, exact verification scope,
 source identities, and replayable receipts. No model bug was fixed. BC/ON
 simulation parity remains blocked as recorded by P03. Every other cleanup
 checkbox remains open.
+
+### D04–D13 record — 13 November 2026
+
+**D04–D11, D12a–e, D13 and D13-02–15 completed:** independently reviewed and
+removed 28 unselected files, totaling 6,145 lines / 189,493 bytes. Each file has
+its own historical-purpose assessment, scientific/platform differences,
+selected replacement, exact Git blob/SHA256, DATA literals, replacement diff
+and recovery command. The pre-deletion revision is
+`9bc35a16d6dec5fc79f513ae524297077e5298e3`; NVEL remains
+`a73e697e220ffd0f792aa7ac10d84c911edb7ad7`. The per-file plan was stored before
+deletion. All 28 alternatives were also unselected in original F77 `c2105365`.
+
+Every variant's complete selected build input set is unchanged. The other
+2,117 tracked main-repository model source/include files, all current NVEL
+files and 34 checked build recipes are unchanged. Existing shared model homes
+remain selected; no new model definitions or wrappers were introduced. Two
+unused, already incomplete Canadian manifests retain their historical
+references, with their path resolution and missing-input counts documented.
+
+Eight fresh original/pre-deletion IE, SN, BC and ON builds succeeded. Four
+candidate binaries were explicitly reused because complete selected input
+hashes and flags match. Separate original/current/candidate IE and SN runs pass
+all six pairwise comparisons, including all generated artifacts and SQLite
+schemas/typed rows. Three Canadian original/current comparisons also pass at
+the known invalid-keyword/STOP 20 boundary. These are not BC/ON simulation
+parity claims; candidate Canadian execution is not claimed. The nine reports
+replay identically from the retained raw artifact archive.
+
+The retirement verifier rejects selected-source changes, unselected-model
+changes and reintroduced retired files. The signature tracer was adapted only
+to recognize the absent, unselected D07 source and identify Canadian runs by
+variant. Its live-interface checks and all output comparison rules remain
+strict. No model bug was fixed. D07/D08 bug-tracker references now describe
+completed retirements; all five confirmed defects remain open. D11's formerly
+active numerical guard is recoverable and logged separately as an unconfirmed
+concern requiring later reachability/impact investigation.
+
+See the [per-file findings and verification report](tests/parity/evidence/2026-11-13-d04-d13/README.md)
+for scientific differences, history, scope limits, source identities, exact
+commands and replay instructions. Prior P01–P03 and D01–D03 evidence bytes are
+unchanged. D14 and every C/M/R/U/B/L task remain pending. The tracker now has
+35 completed and 85 pending items.
