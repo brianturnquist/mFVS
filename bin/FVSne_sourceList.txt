@@ -5,6 +5,7 @@
 
 ../common/ARRAYS.f90
 ../common/CALCOM.f90
+../common/CICOM.f90
 ../common/CALDEN.f90
 ../common/COEFFS.f90
 ../common/CONTRL.f90
@@ -25,6 +26,7 @@
 ../common/FVSSTDCM.f90
 ../common/GGCOM.f90
 ../canada/bc/BCPLOT.f90
+../common/KOTCOM.f90
 ../common/ORGANON.f90
 ../common/GLBLCNTL.f90
 ../common/HTCAL.f90
@@ -57,7 +59,8 @@
 ../ne/cubrds.f90
 ../ne/cutstk.f90
 ../vbase/dgdriv.f90
-../ne/dgf.f90
+../vbase/dgf.f90
+../common/DGCONS_ENTRY.f90
 ../ne/findag.f90
 ../ne/forkod.f90
 ../ne/grinit.f90

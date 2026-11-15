@@ -865,7 +865,7 @@ diagnostic change separate from M20a's sampling-field extraction.
 ## 33. Coastal DGCONS initializes attenuation by equation instead of species
 
 **Variants:** OP, PN and WC.
-**Location:** `ATTEN(KSP) = OBSERV(JSPC,IB)` in `vbase/dgf.f90:859`
+**Location:** `ATTEN(KSP) = OBSERV(JSPC,IB)` in `vbase/dgf.f90:873`
 (DGFPAC; KSP is the equation index JSPC for OP/PN/WC). Originally
 `op/dgf.f90:523`, `pn/dgf.f90:516` and `wc/dgf.f90:498`.
 **Status:** reproduced during the complete L04 audit on 15 November 2026
@@ -904,8 +904,9 @@ repair; do not include this correction in DGF consolidation.
 ## 34. Ontario DGF reuses the last predicted tree's bark ratio
 
 **Variant:** ON.
-**Location:** bark calculation at `canada/on/dgf.f90:360`, followed by
-the separate final loop's use at line 562.
+**Location:** bark calculation at `vbase/dgf.f90:9595` (DGFON; was
+`canada/on/dgf.f90:360`), followed by the separate final loop's use at
+line 9797.
 **Status:** reproduced during L04 with actual original/current DGF and
 Ontario BRATIO. Present in `c2105365`; deliberately unfixed. The direct
 routine comparison does not establish Canadian integrated simulation parity.
@@ -946,12 +947,12 @@ structural DGF sharing.
 
 **Variant:** WS, species 1–3,5–8,11,13,18,22,24,28–33,40,42,43,
 when the calculated DDS exceeds DDSMAX and ICR is positive.
-**Location:** `ws/dgf.f90:732–755`.
+**Location:** `vbase/dgf.f90:7290–7313` (DGFWS; was `ws/dgf.f90:732–755`).
 **Status:** reproduced during L04 with actual original/current DGF and
 native WS bark. Present in `c2105365`; deliberately unfixed. No field-case
 prevalence or integrated projection effect was measured.
 
-DGF applies its lower clamp, stores DDS in WK2 at line 733, then calculates
+DGF applies its lower clamp, stores DDS in WK2 at line 7290, then calculates
 the species/crown/DBH upper bound and reduces local DDS. WK2 is not written
 again. Debug mode can report that the bound is being invoked while callers
 still receive the value from before that bound.
@@ -969,25 +970,29 @@ every listed species, the ICR<=0 bypass, both sides of each bound and the
 interaction with the lower clamp in a separate result-changing repair.
 Moving that store during consolidation would silently fix the model bug.
 
-## 36. DGF diagnostics print crown ratio and BAL that some branches never set
+## 36. DGF diagnostics print crown ratio, BAL and AK's PFCOMP2 that some branches never set
 
 **Variants:** IE (juniper 15,16), SO (juniper 11, red alder 22), TT
-(juniper 4,11,12), and OP/PN/WC red alder (CR, BAL and PCCF(IPCCF) in the
-8000F line); debug output only.
-**Location:** the end-of-tree debug writes at `vbase/dgf.f90:1743` (TT),
-`vbase/dgf.f90:2690` (IE), `vbase/dgf.f90:755` (coastal 8000F) and
-`so/dgf.f90:730`.
+(juniper 4,11,12), OP/PN/WC red alder (CR, BAL and PCCF(IPCCF) in the
+8000F line), and AK (PFCOMP2 in the PF MODIFIER line for species outside
+the permafrost group 4–7,13,16–23); debug output only.
+**Location:** the end-of-tree debug writes at `vbase/dgf.f90:1678` (TT),
+`vbase/dgf.f90:2715` (IE), `vbase/dgf.f90:768` (coastal 8000F) and
+`vbase/dgf.f90:5895` (SO), and the PF MODIFIER write at
+`vbase/dgf.f90:7868` (AK).
 **Status:** found by the L04 old/new routine comparisons on 15 November
-2026. Present in `c2105365`; deliberately unfixed.
+2026 (AK during L04o). Present in `c2105365`; deliberately unfixed.
 
 These branches compute DDS without assigning the CR/BAL locals that the
-shared diagnostic prints. If such a tree is the first one DGF processes in
-a call, the values are whatever the stack holds; later trees print the
-previous tree's values. All model state and WK2 are unaffected, and every
+shared diagnostic prints. AK assigns PFCOMP2 only for permafrost species
+but prints it for every species. If such a tree is the first one DGF
+processes in a call, the values are whatever the stack holds; later trees
+print the previous tree's values. All model state and WK2 are unaffected, and every
 compared common block matched bit for bit. Only the DEBUG text differs
 between builds whose stack layout differs (for example `CR=-0.0000`,
-`CR=*******` or `CR=    NaN` where the original printed `CR= 0.0000`).
+`CR=*******` or `CR=    NaN` where the original printed `CR= 0.0000`;
+AK prints `PFCOMP2 NaN` where the original printed `0.00000000`).
 
-**Suggested fix:** assign CR and BAL (or print only defined values) in
-these branches, in a separate diagnostic-only change. Until then,
+**Suggested fix:** assign CR, BAL and PFCOMP2 (or print only defined
+values) in these branches, in a separate diagnostic-only change. Until then,
 comparisons of DGF debug output must expect these fields to vary.

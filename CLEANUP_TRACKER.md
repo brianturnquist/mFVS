@@ -10,7 +10,7 @@ P01–P03, D01–D15, C01–C19, B01–B03 and the unbuilt-directory removal (R0
 are complete. Six stub tasks, the metric audits M01–M21 (including M08b/M08c)
 and the implementation tasks M01a–M07a, M08a, M08d/M08e, M09a–M21a
 and M17b/M17d are also complete (M06a is included in M04a). The checklist
-now records 147 completed and 25 pending items, including R09 and L04k–L04v.
+now records 159 completed and 13 pending items, including R09.
 BC/ON simulation parity remains blocked by the existing bugs
 in [FOUND_BUGS.md](FOUND_BUGS.md).
 
@@ -1369,48 +1369,71 @@ deliverable is a difference map and subsequent small implementation tasks.
   keyword-input boundary and none of their build inputs changed. `git diff
   --check` clean. `vbase/dgf.f90` replaces 11 native DGFs (6,212 lines)
   with 3,755; net Fortran change −2,364 lines.
-- [ ] **L04k — CS/LS stand preparation (implementation).** Share only the
-  matching weighted preparation block first, retaining ordered in-place QMD
-  caps and each variant's native selection rules.
-- [ ] **L04l — CS/LS growth calculation (implementation).** Share the matching
-  polynomial and bark conversion with independent 96/68-row tables, native
-  caps and current-DBH calibration behavior. Keep both clamps and diagnostics.
-- [ ] **L04m — EC/SO regional calculations (implementation).** Migrate one
-  regional equation block at a time, retaining distinct banks, WSPR overrides,
-  PCCF switches, site transformations and initialization; reuse only proven
-  common expressions from earlier tasks.
-- [ ] **L04n — NC/WS remaining calculations (implementation).** Migrate
-  their ordinary/revised/size-dependent blocks independently; preserve native
-  density fallbacks, RF routing, site/latitude/period adjustments, stagnation
-  and WS's late ineffective upper bound.
-- [ ] **L04o — AK family kernel (implementation).** Retain the distinct annual
-  and permafrost calculations in a dedicated shared-area kernel; transfer
-  species groups incrementally, preserving LPERM, YR, hardwood factors and
-  DGCONS's dependence on incoming DGCON.
-- [ ] **L04p — SN family kernel (implementation).** Retain the native 90-row
-  model; migrate ordinary, forest/plantation, ecological-unit and IFOR=20
-  blocks separately, preserving global BA/ICR defaults and correction behavior.
-- [ ] **L04q — NE annual kernel (implementation).** Retain all 108 native
-  coefficient rows and BALMOD/BADIST contracts; migrate the iteration and
-  conversion blocks independently, preserving ten annual steps and corrections.
-- [ ] **L04r — ON annual kernel (implementation).** Retain the 35-row model,
-  all 72 mappings and quality pairs, metric iteration, disabled hybrid and
-  bug 34. Require direct original/native-baseline evidence beyond the
-  Canadian integrated-suite boundary.
-- [ ] **L04s — CR/GEMDG integration (implementation).** Reuse GEMDG and earlier
-  proven polynomial helpers; migrate stand preparation and each model/species
-  branch separately, retaining model floors, PP blending, DBHMAX and stagnation.
-- [ ] **L04t — BC LV2 kernel (implementation).** Preserve the native legacy
-  bank, SEILTDG interface, supported/unsupported branches, V2SEICOR state
-  and exact DDS/MAX/LOG sequence. Keep direct and integrated evidence separate.
-- [ ] **L04u — BC V3 kernel (implementation).** Migrate lookup and prediction
-  separately, preserving all 28/25 records, string sanitation, first-match
-  order, fallback/no-match behavior and native power/exponential forms.
-- [ ] **L04v — Complete DGF dispatch and inventory (build change).** After
-  all applicable kernel checkpoints, select one public DGF body in all 24
-  manifests, with the two native ENTRY declarations and unique selected
-  basenames. Retire superseded built copies only after exact state/output
-  comparisons and the whole suite; retain ACD and unrelated growth helpers.
+- [x] **L04k — CS/LS stand preparation (implementation).** CS and LS share
+  `DGFCLS` in `vbase/dgf.f90`: one DIAM>=5 weighted preparation (0.005454154,
+  BAGE5 default 10) for both variants.
+- [x] **L04l — CS/LS growth calculation (implementation).** One polynomial,
+  bark conversion with current DBH and both -9.21 clamps, using two-column
+  banks (CS 96 rows, LS 68; values copied verbatim). Each variant keeps its
+  own QMD and CR cap lists in native order, and QMDGE5 is still lowered in
+  place as species are visited.
+- [x] **L04m — EC/SO regional calculations (implementation).** EC and SO
+  moved unchanged into `DGFEC`/`DGFSO` with native table sizes (32/33).
+  Their banks, forms, WSPR/PCCF switches and DGCONS rules stay separate, as
+  the audit requires; they share only the existing DGFRA/DGFJUN/DGFASP.
+- [x] **L04n — NC/WS remaining calculations (implementation).** NC and WS
+  moved unchanged into `DGFNC`/`DGFWS` (12/43 rows): density fallbacks, RF
+  routing, latitude/period handling, NC's -8.52 pre-clamp and WS's late
+  DDSMAX (bug 35) kept.
+- [x] **L04o — AK family kernel (implementation).** AK moved unchanged into
+  `DGFAK` (23 rows); LPERM, YR, hardwood factors and DGCONS's addition to
+  the incoming DGCON kept. Its PF MODIFIER diagnostic prints an unset
+  PFCOMP2 for non-permafrost species (added to FOUND_BUGS section 36).
+- [x] **L04p — SN family kernel (implementation).** SN moved unchanged into
+  `DGFSN` (90 rows); the ordered IFORTP/PCOM selectors, IFOR=20 overrides
+  and global BA/ICR defaults kept.
+- [x] **L04q — NE annual kernel (implementation).** NE moved unchanged into
+  `DGFNE` (108 rows); ten annual steps, BADIST/BALMOD calls and corrections
+  kept.
+- [x] **L04r — ON annual kernel (implementation).** ON moved unchanged into
+  `DGFON`: 35-row bank, 72 mappings, quality pairs, metric iteration,
+  disabled hybrid and bug 34 kept.
+- [x] **L04s — CR/GEMDG integration (implementation).** CR's DGF is
+  `DGFCR`; GEMDG is unchanged. Its age-range and stagnation preparation was
+  statement-identical to TT/UT's and is now one internal `DGFSTG` called by
+  `DGFCR` and `DGFTU` (SDICAL(1,...), FINT/FINTM scaling and DSTAG writes
+  unchanged). CR's AGERNG initialisation now follows DBCHK, which reads only
+  DBSTK.
+- [x] **L04t — BC LV2 kernel (implementation).** BC moved unchanged into
+  `DGFBC` with its local MD_STR/SS_STR types, 15-species LV2 tables, SEILTDG
+  interface and V2SEICOR writes.
+- [x] **L04u — BC V3 kernel (implementation).** The V3 lookup and prediction
+  moved within `DGFBC` unchanged: 28/25 records, NUL sanitation, KAM
+  ICHmw2 remapping, first-match order, `/all` fallback and no-match state.
+- [x] **L04v — Complete DGF dispatch and inventory (build change).** BM moved
+  into `DGFBM`; the host also includes METRIC and BCPLOT. All 24 manifests
+  select `vbase/dgf.f90`, one DGCONS entry include (EM its own), CICOM and
+  KOTCOM. The 13 superseded native DGFs (9,572 lines) are removed;
+  `acd/dgf.f90` (R09) and the helpers GEMDG, BALMOD, DGFASP, SEILTDG and
+  `vbase/dgfeqs.f90` remain.
+
+  **L04k–v verification (15 November 2026, at `0e16036a`+changes).** Old
+  (`0e16036a`) and new builds of the 15 changed variants (the 13 moved plus
+  TT/UT for `DGFSTG`) were linked with one scratch driver: 600 random valid
+  states each (BC 1,200, cycling all 196 V3 patterns under both LV2 and V3,
+  plus the KAM remap and a no-match zone), every species slot, DBH boundary
+  values, zero CR/BA/AVH/SLOPE, extreme COR, COR2=0 and LDCOR2, LSTART with
+  recent mortality, SDI maxima, IFOR/IFORTP/PCOM/IMODTY/LPERM/IGL/TLAT/ICL5/
+  IOSUM ranges and debug on in a third. DGCONS, DGF(DBH) and DGF(WK3) were
+  called and every common block hashed after each call. All 15 matched bit
+  for bit, as did stdout and debug text apart from unset diagnostic values
+  (AK PFCOMP2, TT CR; FOUND_BUGS section 36). A planted change in every
+  family was detected; NC's -8.52 pre-clamp moved to -8.53 is not observable
+  behind the final -9.21 clamp, and moving it to -7.0 was detected.
+  Original-F77 suite: PASS 22/24; BC/ON differ at the existing Canadian
+  keyword-input boundary and match the immediate baseline in all 11/5 suite
+  outputs. `git diff --check` clean. `vbase/dgf.f90` grew from 3,755 to
+  12,759 lines; net Fortran change −568 lines.
 - [x] **L05 — DGDRIV (22 files).** Consolidated in `vbase/dgdriv.f90` for
   all 24 variants; retained tables, calibration, ORGANON and output differences.
   Original-F77 parity: PASS 24/24; BC/ON additionally checked by statement diff.
@@ -1514,9 +1537,9 @@ equation-specific conversions described below remain necessary as well.
 | WC — `wc/dgf.f90` | 1–39 / 10 | 19-row coastal bank with its own mapping and coefficients; red alder/redwood exceptions. |
 | WS — `ws/dgf.f90` | 1–43 / 10 | California group 9,10,12,14–17,19,20,25–27; MC 41; GB 21; GS/RW 4,23; revised RF 7; remaining slots use the default form and conditional size/period adjustments. |
 
-Paths in this table are as audited at `b4b1ee3d`. Since L04a–j, the CA,
-CI, EM, IE, KT, OC, OP, PN, TT, UT and WC bodies are internal procedures
-of `vbase/dgf.f90`.
+Paths in this table are as audited at `b4b1ee3d`. Since L04a–v, every
+variant's body is an internal procedure of `vbase/dgf.f90` and the native
+files are removed.
 
 CA/OC share the following complete MAPSPC partition. CA calls species 4
 WF and OC calls it GF; the numeric mapping is unchanged. Actual BLKDAT
@@ -1818,7 +1841,7 @@ point PBA/PBAL fall back on nonpositive values. Seven forest-type dummies
 and the MANAGD>0 plantation dummy modify the equation. DGCONS adds site,
 slope/aspect and eleven PCOM ecological-unit terms; mappings include
 221DD/DE to S231T, 251 to P255 and 255CH to S231L. Preserve the complete
-ordered IFORTP and PCOM selectors at `sn/dgf.f90:159–211, 1014–1083`,
+ordered IFORTP and PCOM selectors (now `vbase/dgf.f90:8102–8154, 8957–9026`),
 including no-match/default states. The IFOR=20 overrides for native 8/13
 use their two explicit pine equations and DIAGR floor 0.01, replacing the
 earlier DDS rather than appending its correction terms. Their ATTEN values

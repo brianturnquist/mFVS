@@ -59,7 +59,8 @@
 ../vbase/cratet.f90
 ../canada/bc/crown.f90
 ../vbase/dgdriv.f90
-../canada/bc/dgf.f90
+../vbase/dgf.f90
+../common/DGCONS_ENTRY.f90
 ../canada/bc/dubscr.f90
 ../canada/bc/forkod.f90
 ../base/grincr.f90
