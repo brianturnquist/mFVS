@@ -7,9 +7,10 @@ with NVEL submodule `a73e697e220ffd0f792aa7ac10d84c911edb7ad7`.
 
 This checklist stores the redundancy and dormant-code findings before cleanup.
 P01–P03, D01–D15, C01–C19, B01–B03 and the unbuilt-directory removal (R01–R08, R10–R10d)
-are complete. Six stub tasks, the metric audits M01–M14 and the implementation
-tasks M01a–M07a, M08a and M09a–M14a are also complete (M06a is included in M04a);
-the checklist now records 115 completed and 23 pending items, including R09.
+are complete. Six stub tasks, the metric audits M01–M21 (including M08b/M08c)
+and the implementation tasks M01a–M07a, M08a and M09a–M14a are also complete
+(M06a is included in M04a);
+the checklist now records 124 completed and 25 pending items, including R09.
 BC/ON simulation parity remains blocked by the existing bugs
 in [FOUND_BUGS.md](FOUND_BUGS.md).
 
@@ -536,11 +537,34 @@ not whole-routine equivalence or authority to retire these seven copies.
   both FMIN readers. Preserved the landscape rejection, GETID call count,
   optional echo and both report-window contracts behind `LMETRICVAR`.
   No other FMIN handler moved; bug 24 is unchanged.
-- [ ] **M08b — FMIN: DWDCVOUT handler (audit).** Independently compare
-  option 52 and its cover-report consumer before sharing that handler.
-- [ ] **M08c — FMIN: FUELOUT handler (audit).** Independently compare
-  option 15 and its all-fuels consumer, including bug 24. Subsequent FMIN
-  handlers still require their own bounded tasks.
+- [x] **M08b — FMIN: DWDCVOUT handler (audit).** Completed 15 November
+  2026: compared option 52, labels 5200–5215, with `fire/base/fmin.f90`
+  and traced shared FMDOUT/DBSFMDWCOV. Both readers reject landscape calls
+  before changing state, allocate IDDWCV only when zero, and optionally echo
+  the same message; neither uses a numeric keyword field. Metric sets
+  `IDWCVB/IDWCVE = -1/-1`; imperial uses `IY(1)/IY(1)+999`. FMDOUT's
+  LPRINT3 uses only `IDWCVB > 0` for metric, versus the inclusive year window
+  and zero-year exception for imperial. Keep those contracts paired (bug 24).
+  The consumer sends fourteen unconverted percent-cover values, hard then
+  soft, to DBSFMDWCOV before optional text; its database-only return, IDCPAS
+  header counter and metric size-class labels belong to the consumer.
+- [ ] **M08d — Share the DWDCVOUT request block (implementation).** Add
+  a separate helper in `fire/base/` for option 52 only. Preserve rejection,
+  GETID count, echo and LMETRICVAR-selected windows; leave FMDOUT unchanged.
+- [x] **M08c — FMIN: FUELOUT handler (audit).** Completed independently
+  15 November 2026: option 15, labels 1500–1515, is statement-equivalent
+  in both readers. Landscape rejection precedes all updates; GETID is called
+  only for zero IDFLAL, both set `IFLALB/IFLALE = IY(1)/IY(1)+999`, and
+  echo is optional. No keyword-field conversion is involved. Shared FMDOUT
+  skips both DBSFUELS and text for positive metric IFLALB (bug 24), while
+  imperial accepts its year window, with the zero-year exception. When
+  admitted, metric fuel loads use `TItoTM/ACRtoHA`, including conversion
+  before NINT; database-only output bypasses text and IFAPAS header updates.
+  Sharing the request must retain the existing suppression, not repair it.
+- [ ] **M08e — Share the FUELOUT request block (implementation).** Share
+  option 15 alone in `fire/base/`, preserving the identical assignments,
+  rejection, allocation and echo. Correct bug 24 separately with paired
+  producer/consumer tests. Other FMIN handlers still need bounded audits.
 - [x] **M09 — FMSOUT: detailed snag record (audit).** Compared the
   post-accumulation conversion and FORMAT 300 record with `fire/base/fmsout.f90`.
   Species/age/diameter-class accumulation, weighted averages, record order,
@@ -719,22 +743,173 @@ twelve-field KEYRDR for 20 cases, guard both caller buffers, and compare
 NEWMOD reset/enable and all 30 MISKEY slots against minimally widened F77
 and baseline readers. Temporary drivers, builds and outputs were discarded.
 
-- [ ] **M15 — `metric/vbase/disply.f90`.** Compare one display-record format
-  with `vbase/disply.f90`.
-- [ ] **M16 — `metric/vbase/fvsstd.f90`.** Compare one output-record type
-  with `vbase/fvsstd.f90`, retaining Ontario's cord-conversion behavior.
-- [ ] **M17 — `metric/vbase/initre.f90`.** Identify the keyword-array defect,
-  then compare one keyword family with `vbase/initre.f90`. BC's separate
-  `canada/bc/initre.f90` requires its own follow-up task. Do not attempt a
-  complete INITRE merge in this task.
-- [ ] **M18 — `metric/vbase/sumout.f90`.** Compare one cycle-summary record
-  with `vbase/sumout.f90`.
-- [ ] **M19 — `metric/vdbsqlite/dbsfmpf.f90`.** Compare one database output
-  group with `vdbsqlite/dbsfmpf.f90`.
-- [ ] **M20 — `metric/vdbsqlite/dbsstandin.f90`.** Compare one group of stand
-  input fields with `vdbsqlite/dbsstandin.f90`.
-- [ ] **M21 — `metric/vdbsqlite/dbssumry.f90`.** Compare one summary record
-  and its units with `vdbsqlite/dbssumry.f90`.
+- [x] **M15 — DISPLY: removal/residual tree-distribution record (audit).**
+  Completed 15 November 2026: FORMAT 9004 and its two writes have the same
+  layout as `vbase/disply.f90`. CUTS supplies ONTREM/ONTRES: positions 1–5
+  are percentile diameters, 6 is maximum diameter, and 7 is trees per acre.
+  Metric multiplies the six diameters by INtoCM and divides density by
+  ACRtoHA; the four species percentages/codes and labels are unchanged.
+  Neither writer changes these arrays. ITABLE(1), LSTART and positive
+  ONTREM(7) gate both records identically; blank lines remain in the caller.
+  Volume, accretion, current-stand, binary sample-tree and summary records
+  are outside this audit.
+- [ ] **M15a — Share the FORMAT 9004 writer (implementation).** Add one
+  `vbase/` helper for the removal/residual record and its unit layer. Keep
+  the existing gates and all other DISPLY records in their callers.
+- [x] **M16 — FVSSTD: normal-precision live-tree record (audit).** Completed
+  15 November 2026: compared the first FORMAT 21 write with `vbase/fvsstd.f90`.
+  Field order, descriptors and the `P/DP < 9999.9995` selection agree.
+  Metric converts P/DP to trees/ha; DBH, diameter increment and PDBHI to cm;
+  heights, height increment, crown width and PHTI to m; point BAL uses
+  `NINT(PTBALT*FT2pACRtoM2pHA)`. Truncation/normal heights use
+  `NINT(FLOAT(value+5)*.01*FTtoM)`, not imperial integer division by 100.
+  Current volume fields use CFV/WK1/BFV and old volumes use
+  PTOCFV/PMRCFV/PMRBFV, all times FT3toM3. Imperial uses CFV/MCFV, except
+  CS/LS/NE/SN select MCFV/SCFV and the corresponding old-volume arrays;
+  board feet remain unconverted. IDs, crown ratio, mistletoe, defects,
+  percentile, YRDLOS, birth year and plot ID are unchanged.
+
+  The requested Ontario cord-conversion check resolves to its volume-scaling
+  contract: `canada/on/varvol.f90` labels the default OBFVOL result NMV,
+  not cords. `canada/on/vols.f90` divides BBFV by FT3toM3 for METHB != 8,
+  compensating for the output multiplication; method 8 keeps cubic-foot NMV.
+  Do not remove either factor or reinterpret BFV solely from its name.
+  OPFIND/OPGET selection, tree order, PDBH/PHT resets and volume preparation
+  remain caller responsibilities. Header, FORMAT 20 and dead-tree output
+  need separate audits before a whole FVSSTD merge.
+- [ ] **M16a — Share the first FORMAT 21 writer (implementation).** Extract
+  only the normal-precision live-tree serialization into `vbase/`, with
+  explicit unit/volume selection. Preserve ON's producer scaling, original
+  arithmetic and caller side effects; do not migrate other record types.
+- [x] **M17 — INITRE: buffer contract and DESIGN family (audit).** Completed
+  15 November 2026: only ON selects `metric/vbase/initre.f90`; its
+  ARRAY/LNOTBK/KARD still have seven elements, while KEYRDR/KEYDMP access
+  twelve (bug 5). BC's separate INITRE buffers are already widened by M12a.
+  This audit does not repair ON's undefined calls or merge either reader.
+  Compared option 10, labels 2000–2030, with `vbase/initre.f90`: metric
+  converts negative BAF and inverse plot area with `/HAtoACR`, nonnegative
+  BAF with M2pHAtoFT2pACR, and break DBH with CMtoIN. These ARRAY conversions
+  precede the LNOTBK-controlled assignments. Plot counts, SAMWT fallback,
+  stocking fraction/percent normalization and XXG calculation agree.
+  Echo converts BAF by sign, FPA by /ACRtoHA and BRK by INtoCM; its FORMAT
+  and final-design notice agree. The PROCESS default-design echo also uses
+  FORMAT 2010 and the metric XBAF preparation, so that format must remain
+  available until its other caller is migrated. Other keywords are unaudited.
+- [ ] **M17a — Repair ON's keyword buffers (implementation prerequisite).**
+  Widen only ARRAY/LNOTBK/KARD to twelve in metric INITRE, as a separate
+  interface repair. Compare guarded reader cases with explicitly widened
+  original/baseline readers; do not call that pristine-original parity.
+- [ ] **M17b — Share the DESIGN handler (implementation).** After M17a,
+  extract option 10 only to `vbase/`, keeping conversion order, blank-field
+  semantics, sampling defaults, stocking and echo. Preserve PROCESS's
+  existing default-design FORMAT 2010 use; no complete INITRE merge.
+- [ ] **M17c — BC INITRE: DESIGN family (audit).** Independently compare
+  `canada/bc/initre.f90`, its field layout and BC-specific dependencies
+  before adding it to a shared handler.
+- [x] **M18 — SUMOUT: cycle-summary data record (audit).** Completed
+  15 November 2026: compared FORMAT 20, with the identical disk FORMAT 9014,
+  against `vbase/sumout.f90`. DISPLY supplies rounded imperial-unit IOSUM
+  integers plus SUMTAB density, basal area, height, QMD and MAI arrays.
+  Metric applies INT after area/height/volume conversion to those already
+  rounded integers; QMD and MAI remain real conversions. Year, age, CCF,
+  period length and classification codes do not change. All six current/
+  removal volume fields use FT3pACRtoM3pHA, including ON's BFV-derived NMV.
+  Imperial additionally writes IOSUM(21/22) saw-cubic fields: 29 data items
+  versus metric's 27, with nine versus seven consecutive I6 descriptors.
+  LPRT/LDSK gate the two text destinations; ICALLF=0 independently permits
+  DBSSUMRY, receiving metric conversions exactly once. Headings and file
+  opening are outside this record extraction.
+
+  The shared OUTCOM declares IOSUM(22,MAXCY1), but metric DISPLY passes
+  I20=20 to SUMOUT's IOSUM(I20,LENG). Rows after the first therefore use
+  the wrong stride (new bug 30); this is present in F77 too. Preserve that
+  caller contract during extraction and repair it separately. The distinct
+  28/30-argument DBSSUMRY interfaces must also remain paired (M21).
+- [ ] **M18a — Share the cycle-summary text writer (implementation).**
+  Extract the FORMAT 20/9014 data writes into `vbase/`, preserving each
+  field set, INT order and destination gates. Keep IOSUM's caller stride,
+  headings and DBSSUMRY calls unchanged; bug 30 is separate model-fix work.
+- [x] **M19 — DBSFMPF: fuel-model/weight output group (audit).** Completed
+  15 November 2026: compared the four moderate IDs/weights and optional four
+  severe IDs/weights with `vdbsqlite/dbsfmpf.f90`. Both bind IDs as integers
+  and weights as `DBLE(INT(weight*100.+0.5))`; weights are percentages, with
+  the original REAL arithmetic before DBLE. These fields use no unit factor.
+  Metric selects East for ON, while imperial selects East for CS/SN; BC and
+  the other imperial consumers use West. East appends the severe group;
+  CREATE and INSERT list orders differ, but named columns pair correctly
+  with the moderate-then-severe bindings. Metric uses the `_Metric` tables.
+  Earlier West-only fire fields change the starting ColNumber, so a helper
+  must accept/update that index. IPOTFIRE=0 returns, =2 suppresses text via
+  KODE; DBSCASE, SQL prepare/step/finalize and failure handling stay in the
+  caller. FMPOFL prepares dimensional fields before this writer; do not add
+  conversions here. Other potential-fire fields remain outside this audit.
+- [ ] **M19a — Share fuel-model/weight bindings (implementation).** Add one
+  `vdbsqlite/` helper for this group, retaining percent rounding, binding
+  types/order and the metric-ON versus imperial-CS/SN East selection.
+  Leave schema creation, other fields and statement lifetime in the callers.
+- [x] **M20 — DBSSTANDIN: sampling-design fields (audit).** Completed
+  15 November 2026: compared BASAL_AREA_FACTOR, INV_PLOT_SIZE and BRK_DBH
+  read/assignment/echo blocks with `vdbsqlite/dbsstandin.f90`. Both read
+  REAL values into RSTANDDATA(10:12), mark presence before conversion using
+  NullReal, and leave state unchanged for SQL NULL/absent fields. Metric
+  converts BAF by sign (`/HAtoACR` for negative, M2pHAtoFT2pACR otherwise),
+  inverse plot area by /HAtoACR and DBH by CMtoIN; imperial stores inputs
+  directly. The separate assignments depend on the original presence flags.
+  Metric echoes FPA/ACRtoHA and BRK*INtoCM, but always echoes BAF/ACRtoHA:
+  positive area-factor input 4.5 prints 48.4 despite correct internal BAF
+  (new bug 32). Preserve that diagnostic in cleanup. Shared DBSIN invokes
+  this reader for selected stand SQL; query/column dispatch, overlaid integer
+  storage, BC BEC/HABTYP handling and other fields remain in the reader.
+- [ ] **M20a — Share sampling-design field handling (implementation).**
+  Extract only these three fields' conversion/assignment/echo logic into
+  `vdbsqlite/`. Retain presence flags, NULL behavior, exact factors and
+  bug 32; leave SQL traversal and all BC ecological processing in place.
+- [x] **M21 — DBSSUMRY: ordinary Summary record (audit).** Completed
+  15 November 2026: compared DBSSUMRY only, not DBSSUMRY2, with
+  `vdbsqlite/dbssumry.f90`. It runs only for ISUMARY=1 and receives converted
+  metric values from SUMOUT; it must not convert them again. Metric has
+  28 arguments and 27 placeholders; imperial has 30/29, adding saw-cubic
+  volume/removal arguments. Year/age, densities, basal areas, SDI, CCF,
+  heights, volumes, period, accretion/mortality and classification use integer
+  binds; QMD, after-treatment QMD and MAI promote REAL to DOUBLE PRECISION
+  before binding. Metric tables use Tph, metre/cm/m3 units versus imperial
+  Tpa, foot/inch/ft3 and board-foot fields. Imperial also adds missing
+  SCuFt/RSCuFt columns to existing tables; metric has no equivalent migration.
+
+  BC's FVS_Summary_Metric uses BdNA/RBdNA for its legacy third volume slots.
+  ON chooses FVS_Summary_East_Metric; its CREATE defines TCuM/MCuM/CCuM
+  and RTCuM/RMCuM/RCCuM, while INSERT requests MCuM/SCuM/NCuM and
+  RMCuM/RSCuM/RNCuM. A fresh table rejects preparation, sets ISUMARY=0
+  and writes no row (new bug 31, also in F77). A future schema correction
+  must be separate from sharing bindings. Case identity, stand ID, schema,
+  argument order, error exits and statement lifetime stay explicit.
+- [ ] **M21a — Share the ordinary Summary binding prefix (implementation).**
+  Extract Year through QMD (the first eight placeholders) to one
+  `vdbsqlite/` helper with explicit types and column-index progression.
+  Keep the two interfaces, volume fields, schema differences and bug 31;
+  audit DBSSUMRY2 separately before attempting a complete file merge.
+
+M08b/M08c and M15–M21 were audited at `6dcf25a6` against original main
+`c210536536d81fd9b46dccb9a571f0de1e55e944`; the pinned original NVEL
+`38548071d5aa652bb90c7f111f86b427f798a1c9` and current NVEL `a73e697e`
+were checked locally. No volume-library code was needed by the isolated
+drivers. All named metric/shared pairs serve BC/ON and the 22 U.S. variants,
+respectively, except INITRE: ON selects metric, BC selects its separate file,
+and the 22 U.S. variants select shared INITRE. Shared FMDOUT serves all 24.
+
+Verification is bounded audit evidence, not Canadian simulation acceptance:
+48 cases per FMIN handler/copy compare rejection, echo, allocation and state;
+four FORMAT 9004 distributions, the first FORMAT 21 write with ON method-8/
+alternate scaling, 20 DESIGN cases per copy, signed cycle-summary records
+and eight SQLite sampling-input cases per copy match original F77 exactly.
+Actual DBSFMPF/DBSSUMRY routines linked to SQLite match original status,
+schemas and typed rows for IE/CS/BC/ON, including ON's prepare failure.
+Original/current SUMOUT with a two-column 22-row input reproduces bug 30.
+Tests bypass INITRE's undefined seven-field calls; they do not repair them.
+Source lists and `git diff --check` pass. Only this tracker and FOUND_BUGS
+change; compiled inputs, model sources, reference outputs and NVEL are
+unchanged. No full-suite rerun is required for these documentation-only
+audits. Temporary drivers, databases, outputs and builds were discarded.
 
 ## D — Unbuilt copies and documented retirement
 

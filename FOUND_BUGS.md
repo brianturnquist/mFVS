@@ -10,6 +10,12 @@ remain unfixed. Temporary block checks reproduce the report/classification,
 diagnostic and zero-division cases described below; they do not establish
 Canadian integrated simulation coverage.
 
+Sections 30–32 were found during the bounded M15–M21 audits on 15 November
+2026 at `6dcf25a6`. All three are present in the pinned original F77
+reference and remain unfixed. Direct original/current SUMOUT, SQLite and
+sampling-field checks reproduce them without relying on Canadian keyword
+input or claiming integrated simulation parity.
+
 ---
 
 ## 1. `FMSVL2` is called with the wrong number of arguments in BC and ON
@@ -757,3 +763,95 @@ passes element 1 instead. This additional tail issue is source-confirmed.
 **Suggested fix:** apply a defined zero-total mean and pass valid elements
 for unused total-row arguments, with a no-sprouts report/database case.
 Keep the repair separate from M14a's height/DBH extraction.
+
+---
+
+## 30. Metric DISPLY passes a 20-row stride for the 22-row summary array
+
+**Variants:** BC, ON.
+**Location:** `metric/vbase/disply.f90` calls SUMOUT with I20=20;
+`metric/vbase/sumout.f90` declares `IOSUM(I20,LENG)`, while selected
+`common/OUTCOM.f90` declares `IOSUM(22,MAXCY1)`.
+**Status:** confirmed during M18 by source tracing and direct
+original/current routine calls. Present in `c2105365` (including its
+`common/OUTCOM.F77`). Unfixed; full-engine impact was not measured.
+
+DISPLY stores cycles in columns of a 22-row array. SUMOUT instead advances
+20 elements between columns. The first cycle is read correctly, but every
+later cycle starts two elements earlier per preceding column. In cycle 2,
+the printed/database year and age come from the preceding column's rows
+21 and 22; its tree count comes from the actual second column's year.
+The per-cycle SUMTAB arrays still use their proper cycle index, mixing
+these shifted values with the correctly indexed basal-area/QMD data.
+
+Direct calls to the unmodified original F77 and current metric SUMOUT,
+using a defined two-column input `IOSUM(i,j)=100*j+i` and the caller's
+I20=20, both pass year/age 101/102 for the first DBSSUMRY call and 121/122
+for the second, where the actual second column contains 201/202. The
+database call is captured to isolate the stride issue from bug 31. This
+demonstrates argument indexing, not successful Canadian simulation input.
+
+**Suggested fix:** pass the true leading dimension, 22, from metric DISPLY,
+while retaining the metric record's existing 20-field selection and units.
+Test two or more cycles, final-cycle rows and text/database agreement in a
+separate result-changing repair; do not combine it with M18a's writer
+extraction.
+
+---
+
+## 31. Ontario's ordinary Summary table cannot accept its own INSERT
+
+**Variants:** ON, when ISUMARY=1 creates a fresh summary table.
+**Location:** the first routine in `metric/vdbsqlite/dbssumry.f90`.
+**Status:** confirmed during M21 with actual original/current DBSSUMRY
+routines linked to SQLite. Present in `c2105365`. Unfixed; DBSSUMRY2's
+separate ISUMARY=2 record is outside this audit.
+
+ON selects `FVS_Summary_East_Metric`. Its CREATE and INSERT disagree:
+
+| Volume group | CREATE columns | INSERT columns |
+|---|---|---|
+| Standing | TCuM, MCuM, CCuM | MCuM, SCuM, NCuM |
+| Removed | RTCuM, RMCuM, RCCuM | RMCuM, RSCuM, RNCuM |
+
+On a fresh database, preparation fails with `table
+FVS_Summary_East_Metric has no column named SCuM`. DBSSUMRY sets ISUMARY=0
+and returns without a row, disabling later summary writes too. Temporary
+drivers using defined, already converted arguments reproduce the same
+schema, diagnostic and empty table in original F77 and current code. The
+corresponding BC ordinary Summary record and imperial IE/CS records each
+write their row. A pre-existing table with INSERT-compatible columns can
+avoid this particular failure; the defect is in the routine's fresh schema.
+
+**Suggested fix:** choose and document the ON column names/volume meanings,
+align CREATE with INSERT and handle existing database schemas explicitly.
+Verify all six volume fields and output-switch behavior. Keep this schema
+change separate from M21a's common binding-prefix extraction.
+
+---
+
+## 32. Metric stand input echoes positive basal-area factors with a density factor
+
+**Variants:** BC, ON, for positive BASAL_AREA_FACTOR input with keyword echo.
+**Location:** sampling-field read and echo in
+`metric/vdbsqlite/dbsstandin.f90`.
+**Status:** confirmed during M20 using the original/current blocks with
+real SQLite input, including NULL controls. Present in `c2105365`. Unfixed;
+this is an echo defect, not a demonstrated change in stored sampling state.
+
+The reader correctly converts nonnegative BASAL_AREA_FACTOR from m2/ha to
+ft2/acre with M2pHAtoFT2pACR. Negative values represent inverse plot area
+and correctly use division by HAtoACR instead. After assignment to BAF,
+the echo unconditionally prints `BAF/ACRtoHA`, which reverses only the
+negative-value density conversion.
+
+An input of 4.5 stores BAF about 19.602348, then prints 48.4 instead of
+4.5. The original and current blocks produce exactly the same state bits
+and echo. Negative, zero and SQL NULL cases were checked separately;
+the presence flags prevent NULL input from replacing the existing state.
+The metric INITRE DESIGN handler already chooses the echo conversion by
+BAF sign, using FT2pACRtoM2pHA for the nonnegative case.
+
+**Suggested fix:** use the same sign-dependent BAF echo conversion as
+DESIGN, with positive/negative/zero/NULL and echo-off tests. Keep the
+diagnostic change separate from M20a's sampling-field extraction.
