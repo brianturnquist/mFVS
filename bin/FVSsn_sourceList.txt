@@ -50,7 +50,7 @@
 
 ../sn/blkdat.f90
 ../sn/bratio.f90
-../sn/cratet.f90
+../vbase/cratet.f90
 ../sn/crown.f90
 ../sn/cubrds.f90
 ../sn/dgbnd.f90

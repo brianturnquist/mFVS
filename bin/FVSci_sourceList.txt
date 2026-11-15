@@ -56,7 +56,7 @@
 ../ci/blkdat.f90
 ../ci/bratio.f90
 ../ci/ccfcal.f90
-../ci/cratet.f90
+../vbase/cratet.f90
 ../ci/crown.f90
 ../ci/cubrds.f90
 ../vbase/dgdriv.f90

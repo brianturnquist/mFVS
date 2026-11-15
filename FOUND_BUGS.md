@@ -1,6 +1,6 @@
 # Found Bugs
 
-The five confirmed model defects below were found during the 2026-11 consolidation of duplicated routines. Every one is already present in the pre-modernization source (commit `c2105365`), so none was introduced by the conversion to free-form Fortran or by the consolidation. They are **deliberately left unfixed** for now so that model outputs stay identical to `c2105365` while modernization is finished. Each fix below will change outputs for the variants listed, so each should be made as its own commit with a before/after comparison. Sections 6–8 separately record an unconfirmed historical numerical concern, a historical documentation discrepancy, and ESADDT data-flow concerns requiring follow-up. Section 9 records a reproduced SQLite resource defect with scientific-output impact still unmeasured. Section 10 records a restart-file difference that modernization itself introduced, now corrected. Sections 11 and 12 record two original defects that read undefined values and so make restart files vary between runs. Sections 13 and 14 record an invalid stub diagnostic and a fuel-model fallback defect found during the safe reapplication; neither was fixed. Sections 15–18 record DGDRIV tripling/bounds defects and undefined local reads found during L05; all were preserved.
+The five confirmed model defects below were found during the 2026-11 consolidation of duplicated routines. Every one is already present in the pre-modernization source (commit `c2105365`), so none was introduced by the conversion to free-form Fortran or by the consolidation. They are **deliberately left unfixed** for now so that model outputs stay identical to `c2105365` while modernization is finished. Each fix below will change outputs for the variants listed, so each should be made as its own commit with a before/after comparison. Sections 6–8 separately record an unconfirmed historical numerical concern, a historical documentation discrepancy, and ESADDT data-flow concerns requiring follow-up. Section 9 records a reproduced SQLite resource defect with scientific-output impact still unmeasured. Section 10 records a restart-file difference that modernization itself introduced, now corrected. Sections 11 and 12 record two original defects that read undefined values and so make restart files vary between runs. Sections 13 and 14 record an invalid stub diagnostic and a fuel-model fallback defect found during the safe reapplication; neither was fixed. Sections 15–18 record DGDRIV tripling/bounds defects and undefined local reads found during L05; all were preserved. Section 19 records conditional undefined local reads in KT CRATET; these were also retained.
 
 File and line references are to the tree at commit `b5657da3` plus the uncommitted `VARIANTCD` change. Bugs 1 and 2 have the same root cause: FVS calls external procedures with no explicit interface, so gfortran cannot check argument lists across files. Moving these routines into modules would let the compiler catch this class of bug.
 
@@ -333,3 +333,30 @@ When `IERROR=1` and debugging is enabled, the routine prints local logical
 reliability defect; no model-output effect has been established. L05 retains
 it. A separate change should identify the intended status value or remove
 that diagnostic field, with an ORGANON error-path test.
+
+---
+
+## 19. KT CRATET conditionally reads unassigned or stale local values
+
+**Variant:** KT
+**Location:** KT height-dubbing branches in `vbase/cratet.f90`
+**Status:** confirmed by source tracing in current code and original F77
+`c2105365:kt/cratet.f`; simulation impact has not been isolated. Unfixed.
+
+`IERRCK` is assigned only the value 1 when `STEP1 <= 0`, but is read in the
+small-tree fallback test when the discriminant is positive as well. There
+is no initial assignment or reset, so that read can use an undefined value
+or a value retained from an earlier record/species. Fortran does not require
+short-circuit evaluation of the surrounding `.or.`/`.and.` expressions.
+The intended lifetime of this flag needs to be established before changing it.
+
+`XN` is assigned only after the `K1 < 3`/`NOHTDREG` bypass, but the live-tree
+dubbing diagnostic prints it on the default-equation path too. With debugging
+enabled, a first insufficient-sample/default species can therefore print an
+undefined value; later species can print a preceding species' sample count.
+This second read affects diagnostics; no model-value impact is claimed for it.
+
+L06 preserves both conditional assignments and reads, along with the original
+pre-DBCHK initialization of `RAD` and `SOLN`. A separate repair should define
+`IERRCK`'s lifetime and provide a defined diagnostic count, with cases covering
+both discriminant signs, successive species and insufficient height samples.

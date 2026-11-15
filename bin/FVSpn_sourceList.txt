@@ -83,7 +83,7 @@
 ../vwc/smhgdg.f90
 ../vws/r5crwd.f90
 ../wc/bfvol.f90
-../wc/cratet.f90
+../vbase/cratet.f90
 ../wc/cubrds.f90
 ../wc/dgbnd.f90
 ../vbase/dgdriv.f90

@@ -630,9 +630,13 @@ do not consolidate the whole family in one run.
 - [x] **L05 — DGDRIV (22 files).** Consolidated in `vbase/dgdriv.f90` for
   all 24 variants; retained tables, calibration, ORGANON and output differences.
   Original-F77 parity: PASS 24/24; BC/ON additionally checked by statement diff.
-- [ ] **L06 — CRATET (20 active implementations remain).** The first TT/UT
-  group is complete under L06a. Compare each remaining group and preserve its
-  numerical, initialization-order and diagnostic differences before extraction.
+- [x] **L06 — CRATET.** All 24 variants now use `vbase/cratet.f90`; removed
+  the remaining 19 copies (14,325 active lines to 3,782). Retained regional
+  equations, native data/types, call order, ORGANON, metric paths and output.
+  Original-F77 suite: PASS 24/24 variants; 38 focused engine cases also match
+  F77 and the immediate baseline. All 24 statement/format/label projections
+  match; BC/ON diffs are empty. KT's existing undefined reads are recorded in
+  `FOUND_BUGS.md` section 19 and retained. ACD is unchanged.
 - [x] **L06a — TT/UT CRATET.** Joined CS/NE in `vbase/cratet.f90`; preserved
   site/height equations, native species indices, age/calibration order and output.
   All 246 species/profile statement comparisons and eight focused real-engine

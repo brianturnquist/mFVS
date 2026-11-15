@@ -58,7 +58,7 @@
 ../kt/ccfcal.f90
 ../kt/cftopk.f90
 ../kt/cfvol.f90
-../kt/cratet.f90
+../vbase/cratet.f90
 ../kt/crown.f90
 ../kt/cubrds.f90
 ../vbase/dgdriv.f90

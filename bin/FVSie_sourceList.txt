@@ -60,7 +60,7 @@
 ../ie/ccfcal.f90
 ../ie/cftopk.f90
 ../ie/cfvol.f90
-../ie/cratet.f90
+../vbase/cratet.f90
 ../ie/crown.f90
 ../ie/cubrds.f90
 ../ie/cutstk.f90

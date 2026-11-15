@@ -52,7 +52,7 @@
 ../common/WORKCM.f90
 
 ../oc/blkdat.f90
-../oc/cratet.f90
+../vbase/cratet.f90
 ../oc/crown.f90
 ../vbase/dgdriv.f90
 ../oc/dgf.f90

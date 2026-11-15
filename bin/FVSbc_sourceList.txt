@@ -56,7 +56,7 @@
 ../canada/bc/bratio.f90
 ../canada/bc/ccfcal.f90
 ../canada/bc/cfvol.f90
-../canada/bc/cratet.f90
+../vbase/cratet.f90
 ../canada/bc/crown.f90
 ../vbase/dgdriv.f90
 ../canada/bc/dgf.f90

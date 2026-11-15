@@ -53,7 +53,7 @@
 ../canada/on/balmod.f90
 ../canada/on/blkdat.f90
 ../canada/on/bratio.f90
-../canada/on/cratet.f90
+../vbase/cratet.f90
 ../canada/on/crown.f90
 ../canada/on/cubrds.f90
 ../canada/on/cutstk.f90

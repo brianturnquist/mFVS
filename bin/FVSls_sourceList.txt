@@ -55,7 +55,7 @@
 ../ls/bratio.f90
 ../ls/ccfcal.f90
 ../ls/cfvol.f90
-../ls/cratet.f90
+../vbase/cratet.f90
 ../ls/crown.f90
 ../ls/cubrds.f90
 ../ls/cutstk.f90
