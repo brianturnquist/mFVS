@@ -102,9 +102,11 @@
 ../vbase/fvsstdrec_mod.f90
 ../vbase/gheads.f90
 ../metric/vbase/initre.f90
+../vbase/initdesign_mod.f90
 ../vbase/prtrls.f90
 ../vbase/sumhed.f90
 ../metric/vbase/sumout.f90
+../vbase/sumoutrec_mod.f90
 
 ../vbase/cuts.f90
 ../vbase/evpred.f90
@@ -319,8 +321,11 @@
 
 ../vdbsqlite/dbsfmpfc.f90
 ../metric/vdbsqlite/dbsfmpf.f90
+../vdbsqlite/dbsfmpfbind_mod.f90
 ../metric/vdbsqlite/dbsstandin.f90
+../vdbsqlite/dbsstanddesign_mod.f90
 ../metric/vdbsqlite/dbssumry.f90
+../vdbsqlite/dbssumrybind_mod.f90
 
 ../dbsqlite/dbsatrtls.f90
 ../dbsqlite/dbscuts.f90

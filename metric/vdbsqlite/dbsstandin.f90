@@ -3,6 +3,7 @@
 !===================================!
 ! METRIC-VDBSQLITE $Id$
 subroutine DBSSTANDIN(SQLSTR,LKECHO)
+  use DBSSTANDDESIGN_MOD, only: DBSSTANDDESIGN_READ,DBSSTANDDESIGN
   implicit none
 
   !     PURPOSE: TO POPULATE FVS STAND LEVEL DATA FROM THE DATABASE
@@ -336,22 +337,15 @@ subroutine DBSSTANDIN(SQLSTR,LKECHO)
 
      case('BASAL_AREA_FACTOR')
         RSTANDDATA(10) = fsql3_colreal(IinDBref,ColNumber,NullReal)
-        if (RSTANDDATA(10) .ne. NullReal) Basal_LI = 1
-        if (RSTANDDATA(10) .lt.0.0) then
-           RSTANDDATA(10) = RSTANDDATA(10) / HAtoACR
-        else
-           RSTANDDATA(10) = RSTANDDATA(10) * M2pHAtoFT2pACR
-        end if
+        call DBSSTANDDESIGN_READ(RSTANDDATA(10),10,Basal_LI,NullReal)
 
      case('INV_PLOT_SIZE')
         RSTANDDATA(11) = fsql3_colreal(IinDBref,ColNumber,NullReal)
-        if (RSTANDDATA(11) .ne. NullReal) PlotArea_LI = 1
-        RSTANDDATA(11) = RSTANDDATA(11) / HAtoACR
+        call DBSSTANDDESIGN_READ(RSTANDDATA(11),11,PlotArea_LI,NullReal)
 
      case('BRK_DBH')
         RSTANDDATA(12) = fsql3_colreal(IinDBref,ColNumber,NullReal)
-        if (RSTANDDATA(12) .ne. NullReal) BPDBH_LI = 1
-        RSTANDDATA(12) = RSTANDDATA(12) * CMtoIN
+        call DBSSTANDDESIGN_READ(RSTANDDATA(12),12,BPDBH_LI,NullReal)
 
      case('NUM_PLOTS')
         ISTANDDATA(13) = fsql3_colint(IinDBref,ColNumber,NullInt)
@@ -722,21 +716,8 @@ subroutine DBSSTANDIN(SQLSTR,LKECHO)
      if (LKECHO)write(JOSTND,10) RSTANDDATA(33),ELEV
      10 format (T12,'ELEVFT: ',T34,F6.1,' CONVERTED TO: ',F6.1)
   end if
-  if (Basal_LI.ne.NullInt) then
-     BAF = RSTANDDATA(10)
-     IF(LKECHO)WRITE(JOSTND,'(T12,''BASAL_AREA_FACTOR: '',          &
-          &   T34,F6.1)') BAF / ACRtoHA
-  end if
-  if (PlotArea_LI.ne.NullInt) then
-     FPA = RSTANDDATA(11)
-     IF(LKECHO)WRITE(JOSTND,'(T12,''INV_PLOT_SIZE: '',              &
-          &   T34,F6.0)') FPA / ACRtoHA
-  end if
-  if (BPDBH_LI.ne.NullInt) then
-     BRK = RSTANDDATA(12)
-     IF(LKECHO)WRITE(JOSTND,'(T12,''BRK_DBH: '',                    &
-          &   T34,F6.1)') BRK * INtoCM
-  end if
+  call DBSSTANDDESIGN(RSTANDDATA(10:12),Basal_LI,PlotArea_LI, &
+       &BPDBH_LI,NullInt,JOSTND,LKECHO,BAF,FPA,BRK)
   if (NumPlots_LI.ne.NullInt) then
      IPTINV = ISTANDDATA(13)
      if (LKECHO)write(JOSTND,'(T12,''NUM_PLOTS: '',T34,I6)') IPTINV

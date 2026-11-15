@@ -1,6 +1,6 @@
 # Found Bugs
 
-The first five confirmed model defects below were found during the 2026-11 consolidation of duplicated routines. Every one is already present in the pre-modernization source (commit `c2105365`), so none was introduced by the conversion to free-form Fortran or by the consolidation. M02a–M07a resolve the interfaces in section 1 and the missing arguments in section 2, and remove DBSIN's part of section 5; M12a subsequently repairs BC INITRE/MISIN's buffers in section 5. The remaining defects are deliberately retained. These interface repairs define behavior where the original calls were undefined and cannot establish simulation parity on those paths. Sections 6–8 separately record an unconfirmed historical numerical concern, a historical documentation discrepancy, and ESADDT data-flow concerns requiring follow-up. Section 9 records a reproduced SQLite resource defect with scientific-output impact still unmeasured. Section 10 records a restart-file difference that modernization itself introduced, now corrected. Sections 11 and 12 record two original defects that read undefined values and so make restart files vary between runs. Sections 13 and 14 record an invalid stub diagnostic and a fuel-model fallback defect found during the safe reapplication; neither was fixed. Sections 15–18 record DGDRIV tripling/bounds defects and undefined local reads found during L05; all were preserved. Section 19 records conditional undefined local reads in KT CRATET; these were also retained. Sections 20 and 21 record two defects in the former metric copy of EVLDX found during the M01 audit; the M01a merge carried both into `base/evldx.f90` unfixed. Sections 22–24 were found during the M02–M07 audits: section 22 is an output difference in BC and ON that the free-form conversion introduced, six of whose FORMATs are now corrected by M05a/M07a; sections 23 and 24 are original defects retained in the shared STATS and FMDOUT.
+The first five confirmed model defects below were found during the 2026-11 consolidation of duplicated routines. Every one is already present in the pre-modernization source (commit `c2105365`), so none was introduced by the conversion to free-form Fortran or by the consolidation. M02a–M07a resolve the interfaces in section 1 and the missing arguments in section 2, and remove DBSIN's part of section 5; M12a subsequently repairs BC INITRE/MISIN's buffers in section 5, and M17a repairs ON INITRE's buffers. The remaining defects are deliberately retained. These interface repairs define behavior where the original calls were undefined and cannot establish simulation parity on those paths. Sections 6–8 separately record an unconfirmed historical numerical concern, a historical documentation discrepancy, and ESADDT data-flow concerns requiring follow-up. Section 9 records a reproduced SQLite resource defect with scientific-output impact still unmeasured. Section 10 records a restart-file difference that modernization itself introduced, now corrected. Sections 11 and 12 record two original defects that read undefined values and so make restart files vary between runs. Sections 13 and 14 record an invalid stub diagnostic and a fuel-model fallback defect found during the safe reapplication; neither was fixed. Sections 15–18 record DGDRIV tripling/bounds defects and undefined local reads found during L05; all were preserved. Section 19 records conditional undefined local reads in KT CRATET; these were also retained. Sections 20 and 21 record two defects in the former metric copy of EVLDX found during the M01 audit; the M01a merge carried both into `base/evldx.f90` unfixed. Sections 22–24 were found during the M02–M07 audits: section 22 is an output difference in BC and ON that the free-form conversion introduced, six of whose FORMATs are now corrected by M05a/M07a; sections 23 and 24 are original defects retained in the shared STATS and FMDOUT.
 
 Unless a later status or location is given, file and line references are to the tree at commit `b5657da3` plus the then-uncommitted `VARIANTCD` change. Bugs 1 and 2 have the same root cause: FVS calls external procedures with no explicit interface, so gfortran cannot check argument lists across files. Moving these routines into modules would let the compiler catch this class of bug.
 
@@ -132,9 +132,10 @@ As a result, **every infected tree (DMR ≥ 1) of a host species with index 11 o
 
 **Variants:** BC, ON
 **Status:** BC's INITRE/MISIN buffers repaired 15 November 2026 as the
-isolated prerequisite for M12a. ON's INITRE remains unfixed. The repair
-changes only the six ARRAY/LNOTBK/KARD declarations from 7 to 12; keyword
-field references, conversions and handlers are unchanged.
+isolated prerequisite for M12a. M17a repairs ON's INITRE on the same date
+by widening only its three ARRAY/LNOTBK/KARD declarations from 7 to 12.
+M17b/M17d subsequently share only DESIGN through INITDESIGN; keyword
+field references and other handlers are unchanged.
 
 `KEYRDR` (`base/keyrdr.f90`) declares `ARRAY(12)`, `KARD(12)` and `LNOTBK(12)` (lines 35, 39, 44) and fills all twelve. The original BC/ON readers declare seven-element arrays, so an ordinary keyword record overwrites the five elements past the end. In `INITRE` this evidently overwrites the neighboring `KEYWRD` variable:
 - every keyword reads back as eight NUL bytes;
@@ -142,17 +143,16 @@ field references, conversions and handlers are unchanged.
 - the run ends with `STOP 20`.
 
 **Original F77 BC and ON cannot process keyword files at `c2105365`.**
-ON still has this failure in the working tree. BC now reads keywords and
-produces additional model output, so its pristine-F77 suite comparison
-intentionally differs. Upstream commit `08e833b2` (28 August 2025) widened
+Both variants now read keywords and produce additional model output, so
+their pristine-F77 suite comparisons intentionally differ. Upstream commit `08e833b2` (28 August 2025) widened
 KEYRDR from 7 to 12 fields without changing the metric and BC copies.
 
 Compiled readers at the audit and their current status:
 
-| File | Status after M12a | Variants |
+| File | Status after M17a | Variants |
 |---|---|---|
 | `canada/bc/initre.f90` | All three buffers widened | BC |
-| `metric/vbase/initre.f90` | Seven-field buffers remain | ON |
+| `metric/vbase/initre.f90` | All three buffers widened | ON |
 | `metric/newmist/misin.f90` | All three buffers widened | BC |
 
 The same defect was in pre-modernization `canada/bc/keyopn.f`, `metric/base/ksstag.f` and `metric/clim/clin.f`. The consolidation replaced those with the shared 12-element versions, so it no longer exists there. M05a also retires `metric/dbsqlite/dbsin.f90`; BC/ON now use the shared DBSIN with `KARD(12)`. Direct DBSIN tests exercise the real twelve-field KEYRDR.
@@ -168,9 +168,9 @@ baseline after widening only their corresponding buffers. These controls
 avoid the original undefined writes; they do not establish equivalence with
 the overrunning calls.
 
-**Remaining fix:** widen ON's INITRE buffers in a separate change. A shared
-field-count constant can prevent future drift, but is not part of M12a.
-MISTPRT is shared; complete INITRE/MISIN merges still require their bounded
+**Buffer repair complete:** M17a supplies ON's separate interface repair.
+A shared field-count constant remains a possible follow-up. MISTPRT and
+DESIGN are shared; complete INITRE/MISIN merges still require their bounded
 audits. DBSIN and the missing DBSTREESIN arguments are already handled under
 M05a and M02a.
 
@@ -178,18 +178,19 @@ M05a and M02a.
 
 ## What the regression tests show for BC and ON
 
-The original BC/ON decks stop at keyword input. The working ON deck still
-matches that failure; this says nothing about ON simulation results. After
-M12a's isolated BC buffer repair, the whole original-reference suite reports
-23/24 variants matching, with BC different because it now reads keywords.
-The other 22 variants match original F77 model outputs.
+The original BC/ON decks stop at keyword input. After M17a, the whole
+original-reference suite reports 22/24 variants matching: both Canadian
+variants now run farther and differ from that undefined original behavior.
+The 22 U.S. variants match original F77 model outputs.
 
-All 11 BC generated files match the immediate baseline with only the same
-six buffer declarations repaired. StandStructure raises SIGILL in both
-builds, while YSM-SkyRanch now produces a summary. This demonstrates that the
-M08a/M09a–M14a extractions preserve newly reachable BC behavior relative to
-that controlled baseline. It does not establish pristine-original BC
-simulation parity or resolve the remaining StandStructure failure.
+For M17a/M17b/M17d and M18a–M21a, all eleven BC generated files match the
+immediate baseline at `62db12b5`; all five ON generated files match that
+baseline with only its three INITRE buffer declarations widened. BC
+StandStructure still fails later, while YSM-SkyRanch and ON Hardwood produce
+summaries. Guarded twelve-field KEYRDR/DESIGN cases also match native F77
+and the immediate baseline exactly. These are controlled comparisons, not
+pristine-original Canadian simulation parity or fixes to the remaining
+model defects.
 
 An earlier, pre-M05a scratch build with bugs 5 and 2 fixed showed two further,
 unexplained problems:
@@ -198,8 +199,9 @@ unexplained problems:
 - **BC:** both tests still end with exit status 127. `StandStructure` writes no output, and `YSM-SkyRanch` output stops right after the mistletoe keywords (`NEWSPRED`).
 
 Those earlier discrepancies have not been fully traced. The current BC
-comparison above supersedes that older input-stage observation; the ON
-summary problem remains uninvestigated.
+comparison above supersedes that older input-stage observation. The ON
+summary-stride and fresh-schema defects are now recorded in sections 30–31
+and remain unfixed.
 
 ---
 
@@ -771,7 +773,8 @@ Keep the repair separate from M14a's height/DBH extraction.
 
 **Variants:** BC, ON.
 **Location:** `metric/vbase/disply.f90` calls SUMOUT with I20=20;
-`metric/vbase/sumout.f90` declares `IOSUM(I20,LENG)`, while selected
+`metric/vbase/sumout.f90` and its shared text writer
+`vbase/sumoutrec_mod.f90` declare `IOSUM(I20,LENG)`, while selected
 `common/OUTCOM.f90` declares `IOSUM(22,MAXCY1)`.
 **Status:** confirmed during M18 by source tracing and direct
 original/current routine calls. Present in `c2105365` (including its
@@ -834,8 +837,8 @@ change separate from M21a's common binding-prefix extraction.
 ## 32. Metric stand input echoes positive basal-area factors with a density factor
 
 **Variants:** BC, ON, for positive BASAL_AREA_FACTOR input with keyword echo.
-**Location:** sampling-field read and echo in
-`metric/vdbsqlite/dbsstandin.f90`.
+**Location:** sampling-field conversion and echo in
+`vdbsqlite/dbsstanddesign_mod.f90`, called by metric DBSSTANDIN after M20a.
 **Status:** confirmed during M20 using the original/current blocks with
 real SQLite input, including NULL controls. Present in `c2105365`. Unfixed;
 this is an echo defect, not a demonstrated change in stored sampling state.

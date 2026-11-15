@@ -52,11 +52,12 @@ cache directory at any time to start again; it holds nothing that must be kept.
 When a variant fails, the output names the files that differ and the cached
 folders that hold each version's outputs, so you can `diff` them directly.
 
-Original BC/ON stop during keyword input (bug 5). ON still matches that failure,
-which does not establish simulation agreement. BC's buffer repair lets it read
-keywords, so its pristine-original comparison now differs. Its outputs match a
-pre-extraction baseline with only the same buffer repair; StandStructure still
-fails later. Keep that controlled comparison separate from original F77 parity.
+Original BC/ON stop during keyword input (bug 5). Both variants now have
+repaired buffers and run farther, so their pristine-original comparisons
+differ. Their outputs match the immediate pre-extraction baselines, with
+only the same ON buffer repair applied to its baseline; BC StandStructure
+still fails later. Keep those controlled comparisons separate from
+original F77 parity.
 
 ## What is compared
 

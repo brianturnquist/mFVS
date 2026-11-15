@@ -8,9 +8,9 @@ with NVEL submodule `a73e697e220ffd0f792aa7ac10d84c911edb7ad7`.
 This checklist stores the redundancy and dormant-code findings before cleanup.
 P01–P03, D01–D15, C01–C19, B01–B03 and the unbuilt-directory removal (R01–R08, R10–R10d)
 are complete. Six stub tasks, the metric audits M01–M21 (including M08b/M08c)
-and the implementation tasks M01a–M07a, M08a, M08d/M08e and M09a–M16a
-are also complete (M06a is included in M04a). The checklist now records
-128 completed and 21 pending items, including R09.
+and the implementation tasks M01a–M07a, M08a, M08d/M08e, M09a–M21a
+and M17b/M17d are also complete (M06a is included in M04a). The checklist
+now records 136 completed and 14 pending items, including R09.
 BC/ON simulation parity remains blocked by the existing bugs
 in [FOUND_BUGS.md](FOUND_BUGS.md).
 
@@ -832,17 +832,60 @@ revisions are unchanged. Temporary drivers, builds and results were discarded.
   and final-design notice agree. The PROCESS default-design echo also uses
   FORMAT 2010 and the metric XBAF preparation, so that format must remain
   available until its other caller is migrated. Other keywords are unaudited.
-- [ ] **M17a — Repair ON's keyword buffers (implementation prerequisite).**
-  Widen only ARRAY/LNOTBK/KARD to twelve in metric INITRE, as a separate
-  interface repair. Compare guarded reader cases with explicitly widened
-  original/baseline readers; do not call that pristine-original parity.
-- [ ] **M17b — Share the DESIGN handler (implementation).** After M17a,
-  extract option 10 only to `vbase/`, keeping conversion order, blank-field
-  semantics, sampling defaults, stocking and echo. Preserve PROCESS's
-  existing default-design FORMAT 2010 use; no complete INITRE merge.
-- [ ] **M17c — BC INITRE: DESIGN family (audit).** Independently compare
-  `canada/bc/initre.f90`, its field layout and BC-specific dependencies
-  before adding it to a shared handler.
+- [x] **M17a — Repair ON's keyword buffers (implementation prerequisite).**
+  Completed 15 November 2026: only ARRAY/LNOTBK/KARD declarations change
+  from seven to twelve in metric INITRE. Guarded real KEYRDR/DESIGN cases
+  match explicitly defined twelve-field F77 and baseline fixtures. ON's
+  whole suite matches the immediate baseline with only these same three
+  declarations widened; this is not pristine-original simulation parity.
+- [x] **M17b — Share the DESIGN handler (implementation).** Completed
+  15 November 2026 in `vbase/initdesign_mod.f90`, with explicit interfaces
+  in imperial and metric INITRE. Conversion/mutation order, seven consumed
+  fields, presence tests, sampling defaults, stocking and both echo layouts
+  are preserved. PROCESS retains its local FORMAT 2010 and finalization.
+- [x] **M17c — BC INITRE: DESIGN family (audit).** Completed 15 November
+  2026 at `62db12b5`: compared option 10, labels 2000–2030, in
+  `canada/bc/initre.f90` with metric/shared INITRE and original F77
+  `c2105365`. Only BC selects this reader. Its DESIGN block is
+  statement-equivalent to metric/ON and its original F77 block; the shared
+  imperial block has the unit-layer differences already mapped in M17.
+  BC now has twelve ARRAY/LNOTBK/KARD entries (M12a), but DESIGN still
+  consumes only the original seven fields:
+  - Fields 1–3 set BAF, FPA and BRK: negative BAF and inverse plot area
+    use /HAtoACR, nonnegative BAF uses M2pHAtoFT2pACR, and DBH uses
+    CMtoIN. ARRAY conversions precede the presence-controlled assignments.
+  - Fields 4–6 set IPTINV/NONSTK using IFIX and SAMWT directly. Nonpositive
+    SAMWT falls back to FLOAT(IPTINV) when that plot count is positive.
+  - Field 7 accepts a fraction in (0,1] or a percentage in (1,100], with
+    the original multiplication by .01. Other values retain GROSPC.
+    This field is tested without LNOTBK(7). XXG previews the fraction
+    from plot counts when GROSPC remains negative; it does not finalize
+    GROSPC. Fields 8–12 are unused by this handler.
+
+  All seven state variables are in shared PLOT, with native-unit defaults
+  supplied by BC GRINIT before the first handler. DESIGN reads no BCPLOT
+  symbols and calls no BEC/HABTYP or growth-model routines. The enclosing
+  BC reader still owns its ecological state and twenty-character habitat
+  fields. PROCESS owns final plot counts, the automatic stocking fraction,
+  the final DESIGN echo through FORMAT 2010, and the subsequent GROSPC
+  inversion. Keep those steps, BC's separate report layouts and its BEC
+  handling outside this extraction; FORMAT 2010 still has two callers.
+
+  Temporary bounds-checked fixtures use the real twelve-field KEYRDR and
+  1,296 cases per copy, covering blank/partial fields, BAF signs, fractional
+  plot counts, sampling-weight fallback, stocking boundaries, echo on/off
+  and populated unused fields 8–12. Native original-F77, current BC and
+  current metric blocks produce identical text and state bits, with all
+  buffer guards intact. A deliberate DBH-factor mutation is detected.
+  Fixtures supply defined twelve-field buffers; they bypass original
+  INITRE's seven-field overflow and establish no Canadian simulation parity.
+  Only this tracker changes; source lists and `git diff --check` pass.
+  No full-suite rerun is needed for this audit. Temporary files were discarded.
+- [x] **M17d — BC DESIGN caller migration (implementation).** Completed
+  15 November 2026: BC option 10 calls INITDESIGN; its manifest selects the
+  helper. Guarded BC cases match native F77 and the immediate baseline,
+  with no changes to ecological state, PROCESS or local FORMAT 2010.
+  All eleven BC suite files match the immediate baseline; P03 remains.
 - [x] **M18 — SUMOUT: cycle-summary data record (audit).** Completed
   15 November 2026: compared FORMAT 20, with the identical disk FORMAT 9014,
   against `vbase/sumout.f90`. DISPLY supplies rounded imperial-unit IOSUM
@@ -862,10 +905,12 @@ revisions are unchanged. Temporary drivers, builds and results were discarded.
   the wrong stride (new bug 30); this is present in F77 too. Preserve that
   caller contract during extraction and repair it separately. The distinct
   28/30-argument DBSSUMRY interfaces must also remain paired (M21).
-- [ ] **M18a — Share the cycle-summary text writer (implementation).**
-  Extract the FORMAT 20/9014 data writes into `vbase/`, preserving each
-  field set, INT order and destination gates. Keep IOSUM's caller stride,
-  headings and DBSSUMRY calls unchanged; bug 30 is separate model-fix work.
+- [x] **M18a — Share the cycle-summary text writer (implementation).**
+  Completed 15 November 2026 in `vbase/sumoutrec_mod.f90`. Both SUMOUT
+  callers retain destination gates, headings and their DBSSUMRY calls.
+  The helper preserves both field sets, INT/conversion order and supplied
+  IOSUM leading dimension, including bug 30. Full-writer cases compare
+  printed/disk files and captured database arguments against both references.
 - [x] **M19 — DBSFMPF: fuel-model/weight output group (audit).** Completed
   15 November 2026: compared the four moderate IDs/weights and optional four
   severe IDs/weights with `vdbsqlite/dbsfmpf.f90`. Both bind IDs as integers
@@ -880,10 +925,13 @@ revisions are unchanged. Temporary drivers, builds and results were discarded.
   KODE; DBSCASE, SQL prepare/step/finalize and failure handling stay in the
   caller. FMPOFL prepares dimensional fields before this writer; do not add
   conversions here. Other potential-fire fields remain outside this audit.
-- [ ] **M19a — Share fuel-model/weight bindings (implementation).** Add one
-  `vdbsqlite/` helper for this group, retaining percent rounding, binding
-  types/order and the metric-ON versus imperial-CS/SN East selection.
-  Leave schema creation, other fields and statement lifetime in the callers.
+- [x] **M19a — Share fuel-model/weight bindings (implementation).**
+  Completed 15 November 2026 in `vdbsqlite/dbsfmpfbind_mod.f90`. Callers
+  retain REAL percent rounding before DBLE, East/West selection, schemas,
+  other fields and statement lifetime. The helper advances the supplied
+  column index in the original moderate-then-severe order and never reads
+  uninitialized West severe weights. Full SQLite routines match native F77
+  and baseline status, schemas and typed rows for IE/CS/BC/ON.
 - [x] **M20 — DBSSTANDIN: sampling-design fields (audit).** Completed
   15 November 2026: compared BASAL_AREA_FACTOR, INV_PLOT_SIZE and BRK_DBH
   read/assignment/echo blocks with `vdbsqlite/dbsstandin.f90`. Both read
@@ -897,10 +945,13 @@ revisions are unchanged. Temporary drivers, builds and results were discarded.
   (new bug 32). Preserve that diagnostic in cleanup. Shared DBSIN invokes
   this reader for selected stand SQL; query/column dispatch, overlaid integer
   storage, BC BEC/HABTYP handling and other fields remain in the reader.
-- [ ] **M20a — Share sampling-design field handling (implementation).**
-  Extract only these three fields' conversion/assignment/echo logic into
-  `vdbsqlite/`. Retain presence flags, NULL behavior, exact factors and
-  bug 32; leave SQL traversal and all BC ecological processing in place.
+- [x] **M20a — Share sampling-design field handling (implementation).**
+  Completed 15 November 2026 in `vdbsqlite/dbsstanddesign_mod.f90`.
+  SQL traversal and reads stay in the callers; presence is tested before
+  conversion, including the original NULL-sentinel conversion. Assignments
+  and echo preserve exact factors and bug 32. Full SQLite-reader cases
+  match F77/baseline state bits and echo for IE/BC/ON; BC ecological
+  processing and the overlaid stand arrays remain in the reader.
 - [x] **M21 — DBSSUMRY: ordinary Summary record (audit).** Completed
   15 November 2026: compared DBSSUMRY only, not DBSSUMRY2, with
   `vdbsqlite/dbssumry.f90`. It runs only for ISUMARY=1 and receives converted
@@ -920,11 +971,40 @@ revisions are unchanged. Temporary drivers, builds and results were discarded.
   and writes no row (new bug 31, also in F77). A future schema correction
   must be separate from sharing bindings. Case identity, stand ID, schema,
   argument order, error exits and statement lifetime stay explicit.
-- [ ] **M21a — Share the ordinary Summary binding prefix (implementation).**
-  Extract Year through QMD (the first eight placeholders) to one
-  `vdbsqlite/` helper with explicit types and column-index progression.
-  Keep the two interfaces, volume fields, schema differences and bug 31;
-  audit DBSSUMRY2 separately before attempting a complete file merge.
+- [x] **M21a — Share the ordinary Summary binding prefix (implementation).**
+  Completed 15 November 2026 in `vdbsqlite/dbssumrybind_mod.f90`.
+  Year through QMD retain seven integer binds, caller-promoted DOUBLE
+  PRECISION QMD and the supplied column-index progression. Both public
+  interfaces, volume fields, schemas and bug 31 remain; DBSSUMRY2 is
+  byte-identical. Full SQLite comparisons include ON's fresh-table failure
+  and an INSERT-compatible existing table that exercises its actual bindings.
+
+Verification for M17a/M17b/M17d and M18a–M21a on 15 November 2026:
+all five modules have explicit interfaces and are selected by all 24 source
+lists. All 24 variants build. The original-reference suite ends with
+`FAIL 22/24 variants; working tree 62db12b5+changes vs original c2105365;
+failed: bc on`. All 22 U.S. variants match every generated original-F77
+output, including restart files. Both Canadian variants now pass the old
+keyword-input failure: BC's eleven generated files match the immediate
+baseline at `62db12b5`; ON's five files match that baseline with only
+ARRAY/LNOTBK/KARD widened in its INITRE. BC StandStructure still fails
+later. These controlled comparisons do not establish pristine-original
+Canadian simulation parity.
+
+Temporary bounds-checked GNU Fortran fixtures compare native F77,
+immediate baseline and candidate: 1,296 guarded real KEYRDR/DESIGN cases
+per IE/BC/ON copy; 32 full SUMOUT cases per IE/CS/BC/ON copy with three
+rows, signed values, both destinations and captured database arguments;
+12 full DBSFMPF/DBSSUMRY calls per IE/CS/BC/ON copy with disabled/text
+switches and rounding-boundary weights; and 16 full SQLite DBSSTANDIN
+cases per IE/BC/ON copy with NULL, absent, sentinel, reordered and signed
+fields and echo on/off. ON bindings also match with an INSERT-compatible
+existing schema; its fresh-schema failure is separately retained. Each
+of five deliberate helper mutations is detected. Caller projection checks,
+source-list validation, all-variant CMake configuration and `git diff --check`
+pass. Common blocks, equations outside the extracted blocks, reference
+outputs and both pinned NVEL revisions are unchanged. Temporary fixtures,
+builds, databases, suite outputs and results were discarded.
 
 M08b/M08c and M15–M21 were audited at `6dcf25a6` against original main
 `c210536536d81fd9b46dccb9a571f0de1e55e944`; the pinned original NVEL

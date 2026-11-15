@@ -7,6 +7,7 @@ subroutine DBSFMPF(IYEAR,NPLT,SFLMSU,MFLMSU,SFLMTO,MFLMTO,SFTYPE,&
      &MMORTBA,SMORTVOL,MMORTVOL,SPSMOKE,MPSMOKE,SFUELMOD,SFUELWT,&
      &FUELMOD,FUELWT,KODE)
 
+  use DBSFMPFBIND_MOD, only: DBSFMPFBIND
   implicit none
 
   !     PURPOSE: TO POPULATE A DATABASE WITH THE FIRE MODELS POTENTIAL FIRE
@@ -326,56 +327,9 @@ subroutine DBSFMPF(IYEAR,NPLT,SFLMSU,MFLMSU,SFLMTO,MFLMTO,SFTYPE,&
   ColNumber = ColNumber+1
   iRet = fsql3_bind_double(IoutDBref,ColNumber,BMPSMOKE)
 
-  ColNumber = ColNumber+1
-  iRet = fsql3_bind_int(IoutDBref,ColNumber,FUELMOD(1))
-
-  ColNumber = ColNumber+1
-  iRet = fsql3_bind_int(IoutDBref,ColNumber,FUELMOD(2))
-
-  ColNumber = ColNumber+1
-  iRet = fsql3_bind_int(IoutDBref,ColNumber,FUELMOD(3))
-
-  ColNumber = ColNumber+1
-  iRet = fsql3_bind_int(IoutDBref,ColNumber,FUELMOD(4))
-
-  ColNumber = ColNumber+1
-  iRet = fsql3_bind_double(IoutDBref,ColNumber,BFUELWT(1))
-
-  ColNumber = ColNumber+1
-  iRet = fsql3_bind_double(IoutDBref,ColNumber,BFUELWT(2))
-
-  ColNumber = ColNumber+1
-  iRet = fsql3_bind_double(IoutDBref,ColNumber,BFUELWT(3))
-
-  ColNumber = ColNumber+1
-  iRet = fsql3_bind_double(IoutDBref,ColNumber,BFUELWT(4))
-
-  if ((VARACD .eq. 'SN') .or. (VARACD .eq. 'CS')) then
-     ColNumber = ColNumber+1
-     iRet = fsql3_bind_int(IoutDBref,ColNumber,SFUELMOD(1))
-
-     ColNumber = ColNumber+1
-     iRet = fsql3_bind_int(IoutDBref,ColNumber,SFUELMOD(2))
-
-     ColNumber = ColNumber+1
-     iRet = fsql3_bind_int(IoutDBref,ColNumber,SFUELMOD(3))
-
-     ColNumber = ColNumber+1
-     iRet = fsql3_bind_int(IoutDBref,ColNumber,SFUELMOD(4))
-
-     ColNumber = ColNumber+1
-     iRet = fsql3_bind_double(IoutDBref,ColNumber,BSFUELWT(1))
-
-     ColNumber = ColNumber+1
-     iRet = fsql3_bind_double(IoutDBref,ColNumber,BSFUELWT(2))
-
-     ColNumber = ColNumber+1
-     iRet = fsql3_bind_double(IoutDBref,ColNumber,BSFUELWT(3))
-
-     ColNumber = ColNumber+1
-     iRet = fsql3_bind_double(IoutDBref,ColNumber,BSFUELWT(4))
-
-  end if
+  call DBSFMPFBIND(IoutDBref,ColNumber,iRet, &
+       &(VARACD .eq. 'SN') .or. (VARACD .eq. 'CS'), &
+       &FUELMOD,BFUELWT,SFUELMOD,BSFUELWT)
 
   iRet = fsql3_step(IoutDBref)
   if (iRet.ne.0) then

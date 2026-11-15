@@ -110,6 +110,7 @@
 ../vbase/fvsstdrec_mod.f90
 ../vbase/gheads.f90
 ../vbase/initre.f90
+../vbase/initdesign_mod.f90
 ../vbase/prtexm.f90
 ../vbase/prtrls.f90
 ../vbase/ptbal.f90
@@ -121,6 +122,7 @@
 ../vbase/stkval.f90
 ../vbase/sumhed.f90
 ../vbase/sumout.f90
+../vbase/sumoutrec_mod.f90
 ../vbase/svout.f90
 ../vbase/svstart.f90
 
@@ -317,9 +319,12 @@
 ../dbsqlite/DBSCOM.f90
 
 ../vdbsqlite/dbsfmpf.f90
+../vdbsqlite/dbsfmpfbind_mod.f90
 ../vdbsqlite/dbsfmpfc.f90
 ../vdbsqlite/dbsstandin.f90
+../vdbsqlite/dbsstanddesign_mod.f90
 ../vdbsqlite/dbssumry.f90
+../vdbsqlite/dbssumrybind_mod.f90
 ../vdbsqlite/dbscarbbiosumry.f90
 ../vdbsqlite/dbsreference.f90
 

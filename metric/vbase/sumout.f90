@@ -4,6 +4,7 @@
 ! METRIC-VBASE $Id: sumout.f 2494 2018-09-12 20:34:17Z lancedavid $
 subroutine SUMOUT(IOSUM,I20,ICALLF,JOPRT,JSTND2,JSUM2,&
      &LENG,MGMID,NPLT,SAMWT,ITITLE,IPTINV)
+  use SUMOUTREC_MOD, only: SUMOUTREC
   implicit none
 
   !     WRITES SUMMARY OUTPUT.
@@ -197,119 +198,8 @@ subroutine SUMOUT(IOSUM,I20,ICALLF,JOPRT,JSTND2,JSUM2,&
   I12 = I20-8
   do I = 1,LENG
 
-     select case (VARACD)
-
-     case ('CS','LS','NE','SN','ON')
-
-        if (LPRT)&
-             &write(JSTND2,20)&
-             &IOSUM(1,I),&
-             &IOSUM(2,I),&
-             &INT(IOSUM(3,I)/ACRtoHA),&
-             &INT(IOLDBA(I)*FT2pACRtoM2pHA),&
-             &INT(ISDI(I)/ACRtoHA),&
-             &IBTCCF(I),&
-             &INT(IBTAVH(I)*FTtoM),&
-             &QSDBT(I)*INtoCM,&
-             &INT(IOSUM(4,I)*FT3pACRtoM3pHA),&
-             &INT(IOSUM(5,I)*FT3pACRtoM3pHA),&
-             &INT(IOSUM(6,I)*FT3pACRtoM3pHA),&
-             &INT(IOSUM(7,I)/ACRtoHA),&
-             &INT(IOSUM(8,I)*FT3pACRtoM3pHA),&
-             &INT(IOSUM(9,I)*FT3pACRtoM3pHA),&
-             &INT(IOSUM(10,I)*FT3pACRtoM3pHA),&
-             &INT(IOSUM(11,I)*FT2pACRtoM2pHA),&
-             &INT(ISDIAT(I)/ACRtoHA),&
-             &IOSUM(12,I),&
-             &INT(IOSUM(13,I)*FTtoM),&
-             &QDBHAT(I)*INtoCM,&
-             &IOSUM(14,I),&
-             &INT(IOSUM(15,I)*FT3pACRtoM3pHA),&
-             &INT(IOSUM(16,I)*FT3pACRtoM3pHA),&
-             &BCYMAI(I)*FT3pACRtoM3pHA,&
-             &(IOSUM(K,I),K = 18,20)
-
-        if (LDSK)&
-             &write(JSUM2,9014) IOSUM(1,I),IOSUM(2,I),&
-             &INT(IOSUM(3,I)/ACRtoHA),&
-             &INT(IOLDBA(I)*FT2pACRtoM2pHA),&
-             &INT(ISDI(I)/ACRtoHA),&
-             &IBTCCF(I),&
-             &INT(IBTAVH(I)*FTtoM),&
-             &QSDBT(I)*INtoCM,&
-             &INT(IOSUM(4,I)*FT3pACRtoM3pHA),&
-             &INT(IOSUM(5,I)*FT3pACRtoM3pHA),&
-             &INT(IOSUM(6,I)*FT3pACRtoM3pHA),&
-             &INT(IOSUM(7,I)/ACRtoHA),&
-             &INT(IOSUM(8,I)*FT3pACRtoM3pHA),&
-             &INT(IOSUM(9,I)*FT3pACRtoM3pHA),&
-             &INT(IOSUM(10,I)*FT3pACRtoM3pHA),&
-             &INT(IOSUM(11,I)*FT2pACRtoM2pHA),&
-             &INT(ISDIAT(I)/ACRtoHA),&
-             &IOSUM(12,I),&
-             &INT(IOSUM(13,I)*FTtoM),&
-             &QDBHAT(I)*INtoCM,&
-             &IOSUM(14,I),&
-             &INT(IOSUM(15,I)*FT3pACRtoM3pHA),&
-             &INT(IOSUM(16,I)*FT3pACRtoM3pHA),&
-             &BCYMAI(I)*FT3pACRtoM3pHA,&
-             &(IOSUM(K,I),K = 18,20)
-
-     case default
-
-        if (LPRT)&
-             &write(JSTND2,20) IOSUM(1,I),IOSUM(2,I),&
-             &INT(IOSUM(3,I)/ACRtoHA),&
-             &INT(IOLDBA(I)*FT2pACRtoM2pHA),&
-             &INT(ISDI(I)/ACRtoHA),&
-             &IBTCCF(I),&
-             &INT(IBTAVH(I)*FTtoM),&
-             &QSDBT(I)*INtoCM,&
-             &INT(IOSUM(4,I)*FT3pACRtoM3pHA),&
-             &INT(IOSUM(5,I)*FT3pACRtoM3pHA),&
-             &INT(IOSUM(6,I)*FT3pACRtoM3pHA),&
-             &INT(IOSUM(7,I)/ACRtoHA),&
-             &INT(IOSUM(8,I)*FT3pACRtoM3pHA),&
-             &INT(IOSUM(9,I)*FT3pACRtoM3pHA),&
-             &INT(IOSUM(10,I)*FT3pACRtoM3pHA),&
-             &INT(IOSUM(11,I)*FT2pACRtoM2pHA),&
-             &INT(ISDIAT(I)/ACRtoHA),&
-             &IOSUM(12,I),&
-             &INT(IOSUM(13,I)*FTtoM),&
-             &QDBHAT(I)*INtoCM,&
-             &IOSUM(14,I),&
-             &INT(IOSUM(15,I)*FT3pACRtoM3pHA),&
-             &INT(IOSUM(16,I)*FT3pACRtoM3pHA),&
-             &BCYMAI(I)*FT3pACRtoM3pHA,&
-             &(IOSUM(K,I),K = 18,20)
-
-        if (LDSK)&
-             &write(JSUM2,9014) IOSUM(1,I),IOSUM(2,I),&
-             &INT(IOSUM(3,I)/ACRtoHA),&
-             &INT(IOLDBA(I)*FT2pACRtoM2pHA),&
-             &INT(ISDI(I)/ACRtoHA),&
-             &IBTCCF(I),&
-             &INT(IBTAVH(I)*FTtoM),&
-             &QSDBT(I)*INtoCM,&
-             &INT(IOSUM(4,I)*FT3pACRtoM3pHA),&
-             &INT(IOSUM(5,I)*FT3pACRtoM3pHA),&
-             &INT(IOSUM(6,I)*FT3pACRtoM3pHA),&
-             &INT(IOSUM(7,I)/ACRtoHA),&
-             &INT(IOSUM(8,I)*FT3pACRtoM3pHA),&
-             &INT(IOSUM(9,I)*FT3pACRtoM3pHA),&
-             &INT(IOSUM(10,I)*FT3pACRtoM3pHA),&
-             &INT(IOSUM(11,I)*FT2pACRtoM2pHA),&
-             &INT(ISDIAT(I)/ACRtoHA),&
-             &IOSUM(12,I),&
-             &INT(IOSUM(13,I)*FTtoM),&
-             &QDBHAT(I)*INtoCM,&
-             &IOSUM(14,I),&
-             &INT(IOSUM(15,I)*FT3pACRtoM3pHA),&
-             &INT(IOSUM(16,I)*FT3pACRtoM3pHA),&
-             &BCYMAI(I)*FT3pACRtoM3pHA,&
-             &(IOSUM(K,I),K = 18,20)
-
-     end select
+     if (LPRT) call SUMOUTREC(JSTND2,IOSUM,I20,LENG,I)
+     if (LDSK) call SUMOUTREC(JSUM2,IOSUM,I20,LENG,I)
 
      !      CALL THE DBSSUMRY FOR POPULATING THE DATABASE WITH
      !      THE SUMMARY INFORMATION
@@ -340,11 +230,6 @@ subroutine SUMOUT(IOSUM,I20,ICALLF,JOPRT,JSTND2,JSUM2,&
           &BCYMAI(I)*FT3pACRtoM3pHA,&
           &IOSUM(18,I),IOSUM(19,I),IOSUM(20,I))
 
-     20 format(2I4,I6,I4,I5,2I4,F5.1,7I6,I4,I5,2I4,F5.1,2X,I6,&
-          &I5,I6,2X,F6.1,1X,I3,1X,2I1)
-
-     9014 format(2I4,I6,I4,I5,2I4,F5.1,7I6,I4,I5,2I4,F5.1,2X,I6,&
-          &I5,I6,2X,F6.1,1X,I3,1X,2I1)
      50 continue
   end do
 

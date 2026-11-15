@@ -8,6 +8,7 @@ subroutine DBSSUMRY(IYEAR, IAGE, NPLT, ITPA, IBA,&
      &IRMCUFT, IRSCUFT, IRBDFT, IATBA, IATSDI,&
      &IATCCF, IATTOPHT, FATQMD, IPRDLEN, IACC,&
      &IMORT, YMAI, IFORTP, ISZCL, ISTCL)
+  use DBSSUMRYBIND_MOD, only: DBSSUMRYBIND
   implicit none
 
   !     PURPOSE: TO POPULATE A DATABASE WITH THE PROGNOSIS MODEL
@@ -122,28 +123,8 @@ subroutine DBSSUMRY(IYEAR, IAGE, NPLT, ITPA, IBA,&
   end if
 
   ColNumber = 1
-  iRet = fsql3_bind_int(IoutDBref,ColNumber,IYEAR)
-
-  ColNumber = ColNumber+1
-  iRet = fsql3_bind_int(IoutDBref,ColNumber,IAGE)
-
-  ColNumber = ColNumber+1
-  iRet = fsql3_bind_int(IoutDBref,ColNumber,ITPA)
-
-  ColNumber = ColNumber+1
-  iRet = fsql3_bind_int(IoutDBref,ColNumber,IBA)
-
-  ColNumber = ColNumber+1
-  iRet = fsql3_bind_int(IoutDBref,ColNumber,ISDI)
-
-  ColNumber = ColNumber+1
-  iRet = fsql3_bind_int(IoutDBref,ColNumber,ICCF)
-
-  ColNumber = ColNumber+1
-  iRet = fsql3_bind_int(IoutDBref,ColNumber,ITOPHT)
-
-  ColNumber = ColNumber+1
-  iRet = fsql3_bind_double(IoutDBref,ColNumber,FQMDB)
+  call DBSSUMRYBIND(IoutDBref,ColNumber,iRet, &
+       &IYEAR,IAGE,ITPA,IBA,ISDI,ICCF,ITOPHT,FQMDB)
 
   ColNumber = ColNumber+1
   iRet = fsql3_bind_int(IoutDBref,ColNumber,ITCUFT)

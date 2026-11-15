@@ -4,6 +4,7 @@
 ! VBASE $Id$
 subroutine SUMOUT(IOSUM,I20,ICALLF,JOPRT,JSTND2,JSUM2,&
      &LENG,MGMID,NPLT,SAMWT,ITITLE,IPTINV)
+  use SUMOUTREC_MOD, only: SUMOUTREC
   implicit none
 
   !     WRITES SUMMARY OUTPUT.
@@ -159,41 +160,8 @@ subroutine SUMOUT(IOSUM,I20,ICALLF,JOPRT,JSTND2,JSUM2,&
   I12 = I20-8
   do I = 1,LENG
 
-     select case (VARACD)
-
-        !       CASE ('CS','LS','NE','SN')
-        ! C
-        !         IF(LPRT)
-        !      &    WRITE(JSTND2,20) (IOSUM(K,I),K=1,3),IOLDBA(I),ISDI(I),
-        !      &      IBTCCF(I),IBTAVH(I),QSDBT(I),(IOSUM(K,I),K=4,11),
-        !      &      ISDIAT(I),IOSUM(12,I),IOSUM(13,I),QDBHAT(I),
-        !      &      (IOSUM(K,I),K=14,16),BCYMAI(I),(IOSUM(K,I),K=18,20)
-        ! C
-        !         IF(LDSK)
-        !      &    WRITE(JSUM2,9014) (IOSUM(K,I),K=1,3),IOLDBA(I),ISDI(I),
-        !      &      IBTCCF(I),IBTAVH(I),QSDBT(I),(IOSUM(K,I),K=4,11),
-        !      &      ISDIAT(I),IOSUM(12,I),IOSUM(13,I),QDBHAT(I),
-        !      &      (IOSUM(K,I),K=14,16),BCYMAI(I),(IOSUM(K,I),K=18,20)
-
-     case default
-
-        if (LPRT)&
-             &write(JSTND2,20) (IOSUM(K,I),K = 1,3),IOLDBA(I),ISDI(I),&
-             &IBTCCF(I),IBTAVH(I),QSDBT(I),(IOSUM(K,I),K = 4,5),&
-             &IOSUM(21,I),(IOSUM(K,I),K = 6,9),IOSUM(22,I),&
-             &(IOSUM(K,I),K = 10,11),&
-             &ISDIAT(I),IOSUM(12,I),IOSUM(13,I),QDBHAT(I),&
-             &(IOSUM(K,I),K = 14,16),BCYMAI(I),(IOSUM(K,I),K = 18,20)
-
-        if (LDSK)&
-             &write(JSUM2,9014) (IOSUM(K,I),K = 1,3),IOLDBA(I),ISDI(I),&
-             &IBTCCF(I),IBTAVH(I),QSDBT(I),(IOSUM(K,I),K = 4,5),&
-             &IOSUM(21,I),(IOSUM(K,I),K = 6,9),IOSUM(22,I),&
-             &(IOSUM(K,I),K = 10,11),&
-             &ISDIAT(I),IOSUM(12,I),IOSUM(13,I),QDBHAT(I),&
-             &(IOSUM(K,I),K = 14,16),BCYMAI(I),(IOSUM(K,I),K = 18,20)
-
-     end select
+     if (LPRT) call SUMOUTREC(JSTND2,IOSUM,I20,LENG,I)
+     if (LDSK) call SUMOUTREC(JSUM2,IOSUM,I20,LENG,I)
 
      !      CALL THE DBSSUMRY FOR POPULATING THE DATABASE WITH
      !      THE SUMMARY INFORMATION
@@ -208,11 +176,6 @@ subroutine SUMOUT(IOSUM,I20,ICALLF,JOPRT,JSTND2,JSUM2,&
           &IOSUM(14,I),IOSUM(15,I),IOSUM(16,I),BCYMAI(I),IOSUM(18,I),&
           &IOSUM(19,I),IOSUM(20,I))
 
-     20 format(2I4,I6,I4,I5,2I4,F5.1,9I6,I4,I5,2I4,F5.1,2X,I6,&
-          &I5,I6,2X,F6.1,1X,I3,1X,2I1)
-
-     9014 format(2I4,I6,I4,I5,2I4,F5.1,9I6,I4,I5,2I4,F5.1,2X,I6,&
-          &I5,I6,2X,F6.1,1X,I3,1X,2I1)
      50 continue
   end do
 
