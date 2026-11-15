@@ -3,6 +3,7 @@
 !=========================!
 ! FIRE-VBASE $Id$
 subroutine FMFOUT(IYR, FLAME, FMD, IFIRE, CFTMP)
+  use FMBURNREPORT_MOD, only: FMBURNREPORT
   implicit none
 
   !     SINGLE-STAND VERSION
@@ -90,67 +91,9 @@ subroutine FMFOUT(IYR, FLAME, FMD, IFIRE, CFTMP)
   !     TIME WINDOW FOR PRODUCING THE REPORT. WRITE REPORT HEADER
   !     IF REQUESTED.
 
-  if (IYR .ge. IFMBRB .and. IYR .le. IFMBRE .and. IFIRE .ge.0) then
-
-     !     CALL THE DBS MODULE TO OUTPUT BURN CONDITIONS DATA TO A DATABASE
-
-     if (IFIRE .ne.0) then
-        DBSKODEB = 1
-        call DBSFMBURN(IYR,NPLT,MOIS(1,1)*100,MOIS(1,2)*100,&
-             &MOIS(1,3)*100,MOIS(1,4)*100,MOIS(1,5)*100,MOIS(2,1)*100,&
-             &MOIS(2,2)*100,FWIND,INT(FMSLOP*100),FLAME,SCH,CFTMP,FMOD,&
-             &FWT,DBSKODEB)
-        if (DBSKODEB.eq.0) goto 105
-     end if
-
-     IBRPAS = IBRPAS + 1
-     if (IBRPAS .eq.1) then
-        write (JROUT,39) IDBRN,IDBRN
-        write (JROUT,40) IDBRN
-        write (JROUT,41) IDBRN
-        write (JROUT,43) IDBRN
-        write (JROUT,44) IDBRN,NPLT,MGMID
-        write (JROUT,40) IDBRN
-        write (JROUT,45) IDBRN
-        write (JROUT,46) IDBRN
-        write (JROUT,47) IDBRN
-        write (JROUT,40) IDBRN
-        39 format(2(/1X,I5))
-        40 format (1X,I5,1X,113('-'))
-        41 format (1X,I5,37X,'******  FIRE MODEL VERSION 1.0 ******')
-        43 format (1X,I5,26X,'BURN CONDITIONS REPORT --',&
-             &' CONDITIONS AT THE TIME OF THE FIRE')
-        44 format (1X,I5,' STAND ID: ',A26,4X,'MGMT ID: ',A4)
-        45 format (1X,I5,43X,'MIDFLAME       FLAME  SCORCH',21X,&
-             &'FUEL MODELS')
-        46 format (1X,I5,7X,'------------ % MOISTURE ------------- WIND',&
-             &'  SLOPE  LENGTH HEIGHT',12X,31('-'))
-        47 format (1X,I5,1X,'YEAR  1HR 10HR 100HR  3+ DUFF LIVE W LIVE',&
-             &' H (MPH)  (%)    (FT)  (FT)  FIRE TYPE   ',4('MOD %WT '))
-     end if
-
-     if (IFIRE .ne.0) then
-        if (FMD.eq.0) then
-           write (JROUT,100) IDBRN,IYR,&
-                &(MOIS(1,1)*100),(MOIS(1,2)*100),&
-                &(MOIS(1,3)*100),(MOIS(1,4)*100),&
-                &(MOIS(1,5)*100),(MOIS(2,1)*100),(MOIS(2,2)*100),&
-                &FWIND, INT(FMSLOP*100), FLAME, SCH, CFTMP,&
-                &0,100
-        else
-           write (JROUT,100) IDBRN,IYR,&
-                &(MOIS(1,1)*100),(MOIS(1,2)*100),&
-                &(MOIS(1,3)*100),(MOIS(1,4)*100),&
-                &(MOIS(1,5)*100),(MOIS(2,1)*100),(MOIS(2,2)*100),&
-                &FWIND, INT(FMSLOP*100.), FLAME, SCH, CFTMP,&
-                &(FMOD(I),INT((FWT(I)*100.)+0.5),&
-                &I = 1,NFMODS)
-           100 format(1X,2I5,5F5.0,F6.0,1X,F6.0,1X,F5.1,I6,2F7.1,2X,A,T89,&
-                &8(1X,I3))
-        end if
-     end if
-  end if
-  105 continue
+  call FMBURNREPORT(IYR,FLAME,FMD,IFIRE,CFTMP,JROUT)
+  ! The remaining fuel/mortality sections also use this stand heading.
+  44 format (1X,I5,' STAND ID: ',A26,4X,'MGMT ID: ',A4)
 
   !     FUEL CONSUMPTION REPORT: IFMFLB, IFMFLE ARE THE BEGINNING AND
   !     ENDING YEARS FOR THE REPORT.

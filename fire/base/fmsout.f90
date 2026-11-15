@@ -2,6 +2,7 @@
 !   fire/base : fmsout   !
 !========================!
 subroutine FMSOUT (IYR)
+  use FMSRECORD_MOD, only: FMSRECORD
   implicit none
 
   ! FIRE-BASE
@@ -207,70 +208,9 @@ subroutine FMSOUT (IYR)
      130 continue
   end do
 
-  !     CALL THE DBS MODULE TO OUTPUT DETAILED SNAG REPORT TO A DATABASE
-
-  DBSKODE = 1
-  call DBSFMDSNAG(IYR,TOTDBH,TOTHTH,TOTHTS,TOTVLH,&
-       &TOTVLS,TOTDH,TOTDS,YRLAST,DBSKODE)
-  if (DBSKODE.eq.0) goto 500
-
-  !     Make sure JSNOUT is openned.
-
-  call openIfClosed (JSNOUT,"sng",LOK)
-  if (.not.LOK) return
-
-  !     Print the snag output headings.
-
-  if (LSHEAD) then
-     write(JSNOUT,200) NPLT
-     write(JSNOUT,222)
-     write(JSNOUT,210)
-     write(JSNOUT,211)
-     write(JSNOUT,220)
-     write(JSNOUT,222)
-     200 format(' ESTIMATED SNAG CHARACTERISTICS ',&
-          &'(BASED ON STOCKABLE AREA), STAND ID=',A)
-     210 format(13X,'DEATH CURR',&
-          &' HEIGHT CURR VOLUME (FT3)      ',&
-          &'   DENSITY (SNAGS/ACRE)  ')
-     211 format(9X,'DBH  DBH ',1X,&
-          &4('-'),'(FT)',3('-'),1X,17('-'),1X,'YEAR',1X,23('-'))
-     220 format(' YEAR SP  CL  (IN)',1X,&
-          &' HARD  SOFT  HARD  SOFT TOTAL',&
-          &1X,'DIED   HARD    SOFT    TOTAL')
-     222 format(1X,76('-'))
-     LSHEAD = .false.
-  end if
-
-  !     Print information on each snag printing-class, first dividing the
-  !     the total heights and dbhs to get the class-averages.
-
-  do JYR = 1,YRLAST
-     do IDC = 1,MAXSP
-        do JCL = 1,6
-           TOTN = TOTDH(IDC,JYR,JCL) + TOTDS(IDC,JYR,JCL)
-           if (TOTN .eq.0.0) goto 410
-
-           write(JSNOUT,300) IYR,JSP(IDC),JCL,&
-                &TOTDBH(IDC,JYR,JCL),&
-                &TOTHTH(IDC,JYR,JCL), TOTHTS(IDC,JYR,JCL),&
-                &INT(TOTVLH(IDC,JYR,JCL)), INT(TOTVLS(IDC,JYR,JCL)),&
-                &INT(TOTVLH(IDC,JYR,JCL)+TOTVLS(IDC,JYR,JCL)),&
-                &(IYR-JYR+1), TOTDH(IDC,JYR,JCL), TOTDS(IDC,JYR,JCL),&
-                &TOTN
-           300 format(1X,I4,1X,A2,1X,I3,1X,3(F5.1,1X),&
-                &3(I5,1X),I4,1X,3(F7.2,1X))
-           410 continue
-        end do
-        420 continue
-     end do
-     430 continue
-  end do
-
-  inquire(UNIT = JSNOUT,OPENED = LOK)
-  if (LOK) close(UNIT = JSNOUT)
-
-  500 continue
+  ! Shared output leaves allocation and all snag accumulation in this caller.
+  call FMSRECORD(IYR,YRLAST,TOTDBH,TOTHTH,TOTHTS,&
+       &TOTVLH,TOTVLS,TOTDH,TOTDS)
 
   return
 end

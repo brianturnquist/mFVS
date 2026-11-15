@@ -180,6 +180,7 @@ subroutine MISPRT
   !  21-APR-09; Lance R. David (FMSC)
   !        Variables IMOUT_ moved to MISCOM.(thanks to Don Robinson)
 
+  use MISCLASS_MOD, only: MISCLASS
   implicit none
 
   !     Parameter statements.
@@ -490,35 +491,8 @@ subroutine MISPRT
      !        Classification into DBH classes made consistent with
      !        other models; 0-2.9, 3.0-4.9, etc.
 
-     IVAL = IFIX(DBH(ITREE))
-     IDBH = IVAL / 2 + MOD(IVAL,2)
-     IDBH = MAX(1,MIN(20,IDBH))
-     P = PROB(ITREE)
-     IDMR = IMIST(ITREE)
-
-     DCTPA(IDBH) = DCTPA(IDBH) + P
-
-     if (DBH(ITREE) .ge. DMRMIN) DCTPAX(IDBH) = DCTPAX(IDBH) + P
-
-     DCMRT(IDBH) = DCMRT(IDBH) + DMMTPA(ITREE)
-     SDTPA(ISPC,IDBH) = SDTPA(ISPC,IDBH) + P
-     SDMRT(ISPC,IDBH) = SDMRT(ISPC,IDBH) + DMMTPA(ITREE)
-
-     if (IDMR .gt.0.and. DBH(ITREE) .ge. DMRMIN) then
-        DCINF(IDBH) = DCINF(IDBH) + P
-        DCSUM(IDBH) = DCSUM(IDBH) + IDMR * P
-        SDINF(ISPC,IDBH) = SDINF(ISPC,IDBH) + P
-        SDSUM(ISPC,IDBH) = SDSUM(ISPC,IDBH) + IDMR * P
-
-        if (IDMR .eq.1.or. IDMR .eq.2)&
-             &SDIN12(ISPC,IDBH) = SDIN12(ISPC,IDBH) + P
-        if (IDMR .eq.3.or. IDMR .eq.4)&
-             &SDIN34(ISPC,IDBH) = SDIN34(ISPC,IDBH) + P
-        if (IDMR .eq.5.or. IDMR .eq.6)&
-             &SDIN56(ISPC,IDBH) = SDIN56(ISPC,IDBH) + P
-     else
-        SDIN0(ISPC,IDBH) = SDIN0(ISPC,IDBH) + P
-     end if
+     call MISCLASS(ITREE,ISPC,P,DCTPA,DCTPAX,DCMRT,SDTPA,SDMRT,&
+          &DCINF,DCSUM,SDINF,SDSUM,SDIN12,SDIN34,SDIN56,SDIN0)
 
      !        Calculate stand volumes, BAs, and TPAs at beginning of
      !        cycle, infected with DM, and mortality due to DM.

@@ -1,6 +1,6 @@
 # Found Bugs
 
-The first five confirmed model defects below were found during the 2026-11 consolidation of duplicated routines. Every one is already present in the pre-modernization source (commit `c2105365`), so none was introduced by the conversion to free-form Fortran or by the consolidation. M02a–M07a resolve the interfaces in section 1 and the missing arguments in section 2, and remove DBSIN's part of section 5; the remaining defects are deliberately retained. These interface repairs define behavior where the original calls were undefined and cannot establish simulation parity on those paths. Sections 6–8 separately record an unconfirmed historical numerical concern, a historical documentation discrepancy, and ESADDT data-flow concerns requiring follow-up. Section 9 records a reproduced SQLite resource defect with scientific-output impact still unmeasured. Section 10 records a restart-file difference that modernization itself introduced, now corrected. Sections 11 and 12 record two original defects that read undefined values and so make restart files vary between runs. Sections 13 and 14 record an invalid stub diagnostic and a fuel-model fallback defect found during the safe reapplication; neither was fixed. Sections 15–18 record DGDRIV tripling/bounds defects and undefined local reads found during L05; all were preserved. Section 19 records conditional undefined local reads in KT CRATET; these were also retained. Sections 20 and 21 record two defects in the former metric copy of EVLDX found during the M01 audit; the M01a merge carried both into `base/evldx.f90` unfixed. Sections 22–24 were found during the M02–M07 audits: section 22 is an output difference in BC and ON that the free-form conversion introduced, six of whose FORMATs are now corrected by M05a/M07a; sections 23 and 24 are original defects retained in the shared STATS and FMDOUT.
+The first five confirmed model defects below were found during the 2026-11 consolidation of duplicated routines. Every one is already present in the pre-modernization source (commit `c2105365`), so none was introduced by the conversion to free-form Fortran or by the consolidation. M02a–M07a resolve the interfaces in section 1 and the missing arguments in section 2, and remove DBSIN's part of section 5; M12a subsequently repairs BC INITRE/MISIN's buffers in section 5. The remaining defects are deliberately retained. These interface repairs define behavior where the original calls were undefined and cannot establish simulation parity on those paths. Sections 6–8 separately record an unconfirmed historical numerical concern, a historical documentation discrepancy, and ESADDT data-flow concerns requiring follow-up. Section 9 records a reproduced SQLite resource defect with scientific-output impact still unmeasured. Section 10 records a restart-file difference that modernization itself introduced, now corrected. Sections 11 and 12 record two original defects that read undefined values and so make restart files vary between runs. Sections 13 and 14 record an invalid stub diagnostic and a fuel-model fallback defect found during the safe reapplication; neither was fixed. Sections 15–18 record DGDRIV tripling/bounds defects and undefined local reads found during L05; all were preserved. Section 19 records conditional undefined local reads in KT CRATET; these were also retained. Sections 20 and 21 record two defects in the former metric copy of EVLDX found during the M01 audit; the M01a merge carried both into `base/evldx.f90` unfixed. Sections 22–24 were found during the M02–M07 audits: section 22 is an output difference in BC and ON that the free-form conversion introduced, six of whose FORMATs are now corrected by M05a/M07a; sections 23 and 24 are original defects retained in the shared STATS and FMDOUT.
 
 Unless a later status or location is given, file and line references are to the tree at commit `b5657da3` plus the then-uncommitted `VARIANTCD` change. Bugs 1 and 2 have the same root cause: FVS calls external procedures with no explicit interface, so gfortran cannot check argument lists across files. Moving these routines into modules would let the compiler catch this class of bug.
 
@@ -122,45 +122,78 @@ As a result, **every infected tree (DMR ≥ 1) of a host species with index 11 o
 
 ---
 
-## 5. BC and ON keyword-field arrays have 7 slots, but `KEYRDR` fills 12, so BC and ON cannot read keyword files
+## 5. Canadian keyword readers pass seven-field buffers to the twelve-field KEYRDR
 
 **Variants:** BC, ON
+**Status:** BC's INITRE/MISIN buffers repaired 15 November 2026 as the
+isolated prerequisite for M12a. ON's INITRE remains unfixed. The repair
+changes only the six ARRAY/LNOTBK/KARD declarations from 7 to 12; keyword
+field references, conversions and handlers are unchanged.
 
-`KEYRDR` (`base/keyrdr.f90`) declares `ARRAY(12)`, `KARD(12)` and `LNOTBK(12)` (lines 35, 39, 44) and fills all twelve. Several BC/ON routines still declare these as 7-element arrays, so every keyword record overwrites the five elements past the end. In `INITRE` this evidently overwrites the neighboring `KEYWRD` variable:
+`KEYRDR` (`base/keyrdr.f90`) declares `ARRAY(12)`, `KARD(12)` and `LNOTBK(12)` (lines 35, 39, 44) and fills all twelve. The original BC/ON readers declare seven-element arrays, so an ordinary keyword record overwrites the five elements past the end. In `INITRE` this evidently overwrites the neighboring `KEYWRD` variable:
 - every keyword reads back as eight NUL bytes;
 - each record produces `FVS01 ERROR: INVALID KEYWORD WAS SPECIFIED`;
 - the run ends with `STOP 20`.
 
-**BC and ON cannot process any keyword file, at `c2105365` or now.** Upstream commit `08e833b2` (28 August 2025) widened `KEYRDR` from 7 to 12 fields without changing the metric and BC copies.
+**Original F77 BC and ON cannot process keyword files at `c2105365`.**
+ON still has this failure in the working tree. BC now reads keywords and
+produces additional model output, so its pristine-F77 suite comparison
+intentionally differs. Upstream commit `08e833b2` (28 August 2025) widened
+KEYRDR from 7 to 12 fields without changing the metric and BC copies.
 
-Files still affected and compiled:
+Compiled readers at the audit and their current status:
 
-| File | Declarations | Variants |
+| File | Status after M12a | Variants |
 |---|---|---|
-| `canada/bc/initre.f90` | lines 54, 60, 64 | BC |
-| `metric/vbase/initre.f90` | lines 52, 59, 63 | ON |
-| `metric/newmist/misin.f90` | lines 121, 126, 131 | BC |
+| `canada/bc/initre.f90` | All three buffers widened | BC |
+| `metric/vbase/initre.f90` | Seven-field buffers remain | ON |
+| `metric/newmist/misin.f90` | All three buffers widened | BC |
 
-The same defect was in pre-modernization `canada/bc/keyopn.f`, `metric/base/ksstag.f` and `metric/clim/clin.f`. The consolidation replaced those with the shared 12-element versions, so it no longer exists there. M05a also retires `metric/dbsqlite/dbsin.f90`; BC/ON now use the shared DBSIN with `KARD(12)`. Direct DBSIN tests exercise the real twelve-field KEYRDR; the three remaining compiled readers above still block Canadian simulation.
+The same defect was in pre-modernization `canada/bc/keyopn.f`, `metric/base/ksstag.f` and `metric/clim/clin.f`. The consolidation replaced those with the shared 12-element versions, so it no longer exists there. M05a also retires `metric/dbsqlite/dbsin.f90`; BC/ON now use the shared DBSIN with `KARD(12)`. Direct DBSIN tests exercise the real twelve-field KEYRDR.
 
 Eleven uncompiled files had the same defect (in `archive/bgc/`, `metric/dfb/`, `metric/estb/`, `metric/ppbase/`, `metric/rd/` and `metric/wwpb/`). They were removed with the other unbuilt directories on 14 November 2026.
 
 A pre-M05a scratch build with the then-four compiled files widened to 12 read the BC and ON keyword files correctly.
 
-**Suggested fix:** widen the remaining arrays to 12, preferably through a shared named constant so `KEYRDR` and its callers cannot drift apart again. Then merge the `initre` and `misin` twins. DBSIN and the missing `DBSTREESIN` arguments (bug 2) are already handled under M05a and M02a.
+M12a's full-MISIN fixtures exercise 20 real twelve-field KEYRDR cases with
+caller-buffer canaries and bounds checking. Outputs, threshold bits, NEWMOD
+reset/enable and all 30 MISKEY slots match original F77 and the immediate
+baseline after widening only their corresponding buffers. These controls
+avoid the original undefined writes; they do not establish equivalence with
+the overrunning calls.
+
+**Remaining fix:** widen ON's INITRE buffers in a separate change. A shared
+field-count constant can prevent future drift, but is not part of M12a.
+MISTPRT is shared; complete INITRE/MISIN merges still require their bounded
+audits. DBSIN and the missing DBSTREESIN arguments are already handled under
+M05a and M02a.
 
 ---
 
 ## What the regression tests show for BC and ON
 
-Because of bug 5, the BC and ON test decks (`tests/FVSbc`, `tests/FVSon`) stop at keyword input in both `c2105365` and the current tree. Their outputs match only because both fail the same way, so the regression comparison says nothing about BC or ON simulation results. The other 22 variants' test decks run normally.
+The original BC/ON decks stop at keyword input. The working ON deck still
+matches that failure; this says nothing about ON simulation results. After
+M12a's isolated BC buffer repair, the whole original-reference suite reports
+23/24 variants matching, with BC different because it now reads keywords.
+The other 22 variants match original F77 model outputs.
 
-A scratch build with bugs 5 and 2 fixed showed two further, unexplained problems:
+All 11 BC generated files match the immediate baseline with only the same
+six buffer declarations repaired. StandStructure raises SIGILL in both
+builds, while YSM-SkyRanch now produces a summary. This demonstrates that the
+M08a/M09a–M14a extractions preserve newly reachable BC behavior relative to
+that controlled baseline. It does not establish pristine-original BC
+simulation parity or resolve the remaining StandStructure failure.
+
+An earlier, pre-M05a scratch build with bugs 5 and 2 fixed showed two further,
+unexplained problems:
 
 - **ON:** the `Hardwood` test runs to completion. Its starting stand values match `tests/FVSon/Hardwood.sum.save`, as do the post-treatment stand values in later rows. But from the second row on, the `.sum` file's year and growth columns hold wrong values, which points to a further summary-output problem.
 - **BC:** both tests still end with exit status 127. `StandStructure` writes no output, and `YSM-SkyRanch` output stops right after the mistletoe keywords (`NEWSPRED`).
 
-Neither has been traced. Expect more BC/ON defects once these five are fixed and the test decks can run.
+Those earlier discrepancies have not been fully traced. The current BC
+comparison above supersedes that older input-stage observation; the ON
+summary problem remains uninvestigated.
 
 ---
 
@@ -477,7 +510,7 @@ break as `'&` followed by `&'`. In free form that joins the two quotes into
 | `metric/dbsqlite/dbsin.f90` (retired M05a; corrected) | 1120, 2710, 2810 |
 | `metric/fire/base/fmdout.f90` (retired M07a; corrected) | 702, 802, 902 |
 | `metric/fire/base/fmin.f90` | 5610 |
-| `metric/fire/base/fmsout.f90` | 200 |
+| `fire/base/fmsrecord_mod.f90` (moved by M09a; retained) | 201 (formerly metric FMSOUT 200) |
 | `metric/fire/vbase/fmfout.f90` | 318 |
 | `metric/fire/vbase/fmpofl.f90` | 132 |
 | `metric/newmist/misprt.f90` | 905 |
@@ -572,11 +605,11 @@ off or leaves the all-fuels report off.
 ## 25. The metric burn-conditions report rejects the begin year that BURNREPT sets
 
 **Variants:** BC, ON.
-**Location:** the first report section in `metric/fire/vbase/fmfout.f90`,
-with option 4 in `metric/fire/base/fmin.f90`.
+**Location:** the metric branch in `fire/vbase/fmburnreport_mod.f90`, called
+by `metric/fire/vbase/fmfout.f90`, with option 4 in `metric/fire/base/fmin.f90`.
 **Status:** confirmed during M10 by source tracing and block checks in
 current code and `c2105365:metric/fire/vbase/fmfout.f` /
-`c2105365:metric/fire/base/fmin.f`. Unfixed.
+`c2105365:metric/fire/base/fmin.f`. Unfixed; M10a preserves it in the helper.
 
 BURNREPT assigns `IFMBRB = IY(1)` and `IFMBRE = IY(1)+999`. The metric
 FMFOUT section executes only when `IFMBRB < 0` and `IFIRE >= 0`, ignoring
@@ -601,14 +634,15 @@ Keep that result-changing correction separate from M10a's shared section.
 ## 26. Metric potential-fire database conditions use the moderate flag for both rows
 
 **Variants:** BC, ON.
-**Location:** the first-cycle DBSFMPFC loop in `metric/fire/vbase/fmpofl.f90`.
+**Location:** `fire/vbase/fmpotcond_mod.f90`, called by the metric FMPOFL.
 **Status:** confirmed during M11 in current code and
 `c2105365:metric/fire/vbase/fmpofl.f`. Unfixed; full simulation impact has
 not been measured.
 
-The preceding FMOIS loop leaves IDPL equal to 2. The subsequent IDPM=1,2
-database loop tests `PRESVL(IDPL,1)` but copies moisture from
-`PRESVL(IDPM,2:8)`. Both database rows are thus controlled by the moderate
+The preceding FMOIS loop leaves IDPL equal to 2. Before M11a, the subsequent
+IDPM=1,2 database loop tested `PRESVL(IDPL,1)` but copied moisture from
+`PRESVL(IDPM,2:8)`. The shared helper retains this by setting IPRES to the
+incoming IDPL in the metric branch. Both rows are controlled by the moderate
 override flag. A severe-only override is ignored; a moderate-only override
 also makes the severe row use its inactive PRESVL values. The fire
 calculation and text condition rows test their respective scenario flags,
@@ -629,7 +663,8 @@ the old selection during M11a; apply this correction separately.
 ## 27. BC mistletoe diameter classes are non-monotonic
 
 **Variant:** BC; ON selects the mistletoe stub and is unaffected.
-**Location:** class accumulation in `metric/newmist/misprt.f90`.
+**Location:** the metric class-index branch in `mistoe/misclass_mod.f90`,
+called by `metric/newmist/misprt.f90` after M13a.
 **Status:** reproduced during M13 in current code and
 `c2105365:metric/newmist/misprt.f`. Unfixed.
 
@@ -667,7 +702,8 @@ tables. Keep the existing formula during M13a's structural extraction.
 `canada/newmist/dmcycl.f90` as the application consumer.
 **Status:** found during M12. All three defects are present in
 `c2105365:metric/newmist/misin.f`; DMCYCL's original consumer also selects
-activity 2010. Unfixed. The existing field-width defect (bug 5) is separate.
+activity 2010. Unfixed. M12a repairs BC's separate field-width defect (bug 5)
+and preserves these biocontrol handlers.
 
 - DMBCI's unconditional WRITE supplies keyword, agent index, species text
   and REAL mortality values. FORMAT 2902 also expects an integer species

@@ -2,6 +2,7 @@
 !   fire/base : fmin   !
 !======================!
 subroutine FMIN (ICALL,NSP,LKECHO)
+  use FMDWDREQ_MOD, only: FMDWDREQ
   implicit none
 
   ! FIRE-BASE
@@ -2425,20 +2426,7 @@ subroutine FMIN (ICALL,NSP,LKECHO)
   5100 continue
   !                        OPTION NUMBER 51 -- DWDVLOUT
 
-  if (ICALL .eq.2) then
-     write(JOSTND,5104) KEYWRD
-     5104 format(/A8,'   ***KEYWORD IS A STAND-LEVEL KEYWORD ONLY',&
-          &' AND CANNOT BE INCLUDED WITH THE LANDSCAPE-LEVEL KEYWORDS')
-     goto 10
-  end if
-
-  if (IDDWRP .eq.0) call GETID (IDDWRP)
-
-  IDWRPB = IY(1)
-  IDWRPE = IY(1) + 999
-
-  if (LKECHO)write(JOSTND,5115) KEYWRD
-  5115 format(/A8,'   THE DOWN WOOD VOLUME REPORT WILL BE PRINTED.')
+  call FMDWDREQ(ICALL,KEYWRD,LKECHO)
 
   goto 10
   5200 continue

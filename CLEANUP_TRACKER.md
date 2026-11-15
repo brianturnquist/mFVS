@@ -8,8 +8,8 @@ with NVEL submodule `a73e697e220ffd0f792aa7ac10d84c911edb7ad7`.
 This checklist stores the redundancy and dormant-code findings before cleanup.
 P01–P03, D01–D15, C01–C19, B01–B03 and the unbuilt-directory removal (R01–R08, R10–R10d)
 are complete. Six stub tasks, the metric audits M01–M14 and the implementation
-tasks M01a–M07a are also complete (M06a is included in M04a);
-the checklist now records 108 completed and 30 pending items, including R09.
+tasks M01a–M07a, M08a and M09a–M14a are also complete (M06a is included in M04a);
+the checklist now records 115 completed and 23 pending items, including R09.
 BC/ON simulation parity remains blocked by the existing bugs
 in [FOUND_BUGS.md](FOUND_BUGS.md).
 
@@ -531,11 +531,11 @@ not whole-routine equivalence or authority to retire these seven copies.
   contracts must remain paired; changing the handler alone disables metric
   down-wood output for positive inventory years. This confirms the dependency
   in bug 24, without fixing it.
-- [ ] **M08a — Share the DWDVLOUT request block (implementation).** Put
-  only option 51's flag/ID/echo handling in `fire/base/`, called by both
-  readers. Preserve each window contract behind `LMETRICVAR`, the landscape
-  rejection, GETID call count and echo text. Leave the rest of FMIN selected
-  as today; a report-window correction is separate model-fix work.
+- [x] **M08a — Share the DWDVLOUT request block (implementation).**
+  Completed 15 November 2026 in `fire/base/fmdwdreq_mod.f90`, called by
+  both FMIN readers. Preserved the landscape rejection, GETID call count,
+  optional echo and both report-window contracts behind `LMETRICVAR`.
+  No other FMIN handler moved; bug 24 is unchanged.
 - [ ] **M08b — FMIN: DWDCVOUT handler (audit).** Independently compare
   option 52 and its cover-report consumer before sharing that handler.
 - [ ] **M08c — FMIN: FUELOUT handler (audit).** Independently compare
@@ -554,12 +554,13 @@ not whole-routine equivalence or authority to retire these seven copies.
   selects `FVS_SnagDet_Metric`. Metric headings name CM/M/M3/SNAGS/HA;
   FORMAT 200 has the known bug-22 apostrophe. Its seven work arrays are
   allocatable, with cleanup on early exits; imperial uses fixed-size locals.
-- [ ] **M09a — Share detailed snag record preparation (implementation).**
-  Use `fire/base/` for the seven-value conversion and record-writing block.
-  Preserve factors, averaging-before-conversion, truncation order, headings,
-  DBSFMDSNAG arguments and database-only suppression. Keep accumulation and
-  allocation lifetime in the callers; review the intended volume area basis
-  separately from parity-preserving work.
+- [x] **M09a — Share detailed snag record preparation (implementation).**
+  Completed 15 November 2026 in `fire/base/fmsrecord_mod.f90`. Both callers
+  retain accumulation, averaging and allocation lifetime. The helper converts
+  the seven values once, calls DBSFMDSNAG, and handles database-only output,
+  open failure, headings, records and close. Original factors, acre-based
+  volumes, separate INT operations and metric heading apostrophe (bug 22)
+  are retained; the heading is now FORMAT 201 in the helper.
 - [x] **M10 — FMFOUT: burn-conditions report (audit).** Compared the
   first report section through label 105 with `fire/vbase/fmfout.f90`.
   The metric section multiplies wind by `MItoKM` and flame/scorch heights
@@ -572,11 +573,12 @@ not whole-routine equivalence or authority to retire these seven copies.
   BURNREPT sets the metric begin flag to `IY(1)`, so ordinary nonnegative
   inventory years suppress the requested report (bug 25). Fuel-consumption
   and mortality sections, including their CFV/MCFV choices, remain unaudited.
-- [ ] **M10a — Share the burn-conditions section (implementation).**
-  Move only this section to `fire/vbase/`, preserving both gate rules, unit
-  factors, first-header counter, FMD=0 row, fuel-model formatting and the
-  database-only branch. Correct bug 25 separately; leave the other two
-  report sections in their current callers.
+- [x] **M10a — Share the burn-conditions section (implementation).**
+  Completed 15 November 2026 in `fire/vbase/fmburnreport_mod.f90`.
+  Preserved both gates (including bug 25), unit factors, counter, FMD=0
+  row, model/weight formatting and database-only branch. Fuel-consumption
+  and mortality sections remain in their callers, including the stand-header
+  FORMAT 44 they also use. Imperial values undergo no conversion arithmetic.
 - [x] **M11 — FMPOFL: first-cycle fire-condition records (audit).**
   Compared the `ICYC=1` loop calling DBSFMPFC with `fire/vbase/fmpofl.f90`.
   Both request FMMOIS scenarios 1/3 for the severe/moderate rows, and pass
@@ -592,11 +594,12 @@ not whole-routine equivalence or authority to retire these seven copies.
   which selects `FVS_PotFire_Cond_Metric` without further conversion. The
   main fire calculations, CFIM, report gate, result rows and FMPOFL_FMPTRH
   remain outside this audit.
-- [ ] **M11a — Share first-cycle fire-condition records (implementation).**
-  Put just this two-row database loop in `fire/vbase/`, with explicit row
-  selection and the existing metric override behavior retained for parity.
-  Keep scenario calculation and text reporting in the callers. Repair bug 26
-  independently, with asymmetric override cases and database/text checks.
+- [x] **M11a — Share first-cycle fire-condition records (implementation).**
+  Completed 15 November 2026 in `fire/vbase/fmpotcond_mod.f90`. The helper
+  receives the caller's IDPL and retains the metric override selection
+  (bug 26), severe/moderate FMMOIS call order, MOIS state, conversions and
+  truncation. Scenario calculations, text and main result rows stay in the
+  callers. Asymmetric override cases match both references exactly.
 - [x] **M12 — MISIN: keyword dimensions and BC state (audit).** BC's
   copy declares ARRAY/LNOTBK/KARD with seven entries; shared KEYRDR and
   KEYDMP require twelve (bug 5). Both KEYRDR call sites, including DMLIGHT's
@@ -621,12 +624,15 @@ not whole-routine equivalence or authority to retire these seven copies.
   light and spatial state, including biocontrol pools. MISIN0/DMINIT,
   `canada/newmist/mistoe.f90`, DMOPTS and DMCYCL initialize/consume that
   state. This is a separate scientific extension, not an LMETRICVAR layer.
-- [ ] **M12a — Share MISTPRT keyword handling (implementation).** Begin
-  with just the threshold/PRTMIS/echo block in `mistoe/`, retaining inches
-  internally and the metric input/echo factors. Preserve BC's entry reset,
-  MISKEY table and NISI handlers. First isolate bug 5's BC caller/MISIN
-  field-width repair as a separate change; an undersized caller cannot be
-  made safe merely by widening a callee's dummy arrays.
+- [x] **M12a — Share MISTPRT keyword handling (implementation).**
+  Completed 15 November 2026 in `mistoe/mistprt_mod.f90`, retaining inches
+  internally, both input/echo conventions and PRTMIS. BC's NEWMOD reset,
+  30-slot MISKEY table and all NISI handlers remain in MISIN. The isolated
+  prerequisite changes only six declarations: ARRAY/LNOTBK/KARD become
+  twelve fields in both BC INITRE and MISIN. All keyword field indices are
+  unchanged. This repairs BC's part of bug 5, not ON's INITRE. Real KEYRDR
+  fixtures match F77 and the immediate baseline with only their corresponding
+  widths repaired; no equivalence is claimed for original buffer overruns.
 - [x] **M13 — MISPRT: diameter-class summary (audit).** Compared the
   class accumulation, ten-column summary and DBSMIS3 call with
   `mistoe/misprt.f90`. BC first converts DBH from inches to centimetres,
@@ -641,11 +647,13 @@ not whole-routine equivalence or authority to retire these seven copies.
   NEWMOD is true and calls its extra DBSMIS5/6 writers under PRTMIS/NEWMOD.
   Keep those state/output gates. Species, stand-composite, detail and NISI
   database reports require separate audits; bug-22 FORMAT 905 is untouched.
-- [ ] **M13a — Share diameter-class accumulation (implementation).**
-  Extract only the class-index/accumulation block in `mistoe/`, retaining
-  each formula, threshold, mortality input and summation order. Leave all
-  report selection, summary folding, formatting and BC spatial writers in
-  the callers. Correct the five-centimetre bins separately from this task.
+- [x] **M13a — Share diameter-class accumulation (implementation).**
+  Completed 15 November 2026 in `mistoe/misclass_mod.f90`. The per-tree
+  helper preserves both index formulas (including bug 27), threshold,
+  mortality input and accumulation order, and returns P for the caller's
+  following stand-volume calculations. Report selection, folding, formatting
+  and BC's spatial writers stay in the callers. All 1,120 species/diameter/
+  infection/threshold cases per tested consumer match both references.
 - [x] **M14 — ESUCKR: sprout height/DBH calculation (audit).** Compared
   the block from `PROB(ITRN)=PREM*SMULT` through `ICR(ITRN)=70` with both
   selected imperial counterparts: `estb/esuckr.f90` (AK/CI/EM/IE/KT) and
@@ -662,12 +670,13 @@ not whole-routine equivalence or authority to retire these seven copies.
   ESHAP layout also remains distinct. Outside the audited block, metric
   omits newer tree-field initialization and lacks STRP's zero-total report
   guard; ESTB also lacks that guard (bug 29). These are not unit differences.
-- [ ] **M14a — Share sprout size calculation (implementation).** Use
-  `estb/` for only the audited height/DBH block, preserving precision,
-  random draws/retries, thresholds and diagnostic spacing per caller.
-  Leave species mapping, ESSPRT interfaces, record initialization, report
-  calculation and common-block layouts in their current routines. Do not
-  merge the three ESUCKR files as part of this first implementation.
+- [x] **M14a — Share sprout size calculation (implementation).**
+  Completed 15 November 2026 in `estb/essize_mod.f90`, called by all three
+  ESUCKR files. Preserved arithmetic order, native units, thresholds, crown
+  ratio and metric diagnostic spacing. Checks use real SPRTHT, BACHLO and
+  ESRANN, comparing numeric bits and final generator state for every species
+  in the tested variants. Species mapping, ESSPRT interfaces, initialization,
+  report tails (including bug 29) and common-block layouts are unchanged.
 
 Verification for M08–M14: selected all consumers from the 24 current source
 lists; checked the scoped statements against F77 `c2105365` and HEAD
@@ -682,6 +691,34 @@ callee results, not integrated simulations or whole-file equivalence. Source
 lists and `git diff --check` pass; the full simulation suite was not rerun
 for this documentation-only change. P03 and bug 5 remain unresolved. All
 temporary drivers, executables and outputs were discarded.
+
+Verification for M08a/M09a–M14a on 15 November 2026: seven modules with
+explicit caller interfaces are selected by all applicable manifests (24
+consumers each, except MISTPRT/MISCLASS with 19). All 24 variants build;
+the source-list check, all-variant CMake configuration and `git diff --check`
+pass. The original-reference suite ends with `FAIL 23/24 variants; working
+tree e89db818+changes vs original c2105365; failed: bc`: all 22 US variants
+match, and ON matches its original keyword-input failure. BC now reads
+keywords after the isolated buffer repair, whereas pristine F77 cannot.
+Its 11 generated files match the immediate baseline with only the same
+six buffer declarations repaired. StandStructure still raises SIGILL in
+both of those builds; YSM-SkyRanch now produces a summary. This is controlled
+baseline agreement, not pristine-original BC simulation parity.
+
+Direct original/baseline/candidate checks cover BC/ON/IE/SN: 24 DWDVLOUT
+cases, 32 snag-output cases, 256 burn-report cases and 32 potential-condition
+calls per consumer; BC/IE additionally cover 20 MISTPRT and 1,120 MISCLASS
+cases. Sprout checks cover every species with five ages, four multipliers,
+both height-equation flags and both debug settings, using real random and
+height routines. All numeric bits, arrays, relevant common state, text and
+random-generator state match. The one known F77 text difference is the
+pre-existing metric snag-heading apostrophe (bug 22); its immediate-baseline
+text is preserved exactly. Seven temporary controls changing one branch or
+factor, one per helper, are all detected. Full BC MISIN checks use the real
+twelve-field KEYRDR for 20 cases, guard both caller buffers, and compare
+NEWMOD reset/enable and all 30 MISKEY slots against minimally widened F77
+and baseline readers. Temporary drivers, builds and outputs were discarded.
+
 - [ ] **M15 — `metric/vbase/disply.f90`.** Compare one display-record format
   with `vbase/disply.f90`.
 - [ ] **M16 — `metric/vbase/fvsstd.f90`.** Compare one output-record type

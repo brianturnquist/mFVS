@@ -30,7 +30,7 @@ Defects found along the way are deliberately *not* fixed during modernization, b
 
 - **Free-form conversion: done.** All Fortran source compiled by the build has been converted from fixed-form `.f` to free-form `.f90`, including the National Volume Estimator Library (NVEL) submodule.
 - **Consolidation: in progress.** So far, 122 duplicate source files have been merged into single shared routines, removing about 21,000 lines of code.
-- **Verification.** All 24 variants build. For 22 variants, the regression tests produce output identical to the reference. The BC and ON test decks stop while reading their keyword files, in both the reference and the current code (bug 5 in [FOUND_BUGS.md](FOUND_BUGS.md)), so those two variants cannot yet be verified.
+- **Verification.** All 24 variants build. For 22 variants, the regression tests produce output identical to the reference. ON still matches its original keyword-input failure. BC's keyword buffers are repaired, so it runs farther and differs from the failing original; its outputs match a pre-extraction baseline with the same buffer repair, but StandStructure still fails later. Neither Canadian variant has pristine-original simulation parity (bug 5 in [FOUND_BUGS.md](FOUND_BUGS.md)).
 
 Planned next steps:
 

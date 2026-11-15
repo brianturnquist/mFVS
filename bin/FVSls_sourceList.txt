@@ -401,6 +401,7 @@
 ../estb/esrann.f90
 ../estb/estime.f90
 ../estb/estump.f90
+../estb/essize_mod.f90
 ../strp/esuckr.f90
 
 ../volume/NVEL/beqinfo.inc
@@ -592,8 +593,10 @@
 ../fire/vbase/fmcfmd2.f90
 ../fire/vbase/fmcrowe.f90
 ../fire/vbase/fmeff.f90
+../fire/vbase/fmburnreport_mod.f90
 ../fire/vbase/fmfout.f90
 ../fire/vbase/fmpocr.f90
+../fire/vbase/fmpotcond_mod.f90
 ../fire/vbase/fmpofl.f90
 ../fire/vbase/fmr6htls.f90
 ../fire/vbase/fmr6sdcy.f90
@@ -618,6 +621,7 @@
 ../fire/base/fmfint.f90
 ../fire/base/fmgfmv.f90
 ../fire/base/fmhide.f90
+../fire/base/fmdwdreq_mod.f90
 ../fire/base/fmin.f90
 ../fire/base/fminit.f90
 ../fire/base/fmkill.f90
@@ -631,6 +635,7 @@
 ../fire/base/fmscro.f90
 ../fire/base/fmscut.f90
 ../fire/base/fmsdit.f90
+../fire/base/fmsrecord_mod.f90
 ../fire/base/fmsout.f90
 ../fire/base/fmssee.f90
 ../fire/base/fmssum.f90

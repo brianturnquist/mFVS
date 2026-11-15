@@ -51,17 +51,17 @@ subroutine INITRE
   integer :: IDUM1,IDUM2,IDUM3,IHAB,NEWYR,ISPEC,IFOREST,INTDIST,IFORST
   integer :: IFSP,IREGN,IRDUM,INUM,IDFLG,IDTYPE,IXF,IXTMP,ITB,ITC,JJTAB
   real    :: CAPHT,CAPFLG,CAPPRP,CAPDBH,DUM1,XTMP,X,TB,XXG
-  real    :: TC,SDHI,SDLO,ARRAY(7),PRMS(10),XBAF
+  real    :: TC,SDHI,SDLO,ARRAY(12),PRMS(10),XBAF
   integer :: ITOPD8,IACT,IRC,IDBCYC,NP,K,I1,IGSP,IG,IULIM,IGRP,ISETQFA
   integer :: ISPC,ILEN,IS,IDT,JRECNT,ISDSP,IGNDEF,IPSI,KODE,IPRMPT
   integer :: NUMBER,IPTKNT,I,IISP,J,I2
   integer :: ERRFLAG,IRTNCD
   integer :: POINTNO,IFLAG
-  logical :: LTRERD,LFIRST,LNOTBK(7),LNOTRE
+  logical :: LTRERD,LFIRST,LNOTBK(12),LNOTRE
   logical :: DEBUG,LOPEVN,LKECHO
   logical :: RRGO,RRT
   character(len=250) :: RECORD
-  character(len=10) :: KARD(7)
+  character(len=10) :: KARD(12)
   character(len=10) :: PVRDUM
   character(len=2) :: FORST
   character(len=2) :: FORDUM

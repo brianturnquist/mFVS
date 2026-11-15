@@ -276,7 +276,7 @@ def main() -> int:
         original, candidate = stores["original", variant], stores["candidate", variant]
         differences = compare(original, candidate, variant)
         outputs = json.loads((candidate / "outputs.json").read_text())
-        note = "  (stops at keyword input in both versions; see FOUND_BUGS.md)" if variant in ("bc", "on") else ""
+        note = "  (original stops at keyword input; see FOUND_BUGS.md)" if variant in ("bc", "on") else ""
         if differences:
             failed.append(variant)
             print(f"FAIL {variant}: {len(differences)} of {len(outputs)} files differ{note}")

@@ -3,6 +3,7 @@
 !=========================!
 ! FIRE-VBASE $Id$
 subroutine FMPOFL (IYR, FMD, LNMOUT)
+  use FMPOTCOND_MOD, only: FMPOTCOND
   implicit none
 
   !  SINGLE-STAND VERSION
@@ -266,26 +267,7 @@ subroutine FMPOFL (IYR, FMD, LNMOUT)
   if (.not.LNMOUT) return
 
   !     DBS CALL FOR DUMPING DATA TO THE DATABASE
-  if (ICYC.eq.1) then
-     do IDPM = 1,2
-        M = IDPM
-        if (IDPM .eq.2) M = 3
-        call FMMOIS(M, MOIS)
-        if (PRESVL(IDPM,1) .eq.1) then
-           MOIS(1,1) = PRESVL(IDPM,2)
-           MOIS(1,2) = PRESVL(IDPM,3)
-           MOIS(1,3) = PRESVL(IDPM,4)
-           MOIS(1,4) = PRESVL(IDPM,5)
-           MOIS(1,5) = PRESVL(IDPM,6)
-           MOIS(2,1) = PRESVL(IDPM,7)
-           MOIS(2,2) = PRESVL(IDPM,8)
-        end if
-        call DBSFMPFC(NPLT,PREWND(IDPM),INT(POTEMP(IDPM)),&
-             &(100.0*MOIS(1,1)),(100.0*MOIS(1,2)),(100.0*MOIS(1,3)),&
-             &(100.0*MOIS(1,4)),(100.0*MOIS(1,5)),(100.0*MOIS(2,1)),&
-             &(100.0*MOIS(2,2)),IDPM)
-     end do
-  end if
+  call FMPOTCOND(IDPL)
   DBSKODE = 1
   call DBSFMPF(IYR, NPLT, PFLAM(2), PFLAM(4), PFLAM(1), PFLAM(3),&
        &CFTYPE(1), CFTYPE(3),PTORCH(1),PTORCH(2),OINIT1(1),OACT1(1),&

@@ -83,6 +83,7 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
   !                array added for previous update is no longer needed and
   !                was removed along with inclusion of common ARRAYS.F77.
 
+  use MISTPRT_MOD, only: MISTPRT
   implicit none
 
   !.... Parameter statements.
@@ -385,12 +386,8 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
   !.... Check for DBH threshold for large trees.  Trees this size
   !.... and above will be counted in DMR/DMI statistics.
 
-  PRTMIS = .true.
+  call MISTPRT(ARRAY,LNOTBK,LKECHO,KEYWRD)
 
-  if (LNOTBK(1).and.ARRAY(1).ge.0.0) DMRMIN = ARRAY(1)
-  if (LKECHO)write(JOSTND,620) KEYWRD,DMRMIN
-  620 format(/A8,'   Print mistletoe summary output; ',&
-       &'DMRs and DMIs calculated for trees with DBH >=',F4.1)
   go to 50
 
   !.... Option number 7: MISTGMOD.

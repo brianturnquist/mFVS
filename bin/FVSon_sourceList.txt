@@ -374,6 +374,7 @@
 
 ../strp/esin.f90
 ../strp/estab.f90
+../estb/essize_mod.f90
 ../metric/strp/esuckr.f90
 
 ../estb/esaddt.f90
@@ -433,7 +434,9 @@
 ../fire/ls/fmsfall.f90
 ../fire/ls/fmvinit.f90
 
+../fire/vbase/fmburnreport_mod.f90
 ../metric/fire/vbase/fmfout.f90
+../fire/vbase/fmpotcond_mod.f90
 ../metric/fire/vbase/fmpofl.f90
 
 ../fire/vbase/fmcfmd2.f90
@@ -449,7 +452,9 @@
 ../fire/vbase/fmsoilheat.f90
 
 ../fire/base/fmdout.f90
+../fire/base/fmdwdreq_mod.f90
 ../metric/fire/base/fmin.f90
+../fire/base/fmsrecord_mod.f90
 ../metric/fire/base/fmsout.f90
 ../fire/base/fmssum.f90
 

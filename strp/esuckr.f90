@@ -3,6 +3,7 @@
 !===================!
 ! STRP $Id$
 subroutine ESUCKR
+  use ESSIZE_MOD, only: ESSIZE
   implicit none
 
   !  CREATE STUMP & ROOT SPROUTS FROM TREES CUT AT BEGINNING OF CYCLE.
@@ -262,32 +263,7 @@ subroutine ESUCKR
 
         !  INSERT CODE TO CALCULATE DBH AND HEIGHT OF SPROUTS
 
-        PROB(ITRN) = PREM*SMULT
-        HTI = 0.
-        if (DEBUG)write(JOSTND,*)'BEFORE SPRTHT VARACD,ISSP,SI,ISHAG= ',&
-             &VARACD,ISSP,SITEAR(ISSP),ISHAG
-        call SPRTHT (VARACD,ISSP,SITEAR(ISSP),ISHAG,HTI)
-        if (DEBUG)write(JOSTND,*)'AFTER SPRTHT HTI= ',HTI
-        HT(ITRN) = HTI*HMULT
-        162 RANDEV = BACHLO(0.,0.5,ESRANN)
-        if (RANDEV.lt.-1.0.or. RANDEV.gt.1.0) go to 162
-        RANDEV = RANDEV*HT(ITRN)/5.5
-        HT(ITRN) = HT(ITRN)+RANDEV
-
-        if (HT(ITRN) .gt.4.5) then
-           BX = HT2(ISSP)
-           if (IABFLG(ISSP).eq.1) then
-              AX = HT1(ISSP)
-           else
-              AX = AA(ISSP)
-           end if
-           DBH(ITRN) = (BX/(ALOG(HT(ITRN)-4.5)-AX))-1.0
-           if (DBH(ITRN).lt.0.1) DBH(ITRN) = 0.1
-        else
-           DBH(ITRN) = 0.1
-        end if
-
-        ICR(ITRN) = 70
+        call ESSIZE(ISSP,ISHAG,PREM,SMULT,HMULT,DEBUG)
 
         !  CALCULATE A CROWN WIDTH FOR SPROUTS
 

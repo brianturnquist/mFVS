@@ -375,6 +375,7 @@
 
 ../strp/esin.f90
 ../strp/estab.f90
+../estb/essize_mod.f90
 ../metric/strp/esuckr.f90
 
 
@@ -420,7 +421,9 @@
 ../fire/ie/fmcfmd.f90
 ../fire/base/fmmois.f90
 ../fire/base/fmsfall.f90
+../fire/vbase/fmburnreport_mod.f90
 ../metric/fire/vbase/fmfout.f90
+../fire/vbase/fmpotcond_mod.f90
 ../metric/fire/vbase/fmpofl.f90
 ../fire/vbase/fmcfmd2.f90
 ../fire/vbase/fmcrowe.f90
@@ -433,7 +436,9 @@
 ../fire/vbase/fmsnght.f90
 ../fire/vbase/fmsoilheat.f90
 ../fire/base/fmdout.f90
+../fire/base/fmdwdreq_mod.f90
 ../metric/fire/base/fmin.f90
+../fire/base/fmsrecord_mod.f90
 ../metric/fire/base/fmsout.f90
 ../fire/base/fmssum.f90
 ../fire/base/fmcadd.f90
@@ -630,7 +635,9 @@
 ../mistoe/msppgt.f90
 ../mistoe/mspppt.f90
 
+../mistoe/mistprt_mod.f90
 ../metric/newmist/misin.f90
+../mistoe/misclass_mod.f90
 ../metric/newmist/misprt.f90
 
 ../canada/newmist/dminitbc.f90

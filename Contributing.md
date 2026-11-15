@@ -42,7 +42,7 @@ The steps below are what the command does, in case you need to do them by hand:
 2. **Run the tests in both trees.** In each tree, build the variants your change affects and run `make` in the matching `tests/FVSxx` folders. When in doubt, build and test all variants: a change to shared code can affect any of them.
 3. **Compare every generated file:** listing (`.out`), summary (`.sum`), tree lists, and database dumps. Ignore only lines that differ in run identifiers (UUIDs), dates, times and version strings. Anything else must match exactly.
 
-The BC and ON test decks currently stop while reading their keyword files, in both the reference and current code (bug 5 in [FOUND_BUGS.md](FOUND_BUGS.md)). Matching output for those two variants therefore does not show that a change is safe. Review changes that affect BC or ON with extra care.
+The original BC/ON test decks stop while reading keywords. ON still matches that failure. BC's buffers are repaired, so its pristine-reference comparison differs; comparison with a pre-extraction baseline containing only the same buffer repair is recorded separately. BC StandStructure still fails later (bug 5 in [FOUND_BUGS.md](FOUND_BUGS.md)). Neither matching an input failure nor using a deliberately repaired baseline establishes pristine-original Canadian simulation parity.
 
 Run comparisons in temporary directories and discard generated outputs and build copies when finished. Update the cleanup checklist and record newly found bugs in `FOUND_BUGS.md`. Do not keep test-result archives, logs, compiler dumps, receipts or separate completion reports in the repository.
 

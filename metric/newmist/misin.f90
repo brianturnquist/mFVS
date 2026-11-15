@@ -3,6 +3,7 @@
 !============================!
 ! METRIC-NEWMIST $Id$
 subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
+  use MISTPRT_MOD, only: MISTPRT
   implicit none
 
   !  Purpose:
@@ -118,17 +119,17 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
   integer :: ISIZE
   parameter (ISIZE = 30)
 
-  logical :: LNOTBK(7),DEBUG,LCHK(2),LOK,LKECHO
+  logical :: LNOTBK(12),DEBUG,LCHK(2),LOK,LKECHO
   integer :: I,IDT,ISPL,KEY,KODE,NUMBR,IKD,IPRMPT
   integer :: LTNP(2),ERRT(2),J,K,M,N,P,IRTNCD
   integer :: DMT(5,3)
   real    :: DMLRX(2,2,4),X
-  real    :: ARRAY(7)
+  real    :: ARRAY(12)
   character(len=8) :: TABLE(ISIZE)
   character(len=8) :: KEYWRD
   character(len=8) :: PASKEY
   character(len=8) :: LTNM
-  character(len=10) :: KARD(7)
+  character(len=10) :: KARD(12)
   character(len=8) :: RTYPE(2)
 
   !.... Data statements.
@@ -418,12 +419,7 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
   !.... Check for DBH threshold for large trees.  Trees this size
   !.... and above will be counted in DMR/DMI statistics.
 
-  PRTMIS = .true.
-
-  if (LNOTBK(1).and.ARRAY(1).ge.0.0) DMRMIN = ARRAY(1)*CMtoIN
-  if (LKECHO)write(JOSTND,620) KEYWRD,DMRMIN*INtoCM
-  620 format(/A8,'   Print mistletoe summary output; ',&
-       &'DMRs and DMIs calculated for trees with DBH >=',F4.1)
+  call MISTPRT(ARRAY,LNOTBK,LKECHO,KEYWRD)
 
   go to 50
 
