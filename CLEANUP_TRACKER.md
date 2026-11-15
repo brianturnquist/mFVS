@@ -7,9 +7,9 @@ with NVEL submodule `a73e697e220ffd0f792aa7ac10d84c911edb7ad7`.
 
 This checklist stores the redundancy and dormant-code findings before cleanup.
 P01–P03, D01–D15, C01–C19, B01–B03 and the unbuilt-directory removal (R01–R08, R10–R10d)
-are complete. Six stub tasks, the metric audits M01–M07 and their implementation
+are complete. Six stub tasks, the metric audits M01–M14 and the implementation
 tasks M01a–M07a are also complete (M06a is included in M04a);
-the checklist now records 101 completed and 28 pending items, including R09.
+the checklist now records 108 completed and 30 pending items, including R09.
 BC/ON simulation parity remains blocked by the existing bugs
 in [FOUND_BUGS.md](FOUND_BUGS.md).
 
@@ -492,8 +492,9 @@ old-against-new driver like the one used for M01a.
   all BC species and a grid of heights, merchantability and debug flags.
   All variants select `fire/base/fmdout.f90`; removed the 564-line copy.
   `LMETRICVAR` retains metric factors, headings, absent database debug lines
-  and the old report-window rule (bug 24, pending M08). The shared ten-argument
-  call also resolves ON's side of bug 1. Three FORMATs regain F77 text (bug 22).
+  and the old report-window rule (bug 24; M08 audits its input contract).
+  The shared ten-argument call also resolves ON's side of bug 1. Three
+  FORMATs regain F77 text (bug 22).
   Direct comparisons cover 240 cases per variant, report windows, database
   suppression, live/dead fuels, headings and common-block state.
 
@@ -510,22 +511,177 @@ not ON's undefined original call. Only the documented FORMAT apostrophes differ
 from the immediate baseline; their text matches F77. Controls changing one
 conversion or schema in each of the five routines are all detected. Generated
 drivers, builds and outputs are temporary and are not kept in the repository.
-- [ ] **M08 — `metric/fire/base/fmin.f90`.** Compare one keyword handler
-  with `fire/base/fmin.f90`; schedule subsequent handlers independently.
-- [ ] **M09 — `metric/fire/base/fmsout.f90`.** Compare one fuel-output
-  record with `fire/base/fmsout.f90`.
-- [ ] **M10 — `metric/fire/vbase/fmfout.f90`.** Compare one report section
-  with `fire/vbase/fmfout.f90`.
-- [ ] **M11 — `metric/fire/vbase/fmpofl.f90`.** Compare one calculation and
-  output block with `fire/vbase/fmpofl.f90`.
-- [ ] **M12 — `metric/newmist/misin.f90`.** Audit keyword dimensions and
-  BC-specific mistletoe state against `mistoe/misin.f90`. The different state
-  model means this is more than a unit switch.
-- [ ] **M13 — `metric/newmist/misprt.f90`.** Compare one report type with
-  `mistoe/misprt.f90`, including BC state dependencies.
-- [ ] **M14 — `metric/strp/esuckr.f90`.** Compare one sprouting calculation
-  and its dimensional assumptions with the selected imperial counterparts.
-  The eventual shared home is `estb/`; do not merge all sprouting copies here.
+
+M08–M14 were audited on 15 November 2026 at `ed5e92fb`, against the pinned
+F77 reference as well as the immediate baseline. No compiled files or source
+lists changed. The four metric fire routines and ESUCKR serve BC/ON; the two
+`metric/newmist` routines serve BC only. The imperial fire routines serve the
+other 22 variants. MISIN/MISPRT serve 18 imperial variants; CS/LS/NE/SN/ON
+select the `base/exmist.f90` stubs. The findings below cover the named blocks,
+not whole-routine equivalence or authority to retire these seven copies.
+
+- [x] **M08 — FMIN: DWDVLOUT handler (audit).** Compared option 51,
+  labels 5100–5115, with `fire/base/fmin.f90`. Landscape calls reject the
+  request before changing state. Stand calls allocate `IDDWRP` only when
+  it is zero and optionally echo the same message. The sole statement
+  difference is the report window: metric sets `IDWRPB/IDWRPE = -1/-1`;
+  imperial sets `IY(1)/IY(1)+999`. No numeric keyword field or unit factor
+  is used. Shared FMDOUT's metric branch tests only `IDWRPB > 0`, whereas
+  its imperial branch tests the current year against both bounds. These
+  contracts must remain paired; changing the handler alone disables metric
+  down-wood output for positive inventory years. This confirms the dependency
+  in bug 24, without fixing it.
+- [ ] **M08a — Share the DWDVLOUT request block (implementation).** Put
+  only option 51's flag/ID/echo handling in `fire/base/`, called by both
+  readers. Preserve each window contract behind `LMETRICVAR`, the landscape
+  rejection, GETID call count and echo text. Leave the rest of FMIN selected
+  as today; a report-window correction is separate model-fix work.
+- [ ] **M08b — FMIN: DWDCVOUT handler (audit).** Independently compare
+  option 52 and its cover-report consumer before sharing that handler.
+- [ ] **M08c — FMIN: FUELOUT handler (audit).** Independently compare
+  option 15 and its all-fuels consumer, including bug 24. Subsequent FMIN
+  handlers still require their own bounded tasks.
+- [x] **M09 — FMSOUT: detailed snag record (audit).** Compared the
+  post-accumulation conversion and FORMAT 300 record with `fire/base/fmsout.f90`.
+  Species/age/diameter-class accumulation, weighted averages, record order,
+  zero-density screen and FORMAT 300 agree. Metric converts mean DBH by
+  `INtoCM`, hard/soft heights by `FTtoM`, hard/soft volumes by `FT3toM3`,
+  and densities by division by `ACRtoHA`, before database and text output.
+  Thus its accumulated volume retains an acre area basis; do not silently
+  replace that factor with `FT3pACRtoM3pHA` during consolidation. Text
+  truncates each volume and their sum separately with INT; the database gets
+  the untruncated reals. Shared DBSFMDSNAG applies no further conversion and
+  selects `FVS_SnagDet_Metric`. Metric headings name CM/M/M3/SNAGS/HA;
+  FORMAT 200 has the known bug-22 apostrophe. Its seven work arrays are
+  allocatable, with cleanup on early exits; imperial uses fixed-size locals.
+- [ ] **M09a — Share detailed snag record preparation (implementation).**
+  Use `fire/base/` for the seven-value conversion and record-writing block.
+  Preserve factors, averaging-before-conversion, truncation order, headings,
+  DBSFMDSNAG arguments and database-only suppression. Keep accumulation and
+  allocation lifetime in the callers; review the intended volume area basis
+  separately from parity-preserving work.
+- [x] **M10 — FMFOUT: burn-conditions report (audit).** Compared the
+  first report section through label 105 with `fire/vbase/fmfout.f90`.
+  The metric section multiplies wind by `MItoKM` and flame/scorch heights
+  by `FTtoM` for both DBSFMBURN and FORMAT 100; moisture percentages,
+  slope, fire type, fuel-model IDs and rounded weights are unchanged.
+  Headings use KMH/M. Both skip negative IFIRE, allow headers without a
+  database/data row for IFIRE=0, and skip this report's text when the database
+  sets its output code to zero. Metric admits the section only for
+  `IFMBRB < 0`, ignoring the end year; imperial uses the year window.
+  BURNREPT sets the metric begin flag to `IY(1)`, so ordinary nonnegative
+  inventory years suppress the requested report (bug 25). Fuel-consumption
+  and mortality sections, including their CFV/MCFV choices, remain unaudited.
+- [ ] **M10a — Share the burn-conditions section (implementation).**
+  Move only this section to `fire/vbase/`, preserving both gate rules, unit
+  factors, first-header counter, FMD=0 row, fuel-model formatting and the
+  database-only branch. Correct bug 25 separately; leave the other two
+  report sections in their current callers.
+- [x] **M11 — FMPOFL: first-cycle fire-condition records (audit).**
+  Compared the `ICYC=1` loop calling DBSFMPFC with `fire/vbase/fmpofl.f90`.
+  Both request FMMOIS scenarios 1/3 for the severe/moderate rows, and pass
+  seven moisture percentages. Metric converts PREWND with `MItoKM` and
+  POTEMP with `INT(POTEMP*FtoC1+FtoC2)`; imperial truncates Fahrenheit
+  directly. Preserve these existing constants and conversion-before-INT.
+  Metric tests `PRESVL(IDPL,1)` with IDPL left at 2 by the earlier scenario
+  loop, while reading values from row IDPM. Imperial tests row IDPM itself.
+  A severe-only override is therefore omitted from the database; a
+  moderate-only override also selects the inactive severe row (bug 26).
+  The text condition rows use the proper row flag. This block depends on
+  FMMOIS, FMFCOM's PRESVL/PREWND/POTEMP and shared `vdbsqlite/dbsfmpfc.f90`,
+  which selects `FVS_PotFire_Cond_Metric` without further conversion. The
+  main fire calculations, CFIM, report gate, result rows and FMPOFL_FMPTRH
+  remain outside this audit.
+- [ ] **M11a — Share first-cycle fire-condition records (implementation).**
+  Put just this two-row database loop in `fire/vbase/`, with explicit row
+  selection and the existing metric override behavior retained for parity.
+  Keep scenario calculation and text reporting in the callers. Repair bug 26
+  independently, with asymmetric override cases and database/text checks.
+- [x] **M12 — MISIN: keyword dimensions and BC state (audit).** BC's
+  copy declares ARRAY/LNOTBK/KARD with seven entries; shared KEYRDR and
+  KEYDMP require twelve (bug 5). Both KEYRDR call sites, including DMLIGHT's
+  supplemental reads, are affected. The imperial declarations have twelve.
+  The first eleven table slots and their handlers match statement for
+  statement except MISTPRT's centimetre-to-inch threshold and converted
+  echo. BC has 30 slots (28 names), versus 11 (10 names); MISKEY exposes
+  that table too, so widening fields does not authorize dropping keywords.
+  BC additionally resets NEWMOD on entry and includes `canada/newmist/DMCOM.f90`:
+  - NEWSPRED enables the NISI model; DMCRTHRD changes crown-third DMDMR;
+    DMSED changes the separate DMRNCM random stream.
+  - DMOPAQ/DMOPQMLT set opacity; DMKTUNE/DMSTUNE/DMITUNE/DMETUNE set
+    species spread/intensification controls; DMLIGHT changes response
+    points; DMDEATH/DMCAP/DMFLOWER change life-history parameters.
+  - DMCLUMP/DMAUTO schedule activities 2008/2009 for DMOPTS; DMTABLE
+    enables LDETAIL. Slot 26 is blank/defunct.
+  - DMBCI defines up to five biocontrol agents in DMBCCM. DMBCA should feed
+    DMCYCL's activity 2010, but schedules 2004 and reads an unassigned
+    IPRMPT. DMBCI's echo omits a required integer argument (bug 28).
+
+  DMMIST contains crown geometry in two-metre mesh units, infection pools,
+  light and spatial state, including biocontrol pools. MISIN0/DMINIT,
+  `canada/newmist/mistoe.f90`, DMOPTS and DMCYCL initialize/consume that
+  state. This is a separate scientific extension, not an LMETRICVAR layer.
+- [ ] **M12a — Share MISTPRT keyword handling (implementation).** Begin
+  with just the threshold/PRTMIS/echo block in `mistoe/`, retaining inches
+  internally and the metric input/echo factors. Preserve BC's entry reset,
+  MISKEY table and NISI handlers. First isolate bug 5's BC caller/MISIN
+  field-width repair as a separate change; an undersized caller cannot be
+  made safe merely by widening a callee's dummy arrays.
+- [x] **M13 — MISPRT: diameter-class summary (audit).** Compared the
+  class accumulation, ten-column summary and DBSMIS3 call with
+  `mistoe/misprt.f90`. BC first converts DBH from inches to centimetres,
+  then uses `IVAL/5+MOD(IVAL,5)`; imperial uses integer inches and
+  `IVAL/2+MOD(IVAL,2)`. Both clamp to 1–20 and fold classes 11–20 into
+  summary class 10. BC's formula is non-monotonic and disagrees with the
+  five-centimetre headings (bug 27); retain it during structural work.
+  DMRMIN remains in inches. DCTPA/DCINF/DCMRT are accumulated per acre
+  and divided by ACRtoHA for text and DBSMIS3; DCDMR/DCDMI ratios are
+  unchanged. Labels use TPH and metric class headings; shared DBSMIS3
+  selects `FVS_DM_Sz_Sum_Metric`. BC continues without infected trees when
+  NEWMOD is true and calls its extra DBSMIS5/6 writers under PRTMIS/NEWMOD.
+  Keep those state/output gates. Species, stand-composite, detail and NISI
+  database reports require separate audits; bug-22 FORMAT 905 is untouched.
+- [ ] **M13a — Share diameter-class accumulation (implementation).**
+  Extract only the class-index/accumulation block in `mistoe/`, retaining
+  each formula, threshold, mortality input and summation order. Leave all
+  report selection, summary folding, formatting and BC spatial writers in
+  the callers. Correct the five-centimetre bins separately from this task.
+- [x] **M14 — ESUCKR: sprout height/DBH calculation (audit).** Compared
+  the block from `PROB(ITRN)=PREM*SMULT` through `ICR(ITRN)=70` with both
+  selected imperial counterparts: `estb/esuckr.f90` (AK/CI/EM/IE/KT) and
+  `strp/esuckr.f90` (the other 17 imperial variants). Arithmetic and call
+  order agree: SPRTHT, height multiplier, BACHLO rejection outside [-1,1],
+  height perturbation by HT/5.5, the 4.5-foot breast-height breakpoint,
+  logarithmic DBH equation with the existing HT1/AA choice and 0.1-inch
+  floor, then crown ratio 70. The calculation assumes PREM/PROB per acre,
+  SITEAR/HTI/HT in feet and DSTUMP/DBH in inches; ESTUMP stores unconverted
+  DBH and PREM.
+  Only later reporting converts density/height to per hectare/metres.
+  BC/ON select the four-argument VSTRP ESSPRT; ESTB's five-argument VESTB
+  routine also receives NUMSPR. Preserve that caller distinction. BC's
+  ESHAP layout also remains distinct. Outside the audited block, metric
+  omits newer tree-field initialization and lacks STRP's zero-total report
+  guard; ESTB also lacks that guard (bug 29). These are not unit differences.
+- [ ] **M14a — Share sprout size calculation (implementation).** Use
+  `estb/` for only the audited height/DBH block, preserving precision,
+  random draws/retries, thresholds and diagnostic spacing per caller.
+  Leave species mapping, ESSPRT interfaces, record initialization, report
+  calculation and common-block layouts in their current routines. Do not
+  merge the three ESUCKR files as part of this first implementation.
+
+Verification for M08–M14: selected all consumers from the 24 current source
+lists; checked the scoped statements against F77 `c2105365` and HEAD
+`ed5e92fb`. Temporary GNU Fortran 15.2.0 block drivers compare exact text
+and numeric bits: 16 DWDVLOUT cases per copy, seven converted values/six
+detailed-snag rows, 36 burn-report cases per copy, eight first-cycle fire
+condition rows, 100 metric mistletoe class indices, and 90 sprout-size cases
+for all three original/current copies, including random draw counts.
+Separate controls reproduce the DMBCI diagnostic error and zero-total sprout
+division in original/current code. These are scoped block checks with supplied
+callee results, not integrated simulations or whole-file equivalence. Source
+lists and `git diff --check` pass; the full simulation suite was not rerun
+for this documentation-only change. P03 and bug 5 remain unresolved. All
+temporary drivers, executables and outputs were discarded.
 - [ ] **M15 — `metric/vbase/disply.f90`.** Compare one display-record format
   with `vbase/disply.f90`.
 - [ ] **M16 — `metric/vbase/fvsstd.f90`.** Compare one output-record type

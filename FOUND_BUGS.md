@@ -4,6 +4,12 @@ The first five confirmed model defects below were found during the 2026-11 conso
 
 Unless a later status or location is given, file and line references are to the tree at commit `b5657da3` plus the then-uncommitted `VARIANTCD` change. Bugs 1 and 2 have the same root cause: FVS calls external procedures with no explicit interface, so gfortran cannot check argument lists across files. Moving these routines into modules would let the compiler catch this class of bug.
 
+Sections 25–29 were found during the bounded M08–M14 audits on 15 November
+2026 at `ed5e92fb`. All are present in the pinned original F77 reference and
+remain unfixed. Temporary block checks reproduce the report/classification,
+diagnostic and zero-division cases described below; they do not establish
+Canadian integrated simulation coverage.
+
 ---
 
 ## 1. `FMSVL2` is called with the wrong number of arguments in BC and ON
@@ -556,6 +562,162 @@ sets all three reports' variables to the inventory year and that year plus
 
 **Suggested fix:** use the imperial year-window test in FMDOUT and the
 imperial settings in the metric FMIN for all three reports. M07a deliberately
-retains the old rule pending M08; correct both routines together in separate
-model-fix work. Changing either alone turns the down-wood reports off or
-leaves the all-fuels report off.
+retains the old rule. M08 confirms DWDVLOUT's paired flag contract; it is an
+audit, not the model correction. Correct the producer and consumer together
+in separate model-fix work. Changing either alone turns the down-wood reports
+off or leaves the all-fuels report off.
+
+---
+
+## 25. The metric burn-conditions report rejects the begin year that BURNREPT sets
+
+**Variants:** BC, ON.
+**Location:** the first report section in `metric/fire/vbase/fmfout.f90`,
+with option 4 in `metric/fire/base/fmin.f90`.
+**Status:** confirmed during M10 by source tracing and block checks in
+current code and `c2105365:metric/fire/vbase/fmfout.f` /
+`c2105365:metric/fire/base/fmin.f`. Unfixed.
+
+BURNREPT assigns `IFMBRB = IY(1)` and `IFMBRE = IY(1)+999`. The metric
+FMFOUT section executes only when `IFMBRB < 0` and `IFIRE >= 0`, ignoring
+the end year. An inventory year of zero or a positive calendar year
+therefore suppresses both DBSFMBURN and the burn-conditions text, despite
+the keyword echo promising the report. The imperial section accepts the
+current year within the requested window. This is analogous to bug 24,
+but affects a different report and uses a strict negative-flag test.
+
+Thirty-six block cases per copy cover begin flags -1/0/2020, IFIRE -1/0/1,
+FMD zero/nonzero and database-only/text output. Each copy matches its F77
+section; the metric cases with begin 0 or 2020 produce no report. These
+checks supply report inputs directly and do not demonstrate full-engine
+reachability beyond the existing keyword-input blocker.
+
+**Suggested fix:** adopt a consistent begin/end-year contract in the input
+handler and consumer, with explicit zero-year and out-of-window cases.
+Keep that result-changing correction separate from M10a's shared section.
+
+---
+
+## 26. Metric potential-fire database conditions use the moderate flag for both rows
+
+**Variants:** BC, ON.
+**Location:** the first-cycle DBSFMPFC loop in `metric/fire/vbase/fmpofl.f90`.
+**Status:** confirmed during M11 in current code and
+`c2105365:metric/fire/vbase/fmpofl.f`. Unfixed; full simulation impact has
+not been measured.
+
+The preceding FMOIS loop leaves IDPL equal to 2. The subsequent IDPM=1,2
+database loop tests `PRESVL(IDPL,1)` but copies moisture from
+`PRESVL(IDPM,2:8)`. Both database rows are thus controlled by the moderate
+override flag. A severe-only override is ignored; a moderate-only override
+also makes the severe row use its inactive PRESVL values. The fire
+calculation and text condition rows test their respective scenario flags,
+so the database can disagree with both. The imperial database loop correctly
+tests IDPM.
+
+Block drivers with the exact original/current loops match all eight records
+from the four override-flag combinations. They set the documented incoming
+IDPL=2 and supply distinguishable FMMOIS defaults and PRESVL rows, isolating
+the flag-selection error without running the fire model.
+
+**Suggested fix:** test `PRESVL(IDPM,1)` in this loop and verify both
+asymmetric override cases against the text and calculation inputs. Preserve
+the old selection during M11a; apply this correction separately.
+
+---
+
+## 27. BC mistletoe diameter classes are non-monotonic
+
+**Variant:** BC; ON selects the mistletoe stub and is unaffected.
+**Location:** class accumulation in `metric/newmist/misprt.f90`.
+**Status:** reproduced during M13 in current code and
+`c2105365:metric/newmist/misprt.f`. Unfixed.
+
+The routine converts DBH to integer centimetres and computes:
+
+```fortran
+IVAL = IFIX(DBH(ITREE)*INtoCM)
+IDBH = IVAL / 5 + MOD(IVAL,5)
+IDBH = MAX(1,MIN(20,IDBH))
+```
+
+The remainder adds zero through four classes instead of locating a tree in
+one five-centimetre interval. Diameters 3.25, 4.25 and 5.25 cm go to classes
+3, 4 and 1, respectively; 10.25 cm goes to class 2 and 45.25 cm to class 9.
+These disagree with the printed five-centimetre headings. Counts, infection,
+mortality and DMR/DMI contributions are assigned to the wrong columns in
+the size summary and species/size detail, including database size summaries.
+The imperial remainder modulo 2 does not generalize to modulo 5.
+
+One hundred non-boundary diameters give identical original/current indices
+and reproduce the decreasing classes. The tests isolate classification;
+no integrated BC stand-output footprint has been measured. The subsequent
+1–20 clamp and summary folding of classes 11–20 do not correct the problem.
+
+**Suggested fix:** define the exact interval endpoints and use monotonic
+five-centimetre binning, testing every boundary and both summary/detail
+tables. Keep the existing formula during M13a's structural extraction.
+
+---
+
+## 28. BC biocontrol keywords have diagnostic and dispatch defects
+
+**Variant:** BC.
+**Location:** DMBCI/DMBCA handlers in `metric/newmist/misin.f90`, with
+`canada/newmist/dmcycl.f90` as the application consumer.
+**Status:** found during M12. All three defects are present in
+`c2105365:metric/newmist/misin.f`; DMCYCL's original consumer also selects
+activity 2010. Unfixed. The existing field-width defect (bug 5) is separate.
+
+- DMBCI's unconditional WRITE supplies keyword, agent index, species text
+  and REAL mortality values. FORMAT 2902 also expects an integer species
+  code between the text and the mortality values, but ISPL is missing from
+  the argument list. Executing the extracted original/current WRITE and
+  FORMAT with defined agent data makes GNU Fortran stop with an
+  INTEGER/REAL type error. Valid agent definition therefore cannot finish
+  that echo, even when keyword-buffer overflow is bypassed.
+- DMBCA sets `IKD = 2004` and passes it to OPNEW/OPNEWC. DMCYCL searches
+  for activity 2010; 2004 belongs to MISTHMOD, whose MISHGF consumer expects
+  a species plus six growth modifiers rather than three application values.
+  This producer/consumer mismatch is source-confirmed; a full run's wrong
+  growth or application effect has not been measured.
+- DMBCA tests local IPRMPT, which is declared but never assigned anywhere in
+  this MISIN. The PARMS branch therefore depends on an undefined value;
+  moreover the reader's earlier nonzero-KODE handling rejects negative
+  return codes before this handler. Source tracing confirms the missing
+  assignment/dispatch, not a measured distribution of runtime outcomes.
+
+**Suggested fix:** isolate the biocontrol repairs from consolidation: add
+the missing diagnostic argument, align the application activity with 2010,
+and define PARMS/error dispatch before using IPRMPT. Verify with defined
+twelve-field input, real scheduling consumers and each supported agent.
+
+---
+
+## 29. ESUCKR divides by zero when a sprout report has no generated sprouts
+
+**Variants:** BC/ON (`metric/strp/esuckr.f90`) and AK/CI/EM/IE/KT
+(`estb/esuckr.f90`). The 17 variants selecting `strp/esuckr.f90` have a
+zero-total guard.
+**Status:** found during M14; reproduced in the report-tail statements of
+all three original/current copies. Unfixed; a valid full-engine case has
+not been run.
+
+ESUCKR can enter with removed stump records, then generate no sprouts
+because removal density is too small or a multiplier/equation suppresses
+them. TPATOT remains zero. With printing enabled, the metric and ESTB
+tails unconditionally execute `WTAVEHT = WTAVEHT/TPATOT` after initializing
+WTAVEHT to zero. This gives an invalid 0/0 result for the total DBSSPRT row,
+or a floating-point trap. STRP instead sets the total mean to zero when
+TPATOT is zero. Temporary original/current tail drivers with defined zero
+totals trap in metric/ESTB and return zero in STRP.
+
+The imperial ESTB/STRP tails also pass `TPASUM(I)` and `HTAVE(I)` after the
+species loop, when I is NSPSPE+1. Those actual array elements are out of
+bounds. DBSSPRT ignores these two values for the total row (TOT=2), so no
+result impact is claimed; bounds checking can still reject the call. Metric
+passes element 1 instead. This additional tail issue is source-confirmed.
+
+**Suggested fix:** apply a defined zero-total mean and pass valid elements
+for unused total-row arguments, with a no-sprouts report/database case.
+Keep the repair separate from M14a's height/DBH extraction.
