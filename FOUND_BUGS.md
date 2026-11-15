@@ -1,15 +1,21 @@
 # Found Bugs
 
-The five confirmed model defects below were found during the 2026-11 consolidation of duplicated routines. Every one is already present in the pre-modernization source (commit `c2105365`), so none was introduced by the conversion to free-form Fortran or by the consolidation. They are **deliberately left unfixed** for now so that model outputs stay identical to `c2105365` while modernization is finished. Each fix below will change outputs for the variants listed, so each should be made as its own commit with a before/after comparison. Sections 6–8 separately record an unconfirmed historical numerical concern, a historical documentation discrepancy, and ESADDT data-flow concerns requiring follow-up. Section 9 records a reproduced SQLite resource defect with scientific-output impact still unmeasured. Section 10 records a restart-file difference that modernization itself introduced, now corrected. Sections 11 and 12 record two original defects that read undefined values and so make restart files vary between runs. Sections 13 and 14 record an invalid stub diagnostic and a fuel-model fallback defect found during the safe reapplication; neither was fixed. Sections 15–18 record DGDRIV tripling/bounds defects and undefined local reads found during L05; all were preserved. Section 19 records conditional undefined local reads in KT CRATET; these were also retained. Sections 20 and 21 record two defects in the former metric copy of EVLDX found during the M01 audit; the M01a merge carried both into `base/evldx.f90` unfixed.
+The first five confirmed model defects below were found during the 2026-11 consolidation of duplicated routines. Every one is already present in the pre-modernization source (commit `c2105365`), so none was introduced by the conversion to free-form Fortran or by the consolidation. M02a–M07a resolve the interfaces in section 1 and the missing arguments in section 2, and remove DBSIN's part of section 5; the remaining defects are deliberately retained. These interface repairs define behavior where the original calls were undefined and cannot establish simulation parity on those paths. Sections 6–8 separately record an unconfirmed historical numerical concern, a historical documentation discrepancy, and ESADDT data-flow concerns requiring follow-up. Section 9 records a reproduced SQLite resource defect with scientific-output impact still unmeasured. Section 10 records a restart-file difference that modernization itself introduced, now corrected. Sections 11 and 12 record two original defects that read undefined values and so make restart files vary between runs. Sections 13 and 14 record an invalid stub diagnostic and a fuel-model fallback defect found during the safe reapplication; neither was fixed. Sections 15–18 record DGDRIV tripling/bounds defects and undefined local reads found during L05; all were preserved. Section 19 records conditional undefined local reads in KT CRATET; these were also retained. Sections 20 and 21 record two defects in the former metric copy of EVLDX found during the M01 audit; the M01a merge carried both into `base/evldx.f90` unfixed. Sections 22–24 were found during the M02–M07 audits: section 22 is an output difference in BC and ON that the free-form conversion introduced, six of whose FORMATs are now corrected by M05a/M07a; sections 23 and 24 are original defects retained in the shared STATS and FMDOUT.
 
-File and line references are to the tree at commit `b5657da3` plus the uncommitted `VARIANTCD` change. Bugs 1 and 2 have the same root cause: FVS calls external procedures with no explicit interface, so gfortran cannot check argument lists across files. Moving these routines into modules would let the compiler catch this class of bug.
+Unless a later status or location is given, file and line references are to the tree at commit `b5657da3` plus the then-uncommitted `VARIANTCD` change. Bugs 1 and 2 have the same root cause: FVS calls external procedures with no explicit interface, so gfortran cannot check argument lists across files. Moving these routines into modules would let the compiler catch this class of bug.
 
 ---
 
 ## 1. `FMSVL2` is called with the wrong number of arguments in BC and ON
 
 **Variants:** BC, ON
-**Blocks consolidation of:** `metric/fire/base/fmdout.f90` (left as a twin of `fire/base/fmdout.f90`)
+**Status:** interface mismatch resolved 15 November 2026 under M07a. BC's
+`FMSVL2` now accepts ten arguments; every variant uses the ten-argument call
+in `fire/base/fmdout.f90`. BC still ignores crown ratio and the live/dead
+flag. Direct BC eight/ten-argument tests match original F77 and the immediate
+baseline for all species, height/merchantability cases and debug settings.
+ON's original call was undefined, so the repair cannot claim parity with it.
+The description below records the pre-repair mismatch.
 
 The snag-volume entry point `FMSVL2` has two incompatible definitions. The shared one in `fire/base/fmsvol.f90:82` takes ten arguments `(JSP,XD,XH,XHT,VOL2HT,CRWNRTO,LIVEDEAD,LMERCHIN,DEBUG,IOUT)`. The BC one in `canada/fire/bc/fmsvol.f90:68` takes eight `(JSP,XD,XH,XHT,VOL2HT,LMERCHIN,DEBUG,IOUT)`, without crown ratio or the live/dead flag. Each variant compiles callers written for the other version.
 
@@ -30,31 +36,37 @@ Here the callee reads the crown ratio as the merchantable-volume switch, the `'L
 
 The behavior is undefined in both cases. The most likely visible effect is that snag and down-wood volumes switch between merchantable and total volume according to an unrelated value. Because the BC and ON test decks never get past keyword input (see bug 5), no test has exercised these paths.
 
-A third copy of the eight-argument call, formerly in `canada/fire/on/fmcrowe.f90:277`, was not compiled by any variant and was retired under D08 on 13 November 2026. Its original source is available with `git show 9bc35a16:canada/fire/on/fmcrowe.f90`. The live mismatched calls above remain unchanged.
+A third copy of the eight-argument call, formerly in `canada/fire/on/fmcrowe.f90:277`, was not compiled by any variant and was retired under D08 on 13 November 2026. Its original source is available with `git show 9bc35a16:canada/fire/on/fmcrowe.f90`. M07a resolves the live mismatched calls described above.
 
-**Suggested fix:**
+**Repair completed under M07a:**
 1. Give the BC `FMSVL2` the ten-argument interface; it can accept `CRWNRTO` and `LIVEDEAD` and ignore them.
 2. Change the metric `fmdout` call to the ten-argument form, passing `ICR(I)` and `'L'` as `fire/base/fmdout.f90:244` does.
 3. Merge the `fmdout` twin after the interface fix. The unused ON `fmcrowe` retirement is already complete under D08.
 
-Merging `fmdout` before this fix is a compile error, because one file cannot call the same external two different ways. That is why the twin was kept.
+The twin was kept until the BC interface was repaired, then removed under M07a.
 
 ---
 
 ## 2. Metric `INTREE` calls `DBSTREESIN` with 30 of its 33 arguments
 
 **Variants:** BC, ON
-**Blocks consolidation of:** `metric/base/intree.f90` (left as a twin of `base/intree.f90`)
+**Status:** missing arguments resolved 15 November 2026 under M02a. All
+variants now use `base/intree.f90` and its 33-argument call. Real SQLite
+input in both BC and ON verifies cull, decay/stem fields and metric units.
+The absent metric decay-code correction is still retained behind
+`LMETRICVAR`; it needs a separate model correction. The description below
+records the old interface defect.
 
 `dbsqlite/dbstreesin.f90:5` gained three trailing arguments for cull, decay code and woodland stems: `RCULL`, `IDECAY`, `IWDLDSTMS`. `base/intree.f90:135` passes them as `CULL(I)`, `DECAYCD(I)`, `WDLDSTEM(I)`, but the metric copy at `metric/base/intree.f90:136` still passes only the original 30.
 
 `DBSTREESIN` sets all three to zero unconditionally (lines 78–80) and reads them from the `Cull`, `DecayCd` and `WdldStem` columns when present (lines 217–225). In BC and ON those writes go through addresses that were never passed. A scratch build confirmed the effect. With bug 5 fixed, ON crashed with a segmentation fault while reading tree records from the database. When the three arguments were also passed, the ON test ran to completion.
 
-The metric copy also lacks the decay-code correction that `base/intree.f90:141–146` applies after the call. `metric/dbsqlite/dbstreesin.f90`, an older 30-argument version, was not compiled by any variant and was retired under D07 on 13 November 2026. Its original source is available with `git show 9bc35a16:metric/dbsqlite/dbstreesin.f90`. The live caller and shared callee remain unchanged.
+The metric copy also lacked the decay-code correction that the imperial reader applies after the call; M02a preserves that metric behavior. `metric/dbsqlite/dbstreesin.f90`, an older 30-argument version, was not compiled by any variant and was retired under D07 on 13 November 2026. Its original source is available with `git show 9bc35a16:metric/dbsqlite/dbstreesin.f90`. M02a changes the caller's interface; the shared callee is unchanged.
 
-P03 source tracing on 13 November 2026 confirmed 33 versus 30 arguments in both the original `c2105365` source and current mFVS. Earlier documentation counted 31 versus 28, omitting `ABIRTH` and `LBIRTH` from both totals. This is a documentation correction only; the missing trailing arguments and the model code are unchanged.
+P03 source tracing on 13 November 2026 confirmed 33 versus 30 arguments in both the original `c2105365` source and mFVS before M02a. Earlier documentation counted 31 versus 28, omitting `ABIRTH` and `LBIRTH` from both totals.
 
-**Suggested fix:** pass `CULL(I)`, `DECAYCD(I)` and `WDLDSTEM(I)`, and port the decay-code correction. Then merge the `intree` twin, which was attempted during consolidation and reverted for this reason.
+**Remaining correction:** decide and port the metric decay-code correction.
+Passing `CULL(I)`, `DECAYCD(I)` and `WDLDSTEM(I)` and merging the twin are complete.
 
 ---
 
@@ -113,7 +125,7 @@ As a result, **every infected tree (DMR ≥ 1) of a host species with index 11 o
 - each record produces `FVS01 ERROR: INVALID KEYWORD WAS SPECIFIED`;
 - the run ends with `STOP 20`.
 
-**BC and ON cannot process any keyword file, at `c2105365` or now.**
+**BC and ON cannot process any keyword file, at `c2105365` or now.** Upstream commit `08e833b2` (28 August 2025) widened `KEYRDR` from 7 to 12 fields without changing the metric and BC copies.
 
 Files still affected and compiled:
 
@@ -121,16 +133,15 @@ Files still affected and compiled:
 |---|---|---|
 | `canada/bc/initre.f90` | lines 54, 60, 64 | BC |
 | `metric/vbase/initre.f90` | lines 52, 59, 63 | ON |
-| `metric/dbsqlite/dbsin.f90` | line 73 (`KARD` only) | BC, ON |
 | `metric/newmist/misin.f90` | lines 121, 126, 131 | BC |
 
-The same defect was in pre-modernization `canada/bc/keyopn.f`, `metric/base/ksstag.f` and `metric/clim/clin.f`. The consolidation replaced those with the shared 12-element versions, so it no longer exists there.
+The same defect was in pre-modernization `canada/bc/keyopn.f`, `metric/base/ksstag.f` and `metric/clim/clin.f`. The consolidation replaced those with the shared 12-element versions, so it no longer exists there. M05a also retires `metric/dbsqlite/dbsin.f90`; BC/ON now use the shared DBSIN with `KARD(12)`. Direct DBSIN tests exercise the real twelve-field KEYRDR; the three remaining compiled readers above still block Canadian simulation.
 
 Eleven uncompiled files had the same defect (in `archive/bgc/`, `metric/dfb/`, `metric/estb/`, `metric/ppbase/`, `metric/rd/` and `metric/wwpb/`). They were removed with the other unbuilt directories on 14 November 2026.
 
-A scratch build with the four compiled files widened to 12 read the BC and ON keyword files correctly.
+A pre-M05a scratch build with the then-four compiled files widened to 12 read the BC and ON keyword files correctly.
 
-**Suggested fix:** widen the arrays to 12, preferably through a shared named constant so `KEYRDR` and its callers cannot drift apart again. Then merge the `initre`, `dbsin` and `misin` twins. Fix this together with bug 2: once keywords are read, ON reaches the `DBSTREESIN` call and crashes.
+**Suggested fix:** widen the remaining arrays to 12, preferably through a shared named constant so `KEYRDR` and its callers cannot drift apart again. Then merge the `initre` and `misin` twins. DBSIN and the missing `DBSTREESIN` arguments (bug 2) are already handled under M05a and M02a.
 
 ---
 
@@ -426,3 +437,125 @@ units: `MAI` (145), `BDBHWTBA` (147), `BSDI2` (150), `BGMD` (159),
 the newer variables, give `DBHDIST`, `SNAGS` and `ACORNS` a factor per
 attribute, and decide the unit of each density index once for both the
 before- and after-thinning forms.
+
+---
+
+## 22. Introduced by the free-form conversion: split FORMAT text prints a stray apostrophe in BC and ON
+
+**Variants:** BC, ON
+**Status:** found 15 November 2026 during the M05 and M07 audits and
+reproduced with a two-line test program. Not in `c2105365`; introduced when
+the files were converted to free form. M05a and M07a remove the first two
+files below, restoring six FORMATs to their original F77 text. Direct
+DBSIN/FMDOUT comparisons confirm the exercised messages. The other thirteen
+FORMATs remain unfixed. The full regression decks cannot reach these
+messages because BC/ON stop at keyword input (bug 5).
+
+At the audit baseline, nineteen FORMAT statements split a text item
+across two lines with no comma between the halves:
+
+```fortran
+ 1120     FORMAT ('********  ERROR: ',A,' CAN NOT PREFORM'
+     &      ' SUBSTITUTIONS IN SQL COMMAND: ',A)
+```
+
+gfortran reads that as two text items with a missing comma (a legacy
+extension) and prints them one after the other. The conversion wrote the
+break as `'&` followed by `&'`. In free form that joins the two quotes into
+`''`, which is one apostrophe inside a single text item. The original prints
+`CAN NOT PREFORM SUBSTITUTIONS`; the converted file prints
+`CAN NOT PREFORM' SUBSTITUTIONS`.
+
+| File | Formats |
+|---|---|
+| `metric/dbsqlite/dbsin.f90` (retired M05a; corrected) | 1120, 2710, 2810 |
+| `metric/fire/base/fmdout.f90` (retired M07a; corrected) | 702, 802, 902 |
+| `metric/fire/base/fmin.f90` | 5610 |
+| `metric/fire/base/fmsout.f90` | 200 |
+| `metric/fire/vbase/fmfout.f90` | 318 |
+| `metric/fire/vbase/fmpofl.f90` | 132 |
+| `metric/newmist/misprt.f90` | 905 |
+| `canada/bc/becset.f90` | 31, 34, 41 (two breaks), 61, 71 |
+| `canada/bc/sitset.f90` | 57 |
+| `canada/on/morts.f90` | 351 |
+| `clim/base/clin.f90` | 9106, the BC/ON branch only |
+
+The audit searched every Fortran file for a line ending in `'&` followed by
+a line starting with `&'` and found these sites and no others. Wherever the
+imperial twin has the same message, it has the comma.
+
+**Suggested fix:** end the first line with `',&`. Text items separated by a
+comma print exactly as the original did. Retiring a metric copy in favour of
+the imperial file (M05a, M07a) removes its sites as well.
+
+---
+
+## 23. Metric STATS converts the percent sampling error and leaves the error in units unconverted
+
+**Variants:** BC, ON
+**Location:** `base/stats.f90`, the metric trees, cubic-volume and basal-area
+blocks
+**Status:** found 15 November 2026 during the M04 audit by reading the
+source; present in `c2105365:metric/base/stats.f`. Unfixed; M04a retains it
+in the shared routine's metric branches.
+
+The last two columns of the sample-point table are the sampling error in
+percent (`SEP`) and in units (`SEU`). The metric copy multiplies or divides
+`SEP` by the unit factor (`ACRtoHA`, `FT3pACRtoM3pHA`, `FT2pACRtoM2pHA`) and
+writes `SEU` as computed, per acre. A percentage has no unit to convert, so
+both columns are wrong, in the printed table and in the `FVS_Stats_Stand`
+rows.
+
+Two smaller points in the same routine:
+
+- The species table prints the `BFV` total as net merchantable cubic metres,
+  but the value sent to the database column `BoardM` is multiplied by zero.
+  For ON, where `BFV` holds merchantable volume, the report and the database
+  disagree.
+- STATS passes `LABELS(I)` and `IDIST(1,I)` to `DBSSTATS` for
+  every species row, with `I` up to the number of species present. The arrays
+  have six entries after M04a (the former metric copy had four). `DBSSTATS`
+  does not read them for species rows, so nothing visible follows, but a bounds-checked
+  build would stop on a stand with more than six species.
+
+**Suggested fix:** apply the factor to `SEU` and not to `SEP`; decide whether
+`BoardM` should carry the merchantable volume the report shows; pass a fixed
+element for the unused arguments.
+
+---
+
+## 24. BC and ON do not produce the all-fuels report that FUELOUT requests
+
+**Variants:** BC, ON
+**Location:** the metric branch in `fire/base/fmdout.f90` with
+`metric/fire/base/fmin.f90:800`
+**Status:** found 15 November 2026 during the M07 audit by reading the
+source; present in `c2105365`. Unfixed. M07a preserves this rule in the
+shared routine; direct drivers exercise it, while the BC/ON simulation
+decks still cannot read keywords (bug 5).
+
+The metric branch of FMDOUT decides whether to produce each report from the
+begin variable alone: the report is skipped when it is greater than zero.
+
+```fortran
+LPRINT = .true.
+if (IFLALB .gt.0) LPRINT = .false.
+```
+
+The metric FMIN sets the down-wood variables to −1 for `DWDVLOUT` and
+`DWDCVOUT`, which this test accepts. For `FUELOUT` it sets `IFLALB = IY(1)`,
+the inventory year, as the imperial FMIN does for a begin-and-end-year test.
+With any inventory year above zero the test fails in every cycle, so neither
+the printed all-fuels report nor the `DBSFUELS` rows are written, although
+the keyword echo says `THE ALL FUELS REPORT WILL BE PRINTED`. The report
+appears only if `FUELOUT` is read while the inventory year is still zero.
+
+The imperial FMDOUT tests `IYR` against `IFLALB` and `IFLALE`, and its FMIN
+sets all three reports' variables to the inventory year and that year plus
+999.
+
+**Suggested fix:** use the imperial year-window test in FMDOUT and the
+imperial settings in the metric FMIN for all three reports. M07a deliberately
+retains the old rule pending M08; correct both routines together in separate
+model-fix work. Changing either alone turns the down-wood reports off or
+leaves the all-fuels report off.

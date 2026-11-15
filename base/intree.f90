@@ -11,6 +11,17 @@ subroutine INTREE (RECORD,IRDPLV,ISDSP,SDLO,SDHI,LKECHO)
   !  THIS ROUTINE READS THE STAND TREE DATA AND SETS ALL VARIABLES
   !  WHICH ARE TREE RECORD SPECIFIC.
 
+  !  THE METRIC VARIANTS (LMETRICVAR: BC AND ON) READ DIAMETERS IN
+  !  CENTIMETERS AND HEIGHTS IN METERS AND CONVERT THEM HERE. THEY ALSO
+  !  BEHAVE AS THEIR FORMER COPY OF THIS ROUTINE DID, WHICH PREDATES
+  !  SEVERAL CHANGES MADE FOR THE OTHER VARIANTS:
+  !    - NO DECAY CODE CORRECTION AND NO WOODLAND STEM COUNT; CULL,
+  !      DECAYCD AND WDLDSTEM ARE SET ONLY BY **DBSTREESIN** AND ARE NOT
+  !      MOVED WITH DEAD TREES.
+  !    - A BLANK SPECIES CODE IS NOT REPLACED BY 'OT'.
+  !    - WITH ONE INVENTORY PLOT, EVERY RECORD IS GIVEN PLOT ID 1.
+  !    - THREE MESSAGES DIFFER BY ONE BLANK.
+
   ! Common blocks
   include 'PRGPRM.f90'
   include 'ARRAYS.f90'
@@ -19,6 +30,7 @@ subroutine INTREE (RECORD,IRDPLV,ISDSP,SDLO,SDHI,LKECHO)
   include 'HTCAL.f90'
   include 'ESTREE.f90'
   include 'STDSTK.f90'
+  include 'METRIC.f90'
 
   ! Variables
   integer :: IPP,IAXE,ISPI,IUP,IHIT3,IHIT2,IHIT1,I,IK
@@ -114,8 +126,16 @@ subroutine INTREE (RECORD,IRDPLV,ISDSP,SDLO,SDHI,LKECHO)
   15 continue
   LSTKNT = IPTKNT
 
-  if (LRDGO .and. LRDTE) write(JOSTND,895) ITRRR
+  if (LRDGO .and. LRDTE) then
+     if (LMETRICVAR) then
+        write(JOSTND,9895) ITRRR
+     else
+        write(JOSTND,895) ITRRR
+     end if
+  end if
   895 format('**** MAX NUMBER OF TREE RECORDS',I5,' EXCEEDED FOR', &
+       & ' WESTERN ROOT DISEASE MODEL VER 3.0 ****')
+  9895 format(' **** MAX NUMBER OF TREE RECORDS',I5,' EXCEEDED FOR', &
        & ' WESTERN ROOT DISEASE MODEL VER 3.0 ****')
 
   call ERRGRO(.false.,13)
@@ -139,10 +159,12 @@ subroutine INTREE (RECORD,IRDPLV,ISDSP,SDLO,SDHI,LKECHO)
        & IPVARS(5),DBSKODE,DEBUG,JOSTND,LKECHO,ABIRTH(I),LBIRTH(I), &
        & CULL(I),DECAYCD(I),WDLDSTEM(I))
   !  MAKE CORRECTIONS TO DECAY CODE IF NECESSARY
-  if (ITH.gt.5.and.(DECAYCD(I).lt.1.or.DECAYCD(I).gt.5)) then
-     DECAYCD(I) = 3
-  else if (ITH .le. 5 .and. DECAYCD(I) .ne. 0) then
-     DECAYCD(I) = 0
+  if (.not.LMETRICVAR) then
+     if (ITH.gt.5.and.(DECAYCD(I).lt.1.or.DECAYCD(I).gt.5)) then
+        DECAYCD(I) = 3
+     else if (ITH .le. 5 .and. DECAYCD(I) .ne. 0) then
+        DECAYCD(I) = 0
+     end if
   end if
   if (DBSKODE.eq.0) then
      if (.not.LCONN) inquire(UNIT = ISTDAT,exist = LCONN)
@@ -196,8 +218,16 @@ subroutine INTREE (RECORD,IRDPLV,ISDSP,SDLO,SDHI,LKECHO)
           & (IPVARS(K),K = 1,5),' ABIRTH= ',ABIRTH(I),' DBSKODE=', &
           & DBSKODE, ' LBIRTH= ',LBIRTH(I)
   end if
-  if (IDTREE(I) .gt. IDCMP1-1) write(JOSTND,35)
+  if (IDTREE(I) .gt. IDCMP1-1) then
+     if (LMETRICVAR) then
+        write(JOSTND,9035)
+     else
+        write(JOSTND,35)
+     end if
+  end if
   35 format('IN INTREE: TREE ID NUMBER IS LARGER THAN MAXIMUM', &
+       & ' ALLOWED')
+  9035 format(' IN INTREE: TREE ID NUMBER IS LARGER THAN MAXIMUM', &
        & ' ALLOWED')
 
   ! IF THIS IS A SITE TREE, THEN STORE THE SITE RELATED INFORMATION.
@@ -217,7 +247,7 @@ subroutine INTREE (RECORD,IRDPLV,ISDSP,SDLO,SDHI,LKECHO)
   if (IHIT1.gt.0 .or. IHIT2.gt.0 .or. IHIT3.gt.0) then
      NSITET = NSITET + 1
      if (NSITET .gt. MAXSTR)go to 34
-     if (CSPI .eq. '        ') CSPI = 'OT      '
+     if (.not.LMETRICVAR .and. CSPI .eq. '        ') CSPI = 'OT      '
      CSPI = ADJUSTL(CSPI)
      do IUP = 1,8
         call UPCASE(CSPI(IUP:IUP))
@@ -244,8 +274,13 @@ subroutine INTREE (RECORD,IRDPLV,ISDSP,SDLO,SDHI,LKECHO)
      call SPCTRN (CSPI, ISPI)
      33 continue
      SITETR(NSITET,1) = ISPI
-     SITETR(NSITET,2) = DBH(I)
-     SITETR(NSITET,3) = HT(I)
+     if (LMETRICVAR) then
+        SITETR(NSITET,2) = DBH(I) * CMtoIN
+        SITETR(NSITET,3) = HT(I)  * MtoFT
+     else
+        SITETR(NSITET,2) = DBH(I)
+        SITETR(NSITET,3) = HT(I)
+     end if
      SITETR(NSITET,4) = ABIRTH(I)
      IAXE = 0
      if (IHIT1 .gt. 0) then
@@ -288,6 +323,17 @@ subroutine INTREE (RECORD,IRDPLV,ISDSP,SDLO,SDHI,LKECHO)
   end if
   37 continue
 
+  !     CONVERT METRIC INPUT INTO US MEASUREMENTS
+  !     Note that HTG is in meters
+
+  if (LMETRICVAR) then
+     DBH(I) = DBH(I)  * CMtoIN
+     DG(I) = DG(I)   * CMtoIN
+     HT(I) = HT(I)   * MtoFT
+     THT = THT     * MtoFT
+     HTG(I) = HTG(I)  * MtoFT
+  end if
+
   !  COUNT UP THE NUMBER OF POINTS.  'IPVEC' IS A SUB-PLOT I.D. VECTOR
   !  USED TO KEEP TRACK OF SUB-PLOT IDENTIFICATION CODES THAT HAVE
   !  ALREADY BEEN USED.
@@ -301,6 +347,7 @@ subroutine INTREE (RECORD,IRDPLV,ISDSP,SDLO,SDHI,LKECHO)
   !        THAN ONE PLOT ID EXISTING ON THE TREE RECORDS BUT THE STAND HAS
   !        BEEN DEFINED AS A SINGLE PLOT, THE PLOT ID USED WILL BE 1.
   !        LRD 02/04/2022
+  !        THE METRIC VARIANTS INSTEAD SET ALL TREE RECORD PLOT IDS TO 1.
 
   !    *** NEXT 2 SCENERIOS ARE EVELUATED IN CALLING SUBROUTINE INITRE.F ***
   !    2 - IF NUM_PLOTS IS >1 AND COUNTED TREE RECORD PLOT IDS IS LESS THAN
@@ -309,13 +356,14 @@ subroutine INTREE (RECORD,IRDPLV,ISDSP,SDLO,SDHI,LKECHO)
   !        THAT VALUE, THE RUN WILL BE TERMINATED BECAUSE ACCURATE TPA VALUES
   !        CAN NOT BE CALCULATED.
 
+  if (LMETRICVAR .and. IPTINV .eq. 1) ITREI = 1
   if ( IPTKNT .lt. LSTKNT ) go to 50
   do IPP = LSTKNT, IPTKNT
      if ( IPVEC(IPP) .eq. ITREI) then
         !         TREE RECORD IS ON EXISTING PLOT
         go to 60
      else
-        if (IPTINV .eq. 1) then ! ALL TREES ON 1 PLOT (1 ABOVE)
+        if (.not.LMETRICVAR .and. IPTINV .eq. 1) then ! ALL TREES ON 1 PLOT (1 ABOVE)
            !           A SINGLE PLOT HAS BEEN SPECIFIED BUT NEW PLOT ID HAS BEEN
            !           READ. PLOT ID WILL BE SET TO 1 SINCE MULTIPLE PLOT IDS
            !           EXIST IN THE INPUT TREE RECORDS.
@@ -366,7 +414,7 @@ subroutine INTREE (RECORD,IRDPLV,ISDSP,SDLO,SDHI,LKECHO)
   !  SET SPECIES DATA BASE TABLE OUTPUT FORMAT ARRAY
   !  JSPIN BASED ON INPUT SPECIES CODE FORMAT
 
-  if (CSPI .eq. '        ') CSPI = 'OT      '
+  if (.not.LMETRICVAR .and. CSPI .eq. '        ') CSPI = 'OT      '
   CSPI = ADJUSTL(CSPI)
   do IUP = 1,8
      call UPCASE(CSPI(IUP:IUP))
@@ -404,8 +452,14 @@ subroutine INTREE (RECORD,IRDPLV,ISDSP,SDLO,SDHI,LKECHO)
   do ICNTR2 = 1,INOSPC
      if (CSPI.eq.ANOSPC(ICNTR2)) go to 74
   end do
-  write(JOSTND,75) CSPI,JSP(ISPI)
+  if (LMETRICVAR) then
+     write(JOSTND,9075) CSPI,JSP(ISPI)
+  else
+     write(JOSTND,75) CSPI,JSP(ISPI)
+  end if
   75 format(T12,'NOTE: INPUT SPECIES CODE (',A8,')WAS SET TO (' &
+       & ,A4,') FOR THIS PROJECTION.')
+  9075 format(T12,'NOTE: INPUT SPECIES CODE (',A8,') WAS SET TO (' &
        & ,A4,') FOR THIS PROJECTION.')
   INOSPC = INOSPC+1
   if (INOSPC.gt.1000)INOSPC = 1000
@@ -419,14 +473,16 @@ subroutine INTREE (RECORD,IRDPLV,ISDSP,SDLO,SDHI,LKECHO)
   ISP(I) = ISPI
 
   !---------- HANDLE WOODLAND SPECIES STEM COUNT NOW THAT WE KNOW INPUT SPECIES
-  read(FIAJSP(ISPI), '(I4)')FIASPCD
-  select case (FIASPCD)
-  case (62,  63,  65,  66, 69, 106, 133, 134, &
-       & 143, 321, 322, 475, 803, 810, 814, 843)
-     if (WDLDSTEM(I) .eq. 0) WDLDSTEM(I) = 1
-  case default
-     WDLDSTEM(I) = 0
-  end select
+  if (.not.LMETRICVAR) then
+     read(FIAJSP(ISPI), '(I4)')FIASPCD
+     select case (FIASPCD)
+     case (62,  63,  65,  66, 69, 106, 133, 134, &
+          & 143, 321, 322, 475, 803, 810, 814, 843)
+        if (WDLDSTEM(I) .eq. 0) WDLDSTEM(I) = 1
+     case default
+        WDLDSTEM(I) = 0
+     end select
+  end if
 
   !  CHECK TO SEE IF THIS IS A PROJECTABLE TREE RECORD. TREES WITH
   !  HISTORY CODES 6,7,8 AND 9 ARE DEAD TREES ACCORDING TO REGION 1
@@ -514,26 +570,28 @@ subroutine INTREE (RECORD,IRDPLV,ISDSP,SDLO,SDHI,LKECHO)
   !  ATTRIBUTES THAT ONLY THIS ROUTINE READS (NOT **ORG_INTREE**)
 
   LBIRTH(IREC2) = LBIRTH(I)
-  CULL(IREC2) = CULL(I)
-  DECAYCD(IREC2) = DECAYCD(I)
-
-  read(FIAJSP(ISP(I)), '(I4)')FIASPCD
-  select case (FIASPCD)
-  case (62,  63,  65,  66, 69, 106, 133, 134, &
-       & 143, 321, 322, 475, 803, 810, 814, 843)
-     if (WDLDSTEM(I) .eq. 0) then
-        WDLDSTEM(IREC2) = 1
-     else
-        WDLDSTEM(IREC2) = WDLDSTEM(I)
-     end if
-  case default
-     WDLDSTEM(IREC2) = 0
-  end select
-
   LBIRTH(I) = .false.
-  CULL(I) = 0
-  DECAYCD(I) = 0
-  WDLDSTEM(I) = 0
+  if (.not.LMETRICVAR) then
+     CULL(IREC2) = CULL(I)
+     DECAYCD(IREC2) = DECAYCD(I)
+
+     read(FIAJSP(ISP(I)), '(I4)')FIASPCD
+     select case (FIASPCD)
+     case (62,  63,  65,  66, 69, 106, 133, 134, &
+          & 143, 321, 322, 475, 803, 810, 814, 843)
+        if (WDLDSTEM(I) .eq. 0) then
+           WDLDSTEM(IREC2) = 1
+        else
+           WDLDSTEM(IREC2) = WDLDSTEM(I)
+        end if
+     case default
+        WDLDSTEM(IREC2) = 0
+     end select
+
+     CULL(I) = 0
+     DECAYCD(I) = 0
+     WDLDSTEM(I) = 0
+  end if
 
   !  MOVE THE REMAINING ATTRIBUTES AND RESET THEM AT POSITION I
 

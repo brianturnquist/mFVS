@@ -11,6 +11,11 @@ subroutine DBSSTATS(SPECCD,TPA,BAREA,CFVOL,BFVOL,AGBIO,AGCARB,&
   !              CRUISE STATISTICS OUTPUT
   !     AUTH: M. SHETTLES -- FMSC -- JULY 2019
 
+  !     THE METRIC VARIANTS (LMETRICVAR: BC AND ON) WRITE SPECIES ROWS TO
+  !     FVS_Stats_Species_Metric, WHICH HAS FOUR VALUE COLUMNS IN ANOTHER
+  !     ORDER AND NO BIOMASS OR CARBON. **STATS** PASSES VALUES ALREADY IN
+  !     METRIC UNITS. THE SAMPLE POINT TABLE IS THE SAME FOR ALL VARIANTS.
+
   ! Common blocks
   include 'PRGPRM.f90'
   include 'CONTRL.f90'
@@ -45,24 +50,43 @@ subroutine DBSSTATS(SPECCD,TPA,BAREA,CFVOL,BFVOL,AGBIO,AGCARB,&
 
   !     DEFINE TABLENAME
 
-  iRet1 = fsql3_tableexists(IoutDBref,'FVS_Stats_Species'//CHAR(0))
+  if (LMETRICVAR) then
+     iRet1 = fsql3_tableexists(IoutDBref,&
+          &'FVS_Stats_Species_Metric'//CHAR(0))
+  else
+     iRet1 = fsql3_tableexists(IoutDBref,'FVS_Stats_Species'//CHAR(0))
+  end if
 
-  !       GENERAL SPECIES SUMMARY FOR THE CRUISE (PER ACRE)
+  !       GENERAL SPECIES SUMMARY FOR THE CRUISE (PER ACRE OR HECTARE)
 
   if (iRet1.eq.0) then
-     SQLStmtStr = 'CREATE TABLE FVS_Stats_Species('//&
-          &'CaseID text not null,'//&
-          &'StandID text not null,'//&
-          &'Year int null,'//&
-          &'SpeciesFVS    text null,'//&
-          &'SpeciesPLANTS text null,'//&
-          &'SpeciesFIA    text null,'//&
-          &'TreesPerAcre real,'//&
-          &'BasalArea real,'//&
-          &'CubicFeet real,'//&
-          &'BoardFeet real,'//&
-          &'FIA_AbvGrdBio real,'//&
-          &'FIA_AbvGrdCarb real);'//CHAR(0)
+     if (LMETRICVAR) then
+        SQLStmtStr = 'CREATE TABLE FVS_Stats_Species_Metric('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year int null,'//&
+             &'SpeciesFVS    text null,'//&
+             &'SpeciesPLANTS text null,'//&
+             &'SpeciesFIA    text null,'//&
+             &'BoardM real,'//&
+             &'CubicM real,'//&
+             &'TreesPerHa real,'//&
+             &'BasalArea real);'//CHAR(0)
+     else
+        SQLStmtStr = 'CREATE TABLE FVS_Stats_Species('//&
+             &'CaseID text not null,'//&
+             &'StandID text not null,'//&
+             &'Year int null,'//&
+             &'SpeciesFVS    text null,'//&
+             &'SpeciesPLANTS text null,'//&
+             &'SpeciesFIA    text null,'//&
+             &'TreesPerAcre real,'//&
+             &'BasalArea real,'//&
+             &'CubicFeet real,'//&
+             &'BoardFeet real,'//&
+             &'FIA_AbvGrdBio real,'//&
+             &'FIA_AbvGrdCarb real);'//CHAR(0)
+     end if
 
      iRet1 = fsql3_exec(IoutDBref,SQLStmtStr)
      if (iRet1.ne.0) then
@@ -71,14 +95,22 @@ subroutine DBSSTATS(SPECCD,TPA,BAREA,CFVOL,BFVOL,AGBIO,AGCARB,&
      end if
   end if
 
-  write(SQLStmtStr,*)'INSERT INTO FVS_Stats_Species',&
-       &' (CaseID,StandID,Year,',&
-       &'SpeciesFVS,SpeciesPLANTS,SpeciesFIA,',&
-       &'TreesPerAcre,BasalArea,',&
-       &'CubicFeet,BoardFeet,',&
-       &'FIA_AbvGrdBio,FIA_AbvGrdCarb)',&
-       &'VALUES(''',CASEID,''',''',TRIM(NPLT),''',?,',&
-       &'?,?,?,?,?,?,?,?,?);'
+  if (LMETRICVAR) then
+     write(SQLStmtStr,*)'INSERT INTO FVS_Stats_Species_Metric',&
+          &' (CaseID,StandID,Year,',&
+          &'SpeciesFVS,SpeciesPLANTS,SpeciesFIA,',&
+          &'BoardM,CubicM,TreesPerHa,BasalArea)',&
+          &'VALUES(''',CASEID,''',''',TRIM(NPLT),''',?,?,?,?,?,?,?,?);'
+  else
+     write(SQLStmtStr,*)'INSERT INTO FVS_Stats_Species',&
+          &' (CaseID,StandID,Year,',&
+          &'SpeciesFVS,SpeciesPLANTS,SpeciesFIA,',&
+          &'TreesPerAcre,BasalArea,',&
+          &'CubicFeet,BoardFeet,',&
+          &'FIA_AbvGrdBio,FIA_AbvGrdCarb)',&
+          &'VALUES(''',CASEID,''',''',TRIM(NPLT),''',?,',&
+          &'?,?,?,?,?,?,?,?,?);'
+  end if
 
   iRet1 = fsql3_prepare(IoutDBref,trim(SQLStmtStr)//CHAR(0))
   if (iRet1.ne.0) then
@@ -102,8 +134,10 @@ subroutine DBSSTATS(SPECCD,TPA,BAREA,CFVOL,BFVOL,AGBIO,AGCARB,&
   CFVOL1 = CFVOL
   TPA1 = TPA
   BAREA1 = BAREA
-  CARBON = AGCARB
-  BIOMASS = AGBIO
+  if (.not.LMETRICVAR) then
+     CARBON = AGCARB
+     BIOMASS = AGBIO
+  end if
 
   ColNumber = 1
   iRet1 = fsql3_bind_int(IoutDBref,ColNumber,IYEAR)
@@ -116,18 +150,29 @@ subroutine DBSSTATS(SPECCD,TPA,BAREA,CFVOL,BFVOL,AGBIO,AGCARB,&
   ColNumber = ColNumber+1
   iRet1 = fsql3_bind_text(IoutDBref,ColNumber,CSP3,&
        &LEN_TRIM(CSP3))
-  ColNumber = ColNumber+1
-  iRet1 = fsql3_bind_double(IoutDBref,ColNumber,TPA1)
-  ColNumber = ColNumber+1
-  iRet1 = fsql3_bind_double(IoutDBref,ColNumber,BAREA1)
-  ColNumber = ColNumber+1
-  iRet1 = fsql3_bind_double(IoutDBref,ColNumber,CFVOL1)
-  ColNumber = ColNumber+1
-  iRet1 = fsql3_bind_double(IoutDBref,ColNumber,BFVOL1)
-  ColNumber = ColNumber+1
-  iRet1 = fsql3_bind_double(IoutDBref,ColNumber,BIOMASS)
-  ColNumber = ColNumber+1
-  iRet1 = fsql3_bind_double(IoutDBref,ColNumber,CARBON)
+  if (LMETRICVAR) then
+     ColNumber = ColNumber+1
+     iRet1 = fsql3_bind_double(IoutDBref,ColNumber,BFVOL1)
+     ColNumber = ColNumber+1
+     iRet1 = fsql3_bind_double(IoutDBref,ColNumber,CFVOL1)
+     ColNumber = ColNumber+1
+     iRet1 = fsql3_bind_double(IoutDBref,ColNumber,TPA1)
+     ColNumber = ColNumber+1
+     iRet1 = fsql3_bind_double(IoutDBref,ColNumber,BAREA1)
+  else
+     ColNumber = ColNumber+1
+     iRet1 = fsql3_bind_double(IoutDBref,ColNumber,TPA1)
+     ColNumber = ColNumber+1
+     iRet1 = fsql3_bind_double(IoutDBref,ColNumber,BAREA1)
+     ColNumber = ColNumber+1
+     iRet1 = fsql3_bind_double(IoutDBref,ColNumber,CFVOL1)
+     ColNumber = ColNumber+1
+     iRet1 = fsql3_bind_double(IoutDBref,ColNumber,BFVOL1)
+     ColNumber = ColNumber+1
+     iRet1 = fsql3_bind_double(IoutDBref,ColNumber,BIOMASS)
+     ColNumber = ColNumber+1
+     iRet1 = fsql3_bind_double(IoutDBref,ColNumber,CARBON)
+  end if
   iRet1 = fsql3_step(IoutDBref)
   iRet1 = fsql3_finalize(IoutDBref)
   if (iRet1.ne.0) then

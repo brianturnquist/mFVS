@@ -7,8 +7,10 @@ with NVEL submodule `a73e697e220ffd0f792aa7ac10d84c911edb7ad7`.
 
 This checklist stores the redundancy and dormant-code findings before cleanup.
 P01–P03, D01–D15, C01–C19, B01–B03 and the unbuilt-directory removal (R01–R08, R10–R10d)
-are complete. Six stub tasks are also complete; the checklist now records
-90 completed and 34 pending items, including R09. BC/ON simulation parity remains blocked by the existing bugs
+are complete. Six stub tasks, the metric audits M01–M07 and their implementation
+tasks M01a–M07a are also complete (M06a is included in M04a);
+the checklist now records 101 completed and 28 pending items, including R09.
+BC/ON simulation parity remains blocked by the existing bugs
 in [FOUND_BUGS.md](FOUND_BUGS.md).
 
 Run the necessary comparisons against original F77 and the immediate baseline,
@@ -293,8 +295,8 @@ same-name-only duplicate searches miss these opportunities.
 
 ## M — Active metric copies: bounded audits first
 
-There were 21 selected metric copies; 20 remain after M01a. All tasks in this
-section are initially **audits**, not authority to merge whole files. Each
+There were 21 selected metric copies; 14 remain after M01a–M07a. All tasks in
+this section are initially **audits**, not authority to merge whole files. Each
 should produce a difference map for one record group, keyword handler, or
 calculation block, identify state and interface dependencies, and propose the
 next implementation-sized task. Split further if a block is still too large.
@@ -349,21 +351,165 @@ BC/ON parity remains subject to P03.
   identical. As a control, 210 single-site changes to the merged routine
   (every unit-code table entry, switch use, conversion factor and limit)
   were each detected by that comparison for both BC and ON.
-- [ ] **M02 — `metric/base/intree.f90`.** Trace the database-input call and
-  decay handling against `base/intree.f90`. The verified 30-versus-33
-  argument defect blocks consolidation until separately resolved.
-- [ ] **M03 — `metric/base/oplist.f90`.** Compare one activity-output record
-  with `base/oplist.f90`.
-- [ ] **M04 — `metric/base/stats.f90`.** Compare one statistics calculation
-  and output group with `base/stats.f90`.
-- [ ] **M05 — `metric/dbsqlite/dbsin.f90`.** Audit keyword-array dimensions
-  first, then one handler against `dbsqlite/dbsin.f90`. Keep defect repair
-  separate from consolidation.
-- [ ] **M06 — `metric/dbsqlite/dbsstats.f90`.** Compare one database row,
-  including schema, binding types, and conversions, with `dbsqlite/dbsstats.f90`.
-- [ ] **M07 — `metric/fire/base/fmdout.f90`.** Trace `FMSVL2` calls against
-  `fire/base/fmdout.f90`. The documented incompatible interfaces require a
-  separate repair before consolidation.
+M02–M07 were audited together on 15 November 2026 at `a442d9af`; no model
+code changed. Each pair was small enough to compare whole, statement by
+statement with string literals kept. Upstream last touched these six metric
+copies in July–August 2022, so later changes to the imperial files are
+missing from them ("stale code" below). The follow-up tasks M02a–M07a keep
+BC/ON behaviour, defects included, behind `LMETRICVAR`, as M01a did. The BC/ON
+decks cannot reach any of these routines (bug 5), so each merge needs a direct
+old-against-new driver like the one used for M01a.
+
+- [x] **M02 — `metric/base/intree.f90`.** Audit completed.
+  - **Unit layer (the only intended difference).** After the crown-ratio
+    step, `DBH` and `DG` are converted from centimetres and `HT`, `THT` and
+    `HTG` from metres; site-tree DBH and height are converted when stored in
+    `SITETR`.
+  - **Stale code.** `DBSTREESIN` is called with 30 of 33 arguments (bug 2).
+    The callee returns before touching the missing three when trees come
+    from a tree file, so only database input is undefined. There is no
+    decay-code correction and no woodland stem count, and `CULL`, `DECAYCD`
+    and `WDLDSTEM` are neither set nor moved with dead trees. A blank species
+    code is not replaced by `OT` (`d03923d6`, 2025). With one inventory plot,
+    every record is given plot 1, where base keeps the plot ID read (change
+    of 2022-02-04). Formats 895, 35 and 75 differ by one blank each.
+  - **Same code in another form.** The species/DBH screen, the dead-tree
+    move and the end-of-file summary are the in-line originals of `INTRSCRN`,
+    `INTRDEAD` and `INTRFIN` (C19), statement for statement.
+- [x] **M02a — Merge INTREE (implementation).** Completed 15 November 2026.
+  All variants use `base/intree.f90` and its three shared helpers; removed
+  the 603-line metric copy. `LMETRICVAR` retains both conversion blocks,
+  the older plot/species/decay/dead-tree behaviour and diagnostic spacing.
+  The shared call passes all 33 `DBSTREESIN` arguments, completing the
+  interface half of bug 2. Real SQLite input in BC and ON verifies cull,
+  decay and stem outputs and metric diameter/height conversion. Tree-file
+  behaviour is unchanged; the missing metric decay correction remains.
+- [x] **M03 — `metric/base/oplist.f90`.** Audit completed. Nothing in the
+  imperial routine is missing from the metric copy.
+  - **Unit layer.** Before printing, each activity's parameters are
+    multiplied by the factors from `MCNVRT(IACTK,2,…)`, in the three WRITE
+    statements of the activity schedule and summary. `ECOPLS` receives
+    unconverted values in both copies. The routine is `RECURSIVE` because
+    `MCNVRT` calls its `OPKEY` entry.
+  - **Other differences.** The translation table has one more row (149):
+    activity 490 as establishment keyword `NATURAL`. No built code schedules
+    activity 490; it matters only if an activity file read by `OPRDAT`
+    contains that code, which BC/ON would list as `NATURAL` and convert,
+    and other variants list as `*UNKNOWN`. Heading formats 10, 11 and 12
+    start with a blank.
+
+  Dependencies: `MCNVRT`, `OPFIND` and `OPRDAT` are already single shared
+  files for all 24 variants, and `base/oplist.f90` already has `OPKEY`.
+- [x] **M03a — Merge OPLIST (implementation).** Completed 15 November 2026.
+  All variants use recursive `base/oplist.f90`; removed the 361-line metric
+  copy. `LMETRICVAR` selects parameter conversion, activity 490/NATURAL and
+  the three metric headings. Imperial values are printed without arithmetic.
+  Direct comparisons cover 66 schedule/summary calls and OPKEY codes
+  −5 through 3100 per variant, including unknown and completed activities.
+- [x] **M04 — `metric/base/stats.f90`.** Audit completed. The copies share
+  the initialization, the accumulation loop and one statistics calculation
+  repeated once per attribute (six times in base, four in the metric copy).
+  Everything printed differs.
+  - **Unit layer.** Species table per hectare, columns in the order net
+    merchantable volume, gross volume, trees, basal area (base: trees, basal
+    area, cubic feet, board feet). The `BFV` total is printed as cubic metres:
+    ON stores merchantable cubic volume there and BC stores zero. Sample-point
+    rows in the order trees, cubic metres, board feet, basal area (base:
+    trees, basal area, cubic, board), with every value in the board-foot row
+    multiplied by zero. Labels are 16 characters (base 19).
+  - **Stale code.** No above-ground biomass or carbon (`08e833b2`, 2025):
+    two species columns, two sample-point rows and two `DBSSTATS` arguments.
+    Heading 9006 starts with a blank.
+  - **Defects (bug 23).** The unit factor is applied to the sampling error
+    in percent and not to the sampling error in units. The database gets
+    zero board-foot volume where the printed table shows a value.
+
+  Dependencies: the 17-argument `DBSSTATS` call matches only the metric
+  copy (M06), so the two files must change together.
+- [x] **M06 — `metric/dbsqlite/dbsstats.f90`.** Audit completed. Sample-point
+  rows go to the same `FVS_Stats_Stand` table with the same columns and
+  binding types as base, holding metric values; the label is 16 characters.
+  Species rows go to `FVS_Stats_Species_Metric` with four REAL columns
+  (`BoardM`, `CubicM`, `TreesPerHa`, `BasalArea`), where base writes
+  `FVS_Stats_Species` with six (`TreesPerAcre`, `BasalArea`, `CubicFeet`,
+  `BoardFeet`, `FIA_AbvGrdBio`, `FIA_AbvGrdCarb`). The interface has 17
+  arguments (base 19). No conversion is done here; `STATS` passes converted
+  values.
+- [x] **M04a — Merge STATS and DBSSTATS (implementation, includes M06a).**
+  Completed 15 November 2026. Removed both metric copies (652 lines).
+  `base/stats.f90` uses one internal statistics helper, preserving arithmetic
+  order, metric row/column order, labels, zero-volume branches and bug 23.
+  `dbsqlite/dbsstats.f90` takes 19 arguments for every variant and selects
+  the original metric schema, binding order and four value columns behind
+  `LMETRICVAR`. Direct comparisons cover 252 statistics cases and 144 SQL/
+  binding cases per variant, including disabled output and database errors.
+- [x] **M05 — `metric/dbsqlite/dbsin.f90`.** Audit completed. The copy has
+  no unit conversion at all; every difference is stale code or a defect.
+  - `KARD(7)` where `KEYRDR` fills 12 (bug 5). Upstream widened `KEYRDR` in
+    `08e833b2` (2025-08-28) without the metric copies.
+  - Keywords 40–43 (`VBCSUMDB`, `VBCTRLDB`, `VBCCUTDB`, `VBCATRDB`) are
+    absent, so BC/ON reject them as invalid. The four switches they set stay
+    at the zero that `DBSINIT` gives them.
+  - `DSNOUT` does not call `DBSCASE(1)` after opening the database
+    (`62a9de10`, 2025-02-06), so BC/ON create the case row only when the
+    first table is written.
+  - Formats 1110 and 1210 lack a comma (same output). Formats 1120, 2710
+    and 2810 print a stray apostrophe since the free-form conversion
+    (bug 22).
+- [x] **M05a — Retire the metric DBSIN (build change).** Completed
+  15 November 2026. BC/ON select `dbsqlite/dbsin.f90`; removed the 970-line
+  copy. `KARD(12)` resolves this routine's part of bug 5, and three FORMATs
+  regain their F77 text (bug 22). `LMETRICVAR` retains rejection of keywords
+  40–43 and deferred case creation after DSNOUT. Direct BC/ON checks use
+  the real twelve-field KEYRDR over 34 keyword names and three parameter
+  settings, including those rejections and case timing. The comparison
+  widens only KARD in the old/F77 DBSIN test copies to avoid their overflow;
+  it does not claim equivalence for undefined writes.
+- [x] **M07 — `metric/fire/base/fmdout.f90`.** Audit completed.
+  - **Unit layer.** All-fuels values are multiplied by `TItoTM/ACRtoHA`
+    for both the printed report and `DBSFUELS`; down-wood volumes by
+    `FT3pACRtoM3pHA` for the report and `DBSFMDWVOL`. Headings name tonnes
+    per hectare, cubic metres per hectare and centimetre size classes. Cover
+    is a percentage and only its heading differs. The three database
+    routines are the shared ones, so metric values go into the same tables.
+  - **`FMSVL2` (bug 1).** The copy makes the 8-argument call. That matches
+    BC's own `canada/fire/bc/fmsvol.f90` and is wrong for ON, which links
+    the 10-argument `fire/base/fmsvol.f90`. The imperial 10-argument call
+    would be right for ON and wrong for BC, as 26 shared call sites already
+    are.
+  - **Stale code.** The report window: base prints when the year lies
+    between the begin and end years; the copy prints only when the begin
+    value is zero or negative. That suits the −1 the metric `FMIN` sets for
+    the down-wood reports, but `FUELOUT` sets the inventory year, so BC/ON
+    produce no all-fuels report once an inventory year is set (bug 24). Two debug WRITEs around
+    `DBSFUELS` are absent. Heading 715 is spaced differently.
+  - Formats 702, 802 and 902 print a stray apostrophe since the free-form
+    conversion (bug 22).
+- [x] **M07a — Merge FMDOUT (implementation).** Completed 15 November 2026.
+  The prerequisite interface repair is isolated in `canada/fire/bc/fmsvol.f90`:
+  FMSVL2 accepts all ten shared arguments, ignoring crown ratio and live/dead
+  flag as before. Its eight/ten-argument results match F77 and HEAD across
+  all BC species and a grid of heights, merchantability and debug flags.
+  All variants select `fire/base/fmdout.f90`; removed the 564-line copy.
+  `LMETRICVAR` retains metric factors, headings, absent database debug lines
+  and the old report-window rule (bug 24, pending M08). The shared ten-argument
+  call also resolves ON's side of bug 1. Three FORMATs regain F77 text (bug 22).
+  Direct comparisons cover 240 cases per variant, report windows, database
+  suppression, live/dead fuels, headings and common-block state.
+
+Verification for M02a–M07a: `PASS 24/24 variants; working tree
+a442d9af+changes vs original c2105365`, rerun 15 November 2026 with the pinned
+original NVEL revision. The source lists and `git diff --check` pass. BC/ON
+still stop at keyword input (P03/bug 5), so this is not Canadian simulation
+parity. Direct drivers for BC, ON, IE and SN compare the five merged routines
+above against both F77 and the immediate baseline, including exact output,
+argument bits and state. Comparisons of INTREE database input use only the
+defined old argument prefix; the repaired tail is checked separately with
+real SQLite. FMDOUT compares the old eight-argument call with a matching stub,
+not ON's undefined original call. Only the documented FORMAT apostrophes differ
+from the immediate baseline; their text matches F77. Controls changing one
+conversion or schema in each of the five routines are all detected. Generated
+drivers, builds and outputs are temporary and are not kept in the repository.
 - [ ] **M08 — `metric/fire/base/fmin.f90`.** Compare one keyword handler
   with `fire/base/fmin.f90`; schedule subsequent handlers independently.
 - [ ] **M09 — `metric/fire/base/fmsout.f90`.** Compare one fuel-output

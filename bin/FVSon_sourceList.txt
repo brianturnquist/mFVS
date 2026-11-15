@@ -119,15 +119,18 @@
 ../base/dense.f90
 ../base/evldx.f90
 ../base/filopn.f90
-../metric/base/intree.f90
+../base/intree.f90
+../base/intrdead.f90
+../base/intrfin.f90
+../base/intrscrn.f90
 ../base/ksstag.f90
 ../base/mcnvrt.f90
 ../base/opfind.f90
-../metric/base/oplist.f90
+../base/oplist.f90
 ../base/oprdat.f90
 ../base/sdichk.f90
 ../base/sstage.f90
-../metric/base/stats.f90
+../base/stats.f90
 
 ../so/avht40.f90
 
@@ -330,9 +333,9 @@
 ../dbsqlite/dbsfmmort.f90
 ../dbsqlite/dbsfmssnag.f90
 ../dbsqlite/dbsfuels.f90
-../metric/dbsqlite/dbsin.f90
+../dbsqlite/dbsin.f90
 ../dbsqlite/dbssprt.f90
-../metric/dbsqlite/dbsstats.f90
+../dbsqlite/dbsstats.f90
 ../dbsqlite/dbstally.f90
 ../dbsqlite/dbsstrclass.f90
 ../vdbsqlite/dbsreference.f90
@@ -445,7 +448,7 @@
 ../fire/vbase/fmsnght.f90
 ../fire/vbase/fmsoilheat.f90
 
-../metric/fire/base/fmdout.f90
+../fire/base/fmdout.f90
 ../metric/fire/base/fmin.f90
 ../metric/fire/base/fmsout.f90
 ../fire/base/fmssum.f90

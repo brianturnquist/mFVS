@@ -13,6 +13,14 @@ subroutine FMDOUT (IYR)
   !  CALL LIST DEFINITIONS:
   !     IYR:     CURRENT YEAR
 
+  !  THE METRIC VARIANTS (LMETRICVAR: BC AND ON) REPORT FUEL LOADS IN
+  !  TONNES/HA AND DOWN WOOD VOLUME IN CUBIC METERS/HA, IN THE PRINTED
+  !  REPORTS AND IN THE VALUES PASSED TO THE DATABASE ROUTINES.
+  !  THEY ALSO DECIDE WHICH REPORTS TO PRODUCE FROM THE BEGIN VARIABLE
+  !  ALONE (ZERO OR LESS MEANS PRODUCE IT), AS THEIR FORMER COPY OF THIS
+  !  ROUTINE DID. THEIR **FMIN** SETS -1 FOR THE DOWN WOOD REPORTS BUT THE
+  !  INVENTORY YEAR FOR FUELOUT; SEE FOUND_BUGS.md SECTION 24.
+
   !  LOCAL VARIABLE DEFINITIONS:
 
   !  COMMON BLOCK VARIABLES AND PARAMETERS:
@@ -31,10 +39,11 @@ subroutine FMDOUT (IYR)
   include 'ARRAYS.f90'
   include 'FMCOM.f90'
   include 'FMFCOM.f90'
+  include 'METRIC.f90'
 
   !.... VARIABLE DECLARATIONS.
   ! Variables
-  real    :: TOTSNG(2),TOTLIV(2),TONREM
+  real    :: TOTSNG(2),TOTLIV(2),TONREM,CONV,CONV2
   logical :: DEBUG,LPRINT,LPRINT2,LPRINT3,LMERCH
   integer :: IYR,JROUT,I,J,K,L,ISZ,JSZ,KSZ,KSP,IDC,ITM,ITON,JS,II,DBSKODE,CRWNRTO
   real    :: TOTDUF,TOTLIT,SNVIS,SNVIH,ACRES,TOTFOL,TOTCON,D,H,X,VT,TOTSTD,TOTFUL,TOTSUR,SMALL2,&
@@ -63,27 +72,33 @@ subroutine FMDOUT (IYR)
   !     PRINT FLAG TO TRUE (DEFAULT IS FALSE)
 
   LPRINT = .true.
-  if (IYR .eq.0.and. IYR.eq. IFLALE) goto 45
-
-  if (IYR .lt. IFLALB .or. IYR .gt. IFLALE) LPRINT = .false.
-
-  45 continue
-
-  !     DO THIS AGAIN FOR THE DOWN WOOD VOLUME AND COVER REPORTS
-
   LPRINT2 = .true.
-  if (IYR .eq.0.and. IYR.eq. IDWRPE) goto 46
-
-  if (IYR .lt. IDWRPB .or. IYR .gt. IDWRPE) LPRINT2 = .false.
-
-  46 continue
-
   LPRINT3 = .true.
-  if (IYR .eq.0.and. IYR.eq. IDWCVE) goto 47
+  if (LMETRICVAR) then
+     if (IFLALB .gt.0) LPRINT = .false.
+     if (IDWRPB .gt.0) LPRINT2 = .false.
+     if (IDWCVB .gt.0) LPRINT3 = .false.
+  else
+     if (IYR .eq.0.and. IYR.eq. IFLALE) goto 45
 
-  if (IYR .lt. IDWCVB .or. IYR .gt. IDWCVE) LPRINT3 = .false.
+     if (IYR .lt. IFLALB .or. IYR .gt. IFLALE) LPRINT = .false.
 
-  47 continue
+     45 continue
+
+     !     DO THIS AGAIN FOR THE DOWN WOOD VOLUME AND COVER REPORTS
+
+     if (IYR .eq.0.and. IYR.eq. IDWRPE) goto 46
+
+     if (IYR .lt. IDWRPB .or. IYR .gt. IDWRPE) LPRINT2 = .false.
+
+     46 continue
+
+     if (IYR .eq.0.and. IYR.eq. IDWCVE) goto 47
+
+     if (IYR .lt. IDWCVB .or. IYR .gt. IDWCVE) LPRINT3 = .false.
+
+     47 continue
+  end if
 
   !     Zero the summation columns (index 1=3 and 4=5)
 
@@ -383,22 +398,34 @@ subroutine FMDOUT (IYR)
   !     CALL THE DBS MODULE TO OUTPUT FUEL DATA TO A DATABASE
 
   DBSKODE = 1
-  if (DEBUG) write(JOSTND,150)
-  150 format(' FMDOUT: DBSFUELS- TOTLIT,TOTDUF,SMALL2,LARGE2,',&
-       &'CWD(3,4,1,5),CWD(3,4,2,5),CWD(3,5,1,5),CWD(3,5,2,5),',&
-       &'LARGE12,FLIVE(1),FLIVE(2),TOTSUR,TOTSNG(1),TOTSNG(2),',&
-       &'TOTFOL,TOTLIV(1),TOTLIV(2),TOTSTD,TOTFUL,TOTCON,TONREM')
-  if (DEBUG) write(JOSTND,*) TOTLIT,TOTDUF,SMALL2,LARGE2,&
-       &CWD(3,4,1,5),CWD(3,4,2,5),CWD(3,5,1,5),CWD(3,5,2,5),&
-       &LARGE12,FLIVE(1),FLIVE(2),TOTSUR,TOTSNG(1),TOTSNG(2),&
-       &TOTFOL,TOTLIV(1),TOTLIV(2),TOTSTD,TOTFUL,TOTCON,TONREM
+  if (LMETRICVAR) then
+     CONV = TItoTM/ACRtoHA
+     call DBSFUELS(IYR,NPLT,TOTLIT*CONV,TOTDUF*CONV,SMALL2*CONV,&
+          &LARGE2*CONV,(CWD(3,4,1,5)+CWD(3,4,2,5))*CONV,&
+          &(CWD(3,5,1,5)+CWD(3,5,2,5))*CONV,&
+          &LARGE12*CONV,FLIVE(1)*CONV,FLIVE(2)*CONV,TOTSUR*CONV,&
+          &TOTSNG(1)*CONV,TOTSNG(2)*CONV,TOTFOL*CONV,&
+          &TOTLIV(1)*CONV,NINT(TOTLIV(2)*CONV),&
+          &NINT(TOTSTD*CONV),NINT(TOTFUL*CONV),NINT(TOTCON*CONV),&
+          &NINT(TONREM*CONV),DBSKODE)
+  else
+     if (DEBUG) write(JOSTND,150)
+     150 format(' FMDOUT: DBSFUELS- TOTLIT,TOTDUF,SMALL2,LARGE2,',&
+          &'CWD(3,4,1,5),CWD(3,4,2,5),CWD(3,5,1,5),CWD(3,5,2,5),',&
+          &'LARGE12,FLIVE(1),FLIVE(2),TOTSUR,TOTSNG(1),TOTSNG(2),',&
+          &'TOTFOL,TOTLIV(1),TOTLIV(2),TOTSTD,TOTFUL,TOTCON,TONREM')
+     if (DEBUG) write(JOSTND,*) TOTLIT,TOTDUF,SMALL2,LARGE2,&
+          &CWD(3,4,1,5),CWD(3,4,2,5),CWD(3,5,1,5),CWD(3,5,2,5),&
+          &LARGE12,FLIVE(1),FLIVE(2),TOTSUR,TOTSNG(1),TOTSNG(2),&
+          &TOTFOL,TOTLIV(1),TOTLIV(2),TOTSTD,TOTFUL,TOTCON,TONREM
 
-  call DBSFUELS(IYR,NPLT,TOTLIT,TOTDUF,SMALL2,LARGE2,&
-       &(CWD(3,4,1,5)+CWD(3,4,2,5)),(CWD(3,5,1,5)+CWD(3,5,2,5)),&
-       &LARGE12,FLIVE(1),FLIVE(2),TOTSUR,&
-       &TOTSNG(1),TOTSNG(2),TOTFOL,TOTLIV(1),NINT(TOTLIV(2)),&
-       &NINT(TOTSTD),NINT(TOTFUL),NINT(TOTCON),NINT(TONREM),DBSKODE)
-  if (DEBUG) write(JOSTND,*) ' FMDOUT: AFTER DBSFUELS'
+     call DBSFUELS(IYR,NPLT,TOTLIT,TOTDUF,SMALL2,LARGE2,&
+          &(CWD(3,4,1,5)+CWD(3,4,2,5)),(CWD(3,5,1,5)+CWD(3,5,2,5)),&
+          &LARGE12,FLIVE(1),FLIVE(2),TOTSUR,&
+          &TOTSNG(1),TOTSNG(2),TOTFOL,TOTLIV(1),NINT(TOTLIV(2)),&
+          &NINT(TOTSTD),NINT(TOTFUL),NINT(TOTCON),NINT(TONREM),DBSKODE)
+     if (DEBUG) write(JOSTND,*) ' FMDOUT: AFTER DBSFUELS'
+  end if
   if (DBSKODE.eq.0) goto 750
 
   !     IF HEADER REQUESTED AND THIS IS THE FIRST OPPORTUNITY TO PRINT
@@ -413,11 +440,20 @@ subroutine FMDOUT (IYR)
      write (JROUT,44) IDFLAL,NPLT,MGMID
      write(JROUT,700) IDFLAL
      write(JROUT,703) IDFLAL
-     write(JROUT,704) IDFLAL
+     if (LMETRICVAR) then
+        write(JROUT,9704) IDFLAL
+     else
+        write(JROUT,704) IDFLAL
+     end if
      write(JROUT,705) IDFLAL
      write(JROUT,710) IDFLAL
-     write(JROUT,715) IDFLAL
-     write(JROUT,720) IDFLAL
+     if (LMETRICVAR) then
+        write(JROUT,9715) IDFLAL
+        write(JROUT,9720) IDFLAL
+     else
+        write(JROUT,715) IDFLAL
+        write(JROUT,720) IDFLAL
+     end if
      write(JROUT,700) IDFLAL
      699 format(2(/1X,I5))
      700 format(1X,I5,1X,122('-'))
@@ -437,15 +473,35 @@ subroutine FMDOUT (IYR)
      720 format(1X,I5,1X,'YEAR LITT.  DUFF  0-3"   >3"  3-6" ',&
           &'6-12"  >12"  HERB SHRUB TOTAL   0-3"   >3"   FOL  0-3" ',&
           &'  >3" TOTAL BIOMASS CONS REMOVED')
+     9704 format(1X,I5,22X,'SURFACE FUEL (TONNES/HA) ',&
+          &26X,'STANDING WOOD (TONNES/HA)')
+     9715 format(1X,I5,1X,5X,39('-'),&
+          &'--  ----------  SURF  -----------   ---------------',&
+          &'        TOTAL TOTAL BIOMASS')
+     9720 format(1X,I5,1X,'YEAR LITT.  DUFF  <7.6  >7.6 -15.2',&
+          &' -30.5   >30  HERB SHRUB TOTAL   <7.6  >7.6   FOL  <7.6',&
+          &'  >7.6 TOTAL BIOMASS CONS REMOVED')
   end if
 
-  write(JROUT,730) IDFLAL,IYR,TOTLIT,TOTDUF,&
-       &SMALL2,LARGE2,&
-       &(CWD(3,4,1,5)+CWD(3,4,2,5)),(CWD(3,5,1,5)+CWD(3,5,2,5)),&
-       &LARGE12,(FLIVE(I),I = 1,2),TOTSUR,&
-       &TOTSNG(1),TOTSNG(2),TOTFOL,TOTLIV(1),NINT(TOTLIV(2)),&
-       &NINT(TOTSTD),NINT(TOTFUL),NINT(TOTCON),&
-       &NINT(TONREM)
+  if (LMETRICVAR) then
+     write(JROUT,730) IDFLAL,IYR,TOTLIT*CONV,TOTDUF*CONV,&
+          &SMALL2*CONV,LARGE2*CONV,&
+          &(CWD(3,4,1,5)+CWD(3,4,2,5))*CONV,&
+          &(CWD(3,5,1,5)+CWD(3,5,2,5))*CONV,&
+          &LARGE12*CONV,(FLIVE(I)*CONV,I = 1,2),TOTSUR*CONV,&
+          &TOTSNG(1)*CONV,TOTSNG(2)*CONV,TOTFOL*CONV,&
+          &TOTLIV(1)*CONV,NINT(TOTLIV(2)*CONV),&
+          &NINT(TOTSTD*CONV),NINT(TOTFUL*CONV),NINT(TOTCON*CONV),&
+          &NINT(TONREM*CONV)
+  else
+     write(JROUT,730) IDFLAL,IYR,TOTLIT,TOTDUF,&
+          &SMALL2,LARGE2,&
+          &(CWD(3,4,1,5)+CWD(3,4,2,5)),(CWD(3,5,1,5)+CWD(3,5,2,5)),&
+          &LARGE12,(FLIVE(I),I = 1,2),TOTSUR,&
+          &TOTSNG(1),TOTSNG(2),TOTFOL,TOTLIV(1),NINT(TOTLIV(2)),&
+          &NINT(TOTSTD),NINT(TOTFUL),NINT(TOTCON),&
+          &NINT(TONREM)
+  end if
 
   730 format(1X,I5,1X,I4,1X,F5.2,1X,6(F5.1,1X),2(F5.2,1X),&
        &F5.1,1X,F6.2,1X,3(F5.1,1X),I5,1X,I5,1X,I5,I6,1X,I6)
@@ -477,6 +533,14 @@ subroutine FMDOUT (IYR)
   V1(14) = CWDVOL(3,8,1,5)
   V1(15) = CWDVOL(3,9,1,5)
   V1(16) = CWDVOL(3,10,1,5)
+  if (LMETRICVAR) then
+     CONV2 = FT3pACRtoM3pHA
+     V1(1) = (CWDVOL(3,1,2,5)+CWDVOL(3,2,2,5)+CWDVOL(3,3,2,5))*CONV2
+     V1(9) = (CWDVOL(3,1,1,5)+CWDVOL(3,2,1,5)+CWDVOL(3,3,1,5))*CONV2
+     do I = 2,16
+        if (I.ne.9) V1(I) = V1(I)*CONV2
+     end do
+  end if
 
   call DBSFMDWVOL(IYR,NPLT,V1,16,DBSKODE)
   if (DBSKODE.eq.0) goto 850
@@ -492,10 +556,18 @@ subroutine FMDOUT (IYR)
      write(JROUT,802) IDDWRP
      write (JROUT,44) IDDWRP,NPLT,MGMID
      write(JROUT,800) IDDWRP
-     write(JROUT,803) IDDWRP
+     if (LMETRICVAR) then
+        write(JROUT,9803) IDDWRP
+     else
+        write(JROUT,803) IDDWRP
+     end if
      write(JROUT,804) IDDWRP
      write(JROUT,805) IDDWRP
-     write(JROUT,820) IDDWRP
+     if (LMETRICVAR) then
+        write(JROUT,9820) IDDWRP
+     else
+        write(JROUT,820) IDDWRP
+     end if
      write(JROUT,800) IDDWRP
      799 format(2(/1X,I5))
      800 format(1X,I5,1X,134('-'))
@@ -510,6 +582,11 @@ subroutine FMDOUT (IYR)
      820 format(1X,I5,1X,'YEAR    0-3    3-6   6-12   12-20   20-35',&
           &'   35-50     >=50      TOT       0-3    3-6   6-12   12-20',&
           &'   20-35   35-50     >=50      TOT ')
+     9803 format(1X,I5,1X,30X,'ESTIMATED DOWN WOOD VOLUME (M3/HA)',&
+          &' BY SIZE CLASS (CM)')
+     9820 format(1X,I5,1X,'YEAR    0-8   8-15  15-30   30-51   51-89',&
+          &'  89-127    >=127      TOT       0-8   8-15  15-30   30-51',&
+          &'   51-89  89-127    >=127      TOT ')
   end if
 
   write(JROUT,830) IDDWRP,IYR,(NINT(V1(I)),I = 1,16)
@@ -555,10 +632,18 @@ subroutine FMDOUT (IYR)
      write(JROUT,902) IDDWCV
      write (JROUT,44) IDDWCV,NPLT,MGMID
      write(JROUT,900) IDDWCV
-     write(JROUT,903) IDDWCV
+     if (LMETRICVAR) then
+        write(JROUT,9903) IDDWCV
+     else
+        write(JROUT,903) IDDWCV
+     end if
      write(JROUT,904) IDDWCV
      write(JROUT,905) IDDWCV
-     write(JROUT,920) IDDWCV
+     if (LMETRICVAR) then
+        write(JROUT,9920) IDDWCV
+     else
+        write(JROUT,920) IDDWCV
+     end if
      write(JROUT,900) IDDWCV
      899 format(2(/1X,I5))
      900 format(1X,I5,1X,122('-'))
@@ -573,6 +658,11 @@ subroutine FMDOUT (IYR)
      920 format(1X,I5,1X,'YEAR    3-6    6-12   12-20   20-35   35-50',&
           &'    >=50     TOT       3-6    6-12   12-20   20-35   35-50',&
           &'    >=50     TOT ')
+     9903 format(1X,I5,1X,30X,'ESTIMATED DOWN WOOD PERCENT COVER (%)',&
+          &' BY SIZE CLASS (CM)')
+     9920 format(1X,I5,1X,'YEAR   8-15   15-30   30-51   51-89  89-127',&
+          &'   >=127     TOT      8-15   15-30   30-51   51-89  89-127',&
+          &'   >=127     TOT ')
   end if
 
   write(JROUT,930) IDDWCV,IYR,(V2(I),I = 1,14)
