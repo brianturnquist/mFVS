@@ -8,9 +8,9 @@ with NVEL submodule `a73e697e220ffd0f792aa7ac10d84c911edb7ad7`.
 This checklist stores the redundancy and dormant-code findings before cleanup.
 P01–P03, D01–D15, C01–C19, B01–B03 and the unbuilt-directory removal (R01–R08, R10–R10d)
 are complete. Six stub tasks, the metric audits M01–M21 (including M08b/M08c)
-and the implementation tasks M01a–M07a, M08a and M09a–M14a are also complete
-(M06a is included in M04a);
-the checklist now records 124 completed and 25 pending items, including R09.
+and the implementation tasks M01a–M07a, M08a, M08d/M08e and M09a–M16a
+are also complete (M06a is included in M04a). The checklist now records
+128 completed and 21 pending items, including R09.
 BC/ON simulation parity remains blocked by the existing bugs
 in [FOUND_BUGS.md](FOUND_BUGS.md).
 
@@ -548,9 +548,11 @@ not whole-routine equivalence or authority to retire these seven copies.
   The consumer sends fourteen unconverted percent-cover values, hard then
   soft, to DBSFMDWCOV before optional text; its database-only return, IDCPAS
   header counter and metric size-class labels belong to the consumer.
-- [ ] **M08d — Share the DWDCVOUT request block (implementation).** Add
-  a separate helper in `fire/base/` for option 52 only. Preserve rejection,
-  GETID count, echo and LMETRICVAR-selected windows; leave FMDOUT unchanged.
+- [x] **M08d — Share the DWDCVOUT request block (implementation).**
+  Completed 15 November 2026 in `fire/base/fmdwcvreq_mod.f90`, called by
+  both FMIN readers for option 52 only. Landscape rejection, GETID count,
+  optional echo and LMETRICVAR-selected windows are preserved. FMDOUT and
+  its metric sentinel contract are unchanged; bug 24 remains unfixed.
 - [x] **M08c — FMIN: FUELOUT handler (audit).** Completed independently
   15 November 2026: option 15, labels 1500–1515, is statement-equivalent
   in both readers. Landscape rejection precedes all updates; GETID is called
@@ -561,10 +563,12 @@ not whole-routine equivalence or authority to retire these seven copies.
   admitted, metric fuel loads use `TItoTM/ACRtoHA`, including conversion
   before NINT; database-only output bypasses text and IFAPAS header updates.
   Sharing the request must retain the existing suppression, not repair it.
-- [ ] **M08e — Share the FUELOUT request block (implementation).** Share
-  option 15 alone in `fire/base/`, preserving the identical assignments,
-  rejection, allocation and echo. Correct bug 24 separately with paired
-  producer/consumer tests. Other FMIN handlers still need bounded audits.
+- [x] **M08e — Share the FUELOUT request block (implementation).**
+  Completed independently 15 November 2026 in `fire/base/fmfuelreq_mod.f90`.
+  Both readers call it for option 15 only, preserving rejection, allocation,
+  echo and identical year assignments. Positive metric begin years still
+  suppress the report (bug 24); no producer/consumer correction was mixed
+  into this extraction. Other FMIN handlers still need bounded audits.
 - [x] **M09 — FMSOUT: detailed snag record (audit).** Compared the
   post-accumulation conversion and FORMAT 300 record with `fire/base/fmsout.f90`.
   Species/age/diameter-class accumulation, weighted averages, record order,
@@ -753,9 +757,12 @@ and baseline readers. Temporary drivers, builds and outputs were discarded.
   ONTREM(7) gate both records identically; blank lines remain in the caller.
   Volume, accretion, current-stand, binary sample-tree and summary records
   are outside this audit.
-- [ ] **M15a — Share the FORMAT 9004 writer (implementation).** Add one
-  `vbase/` helper for the removal/residual record and its unit layer. Keep
-  the existing gates and all other DISPLY records in their callers.
+- [x] **M15a — Share the FORMAT 9004 writer (implementation).** Completed
+  15 November 2026 in `vbase/disptrees_mod.f90`, called for removal and
+  residual records by both DISPLY copies. The helper converts only printed
+  values, retains the format and species order, and leaves input arrays in
+  native units. Gates, blank lines and all other DISPLY records stay in
+  their callers, including the existing summary-array stride (bug 30).
 - [x] **M16 — FVSSTD: normal-precision live-tree record (audit).** Completed
   15 November 2026: compared the first FORMAT 21 write with `vbase/fvsstd.f90`.
   Field order, descriptors and the `P/DP < 9999.9995` selection agree.
@@ -777,10 +784,40 @@ and baseline readers. Temporary drivers, builds and outputs were discarded.
   OPFIND/OPGET selection, tree order, PDBH/PHT resets and volume preparation
   remain caller responsibilities. Header, FORMAT 20 and dead-tree output
   need separate audits before a whole FVSSTD merge.
-- [ ] **M16a — Share the first FORMAT 21 writer (implementation).** Extract
-  only the normal-precision live-tree serialization into `vbase/`, with
-  explicit unit/volume selection. Preserve ON's producer scaling, original
-  arithmetic and caller side effects; do not migrate other record types.
+- [x] **M16a — Share the first FORMAT 21 writer (implementation).** Completed
+  15 November 2026 in `vbase/fvsstdrec_mod.f90`. Only the first live-tree
+  write calls the helper. Imperial callers retain their four selected
+  current/old cubic-volume values; metric callers explicitly pass
+  CFV/WK1/PTOCFV/PMRCFV. LMETRICVAR selects the original conversions and
+  integer-height arithmetic, retaining ON's compensating VOLS scaling.
+  Scheduling, density-format selection, tree order and PDBH/PHT resets
+  remain in FVSSTD. Header, FORMAT 20 and dead-tree writes are unchanged;
+  FORMAT 21 remains in the callers because the dead-tree writer uses it.
+
+M08d/M08e/M15a/M16a verification at immediate baseline `7691150f`:
+all 24 variants select all four canonical helpers (96 manifest additions)
+and build successfully. The whole original-reference suite ends with
+`FAIL 23/24 variants; working tree 7691150f+changes vs original c2105365; failed: bc`.
+The BC difference is the existing M12a keyword-buffer repair, not a new
+extraction difference. The complete immediate-baseline comparison ends with
+`PASS 24/24 variants; working tree 7691150f+changes vs immediate baseline 7691150f`.
+All generated files, SQLite schemas/typed rows and restart files use the
+existing exact comparator and its documented metadata/undefined-value rules.
+ON still matches its original keyword-input failure; neither Canadian
+variant gains pristine-original simulation acceptance from these checks.
+
+Focused original-F77/immediate-baseline/candidate comparisons cover 48 cases
+per request helper per variant, eight removal/residual records per variant,
+and 40 normal-precision live-tree records per variant. They check landscape
+rejection with echo on/off, existing/new IDs, negative/zero/positive years,
+unchanged native arrays, first/last species, imperial eastern volume choices,
+ON default/alternate volume scaling, near-threshold densities and integer
+height rounding. Each of four temporary helper mutations is detected.
+Expanding the new calls back to their baseline blocks reproduces every
+remaining caller statement, including gates and the other record types.
+Source-list checks and `git diff --check` pass. Common blocks, scientific
+equations, FMDOUT, Ontario VOLS, reference outputs and both pinned NVEL
+revisions are unchanged. Temporary drivers, builds and results were discarded.
 - [x] **M17 — INITRE: buffer contract and DESIGN family (audit).** Completed
   15 November 2026: only ON selects `metric/vbase/initre.f90`; its
   ARRAY/LNOTBK/KARD still have seven elements, while KEYRDR/KEYDMP access

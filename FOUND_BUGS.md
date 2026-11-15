@@ -573,11 +573,12 @@ element for the unused arguments.
 
 **Variants:** BC, ON
 **Location:** the metric branch in `fire/base/fmdout.f90` with
-`metric/fire/base/fmin.f90:800`
+`fire/base/fmfuelreq_mod.f90`, called by option 15 in both FMIN readers.
 **Status:** found 15 November 2026 during the M07 audit by reading the
 source; present in `c2105365`. Unfixed. M07a preserves this rule in the
-shared routine; direct drivers exercise it, while the BC/ON simulation
-decks still cannot read keywords (bug 5).
+shared routine; direct drivers exercise it, while Canadian integrated
+simulation acceptance remains limited by bug 5. M08d/M08e subsequently
+extract the DWDCVOUT/FUELOUT requests without changing these contracts.
 
 The metric branch of FMDOUT decides whether to produce each report from the
 begin variable alone: the report is skipped when it is greater than zero.

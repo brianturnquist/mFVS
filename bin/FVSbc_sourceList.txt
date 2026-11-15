@@ -88,7 +88,9 @@
 ../vie/cwcalc.f90
 ../vws/r5crwd.f90
 ../metric/vbase/disply.f90
+../vbase/disptrees_mod.f90
 ../metric/vbase/fvsstd.f90
+../vbase/fvsstdrec_mod.f90
 ../vbase/gheads.f90
 ../vbase/prtrls.f90
 ../vbase/sumhed.f90
@@ -437,6 +439,8 @@
 ../fire/vbase/fmsoilheat.f90
 ../fire/base/fmdout.f90
 ../fire/base/fmdwdreq_mod.f90
+../fire/base/fmdwcvreq_mod.f90
+../fire/base/fmfuelreq_mod.f90
 ../metric/fire/base/fmin.f90
 ../fire/base/fmsrecord_mod.f90
 ../metric/fire/base/fmsout.f90

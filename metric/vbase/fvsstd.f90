@@ -3,6 +3,7 @@
 !===========================!
 ! METRIC-VBASE $Id$
 subroutine FVSSTD (IWHO)
+  use FVSSTDREC_MOD, only: FVSSTDREC
   implicit none
 
   !     CREATE A FILE FOR FVSTAND POST-PROCESSOR INPUT.
@@ -246,42 +247,8 @@ subroutine FVSSTD (IWHO)
            PHT(I) = 0.
 
            if (P.lt.9999.9995.and. DP.lt.9999.9995) then
-              write(KOLIST,21)&
-                   &TID,&
-                   &I,&
-                   &NSP(ISP(I),1)(1:2),&
-                   &ISP(I),&
-                   &IMC(I),&
-                   &ISPECL(I),&
-                   &ITRE(I),&
-                   &P/ACRtoHA,&
-                   &DP/ACRtoHA,&
-                   &DBH(I)*INtoCM,&
-                   &DGI*INtoCM,&
-                   &HT(I)*FTtoM,&
-                   &HTG(I)*FTtoM,&
-                   &ICR(I),&
-                   &CW*FTtoM,&
-                   &IDMR,&
-                   &PCT(I),&
-                   &IPTBAL,&
-                   &CFV(I)*FT3toM3,&
-                   &WK1(I)*FT3toM3,&
-                   &BFV(I)*FT3toM3,&
-                   &ICDF,&
-                   &IBDF,&
-                   &NINT(FLOAT(ITRUNC(I)+5)*.01*FTtoM),&
-                   &PDBHI*INtoCM,&
-                   &PHTI*FTtoM,&
-                   &PTOCFV(I)*FT3toM3,&
-                   &PMRCFV(I)*FT3toM3,&
-                   &PMRBFV(I)*FT3toM3,&
-                   &NCFDEF(I),&
-                   &NBFDEF(I),&
-                   &YRDLOS(I),&
-                   &NINT(FLOAT(NORMHT(I)+5)*.01*FTtoM),&
-                   &ABIRTH(I),&
-                   &IPVEC(ITRE(I))
+              call FVSSTDREC(I,TID,P,DP,DGI,CW,IDMR,IPTBAL,ICDF,IBDF,&
+                   &PDBHI,PHTI,CFV(I),WK1(I),PTOCFV(I),PMRCFV(I))
               21 format(1X,A8,1X,I4,1X,A2,I3,2(1X,I2),1X,I3,1X,F8.3,1X,F8.3,&
                    &1X,F5.1,1X,F5.2,1X,F5.1,1X,F4.1,1X,I2,1X,F4.1,1X,I2,&
                    &1X,F6.2,1X,I5,1X,F6.1,1X,F6.1,1X,F7.1,1X,I2,1X,I2,&

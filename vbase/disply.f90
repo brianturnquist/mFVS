@@ -3,6 +3,7 @@
 !====================!
 ! VBASE $Id$
 subroutine DISPLY
+  use DISPTREES_MOD, only: DISPTREES
   implicit none
 
   !  **DISPLY** PRINTS STAND AND TREE STATISTICS AT THE BEGINNING
@@ -82,9 +83,7 @@ subroutine DISPLY
   if (ONTREM(7).le.0.0) go to 20
   write(JOSTND,9003)
   9003 format(/)
-  write(JOSTND,9004) AT1,ONTREM,(OSPTT(I),IOSPTT(I),I = 1,4)
-  9004 format(6X,A9,3X,5F7.1,F8.1,F9.0,' TREES   ',&
-       &3(F5.0,'% ',A3,','),F5.0,'% ',A3)
+  call DISPTREES(JOSTND,AT1,ONTREM,OSPTT,IOSPTT)
 
   write(JOSTND,9005) AT2,STD(1),OCVREM,(OSPTV(I),IOSPTV(I),I = 1,4),&
        &STD(2),OMCREM,(OSPMR(I),IOSPMR(I),I = 1,4),&
@@ -100,7 +99,7 @@ subroutine DISPLY
        &8X,A10,5F7.1,F8.1,F9.0,' BDFT    ',&
        &3(F5.0,'% ',A3,','),F5.0,'% ',A3)
   write(JOSTND,9003)
-  write(JOSTND,9004) AT3,ONTRES,(OSPRT(I),IOSPRT(I),I = 1,4)
+  call DISPTREES(JOSTND,AT3,ONTRES,OSPRT,IOSPRT)
 
   !  WRITE ACCRETION AND MORTALITY STATISTICS.  BYPASSED IF LSTART
   !  IS TRUE. IF MORTALITY FUNCTIONS HAVE BEEN MODIFIED BY CERTAIN

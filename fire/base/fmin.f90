@@ -3,6 +3,8 @@
 !======================!
 subroutine FMIN (ICALL,NSP,LKECHO)
   use FMDWDREQ_MOD, only: FMDWDREQ
+  use FMDWCVREQ_MOD, only: FMDWCVREQ
+  use FMFUELREQ_MOD, only: FMFUELREQ
   implicit none
 
   ! FIRE-BASE
@@ -787,20 +789,7 @@ subroutine FMIN (ICALL,NSP,LKECHO)
   1500 continue
   !                        OPTION NUMBER 15 -- FUELOUT
 
-  if (ICALL .eq.2) then
-     write(JOSTND,1504) KEYWRD
-     1504 format(/A8,'   ***KEYWORD IS A STAND-LEVEL KEYWORD ONLY',&
-          &' AND CANNOT BE INCLUDED WITH THE LANDSCAPE-LEVEL KEYWORDS')
-     goto 10
-  end if
-
-  if (IDFLAL .eq.0) call GETID (IDFLAL)
-
-  IFLALB = IY(1)
-  IFLALE = IY(1) + 999
-
-  if (LKECHO)write(JOSTND,1515) KEYWRD
-  1515 format(/A8,'   THE ALL FUELS REPORT WILL BE PRINTED.')
+  call FMFUELREQ(ICALL,KEYWRD,LKECHO)
 
   goto 10
   1600 continue
@@ -2432,20 +2421,7 @@ subroutine FMIN (ICALL,NSP,LKECHO)
   5200 continue
   !                        OPTION NUMBER 52 -- DWDCVOUT
 
-  if (ICALL .eq.2) then
-     write(JOSTND,5204) KEYWRD
-     5204 format(/A8,'   ***KEYWORD IS A STAND-LEVEL KEYWORD ONLY',&
-          &' AND CANNOT BE INCLUDED WITH THE LANDSCAPE-LEVEL KEYWORDS')
-     goto 10
-  end if
-
-  if (IDDWCV .eq.0) call GETID (IDDWCV)
-
-  IDWCVB = IY(1)
-  IDWCVE = IY(1) + 999
-
-  if (LKECHO)write(JOSTND,5215) KEYWRD
-  5215 format(/A8,'   THE DOWN WOOD COVER REPORT WILL BE PRINTED.')
+  call FMDWCVREQ(ICALL,KEYWRD,LKECHO)
 
   goto 10
 
