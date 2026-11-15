@@ -25,6 +25,7 @@
 ../common/ESWSBW.f90
 ../common/FVSSTDCM.f90
 ../common/GGCOM.f90
+../common/ORGANON.f90
 ../common/GLBLCNTL.f90
 ../common/HTCAL.f90
 ../common/HVDNCM.f90
@@ -57,7 +58,7 @@
 ../canada/bc/cfvol.f90
 ../canada/bc/cratet.f90
 ../canada/bc/crown.f90
-../canada/bc/dgdriv.f90
+../vbase/dgdriv.f90
 ../canada/bc/dgf.f90
 ../canada/bc/dubscr.f90
 ../canada/bc/forkod.f90

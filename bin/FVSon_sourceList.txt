@@ -24,6 +24,7 @@
 ../common/ESWSBW.f90
 ../common/FVSSTDCM.f90
 ../common/GGCOM.f90
+../common/ORGANON.f90
 ../common/GLBLCNTL.f90
 ../common/HTCAL.f90
 ../common/HVDNCM.f90
@@ -58,7 +59,7 @@
 ../canada/on/cutstk.f90
 ../canada/on/cwcalc.f90
 ../canada/on/dgbnd.f90
-../canada/on/dgdriv.f90
+../vbase/dgdriv.f90
 ../canada/on/dgf.f90
 ../canada/on/dunn.f90
 ../canada/on/findag.f90

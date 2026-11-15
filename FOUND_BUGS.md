@@ -1,6 +1,6 @@
 # Found Bugs
 
-The five confirmed model defects below were found during the 2026-11 consolidation of duplicated routines. Every one is already present in the pre-modernization source (commit `c2105365`), so none was introduced by the conversion to free-form Fortran or by the consolidation. They are **deliberately left unfixed** for now so that model outputs stay identical to `c2105365` while modernization is finished. Each fix below will change outputs for the variants listed, so each should be made as its own commit with a before/after comparison. Sections 6–8 separately record an unconfirmed historical numerical concern, a historical documentation discrepancy, and ESADDT data-flow concerns requiring follow-up. Section 9 records a reproduced SQLite resource defect with scientific-output impact still unmeasured. Section 10 records a restart-file difference that modernization itself introduced, now corrected. Sections 11 and 12 record two original defects that read undefined values and so make restart files vary between runs. Sections 13 and 14 record an invalid stub diagnostic and a fuel-model fallback defect found during the safe reapplication; neither was fixed.
+The five confirmed model defects below were found during the 2026-11 consolidation of duplicated routines. Every one is already present in the pre-modernization source (commit `c2105365`), so none was introduced by the conversion to free-form Fortran or by the consolidation. They are **deliberately left unfixed** for now so that model outputs stay identical to `c2105365` while modernization is finished. Each fix below will change outputs for the variants listed, so each should be made as its own commit with a before/after comparison. Sections 6–8 separately record an unconfirmed historical numerical concern, a historical documentation discrepancy, and ESADDT data-flow concerns requiring follow-up. Section 9 records a reproduced SQLite resource defect with scientific-output impact still unmeasured. Section 10 records a restart-file difference that modernization itself introduced, now corrected. Sections 11 and 12 record two original defects that read undefined values and so make restart files vary between runs. Sections 13 and 14 record an invalid stub diagnostic and a fuel-model fallback defect found during the safe reapplication; neither was fixed. Sections 15–18 record DGDRIV tripling/bounds defects and undefined local reads found during L05; all were preserved.
 
 File and line references are to the tree at commit `b5657da3` plus the uncommitted `VARIANTCD` change. Bugs 1 and 2 have the same root cause: FVS calls external procedures with no explicit interface, so gfortran cannot check argument lists across files. Moving these routines into modules would let the compiler catch this class of bug.
 
@@ -267,3 +267,69 @@ The failsafe sets `FMOD(1)=8`, its weight to 1 and the warning flag when no domi
 A temporary fixture compiled the original F77 tail without changing its statements and compared it with FMMODSEL. Fourteen cases, including ordinary weights, truncation, the 1e-6 threshold and zero weights in both dynamic/static modes, matched exactly. With all weights zero, both return FMD=-1; FMOD(1) is 8 in dynamic mode and -1 in static mode, with one warning request. This isolates the fallback behavior and does not establish a reachable valid-input simulation failure.
 
 A later investigation should reproduce the fallback from a full model run before assigning impact. Any correction should set the dominant result consistently with the intended fallback and be verified separately from F77-preserving consolidation.
+
+---
+
+## 15. DGDRIV tripling limits use the parent record instead of the triple
+
+**Variants:** CI and UT (test and assignment); EM and IE (test)
+**Location:** the `ITRIPU`/`ITRIPL` growth-limit blocks in `vbase/dgdriv.f90`
+
+The original `c2105365` copies already have these indices. CI (species 17,
+19) and UT (17–19, 22) calculate `GDIF = DG(I)-WKI` and write `DG(I)` after
+calculating a triple's growth. EM (11, 13–16, 19) and IE (19, 22) also test
+`DG(I)` but write the triple. CR, from which these blocks were copied, tests
+and writes the triple itself. Consequently the documented one-third limit
+can be bypassed: with `WKI=1`, parent `DG(I)=1` and triple growth 2, the test
+is `0 > 0.33` and the triple remains 2 rather than being limited to 1.33.
+This is a source-level/synthetic confirmation, not a measured regression-suite
+impact. L05 preserves all original indices. A separate model fix should use
+the relevant triple in both the test and assignment, with affected-species
+and tripling regressions.
+
+---
+
+## 16. WC/PN DGDRIV overwrites the bounds on a dubbed diameter increment
+
+**Variants:** WC, PN
+**Location:** missing-increment branch after label 215 in `vbase/dgdriv.f90`
+
+The original WC routine, also used by PN, first computes an unscaled increment,
+limits it to inside-bark DBH and calls `DGBND`. It then overwrites `DG(I)` with
+`SQRT(D*D+EXP((WK2(I)+OLDRN(I)))*SCALE)-D`, without applying either bound again.
+The same sequence is present in `c2105365:wc/dgdriv.f`. For example, `D=10`,
+`EXP(WK2+OLDRN)=100`, `SCALE=4` gives an initial increment of about 4.14 but
+an overwrite of about 12.36, exceeding even `D`. This confirms a possible
+bound violation synthetically; its footprint in real stands is unmeasured.
+L05 preserves the overwrite. A separate fix should establish the intended
+scaling order and then apply the appropriate bounds to the final value.
+
+---
+
+## 17. BC DGDRIV can read LTEM before assigning it
+
+**Variant:** BC
+**Location:** calibration label 193 in `vbase/dgdriv.f90`
+
+`LTEM(ISPC)` is set only after the empirical-Bayes correction, but the
+insufficient-sample path reaches label 193 without that assignment and reads
+it to set `CTEM(IREFI)`. This path and the automatic local declaration are
+present in `c2105365:canada/bc/dgdriv.f`. `CTEM` is never subsequently read,
+so no scientific-output impact has been demonstrated. BC's supplied test
+stops at keyword input (bug 5). L05 retains the assignments and read; a
+separate cleanup should initialize the flag before all paths to its use,
+or establish that the unused marker can be removed.
+
+---
+
+## 18. OC/OP DGDRIV prints an unassigned ORGANON status flag
+
+**Variants:** OC, OP
+**Location:** ORGANON error diagnostic, FORMAT 125, in `vbase/dgdriv.f90`
+
+When `IERROR=1` and debugging is enabled, the routine prints local logical
+`STATUS`, which is neither assigned nor passed to `EXECUTE`. Both original
+`c2105365` routines have the same declaration and read. This is a diagnostic
+reliability defect; no model-output effect has been established. L05 retains
+it. A separate change should identify the intended status value or remove
+that diagnostic field, with an ORGANON error-path test.

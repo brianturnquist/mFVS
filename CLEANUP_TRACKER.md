@@ -627,8 +627,9 @@ do not consolidate the whole family in one run.
   calculation block; record coefficients and state dependencies.
 - [ ] **L04 — DGF (24 files).** Begin with CA/OC and one species/equation
   group. Do not infer equivalence from matching routine names.
-- [ ] **L05 — DGDRIV (22 files).** Begin with KT/NC and one calibration
-  branch. Their `LDGCAL` control flow differs; preserve it.
+- [x] **L05 — DGDRIV (22 files).** Consolidated in `vbase/dgdriv.f90` for
+  all 24 variants; retained tables, calibration, ORGANON and output differences.
+  Original-F77 parity: PASS 24/24; BC/ON additionally checked by statement diff.
 - [ ] **L06 — CRATET (23 files).** After the separate CS/NE task C09, begin
   a TT/UT comparison of one calculation group. Record numerical and diagnostic
   differences before proposing extraction.
