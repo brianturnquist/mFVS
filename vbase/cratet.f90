@@ -22,6 +22,12 @@ subroutine CRATET
   !    8)  PRINT A TABLE DESCRIBING CONTROL PARAMETERS AND INPUT
   !        VARIABLES.
 
+  !  CS/NE SHARE THE ORIGINAL INVENTORY-EQUATION CALIBRATION PATH.
+  !  TT/UT ALSO CONVERT SITE INDEX TO AGE 50 AND USE SPECIES-SPECIFIC
+  !  HEIGHT EQUATIONS. CONSTANT SPECIES INDICES RETAIN THEIR NATIVE ORDERS:
+  !  TT BIRCH/MAHOGANY/OTHER = 13/16/17; UT = 21/20/23.
+  !  LTTUT KEEPS OPTIONAL CALLS OUT OF THE CS/NE EXECUTABLES.
+
   ! Common blocks
   include 'PRGPRM.f90'
   include 'ARRAYS.f90'
@@ -31,6 +37,7 @@ subroutine CRATET
   include 'OUTCOM.f90'
   include 'HTCAL.f90'
   include 'VARCOM.f90'
+  include 'GGCOM.f90'
 
   !  INTERNAL VARIABLES.
 
@@ -42,12 +49,50 @@ subroutine CRATET
 
   ! Variables
   logical :: DEBUG,MISSCR,TKILL
+  logical, parameter :: LTTUT = VARIANTCD.eq.'TT'.or.VARIANTCD.eq.'UT'
+  integer, parameter :: JOTHER50 = merge(17,23,VARIANTCD.eq.'TT')
+  integer, parameter :: JBIRCH = merge(13,21,VARIANTCD.eq.'TT')
+  integer, parameter :: JMAHOG = merge(16,20,VARIANTCD.eq.'TT')
   character(len=4) :: UNDER
   integer :: I,J,II,ISPC,I1,I2,I3,NH,K1,K2,K3,K4,IS,JJ,IM,IMR,IPTR
   integer :: KNT2(MAXSP),KNT(MAXSP)
   real    :: SPCNT(MAXSP,3)
   real    :: D2,SITAGE,SITHT,AGMAX,HTMAX,HTMAX2
   real    :: Q,SUMX,H,D,BX,XX,YY,XN,HS,AX
+  integer :: IDM1
+  real    :: D1,P2,P3,P4,YOUNG,OLD,TEMCCF,P,DM1,CW,CCFT,SI
+
+  ! SPECIES ORDER FOR TETONS VARIANT:
+
+  !  1=WB,  2=LM,  3=DF,  4=PM,  5=BS,  6=AS,  7=LP,  8=ES,  9=AF, 10=PP,
+  ! 11=UJ, 12=RM, 13=BI, 14=MM, 15=NC, 16=MC, 17=OS, 18=OH
+
+  ! VARIANT EXPANSION:
+  ! BS USES ES EQUATIONS FROM TT
+  ! PM USES PI (COMMON PINYON) EQUATIONS FROM UT
+  ! PP USES PP EQUATIONS FROM CI
+  ! UJ AND RM USE WJ (WESTERN JUNIPER) EQUATIONS FROM UT
+  ! BI USES BM (BIGLEAF MAPLE) EQUATIONS FROM SO
+  ! MM USES MM EQUATIONS FROM IE
+  ! NC AND OH USE NC (NARROWLEAF COTTONWOOD) EQUATIONS FROM CR
+  ! MC USES MC (CURL-LEAF MTN-MAHOGANY) EQUATIONS FROM SO
+  ! OS USES OT (OTHER SP.) EQUATIONS FROM TT
+
+  ! SPECIES ORDER FOR UTAH VARIANT:
+
+  !  1=WB,  2=LM,  3=DF,  4=WF,  5=BS,  6=AS,  7=LP,  8=ES,  9=AF, 10=PP,
+  ! 11=PI, 12=WJ, 13=GO, 14=PM, 15=RM, 16=UJ, 17=GB, 18=NC, 19=FC, 20=MC,
+  ! 21=BI, 22=BE, 23=OS, 24=OH
+
+  ! VARIANT EXPANSION:
+  ! GO AND OH USE OA (OAK SP.) EQUATIONS FROM UT
+  ! PM USES PI (COMMON PINYON) EQUATIONS FROM UT
+  ! RM AND UJ USE WJ (WESTERN JUNIPER) EQUATIONS FROM UT
+  ! GB USES BC (BRISTLECONE PINE) EQUATIONS FROM CR
+  ! NC, FC, AND BE USE NC (NARROWLEAF COTTONWOOD) EQUATIONS FROM CR
+  ! MC USES MC (CURL-LEAF MTN-MAHOGANY) EQUATIONS FROM SO
+  ! BI USES BM (BIGLEAF MAPLE) EQUATIONS FROM SO
+  ! OS USES OT (OTHER SP.) EQUATIONS FROM UT
 
   !  INITIALIZE INTERNAL VARIABLES:
 
@@ -55,6 +100,71 @@ subroutine CRATET
 
   ! Check whether debugging is enabled
   call DBCHK (DEBUG,'CRATET',6,ICYC)
+
+  if (LTTUT) then
+     !  TT: WB, LM, BS, LP, ES, AF, OS; UT ALSO ADJUSTS WF AND PP.
+     !  THESE GROWTH EQUATIONS WERE FIT
+     !  USING SITE INDEX ADJUSTED TO A 50-YEAR AGE BASE. ADJUST THE SITE VALUES
+     !  FOR THESE SPECIES TO THIS BASIS.
+
+     !  FIRST NEED AN ESTIMATE OF STAND CCF
+
+     TEMCCF = 0.
+     do I = 1,IREC1
+        P = PROB(I)
+        D = DBH(I)
+        DM1 = 0.
+        IDM1 = 0
+        call CCFCAL(ISP(I),D,DM1,IDM1,P,.false.,CCFT,CW,1)
+        TEMCCF = TEMCCF + CCFT
+     end do
+     if (TEMCCF .lt.125.)TEMCCF = 125.
+
+     if (DEBUG) then
+        write(JOSTND,*)'SITEAR BEFORE = '
+        write(JOSTND,8998) (NSP(J,1)(1:2),SITEAR(J),J = 1,MAXSP)
+        8998 format ((T12,8(A3,'=',F6.0,:,'; '),A,'=',F6.0))
+     end if
+     do ISPC = 1,MAXSP
+        SI = SITEAR(ISPC)
+        H = 0.
+        select case (ISPC)
+
+           ! SPECIES USING ALEXANDER, TACKLE, & DAHMS 1967, RES NOTE RM-29
+
+        case(1,2,7,JOTHER50)
+           H = 9.89311 - 0.19177*(50.0) + 0.00124*(50.0**2.0)&
+                &- 0.00082*(TEMCCF-125.)*SI + 0.01387*(50.0)*SI&
+                &- 0.0000455*(50.0**2.0)*SI
+           SITEAR(ISPC) = H
+
+           ! SPECIES USING ALEXANDER 1967, RES NOTE RM-32
+
+        case(4,5,8,9)
+           if (ISPC.ne.4.or.VARACD.eq.'UT') then
+              H = 4.5 + (2.75780*(SI**0.83312)) * (1.0 - EXP(-0.015701*50.))**&
+                   &(22.71944*(SI**(-0.63557)))
+              SITEAR(ISPC) = H
+           end if
+
+           ! UT PONDEROSA PINE: MEYER 1961 REV., TECH BULL 630.
+
+        case(10)
+           if (VARACD.eq.'UT') then
+              H = (3.635794*(SI**0.916307)) / (1.0 + EXP(6.09478 -&
+                   &(0.96483*ALOG(50.)) - (0.277025*ALOG(SI))))
+              SITEAR(ISPC) = H
+           end if
+        end select
+        if (DEBUG)write(16,*)'ISPC,SI,TEMCCF,H= ',ISPC,SI,TEMCCF,H
+     end do
+     if (DEBUG) then
+        write(JOSTND,*)'SITEAR AFTER = '
+        write(JOSTND,8998) (NSP(J,1)(1:2),SITEAR(J),J = 1,MAXSP)
+     end if
+
+     !  END OF SITE ADJUSTMENT SECTION
+  end if
 
   !  IF THERE ARE TREE RECORDS, BRANCH TO PREFORM CALIBRATION.
 
@@ -273,7 +383,16 @@ subroutine CRATET
 
         !  BYPASS SUMS FOR TREES WITH MISSING HEIGHT OR TRUNCATED TOPS.
 
-        if (H.le.4.5.or. NH.lt.0.or. D.lt.3.0) go to 70
+        if (LTTUT) then
+           select case(ISPC)
+           case (JBIRCH,JMAHOG)
+              if (H.le.4.5.or. NH.lt.0.or. D.lt.5.0) go to 70
+           case default
+              if (H.le.4.5.or. NH.lt.0.or. D.lt.3.0) go to 70
+           end select
+        else
+           if (H.le.4.5.or. NH.lt.0.or. D.lt.3.0) go to 70
+        end if
         K1 = K1+1
         XX = BX/(D+1.)
         YY = ALOG(H-4.5)
@@ -301,7 +420,11 @@ subroutine CRATET
 
      KNT(IPTR) = K3
      if (K1.lt.3.or..not. LHTDRG(ISPC)) go to 100
-     XN = FLOAT(K1)
+     if (LTTUT) then
+        XN = real(K1)
+     else
+        XN = FLOAT(K1)
+     end if
      AA(ISPC) = SUMX/XN
 
      !  IF THE INTERCEPT IS NEGATIVE, USE THE DEFAULT VALUE.
@@ -330,22 +453,72 @@ subroutine CRATET
            go to 115
         end if
 
-        H = EXP(AX+BX/(D+1.0))+4.5
+        if (LTTUT) then
+           select case(ISPC)
 
-        if (DEBUG) write(JOSTND,88) AX,BX,D,H
-        88 format('CRATET DUBBED HEIGHT: AX,BX,D,H=',4F8.2)
+           case (JBIRCH,JMAHOG)
 
-        !  USE INVENTORY EQUATIONS IF CALIBRATION OF THE HT-DBH FUNCTION IS TURNED
-        !  OFF, OR IF WYKOFF CALIBRATION DID NOT OCCUR.
-        !  NOTE: THIS SIMPLIFIES TO IF(IABFLB(ISPC).EQ.1) BUT IS SHOWN IN IT'S
-        !        ENTIRITY FOR CLARITY.
+              !  USE INVENTORY EQUATIONS IF CALIBRATION OF THE HT-DBH FUNCTION IS TURNED
+              !  OFF, OR IF WYKOFF CALIBRATION DID NOT OCCUR.
+              !  NOTE: THIS SIMPLIFIES TO IF(IABFLB(ISPC).EQ.1) BUT IS SHOWN IN IT'S
+              !        ENTIRITY FOR CLARITY.
 
-        if (.not.LHTDRG(ISPC) .or.&
-             &(LHTDRG(ISPC) .and. IABFLG(ISPC).eq.1)) then
-           call HTDBH (IFOR,ISPC,D,H,0)
-           if (DEBUG)write(JOSTND,*)'INVENTORY EQN DUBBING IFOR,ISPC,D,H= '&
-                &,IFOR,ISPC,D,H
+              if (.not.LHTDRG(ISPC) .or.&
+                   &(LHTDRG(ISPC) .and. IABFLG(ISPC).eq.1)) then
+                 if (ISPC .eq.JMAHOG) then
+                    P2 = 1709.7229
+                    P3 = 5.8887
+                    P4 = -0.2286
+                 else
+                    P2 = 76.5170
+                    P3 = 2.2107
+                    P4 = -0.6365
+                 end if
+                 if (D .ge.3.) then
+                    H = 4.5 + P2 * EXP(-1.*P3*D**P4)
+                 else
+                    H = ((4.5+P2*EXP(-1.*P3*(3.**P4))-4.51)*(D-0.3)/2.7)+4.51
+                 end if
+              else
+                 if (D .lt.5.0) then
+                    H = 0.0994 + 4.9767*D
+                 else
+                    H = EXP(AX+BX/(D+1.0))+4.5
+                 end if
+              end if
+
+           case default
+              if (VARACD.eq.'TT') then
+                 if (ISPC.eq.10.and. D.le.3.0) then
+                    H = 1.74189 + 4.17687*D
+                 else
+                    H = EXP(AX+BX/(D+1.0))+4.5
+                 end if
+              else
+                 H = EXP(AX+BX/(D+1.0))+4.5
+              end if
+           end select
+           if (VARACD.eq.'UT') then
+              if (DEBUG) write(JOSTND,88) AX,BX,D,H
+           end if
+        else
+           H = EXP(AX+BX/(D+1.0))+4.5
+
+           if (DEBUG) write(JOSTND,88) AX,BX,D,H
+
+           !  USE INVENTORY EQUATIONS IF CALIBRATION OF THE HT-DBH FUNCTION IS TURNED
+           !  OFF, OR IF WYKOFF CALIBRATION DID NOT OCCUR.
+           !  NOTE: THIS SIMPLIFIES TO IF(IABFLB(ISPC).EQ.1) BUT IS SHOWN IN IT'S
+           !        ENTIRITY FOR CLARITY.
+
+           if (.not.LHTDRG(ISPC) .or.&
+                &(LHTDRG(ISPC) .and. IABFLG(ISPC).eq.1)) then
+              call HTDBH (IFOR,ISPC,D,H,0)
+              if (DEBUG)write(JOSTND,*)'INVENTORY EQN DUBBING IFOR,ISPC,D,H= '&
+                   &,IFOR,ISPC,D,H
+           end if
         end if
+        88 format('CRATET DUBBED HEIGHT: AX,BX,D,H=',4F8.2)
 
         if (H .lt.4.5) H = 4.5
         115 continue
@@ -380,20 +553,28 @@ subroutine CRATET
      !  DEBUG UNIT IF DESIRED.
 
      140 continue
-     if (DEBUG) then
-        ! NE REPORTS THE INTERCEPT AS WELL AS THE SLOPE. KEEP THE CS
-        ! DIAGNOSTIC LAYOUT AND THE NE LAYOUT EXACTLY AS BEFORE.
-        if (VARIANTCD.eq.'NE') then
-           write(JOSTND,9905) ISPC,AX,BX,IABFLG(ISPC)
-        else
-           write(JOSTND,9005) ISPC,BX,IABFLG(ISPC)
+     if (LTTUT) then
+        if (.not.DEBUG) go to 141
+        write(JOSTND,29005) ISPC,AX,BX,IABFLG(ISPC)
+        29005 format('HEIGHT-DIAMETER COEFFICIENTS FOR SPECIES ',I2,&
+             &':  INTERCEPT=',F10.6,'  SLOPE=',F10.6,'  IABFLG=',I4,&
+             &' (9005 CRATET)')
+     else
+        if (DEBUG) then
+           ! NE REPORTS THE INTERCEPT AS WELL AS THE SLOPE. KEEP THE CS
+           ! DIAGNOSTIC LAYOUT AND THE NE LAYOUT EXACTLY AS BEFORE.
+           if (VARIANTCD.eq.'NE') then
+              write(JOSTND,9905) ISPC,AX,BX,IABFLG(ISPC)
+           else
+              write(JOSTND,9005) ISPC,BX,IABFLG(ISPC)
+           end if
+           9005 format('HEIGHT-DIAMETER COEFFICIENTS FOR SPECIES ',I2,&
+                &':  SLOPE=',F10.6,'  FLAG=',I3,&
+                &' (9005 CRATET)')
+           9905 format('HEIGHT-DIAMETER COEFFICIENTS FOR SPECIES ',I2,&
+                &':  INTERCEPT=',F10.6,'  SLOPE=',F10.6,'  FLAG=',I3,&
+                &' (9005 CRATET)')
         end if
-        9005 format('HEIGHT-DIAMETER COEFFICIENTS FOR SPECIES ',I2,&
-             &':  SLOPE=',F10.6,'  FLAG=',I3,&
-             &' (9005 CRATET)')
-        9905 format('HEIGHT-DIAMETER COEFFICIENTS FOR SPECIES ',I2,&
-             &':  INTERCEPT=',F10.6,'  SLOPE=',F10.6,'  FLAG=',I3,&
-             &' (9005 CRATET)')
      end if
 
      !  LOOP THROUGH DEAD TREES AND DUB MISSING HEIGHTS FOR THIS SPECIES.
@@ -415,18 +596,57 @@ subroutine CRATET
            go to 144
         end if
 
-        H = EXP(AX+BX/(D+1.0))+4.5
+        if (LTTUT) then
+           select case(ISPC)
 
-        !  USE INVENTORY EQUATIONS IF CALIBRATION OF THE HT-DBH FUNCTION IS TURNED
-        !  OFF, OR IF WYKOFF CALIBRATION DID NOT OCCUR.
-        !  NOTE: THIS SIMPLIFIES TO IF(IABFLB(ISPC).EQ.1) BUT IS SHOWN IN IT'S
-        !        ENTIRITY FOR CLARITY.
+           case (JBIRCH,JMAHOG)
 
-        if (.not.LHTDRG(ISPC) .or.&
-             &(LHTDRG(ISPC) .and. IABFLG(ISPC).eq.1)) then
-           call HTDBH (IFOR,ISPC,D,H,0)
-           if (DEBUG)write(JOSTND,*)'INVENTORY EQN DUBBING IFOR,ISPC,D,H= '&
-                &,IFOR,ISPC,D,H
+              !  USE INVENTORY EQUATIONS IF CALIBRATION OF THE HT-DBH FUNCTION IS TURNED
+              !  OFF, OR IF WYKOFF CALIBRATION DID NOT OCCUR.
+              !  NOTE: THIS SIMPLIFIES TO IF(IABFLB(ISPC).EQ.1) BUT IS SHOWN IN IT'S
+              !        ENTIRITY FOR CLARITY.
+
+              if (.not.LHTDRG(ISPC) .or.&
+                   &(LHTDRG(ISPC) .and. IABFLG(ISPC).eq.1)) then
+                 if (ISPC .eq.JMAHOG) then
+                    P2 = 1709.7229
+                    P3 = 5.8887
+                    P4 = -0.2286
+                 else
+                    P2 = 76.5170
+                    P3 = 2.2107
+                    P4 = -0.6365
+                 end if
+                 if (D .ge.3.) then
+                    H = 4.5 + P2 * EXP(-1.*P3*D**P4)
+                 else
+                    H = ((4.5+P2*EXP(-1.*P3*(3.**P4))-4.51)*(D-0.3)/2.7)+4.51
+                 end if
+              else
+                 if (D .lt.5.0) then
+                    H = 0.0994 + 4.9767*D
+                 else
+                    H = EXP(AX+BX/(D+1.0))+4.5
+                 end if
+              end if
+
+           case default
+              H = EXP(AX+BX/(D+1.0))+4.5
+           end select
+        else
+           H = EXP(AX+BX/(D+1.0))+4.5
+
+           !  USE INVENTORY EQUATIONS IF CALIBRATION OF THE HT-DBH FUNCTION IS TURNED
+           !  OFF, OR IF WYKOFF CALIBRATION DID NOT OCCUR.
+           !  NOTE: THIS SIMPLIFIES TO IF(IABFLB(ISPC).EQ.1) BUT IS SHOWN IN IT'S
+           !        ENTIRITY FOR CLARITY.
+
+           if (.not.LHTDRG(ISPC) .or.&
+                &(LHTDRG(ISPC) .and. IABFLG(ISPC).eq.1)) then
+              call HTDBH (IFOR,ISPC,D,H,0)
+              if (DEBUG)write(JOSTND,*)'INVENTORY EQN DUBBING IFOR,ISPC,D,H= '&
+                   &,IFOR,ISPC,D,H
+           end if
         end if
 
         if (H .lt.4.5) H = 4.5
@@ -484,12 +704,26 @@ subroutine CRATET
   !  END OF HEIGHT DUBBING SEGMENT.  PRINT CONTROL TABLE ENTRIES FOR
   !  USEABLE HEIGHTS AND MISSING HEIGHTS, AND REINITIALIZE COUNTERS.
 
-  write(JOSTND,9006) (KNT2(I),I = 1,NUMSP)
+  if (VARACD.eq.'TT') then
+     write(JOSTND,19006) (KNT2(I),I = 1,NUMSP)
+  else
+     write(JOSTND,9006) (KNT2(I),I = 1,NUMSP)
+  end if
   9006 format(/,'NUMBER OF RECORDS WITH MISSING HEIGHTS',&
        &((T49,11(I4,2X)/)))
-  write(JOSTND,9007) (KNT(I),I = 1,NUMSP)
+
+  19006 format(/,'NUMBER OF RECORDS WITH MISSING HEIGHTS',&
+       &T49,11(I4,2X))
+  if (VARACD.eq.'TT') then
+     write(JOSTND,19007) (KNT(I),I = 1,NUMSP)
+  else
+     write(JOSTND,9007) (KNT(I),I = 1,NUMSP)
+  end if
   9007 format(/,'NUMBER OF RECORDS WITH BROKEN OR DEAD TOPS',&
        &((T49,11(I4,2X)/)))
+
+  19007 format(/,'NUMBER OF RECORDS WITH BROKEN OR DEAD TOPS',&
+       &T49,11(I4,2X))
   do I = 1,MAXSP
      KNT(I) = 0
      KNT2(I) = 0
@@ -527,9 +761,16 @@ subroutine CRATET
 
   !  PRINT CONTROL TABLE ENTRY FOR MISSING CROWN RATIOS; RESET COUNTERS.
 
-  write(JOSTND,9008) (KNT2(I),I = 1,NUMSP)
+  if (VARACD.eq.'TT') then
+     write(JOSTND,19008) (KNT2(I),I = 1,NUMSP)
+  else
+     write(JOSTND,9008) (KNT2(I),I = 1,NUMSP)
+  end if
   9008 format(/,'NUMBER OF RECORDS WITH MISSING CROWN RATIOS',&
        &((T49,11(I4,2X)/)))
+
+  19008 format(/,'NUMBER OF RECORDS WITH MISSING CROWN RATIOS',&
+       &T49,11(I4,2X))
   do I = 1,MAXSP
      KNT2(I) = 0
      200 continue
@@ -540,9 +781,19 @@ subroutine CRATET
 
   call AVHT40
 
+  !  TT/UT NEED TREE AGES AND AGERNG BEFORE DIAMETER CALIBRATION.
+  !  CS/NE RETAIN THEIR ORIGINAL AGE PASS AFTER THE HTG CONVERSION.
+
+  if (LTTUT) call CALAGE
+
   !  CALL DGDRIV TO CALIBRATE DIAMETER GROWTH EQUATIONS.
 
-  if (DEBUG)write(JOSTND,*)'CALL DGDRIV FROM CRATET SECOND TIME'
+  if (VARACD.eq.'UT') then
+     if (DEBUG) write(JOSTND,*)'CALL DGDRIV FROM CRATET SECOND',&
+          &' TIME'
+  else
+     if (DEBUG)write(JOSTND,*)'CALL DGDRIV FROM CRATET SECOND TIME'
+  end if
   call DGDRIV
 
   !  PREPARE INPUT DATA FOR HEIGHT GROWTH MODEL CALIBRATION; IT'S DONE
@@ -561,23 +812,7 @@ subroutine CRATET
 
   !  ESTIMATE MISSING TREE AGE
 
-  if (DEBUG)write(JOSTND,*)'IN CRATET, CALLING FINDAG'
-  do I = 1,ITRN
-     if (ABIRTH(I) .le.0.) then
-        SITAGE = 0.0
-        SITHT = 0.0
-        AGMAX = 0.0
-        HTMAX = 0.0
-        HTMAX2 = 0.0
-        ISPC = ISP(I)
-        D = DBH(I)
-        H = HT(I)
-        D2 = 0.0
-        call FINDAG(I,ISPC,D,D2,H,SITAGE,SITHT,AGMAX,HTMAX,HTMAX2,&
-             &DEBUG)
-        if (SITAGE .gt.0.)ABIRTH(I) = SITAGE
-     end if
-  end do
+  if (.not.LTTUT) call CALAGE
 
   !  CALL REGENT TO CALIBRATE THE SMALL TREE HEIGHT INCREMENT MODEL.
 
@@ -605,24 +840,39 @@ subroutine CRATET
   !  CALL **DENSE** TO CALCULATE STAND DENSITY STATISTICS FOR
   !  INITIAL INVENTORY.
 
-  if (DEBUG) write(JOSTND,9013) ICYC
+  if (VARACD.ne.'UT') then
+     if (DEBUG) write(JOSTND,9013) ICYC
+  end if
   9013 format('CALLING DENSE, CYCLE=',I2)
   call DENSE
 
   ! COUNT AND PRINT NUMBER OF MISTLETOE RECORDS
 
-  do I = 1,MAXSP
-     KNT(I) = 0
-     246 continue
-  end do
-  do I = 1,ITRN
-     call MISGET(I,IMR)
-     if (IMR .eq.0)go to 247
-     IPTR = IREF(ISP(I))
-     KNT(IPTR) = KNT(IPTR) + 1
-     247 continue
-  end do
-  write(JOSTND,248) (KNT(I),I = 1,NUMSP)
+  if (LTTUT) then
+     call MISCNT(KNT)
+  else
+     do I = 1,MAXSP
+        KNT(I) = 0
+        246 continue
+     end do
+     do I = 1,ITRN
+        call MISGET(I,IMR)
+        if (IMR .eq.0)go to 247
+        IPTR = IREF(ISP(I))
+        KNT(IPTR) = KNT(IPTR) + 1
+        247 continue
+     end do
+  end if
+  select case (VARACD)
+  case ('TT')
+     write(JOSTND,10248) (KNT(I),I = 1,NUMSP)
+  case ('UT')
+     write(JOSTND,20248) (KNT(I),I = 1,NUMSP)
+  case default
+     write(JOSTND,248) (KNT(I),I = 1,NUMSP)
+  end select
+  10248 format(/,'NUMBER OF RECORDS WITH MISTLETOE',T49,11(I4,2X))
+  20248 format(/,'NUMBER OF RECORDS WITH MISTLETOE',T49,11(I4,2X)/)
   248 format(/,'NUMBER OF RECORDS WITH MISTLETOE',((T49,11(I4,2X)/)))
 
   !  CALL **SDICHK** TO SEE IF INITIAL STAND SDI IS ABOVE THE SPECIFIED
@@ -635,4 +885,69 @@ subroutine CRATET
   510 format('LEAVING SUBROUTINE CRATET  CYCLE =',I5)
 
   return
-end
+
+contains
+
+  subroutine CALAGE
+    implicit none
+
+    !  KEEP EACH PROFILE'S INVALID-AGE TEST, FINDAG ARGUMENT AND AGE RANGE.
+    !  HOST VARIABLES PRESERVE THE ORIGINAL LOCALS AND THEIR ASSIGNMENT ORDER.
+
+    if (LTTUT) then
+      AGERNG = 1000.
+      YOUNG = 1000.
+      OLD = 0.
+      if (DEBUG)write(JOSTND,*)'IN CRATET, CALLING FINDAG'
+      do I = 1,ITRN
+         H = HT(I)
+         if (ABIRTH(I) .le.0.0.or. ABIRTH(I).gt.999.) then
+            SITAGE = 0.0
+            SITHT = 0.0
+            AGMAX = 0.0
+            HTMAX = 0.0
+            HTMAX2 = 0.0
+            ISPC = ISP(I)
+            D1 = DBH(I)
+            D2 = 0.0
+            call FINDAG(I,ISPC,D1,D2,H,SITAGE,SITHT,AGMAX,HTMAX,HTMAX2,&
+                 &DEBUG)
+            if (SITAGE .gt.0.)ABIRTH(I) = SITAGE
+         end if
+
+         !  EXCLUDE SEEDLINGS FROM EA/UEA DETERMINATION. TREES EXACTLY 4.5'
+         !  ARE EXCLUDED BECAUSE WE HAVE THEM AS .1 DBH AND THIS WOULD
+         !  PROBABLY MESS UP THE CALCUALTION.  DIXON. 5-2-91.
+
+         if (H .gt.4.5) then
+            if (ABIRTH(I).le.1.)go to 210
+            if (ABIRTH(I) .lt. YOUNG) YOUNG = ABIRTH(I)
+            if (ABIRTH(I) .gt. OLD) OLD = ABIRTH(I)
+         end if
+         210 continue
+      end do
+
+      ! COMPUTE AGE RANGE.
+
+      AGERNG = ABS(OLD - YOUNG)
+    else
+      if (DEBUG)write(JOSTND,*)'IN CRATET, CALLING FINDAG'
+      do I = 1,ITRN
+         if (ABIRTH(I) .le.0.) then
+            SITAGE = 0.0
+            SITHT = 0.0
+            AGMAX = 0.0
+            HTMAX = 0.0
+            HTMAX2 = 0.0
+            ISPC = ISP(I)
+            D = DBH(I)
+            H = HT(I)
+            D2 = 0.0
+            call FINDAG(I,ISPC,D,D2,H,SITAGE,SITHT,AGMAX,HTMAX,HTMAX2,&
+                 &DEBUG)
+            if (SITAGE .gt.0.)ABIRTH(I) = SITAGE
+         end if
+      end do
+    end if
+  end subroutine CALAGE
+end subroutine CRATET

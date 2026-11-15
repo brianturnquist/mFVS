@@ -630,9 +630,13 @@ do not consolidate the whole family in one run.
 - [x] **L05 — DGDRIV (22 files).** Consolidated in `vbase/dgdriv.f90` for
   all 24 variants; retained tables, calibration, ORGANON and output differences.
   Original-F77 parity: PASS 24/24; BC/ON additionally checked by statement diff.
-- [ ] **L06 — CRATET (23 files).** After the separate CS/NE task C09, begin
-  a TT/UT comparison of one calculation group. Record numerical and diagnostic
-  differences before proposing extraction.
+- [ ] **L06 — CRATET (20 active implementations remain).** The first TT/UT
+  group is complete under L06a. Compare each remaining group and preserve its
+  numerical, initialization-order and diagnostic differences before extraction.
+- [x] **L06a — TT/UT CRATET.** Joined CS/NE in `vbase/cratet.f90`; preserved
+  site/height equations, native species indices, age/calibration order and output.
+  All 246 species/profile statement comparisons and eight focused real-engine
+  cases match the originals/baseline. Original-F77 suite: PASS 24/24 variants.
 
 ## Material to preserve
 
