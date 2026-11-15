@@ -27,6 +27,7 @@ subroutine EVLDX (XLDREG,NXLDX,INSTR,IRC)
   include 'STDSTK.f90'
   include 'WORKCM.f90'
   include 'SSTGMC.f90'
+  include 'METRIC.f90'
 
   ! Variables
   integer :: M,I1,I2,I3,I4,INDEX(MAXTRE),ISRTI
@@ -42,8 +43,43 @@ subroutine EVLDX (XLDREG,NXLDX,INSTR,IRC)
   real    :: TPA3,DCM,ADIV,BADJ,ACRN
   integer :: JPT,JPTGRP
   real    :: CLSD2,CLSTPA,XCRD,CRDTFAC,CRDDFAC
+  real    :: X
+  integer :: IUNIT
+  integer :: IUTST1(40),IUTST2(25),IUTST3(20),IUTST4(25),IUSPMC(14),IUSUMS(17)
+  integer :: MXCNST,NSPMCA,NDBHDA,NSUMCL
+
+  !     THE METRIC VARIANTS (LMETRICVAR: BC AND ON) KEEP THE LIMITS OF THEIR
+  !     FORMER COPY OF THIS ROUTINE: CONSTANT CODES BELOW MXCNST, NSPMCA
+  !     SPMCDBH ATTRIBUTES, NDBHDA DBHDIST ATTRIBUTES AND NSUMCL SUMSTAT
+  !     COLUMNS.  THESE LIMITS AND SOME OF THE UNIT CODES BELOW ARE RECORDED
+  !     DEFECTS (FOUND_BUGS.md 20 AND 21), KEPT SO THAT RESULTS DO NOT CHANGE.
+
+  parameter (MXCNST = MERGE(7000,9000,LMETRICVAR))
+  parameter (NSPMCA = MERGE(14,15,LMETRICVAR))
+  parameter (NDBHDA = MERGE(11,13,LMETRICVAR))
+  parameter (NSUMCL = MERGE(17,22,LMETRICVAR))
+
+  !     THE METRIC VARIANTS TAKE DIAMETER AND HEIGHT LIMITS IN CM AND M AND
+  !     RETURN METRIC VALUES.  THE MODEL HOLDS IMPERIAL VALUES, SO A LOADED
+  !     VALUE IS CONVERTED AT LABEL 900 ACCORDING TO ITS UNIT CODE (IUNIT):
+  !        0 = NO CONVERSION           3 = SQ FT/ACRE TO SQ M/HA
+  !        1 = PER ACRE TO PER HA      4 = FEET TO M
+  !        2 = CU FT/ACRE TO CU M/HA   5 = INCHES TO CM
+  !     IUTST1-IUTST4 HOLD THE CODES OF SAVED-VARIABLE GROUPS 1-4, IUSPMC
+  !     THOSE OF THE SPMCDBH ATTRIBUTES AND IUSUMS THOSE OF THE SUMSTAT
+  !     COLUMNS.  A SAVED VARIABLE NUMBERED BEYOND ITS TABLE IS NOT
+  !     CONVERTED.  FUNCTIONS WITH OTHER UNITS CONVERT IN PLACE.
+
+  data IUTST1 /0,0,1,2,2,0,3,1,4,5, 0,0,0,0,1,1,1,1,1,1,&
+       &1,1,1,1,1,0,0,0,4,0, 0,0,0,0,4,0,1,0,0,0/
+  data IUTST2 /1,2,2,0,3,0,4,5,1,2, 2,0,0,0,0,0,0,0,0,0, 0,0,0,1,0/
+  data IUTST3 /2,2,2,2,1,0,3,0,0,0, 0,0,0,0,0,0,0,0,0,0/
+  data IUTST4 /0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,5,5,0, 0,4,0,0,0/
+  data IUSPMC /1,3,2,0,5,4,0,0,2,5, 1,1,1,1/
+  data IUSUMS /0,0,1,2,2,0,1,2,2,0, 3,0,4,0,2,2,0/
 
   ITMPDX(1) = 0
+  IUNIT = 0
 
   call DBCHK (LDEB,'EVLDX',5,ICYC)
   if (LDEB) write (JOSTND,5) INSTR,NXLDX
@@ -51,7 +87,7 @@ subroutine EVLDX (XLDREG,NXLDX,INSTR,IRC)
 
   !     DECODE THE INSTRUCTION AND EXECUTE: LOAD A CONSTANT.
 
-  if (INSTR.gt.1000 .and. INSTR.lt. 9000) then
+  if (INSTR.gt.1000 .and. INSTR.lt.MXCNST) then
      XLDREG(1) = PARMS(INSTR-1000)
      if (LDEB) write (JOSTND,*) &
           & 'IN EVLDX, XLDREG(1)=PARMS(',INSTR-1000,')',PARMS(INSTR-1000)
@@ -67,19 +103,23 @@ subroutine EVLDX (XLDREG,NXLDX,INSTR,IRC)
      goto (1001,11,12,13,14,15,16,17,18,19,1001),(J+1)
      11 continue
      XLDREG(1) = TSTV1(I)
-     goto 1000
+     if (LMETRICVAR .and. I.ge.1 .and. I.le.40) IUNIT = IUTST1(I)
+     goto 900
      12 continue
      if (IPHASE.lt.2) goto 1001
      XLDREG(1) = TSTV2(I)
-     goto 1000
+     if (LMETRICVAR .and. I.ge.1 .and. I.le.25) IUNIT = IUTST2(I)
+     goto 900
      13 continue
      if (ICYC.lt.2) goto 1001
      XLDREG(1) = TSTV3(I)
-     goto 1000
+     if (LMETRICVAR .and. I.ge.1 .and. I.le.20) IUNIT = IUTST3(I)
+     goto 900
      14 continue
      if (.not.LTSTV4(I)) goto 1001
      XLDREG(1) = TSTV4(I)
-     goto 1000
+     if (LMETRICVAR .and. I.ge.1 .and. I.le.25) IUNIT = IUTST4(I)
+     goto 900
      15 continue ! OPCODE 501 to 599
      if (.not.LTSTV5(I)) goto 1001
      XLDREG(1) = TSTV5(I)
@@ -155,7 +195,7 @@ subroutine EVLDX (XLDREG,NXLDX,INSTR,IRC)
      !       IF THE ATTRIBUTE (L) IS OUT OF RANGE OR UNDEFINED IN THE
      !       PHASE, THEN: ISSUE ERROR CODE.
 
-     if (L.le.0 .or. L.gt.15) goto 1002
+     if (L.le.0 .or. L.gt.NSPMCA) goto 1002
 
      !       IF THE SPECIES (J) IS OUT OF RANGE, THEN: ISSUE ERROR CODE.
      !       NOTE: A NEGATIVE SPECIES NUMBER INDICATES A SPECIES GROUP
@@ -195,6 +235,12 @@ subroutine EVLDX (XLDREG,NXLDX,INSTR,IRC)
      if (JARGS.ge.5) XHDBH = XLDREG(5)
      if (JARGS.ge.6) XLHT = XLDREG(6)
      if (JARGS.ge.7) XHHT = XLDREG(7)
+     if (LMETRICVAR) then
+        if (JARGS.ge.4) XLDBH = XLDBH * CMtoIN
+        if (JARGS.ge.5) XHDBH = XHDBH * CMtoIN
+        if (JARGS.ge.6) XLHT = XLHT * MtoFT
+        if (JARGS.ge.7) XHHT = XHHT * MtoFT
+     end if
      if (JARGS.ge.8 .and. XLDREG(8).eq.1) DEAD = XLDREG(8)
      if (JARGS.ge.8 .and. XLDREG(8).eq.2) CUT = XLDREG(8)
      if (JARGS.ge.8 .and. XLDREG(8).eq.3) RES = XLDREG(8)
@@ -345,6 +391,11 @@ subroutine EVLDX (XLDREG,NXLDX,INSTR,IRC)
               119 continue
               if (DEAD.ne.0.) then
                  XLDREG(1) = XLDREG(1)+(TPA*PMRCFV(I))
+              else if (LMETRICVAR) then
+
+                 !              THE BC AND ON VOLS ROUTINES STORE THIS VOLUME IN WK1
+
+                 XLDREG(1) = XLDREG(1)+(TPA*WK1(I))
               else
                  XLDREG(1) = XLDREG(1)+(TPA*MCFV(I))
               end if
@@ -413,8 +464,9 @@ subroutine EVLDX (XLDREG,NXLDX,INSTR,IRC)
         else if ((L.ge.1 .and. L.le.4) .or. L.eq.9) then
            XLDREG(1) = XLDREG(1)/GROSPC
         end if
+        if (LMETRICVAR) IUNIT = IUSPMC(L)
      end if
-     goto 1000
+     goto 900
   end if
 
   !     DECODE INSTRUCTION AND EXECUTE.    ACCFSP & BCCFSP:
@@ -474,64 +526,66 @@ subroutine EVLDX (XLDREG,NXLDX,INSTR,IRC)
      !       IF THE ATTRIBUTE (I) IS OUT OF RANGE OR UNDEFINED IN THE
      !       PHASE, THEN: ISSUE ERROR CODE.
 
-     if (I.le.0 .or. I.gt.13) goto 1002
+     if (I.le.0 .or. I.gt.NDBHDA) goto 1002
      if (I.ge.7 .and. IPHASE.eq.1) goto 1001
      if (J.le.0 .or. J.gt. 7) goto 1002
+     if (LMETRICVAR) IUNIT = 5
      goto (201,202,203,204,205,206,207,208,209,210,211,212,213),I
      201 continue
      XLDREG(1) = OACC(J)
-     goto 1000
+     goto 900
      202 continue
      XLDREG(1) = OMORT(J)
-     goto 1000
+     goto 900
      203 continue
      XLDREG(1) = ONTCUR(J)
-     goto 1000
+     goto 900
      204 continue
      XLDREG(1) = OCVCUR(J)
-     goto 1000
+     goto 900
      205 continue
      XLDREG(1) = OMCCUR(J)
-     goto 1000
+     goto 900
      206 continue
      XLDREG(1) = OBFCUR(J)
-     goto 1000
+     goto 900
      207 continue
      XLDREG(1) = ONTREM(J)
-     goto 1000
+     goto 900
      208 continue
      XLDREG(1) = OCVREM(J)
-     goto 1000
+     goto 900
      209 continue
      XLDREG(1) = OMCREM(J)
-     goto 1000
+     goto 900
      210 continue
      XLDREG(1) = OBFREM(J)
-     goto 1000
+     goto 900
      211 continue
      XLDREG(1) = ONTRES(J)
-     goto 1000
+     goto 900
      212 continue
      XLDREG(1) = OSCCUR(J)
-     goto 1000
+     goto 900
      213 continue
      XLDREG(1) = OSCREM(J)
-     goto 1000
+     goto 900
   end if
 
   !     DECODE INSTRUCTION AND EXECUTE.    SUMSTAT:
 
   if (MYSTR.eq.10400) then
-     if (LDEB) write(JOSTND,310) (J,(IOSUM(J,I),J = 1,22),I = 1,ICYC+1)
+     if (LDEB) write(JOSTND,310) (J,(IOSUM(J,I),J = 1,NSUMCL),I = 1,ICYC+1)
      310 format (' IN EVLDX: CURRENT IOSUM:'/((1X,I3,17I7)))
      if (JARGS.lt.2) goto 1002
      I = IFIX(XLDREG(1)+.5)
      J = IFIX(XLDREG(2)+.5)
      if (I.le.0 .or. I.gt.MAXCY1) goto 1001
-     if (J.le.0 .or. J.gt.22) goto 1002
+     if (J.le.0 .or. J.gt.NSUMCL) goto 1002
      if (I.gt.ICYC+1) goto 1001
      XLDREG(1) = IOSUM(J,I)
-     goto 1000
+     if (LMETRICVAR) IUNIT = IUSUMS(J)
+     goto 900
   end if
 
   !     DECODE INSTRUCTION AND EXECUTE.    FUELLOAD:
@@ -562,6 +616,7 @@ subroutine EVLDX (XLDREG,NXLDX,INSTR,IRC)
      call FMEVCWD(RVAL, ILO, IHI, I)
      if (I.eq.1) goto 1001
      XLDREG(1) = RVAL
+     if (LMETRICVAR) XLDREG(1) = RVAL * TItoTM / ACRtoHA
 
      goto 1000
   end if
@@ -609,9 +664,17 @@ subroutine EVLDX (XLDREG,NXLDX,INSTR,IRC)
 
      if ((M.eq.1) .and. (IPHASE.lt.2)) goto 1001
 
+     if (LMETRICVAR) then
+        XLDBH = XLDBH * CMtoIN
+        XHDBH = XHDBH * CMtoIN
+        XLHT = XLHT * MtoFT
+        XHHT = XHHT * MtoFT
+     end if
+
      call FMEVSNG(RVAL, L, J, K, XLDBH, XHDBH, XLHT, XHHT, I)
      if (I.eq.1) goto 1001
      XLDREG(1) = RVAL
+     if (LMETRICVAR) XLDREG(1) = RVAL * FT3pACRtoM3pHA
 
      goto 1000
   end if
@@ -640,6 +703,7 @@ subroutine EVLDX (XLDREG,NXLDX,INSTR,IRC)
      call FMEVFLM(RVAL, J, I)
      if (I.eq.1) goto 1001
      XLDREG(1) = RVAL
+     if (LMETRICVAR) XLDREG(1) = RVAL * FTtoM
 
      goto 1000
   end if
@@ -665,6 +729,7 @@ subroutine EVLDX (XLDREG,NXLDX,INSTR,IRC)
      call FMEVMRT(RVAL, J, I)
      if (I.eq.1) goto 1001
      XLDREG(1) = RVAL
+     if (LMETRICVAR .and. J.gt.2) XLDREG(1) = RVAL * FT3pACRtoM3pHA
 
      goto 1000
   end if
@@ -720,10 +785,15 @@ subroutine EVLDX (XLDREG,NXLDX,INSTR,IRC)
 
      XLDBH = XLDREG(2)
      XHDBH = XLDREG(3)
+     if (LMETRICVAR) then
+        XLDBH = XLDBH * CMtoIN
+        XHDBH = XHDBH * CMtoIN
+     end if
 
      call FMEVSAL(RVAL, J, XLDBH, XHDBH, I)
      if ((I.eq.1) .or. (IPHASE.lt.2)) goto 1001
      XLDREG(1) = RVAL
+     if (LMETRICVAR) XLDREG(1) = RVAL * FT3pACRtoM3pHA
 
      goto 1000
   end if
@@ -756,6 +826,21 @@ subroutine EVLDX (XLDREG,NXLDX,INSTR,IRC)
      if (J .lt. 0 .or. J .gt. 1) goto 1002
      if (J.eq.1 .and. IPHASE.lt.2) go to 1001
      XLDREG(1) = OSTRST(L,J+1)
+     if (LMETRICVAR) then
+
+        !          DIAMETER, HEIGHTS AND TREES PER ACRE OF EACH STRATUM
+
+        X = 1.0
+        select case (L)
+        case (1,11,21)
+           X = INtoCM
+        case (2:5,12:15,22:25)
+           X = FTtoM
+        case (10,20,30)
+           X = HAtoACR
+        end select
+        XLDREG(1) = OSTRST(L,J+1) * X
+     end if
      goto 1000
   end if
 
@@ -805,6 +890,7 @@ subroutine EVLDX (XLDREG,NXLDX,INSTR,IRC)
      call FMEVSRT(RVAL, J, I)
      if (I.eq.1) goto 1001
      XLDREG(1) = RVAL
+     if (LMETRICVAR) XLDREG(1) = RVAL * FTtoM ! FT/MIN TO M/MIN
 
      goto 1000
   end if
@@ -830,6 +916,10 @@ subroutine EVLDX (XLDREG,NXLDX,INSTR,IRC)
      call FMEVRIN(RVAL, J, I)
      if (I.eq.1) goto 1001
      XLDREG(1) = RVAL
+
+     !       BTU/FT**2/MIN TO KJ/M**2/MIN
+
+     if (LMETRICVAR) XLDREG(1) = RVAL * BTUtoKJ / FT2toM2
 
      goto 1000
   end if
@@ -904,10 +994,17 @@ subroutine EVLDX (XLDREG,NXLDX,INSTR,IRC)
      if (JARGS.ge.6) XHDBH = XLDREG(6)
      if (JARGS.ge.7) XLHT = XLDREG(7)
      if (JARGS.ge.8) XHHT = XLDREG(8)
+     if (LMETRICVAR) then
+        if (JARGS.ge.5) XLDBH = XLDBH * CMtoIN
+        if (JARGS.ge.6) XHDBH = XHDBH * CMtoIN
+        if (JARGS.ge.7) XLHT = XLHT * MtoFT
+        if (JARGS.ge.8) XHHT = XHHT * MtoFT
+     end if
 
      call FMEVTBM(RVAL,I1,I2,I3,I4,XLDBH,XHDBH,XLHT,XHHT,I)
      if (I.eq.1) goto 1001
      XLDREG(1) = RVAL
+     if (LMETRICVAR) XLDREG(1) = RVAL * TItoTM / ACRtoHA
 
      goto 1000
   end if
@@ -969,8 +1066,10 @@ subroutine EVLDX (XLDREG,NXLDX,INSTR,IRC)
         if (HT(ISRTI) .ge. XLDREG(1)) then
            SUMPIN = SUMPIN + P
         end if
-        if (SUMPIN.gt.TPROB*HTPCT .and. XLDREG(1).eq.0.) &
-             & XLDREG(1) = HT(ISRTI)
+        if (SUMPIN.gt.TPROB*HTPCT .and. XLDREG(1).eq.0.) then
+           XLDREG(1) = HT(ISRTI)
+           if (LMETRICVAR) XLDREG(1) = HT(ISRTI) * FTtoM
+        end if
         410 continue
      end do
      goto 1000
@@ -995,6 +1094,7 @@ subroutine EVLDX (XLDREG,NXLDX,INSTR,IRC)
      call FMEVLSF(RVAL, ILO, I)
      if (I.eq.1) goto 1001
      XLDREG(1) = RVAL
+     if (LMETRICVAR) XLDREG(1) = RVAL * TItoTM / ACRtoHA
 
      goto 1000
   end if
@@ -1032,6 +1132,7 @@ subroutine EVLDX (XLDREG,NXLDX,INSTR,IRC)
      call FMDWD(RVAL, L, J, K, M, I)
      if (I.eq.1) goto 1001
      XLDREG(1) = RVAL
+     if (LMETRICVAR .and. L.eq.1) XLDREG(1) = RVAL * FT3pACRtoM3pHA
 
      goto 1000
   end if
@@ -1145,6 +1246,10 @@ subroutine EVLDX (XLDREG,NXLDX,INSTR,IRC)
            end if
            450 continue
         end do
+
+        !       LB/ACRE TO KG/HA
+
+        if (LMETRICVAR) XLDREG(1) = XLDREG(1) * LBtoKG / ACRtoHA
      end if
 
      goto 1000
@@ -1172,6 +1277,25 @@ subroutine EVLDX (XLDREG,NXLDX,INSTR,IRC)
   end if
 
   !  **INSERT ADDITIONAL FUNCTIONS HERE**
+
+  goto 1000
+
+  !     CONVERT THE LOADED VALUE BY ITS UNIT CODE (METRIC VARIANTS ONLY;
+  !     IUNIT IS ZERO OTHERWISE).
+
+  900 continue
+  select case (IUNIT)
+  case (1)
+     XLDREG(1) = XLDREG(1) / ACRtoHA
+  case (2)
+     XLDREG(1) = XLDREG(1) * FT3pACRtoM3pHA
+  case (3)
+     XLDREG(1) = XLDREG(1) * FT2pACRtoM2pHA
+  case (4)
+     XLDREG(1) = XLDREG(1) * FTtoM
+  case (5)
+     XLDREG(1) = XLDREG(1) * INtoCM
+  end select
 
   1000 continue
   IRC = 0

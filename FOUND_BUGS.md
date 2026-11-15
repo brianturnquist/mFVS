@@ -1,6 +1,6 @@
 # Found Bugs
 
-The five confirmed model defects below were found during the 2026-11 consolidation of duplicated routines. Every one is already present in the pre-modernization source (commit `c2105365`), so none was introduced by the conversion to free-form Fortran or by the consolidation. They are **deliberately left unfixed** for now so that model outputs stay identical to `c2105365` while modernization is finished. Each fix below will change outputs for the variants listed, so each should be made as its own commit with a before/after comparison. Sections 6–8 separately record an unconfirmed historical numerical concern, a historical documentation discrepancy, and ESADDT data-flow concerns requiring follow-up. Section 9 records a reproduced SQLite resource defect with scientific-output impact still unmeasured. Section 10 records a restart-file difference that modernization itself introduced, now corrected. Sections 11 and 12 record two original defects that read undefined values and so make restart files vary between runs. Sections 13 and 14 record an invalid stub diagnostic and a fuel-model fallback defect found during the safe reapplication; neither was fixed. Sections 15–18 record DGDRIV tripling/bounds defects and undefined local reads found during L05; all were preserved. Section 19 records conditional undefined local reads in KT CRATET; these were also retained.
+The five confirmed model defects below were found during the 2026-11 consolidation of duplicated routines. Every one is already present in the pre-modernization source (commit `c2105365`), so none was introduced by the conversion to free-form Fortran or by the consolidation. They are **deliberately left unfixed** for now so that model outputs stay identical to `c2105365` while modernization is finished. Each fix below will change outputs for the variants listed, so each should be made as its own commit with a before/after comparison. Sections 6–8 separately record an unconfirmed historical numerical concern, a historical documentation discrepancy, and ESADDT data-flow concerns requiring follow-up. Section 9 records a reproduced SQLite resource defect with scientific-output impact still unmeasured. Section 10 records a restart-file difference that modernization itself introduced, now corrected. Sections 11 and 12 record two original defects that read undefined values and so make restart files vary between runs. Sections 13 and 14 record an invalid stub diagnostic and a fuel-model fallback defect found during the safe reapplication; neither was fixed. Sections 15–18 record DGDRIV tripling/bounds defects and undefined local reads found during L05; all were preserved. Section 19 records conditional undefined local reads in KT CRATET; these were also retained. Sections 20 and 21 record two defects in the former metric copy of EVLDX found during the M01 audit; the M01a merge carried both into `base/evldx.f90` unfixed.
 
 File and line references are to the tree at commit `b5657da3` plus the uncommitted `VARIANTCD` change. Bugs 1 and 2 have the same root cause: FVS calls external procedures with no explicit interface, so gfortran cannot check argument lists across files. Moving these routines into modules would let the compiler catch this class of bug.
 
@@ -360,3 +360,69 @@ L06 preserves both conditional assignments and reads, along with the original
 pre-DBCHK initialization of `RAD` and `SOLN`. A separate repair should define
 `IERRCK`'s lifetime and provide a defined diagnostic count, with cases covering
 both discriminant signs, successive species and insufficient height samples.
+
+---
+
+## 20. BC and ON cannot evaluate an expression that contains a number
+
+**Variants:** BC, ON
+**Location:** `MXCNST` in `base/evldx.f90` (before the M01a merge,
+`metric/base/evldx.f90:55`)
+**Status:** reproduced by a direct call on 14 November 2026; present in
+`c2105365:metric/base/evldx.f`. Unfixed; M01a kept the limit for BC and ON.
+
+Numbers in `IF` and `COMPUTE` expressions are stored from the top of `PARMS`
+downward and loaded with instruction code 1000 plus the index. Upstream
+commit `86463e16` (20 April 2025) raised `MAXPRM` from 5999 to 7999 and
+changed the test in `base/evldx.f` from `INSTR.LT.7000` to `INSTR.LT.9000`.
+The metric copy kept 7000. The first 2,000 constants of a run get codes
+7000–8999, which BC and ON reject with return code 2.
+
+A driver linked with the BC objects compiled `YEAR GE 5` to codes
+`101 8999 7` and `ALGEVL` returned 2, which `EVMON` reports as `FVS21 ERROR:
+AN EXPRESSION WAS INCORRECTLY COMPUTED; ANSWER IS IGNORED`. The same objects
+with the imperial routine of that date (`3b15e43a:base/evldx.f90`) returned 0
+and true. The BC and ON decks stop earlier, at keyword input (bug 5), so no
+test shows this.
+
+**Suggested fix:** remove `MXCNST` and test against 9000 (or `MAXPRM`+1000)
+in every variant.
+
+---
+
+## 21. Metric EVLDX applies the wrong factor to several values
+
+**Variants:** BC, ON
+**Location:** unit-code tables (`IUTST1`–`IUTST4`) and in-place conversions
+in `base/evldx.f90` (before the M01a merge, `metric/base/evldx.f90`)
+**Status:** confirmed by source tracing against `base/algkey.f90` and the
+routines that set each value; all present in `c2105365`. Unfixed. Which unit
+each value should have is for the maintainer to settle.
+
+BC and ON convert results by position in fixed tables. Some positions hold
+a different kind of value from the one the factor suits:
+
+| Value | Factor applied | Stored value |
+|---|---|---|
+| `LAT` (137) | ÷ `ACRtoHA` | Latitude, degrees |
+| `BHTWTBA` (119) | ÷ `ACRtoHA` | Height, feet |
+| `BSCUFT` (120) | ÷ `ACRtoHA` | Cubic feet per acre |
+| `AMERBIO` (224) | ÷ `ACRtoHA` | Tons per acre; no other biomass or carbon variable is converted |
+| `CROWNIDX` (422) | × `FTtoM` | Wind speed, miles per hour; the fire report uses `MItoKM` |
+| `DBHDIST(a,7)` | × `INtoCM` | Total of the attribute (trees or volume per acre), not a diameter |
+| `SNAGS(1,…)`, `SNAGS(2,…)` | × `FT3pACRtoM3pHA` | Trees and basal area per acre |
+| `ACORNS(1,…)` | × `LBtoKG` ÷ `ACRtoHA` | Number per acre, not pounds |
+
+Paired variables are also treated differently before and after thinning:
+`BCCF`, `BSDIMAX`, `BSDI`, `BRDEN` and `BRDEN2` are divided by `ACRtoHA`,
+while `ACCF`, `DCCF`, `ASDIMAX`, `ASDI`, `ARDEN` and `ARDEN2` are not.
+
+Variables added after the tables were written are returned in imperial
+units: `MAI` (145), `BDBHWTBA` (147), `BSDI2` (150), `BGMD` (159),
+`ADBHWTBA` (216), `ASDI2` (218), `AHTWTBA` (219), `ASCUFT` (220), `RSCUFT`
+(221), `AGMD` (238), `CRBASEHT` (426) and the stratum heights (440–443).
+
+**Suggested fix:** correct the unit codes in the tables, extend the tables to
+the newer variables, give `DBHDIST`, `SNAGS` and `ACORNS` a factor per
+attribute, and decide the unit of each density index once for both the
+before- and after-thinning forms.

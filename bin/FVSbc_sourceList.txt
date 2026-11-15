@@ -105,7 +105,7 @@
 ../vbase/svstart.f90
 ../base/cwidth.f90
 ../base/dense.f90
-../metric/base/evldx.f90
+../base/evldx.f90
 ../base/filopn.f90
 ../metric/base/intree.f90
 ../base/ksstag.f90

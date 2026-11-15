@@ -8,7 +8,7 @@ with NVEL submodule `a73e697e220ffd0f792aa7ac10d84c911edb7ad7`.
 This checklist stores the redundancy and dormant-code findings before cleanup.
 P01–P03, D01–D15, C01–C19, B01–B03 and the unbuilt-directory removal (R01–R08, R10–R10d)
 are complete. Six stub tasks are also complete; the checklist now records
-85 completed and 37 pending items, including R09. BC/ON simulation parity remains blocked by the existing bugs
+90 completed and 34 pending items, including R09. BC/ON simulation parity remains blocked by the existing bugs
 in [FOUND_BUGS.md](FOUND_BUGS.md).
 
 Run the necessary comparisons against original F77 and the immediate baseline,
@@ -293,14 +293,62 @@ same-name-only duplicate searches miss these opportunities.
 
 ## M — Active metric copies: bounded audits first
 
-There are 21 selected metric copies. All tasks in this section are initially
-**audits**, not authority to merge whole files. Each should produce a difference
-map for one record group, keyword handler, or calculation block, identify state
-and interface dependencies, and propose the next implementation-sized task.
-Split further if a block is still too large. BC/ON parity remains subject to P03.
+There were 21 selected metric copies; 20 remain after M01a. All tasks in this
+section are initially **audits**, not authority to merge whole files. Each
+should produce a difference map for one record group, keyword handler, or
+calculation block, identify state and interface dependencies, and propose the
+next implementation-sized task. Split further if a block is still too large.
+BC/ON parity remains subject to P03.
 
-- [ ] **M01 — `metric/base/evldx.f90`.** Compare one event-variable family
-  and its unit conversions with `base/evldx.f90`.
+- [x] **M01 — `metric/base/evldx.f90`.** Audit completed 14 November 2026 at
+  `3b15e43a`; no model code changed. The saved variables (codes 101–450) were
+  checked index by index against `base/algkey.f90` and their setters; the
+  differences elsewhere were few enough to classify the whole file. Apart
+  from layout, the copies differ in three ways:
+  - **Unit layer (the only intended difference).** DBH and height limits are
+    converted on input in SPMCDBH, SNAGS, SALVVOL and TREEBIO. Results are
+    converted for saved-variable groups 1–4 (four computed-GOTO tables),
+    SPMCDBH, DBHDIST, SUMSTAT, FUELLOAD, SNAGS, POTFLEN, POTFMORT, SALVVOL,
+    STRSTAT, POTSRATE, POTREINT, TREEBIO, HTDIST, HERBSHRB, DWDVAL and
+    ACORNS. BCCFSP/ACCFSP, FUELMODS, POINTID, POTFTYPE, CARBSTAT, user
+    variables and constants are the same in both copies.
+  - **Stale code.** The metric copy missed two upstream changes. It rejects
+    constant codes of 7000 and above although `MAXPRM` is 7999 (`86463e16`),
+    so no expression with a number in it can be evaluated in BC/ON (bug 20,
+    reproduced). It lacks the 2025 sawlog additions (`08e833b2`): SPMCDBH
+    attribute 15, DBHDIST attributes 12–13 and SUMSTAT columns 18–22 are
+    rejected, and SPMCDBH attribute 9 sums `WK1` where base sums `MCFV`.
+    Saved variables numbered beyond the tables (141–160, 226–238, 426–450)
+    are returned unconverted.
+  - **Wrong factors in the unit layer** (bug 21): latitude, BHTWTBA, BSCUFT,
+    AMERBIO, CROWNIDX, the DBHDIST totals, SNAGS trees and basal area, and
+    the ACORNS count; before-thinning density variables are converted where
+    their after-thinning partners are not.
+
+  Dependencies: both copies call the same routines with the same arguments,
+  and every setter stores imperial values in BC/ON as elsewhere (including
+  `metric/fire/vbase/fmpofl.f90`), so the conversion belongs in EVLDX alone. `METRIC.f90` is already selected by all 24 variants
+  and `LMETRICVAR` is true only for BC and ON. Two of the stale limits follow
+  real BC/ON state and cannot simply be lifted: the Canadian `VOLS` routines
+  store merchantable cubic volume in `WK1` and never fill `MCFV` or `SCFV`,
+  and `metric/vbase/disply.f90` does not fill IOSUM columns 21–22.
+- [x] **M01a — Merge EVLDX (implementation).** Completed 14 November 2026.
+  All 24 variants build `base/evldx.f90`; `metric/base/evldx.f90` is removed
+  (1,321 lines out, 124 in). Each conversion is behind `LMETRICVAR`. The four
+  computed-GOTO tables became unit-code tables applied in one block, which
+  keeps the original divide or multiply. BC/ON behaviour is unchanged by
+  design: the `WK1` read for SPMCDBH attribute 9 and the constant-code,
+  attribute and column limits stay behind the same switch, so bugs 20 and 21
+  are carried over unfixed. `PASS 24/24 variants; working tree
+  3b15e43a+changes vs original c2105365`, subject to P03. Because the BC/ON
+  decks stop at keyword input, old and new EVLDX were also compared directly
+  for BC, ON, IE and SN: a driver with each variant's common blocks called
+  both over every instruction code and a grid of arguments (86.5 million
+  calls per variant, callees replaced by stubs that record their arguments).
+  Return codes, result bits, arguments passed on and debug output were
+  identical. As a control, 210 single-site changes to the merged routine
+  (every unit-code table entry, switch use, conversion factor and limit)
+  were each detected by that comparison for both BC and ON.
 - [ ] **M02 — `metric/base/intree.f90`.** Trace the database-input call and
   decay handling against `base/intree.f90`. The verified 30-versus-33
   argument defect blocks consolidation until separately resolved.
