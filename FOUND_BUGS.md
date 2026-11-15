@@ -859,3 +859,135 @@ BAF sign, using FT2pACRtoM2pHA for the nonnegative case.
 **Suggested fix:** use the same sign-dependent BAF echo conversion as
 DESIGN, with positive/negative/zero/NULL and echo-off tests. Keep the
 diagnostic change separate from M20a's sampling-field extraction.
+
+---
+
+## 33. Coastal DGCONS initializes attenuation by equation instead of species
+
+**Variants:** OP, PN and WC.
+**Location:** `ATTEN(KSP) = OBSERV(JSPC,IB)` in `vbase/dgf.f90:859`
+(DGFPAC; KSP is the equation index JSPC for OP/PN/WC). Originally
+`op/dgf.f90:523`, `pn/dgf.f90:516` and `wc/dgf.f90:498`.
+**Status:** reproduced during the complete L04 audit on 15 November 2026
+with actual original F77 and current DGCONS routines. Present in `c2105365`;
+deliberately unfixed. No integrated growth-impact measurement is claimed.
+
+DGCONS loops over native species ISPC but stores ATTEN at the mapped growth
+equation index JSPC. OP/PN have 39 native species and a 20-row equation bank
+with row 17 unused; WC has 39 species and a 19-row bank. DGDRIV subsequently
+reads `ATTEN(ISPC)` for the species' calibration prior, rather than looking
+it up through MAPSPC. Thus multiple species overwrite the same equation
+slot, some populated slots contain another species' observation count,
+and many native slots retain their incoming value.
+
+Direct bounds-checked calls initialize all ATTEN values to -999, provide
+defined site/forest/aspect/correction state, then call each native DGCONS.
+Original and current results agree exactly:
+
+| Variant | Native ATTEN slots still -999 | Count |
+|---|---|---:|
+| OP, PN | 17,21–39 | 20 each |
+| WC | 20–39 | 20 |
+
+The sentinel demonstrates missing writes; it is not a claim that a normal
+model run starts with -999. Existing initialization or earlier state can
+mask the omission. DGDSQ is also equation-indexed in these routines, but
+DGF reads it by equation index, so that assignment is a different contract.
+
+**Suggested fix:** assign `ATTEN(ISPC)=OBSERV(JSPC)`, leaving native
+observation types and the equation-indexed DGDSQ behavior intact. Verify
+all 39 native slots and calibration results in a separate model-changing
+repair; do not include this correction in DGF consolidation.
+
+---
+
+## 34. Ontario DGF reuses the last predicted tree's bark ratio
+
+**Variant:** ON.
+**Location:** bark calculation at `canada/on/dgf.f90:360`, followed by
+the separate final loop's use at line 562.
+**Status:** reproduced during L04 with actual original/current DGF and
+Ontario BRATIO. Present in `c2105365`; deliberately unfixed. The direct
+routine comparison does not establish Canadian integrated simulation parity.
+
+The first tree loop calculates each tree's grown diameter, calls BRATIO
+and stores its bark-adjusted diameter increment in TEMD. After that loop,
+the final loop calculates `DDS=DIAGR*(2.0*DIAM(I)*BARK+DIAGR)` using the
+single scalar BARK left by the last successfully predicted tree. It neither
+retains each tree's ratio nor recalculates it. A later species can therefore
+change an earlier tree's stored growth even when that earlier tree's own
+predictors and diameter increment are unchanged.
+
+A defined two-tree direct case uses native species 1 (jack pine) and 4
+(red pine), each D=10 inches and H=60 feet, with fixed stand BA/QMD/site/
+competition and neutral correction factors. The disabled hybrid branch
+remains disabled. Original F77 and current DGF give identical results:
+
+| First tree's context | WK2 for species 1 |
+|---|---:|
+| Predicted alone | 2.5945756 |
+| Followed by species 4 | 2.5589375 |
+
+Actual BRATIO returns 0.9609000 for species 1 and 0.9260800 for species 4.
+The changed final-loop multiplier accounts for the earlier tree's different
+result. This controlled state demonstrates the data-flow defect, not its
+frequency or total effect in field inventories.
+
+**Suggested fix:** retain each tree's bark ratio from the original grown-
+diameter call and use that ratio in the final conversion. Recomputing it
+at the original diameter is a different change because some Ontario bark
+equations depend on diameter. Test mixed species, diameter-dependent bark,
+corrections, skipped trees and the inactive hybrid contract separately from
+structural DGF sharing.
+
+---
+
+## 35. Western Sierra DGF's upper growth bound does not reach WK2
+
+**Variant:** WS, species 1–3,5–8,11,13,18,22,24,28–33,40,42,43,
+when the calculated DDS exceeds DDSMAX and ICR is positive.
+**Location:** `ws/dgf.f90:732–755`.
+**Status:** reproduced during L04 with actual original/current DGF and
+native WS bark. Present in `c2105365`; deliberately unfixed. No field-case
+prevalence or integrated projection effect was measured.
+
+DGF applies its lower clamp, stores DDS in WK2 at line 733, then calculates
+the species/crown/DBH upper bound and reduces local DDS. WK2 is not written
+again. Debug mode can report that the bound is being invoked while callers
+still receive the value from before that bound.
+
+A direct bounds-checked species-1 case uses D=10, ICR=50, defined stand/
+point state and COR(1)=1 to reach the upper-bound path. Density outputs are
+controlled, and the actual DGF/BRATIO routines are unchanged. Original and
+current both store WK2=5.2058067, above the calculated bound
+`-3.91+1.42*ALOG(50*10)=4.9147434`. This is a controlled routine case, not
+a claim that its correction factor represents a particular production run.
+
+**Suggested fix:** store the final bounded value after the upper-limit
+logic, while preserving the existing skipped-diameter behavior. Verify
+every listed species, the ICR<=0 bypass, both sides of each bound and the
+interaction with the lower clamp in a separate result-changing repair.
+Moving that store during consolidation would silently fix the model bug.
+
+## 36. DGF diagnostics print crown ratio and BAL that some branches never set
+
+**Variants:** IE (juniper 15,16), SO (juniper 11, red alder 22), TT
+(juniper 4,11,12), and OP/PN/WC red alder (CR, BAL and PCCF(IPCCF) in the
+8000F line); debug output only.
+**Location:** the end-of-tree debug writes at `vbase/dgf.f90:1743` (TT),
+`vbase/dgf.f90:2690` (IE), `vbase/dgf.f90:755` (coastal 8000F) and
+`so/dgf.f90:730`.
+**Status:** found by the L04 old/new routine comparisons on 15 November
+2026. Present in `c2105365`; deliberately unfixed.
+
+These branches compute DDS without assigning the CR/BAL locals that the
+shared diagnostic prints. If such a tree is the first one DGF processes in
+a call, the values are whatever the stack holds; later trees print the
+previous tree's values. All model state and WK2 are unaffected, and every
+compared common block matched bit for bit. Only the DEBUG text differs
+between builds whose stack layout differs (for example `CR=-0.0000`,
+`CR=*******` or `CR=    NaN` where the original printed `CR= 0.0000`).
+
+**Suggested fix:** assign CR and BAL (or print only defined values) in
+these branches, in a separate diagnostic-only change. Until then,
+comparisons of DGF debug output must expect these fields to vary.

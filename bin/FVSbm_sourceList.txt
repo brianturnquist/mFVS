@@ -61,6 +61,7 @@
 ../bm/cubrds.f90
 ../vbase/dgdriv.f90
 ../bm/dgf.f90
+../vbase/dgfeqs.f90
 ../bm/dubscr.f90
 ../bm/ecocls.f90
 ../bm/findag.f90

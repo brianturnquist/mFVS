@@ -63,6 +63,7 @@
 ../cr/cutstk.f90
 ../vbase/dgdriv.f90
 ../cr/dgf.f90
+../vbase/dgfeqs.f90
 ../cr/dubscr.f90
 ../cr/findag.f90
 ../cr/fndag.f90

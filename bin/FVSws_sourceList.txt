@@ -61,6 +61,7 @@
 ../ws/dgbnd.f90
 ../vbase/dgdriv.f90
 ../ws/dgf.f90
+../vbase/dgfeqs.f90
 ../ws/dubscr.f90
 ../ws/dunn.f90
 ../ws/findag.f90

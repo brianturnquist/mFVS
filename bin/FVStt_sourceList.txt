@@ -28,6 +28,7 @@
 ../common/FVSSTDCM.f90
 ../common/GGCOM.f90
 ../canada/bc/BCPLOT.f90
+../common/KOTCOM.f90
 ../common/ORGANON.f90
 ../common/GLBLCNTL.f90
 ../common/HTCAL.f90
@@ -60,7 +61,9 @@
 ../tt/crown.f90
 ../tt/cubrds.f90
 ../vbase/dgdriv.f90
-../tt/dgf.f90
+../vbase/dgf.f90
+../vbase/dgfeqs.f90
+../common/DGCONS_ENTRY.f90
 ../tt/dubscr.f90
 ../tt/findag.f90
 ../tt/forkod.f90

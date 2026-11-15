@@ -69,7 +69,8 @@ subroutine DGF(DIAM)
   integer :: MAPDSQ(10,MAXSP),MAPLOC(10,MAXSP)
   integer :: IBSERV(5,MAXSP),I,J,ISPC,I1,I2,I3,IPCCF,ISIC
   real    :: ALCCF,CONSPP,DGLDS,DGBALS,DGCRS,DGCRS2,DGDSQS,DGDBLS,SI,D
-  real    :: BARK,BRATIO,RELHT,DPP,BATEM,DF,DIAGR,DDS,CR,ASPDG,CONST
+  real    :: BARK,BRATIO,RELHT,DPP,BATEM,DF,DIAGR,DDS,CR,ASPDG
+  real    :: DGFJUN
   real    :: DUMMY,ALD,BAL,HOAVH,DGLCCF,DGPCF2,XSITE,LSI
   real    :: XSLOPE,ASPTEM,TEMEL,SASP,OBSERV(MAXSP)
   data DGLD/&
@@ -548,9 +549,7 @@ subroutine DGF(DIAM)
            if (DPP .lt.1.0) DPP = 1.0
            BATEM = BA
            if (BATEM .lt.1.0) BATEM = 1.0
-           DF = 0.25897 + 1.03129 * DPP - 0.0002025464 * BATEM&
-                &+ 0.00177 * SI
-           if ((DF-DPP) .gt.1.0) DF = DPP + 1.0
+           DF = DGFJUN(DPP,BATEM,SI)
            !CCC        IF(DF .GT. DBHMAX(IS)) DF = DBHMAX(IS)
            if (DF .lt. DPP) DF = DPP
            DIAGR = (DF - DPP) * BARK
@@ -581,14 +580,7 @@ subroutine DGF(DIAM)
 
         else if (ISPC .eq.22) then
            BARK = BRATIO(22,D,HT(I))
-           CONST = 3.250531 - 0.003029*BA
-           if (D .le.18.) then
-              DIAGR = CONST - 0.166496*D + 0.004618*D*D
-           else
-              DIAGR = CONST - (CONST/10.)*(D-18.)
-           end if
-           if (DIAGR .lt.0.1) DIAGR = 0.1
-           DDS = ALOG(DIAGR*(2.0*D*BARK+DIAGR))+ALOG(COR2(ISPC))+COR(ISPC)
+           call DGFRA(ISPC,D,BARK,DIAGR,DDS)
            if (DEBUG)write(JOSTND,*)' RA-BARK,D,BA,DIAGR,COR2,COR,DDS= '
            if (DEBUG)write(JOSTND,*)BARK,D,BA,DIAGR,COR2(ISPC),COR(ISPC),DDS
 

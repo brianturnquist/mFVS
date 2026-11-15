@@ -69,7 +69,7 @@ subroutine DGF(DIAM)
   real    :: ALPBA,DDS,TDDS
   integer :: ISPC,I1,I2,I3,I,IPCCF,ILAT,IWHO
   real    :: PRD,DLO,DHI,SDICS,SDICZ,A,B,XMAX,DGLT
-  real    :: TEMPD1,TEMPD2,BRAT,BRATIO,DUP
+  real    :: BRAT,BRATIO
   real    :: ZRD(MAXPLT)
 
   ! COEFS FOR SPECIES 2,6,9 ARE FROM THE WESSIN VARIANT (DOLPH)
@@ -359,19 +359,7 @@ subroutine DGF(DIAM)
         !  PROCESS REDWOOD
         select case(ISPC)
         case(12)
-           DGLT = EXP(CONSPP + 0.185911*LOG(D) -0.000073*D*D&
-                &-0.001796*PBAL - 0.42078*PRD + 0.589318*LOG(CR*100)&
-                &-0.000926*SLOPE*100 - 0.002203*(SLOPE*100)*COS(ASPECT))
-
-           !  CONVERT OUTSIDE BARK DIAMETER INCREMENT TO INSIDE BARK
-           !  CALCULATE CHANGE IN SQUARED DIAMETERS AND LOAD INTO WK2 ARRAY.
-           BRAT = BRATIO(ISPC,D,HT(I))
-           TEMPD1 = D * BRAT ! CURRENT DIB
-           DUP = D + DGLT ! WITH GROWTH DOB
-           TEMPD2 = DUP * BRAT ! WITH GROWTH DIB
-
-           !  LOG OF CHANGE IN DIB SQUARED FOR THE PERIOD
-           DDS = LOG(TEMPD2**2 - TEMPD1**2)
+           call RWGSDG(ISPC,D,HT(I),CR,PBAL,PRD,CONSPP,DGLT,BRAT,DDS)
 
            !  RW DEBUG
            if (DEBUG)write(JOSTND,*)'IN DGF - RW DEBUG',' D=',D,&

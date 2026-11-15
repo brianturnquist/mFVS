@@ -20,6 +20,7 @@ common/CONTRL.f90
 common/CVCOM.f90
 common/CWDCOM.f90
 common/DBSTK.f90
+common/DGCONS_ENTRY.f90
 common/ECNCOM.f90
 common/ECNCOMSAVES.f90
 common/ECON.f90
@@ -65,6 +66,7 @@ cr/common/PRGPRM.f90
 cs/common/PRGPRM.f90
 dbsqlite/DBSCOM.f90
 ec/common/PRGPRM.f90
+em/common/DGCONS_ENTRY.f90
 em/common/PRGPRM.f90
 fire/base/common/FMCOM.f90
 fire/base/common/FMFCOM.f90

@@ -6,6 +6,7 @@
 ../common/ARRAYS.f90
 ../common/CALCOM.f90
 ../common/CALDEN.f90
+../common/CICOM.f90
 ../common/CLIMATE.f90
 ../common/COEFFS.f90
 ../common/CONTRL.f90
@@ -30,6 +31,7 @@
 ../common/GLBLCNTL.f90
 ../common/HTCAL.f90
 ../common/KEYCOM.f90
+../common/KOTCOM.f90
 ../common/METRIC.f90
 ../common/MISCOM.f90
 ../common/MULTCM.f90
@@ -55,7 +57,9 @@
 ../vbase/cratet.f90
 ../op/crown.f90
 ../vbase/dgdriv.f90
-../op/dgf.f90
+../vbase/dgf.f90
+../vbase/dgfeqs.f90
+../common/DGCONS_ENTRY.f90
 ../op/grinit.f90
 ../vbase/grohed.f90
 ../op/htgf.f90

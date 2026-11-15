@@ -62,6 +62,7 @@
 ../so/cubrds.f90
 ../vbase/dgdriv.f90
 ../so/dgf.f90
+../vbase/dgfeqs.f90
 ../so/dubscr.f90
 ../so/dunn.f90
 ../so/ecocls.f90

@@ -70,6 +70,7 @@ subroutine DGF(DIAM)
 
   real    :: ALBA,ASPDG,ASPTEM,BAL,BARK,BATEM,BRATIO,CCR,CCR2
   real    :: CDBAL,CDSQ,CLBA,CLD,CONSPP,CPCCF,CR,D,DDS,DDSL,DDSS,DF
+  real    :: DGFJUN
   real    :: DIAGR,DPP,DSQ,DSQNEW,HOAVH,SI,SMCONS,TEMDG,TEMEL,TSITE
   real    :: XSITE,XWT
 
@@ -460,9 +461,7 @@ subroutine DGF(DIAM)
               if (DPP .lt.1.0) DPP = 1.0
               BATEM = BA
               if (BATEM .lt.1.0) BATEM = 1.0
-              DF = 0.25897 + 1.03129 * DPP - 0.0002025464 * BATEM&
-                   &+ 0.00177 * SI
-              if ((DF-DPP) .gt.1.0) DF = DPP + 1.0
+              DF = DGFJUN(DPP,BATEM,SI)
               if (DF .lt. DPP) DF = DPP
               DIAGR = (DF - DPP) * BARK
               if (DIAGR .le.0.) then

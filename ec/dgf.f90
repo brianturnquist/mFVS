@@ -113,7 +113,7 @@ subroutine DGF(DIAM)
   logical :: DEBUG
   integer :: ISPC,I1,I2,I3,I,IPCCF
   integer :: MAPDSQ(7,MAXSP),MAPLOC(7,MAXSP)
-  real    :: BARK,BRATIO,CONST,DIAGR
+  real    :: BARK,BRATIO,DIAGR
   real    :: CONSPP,D,CR,BAL,DUMMY,RELHT,DDS,SASP,XSITE,TEMEL
   real    :: DIAM(MAXTRE),DGLD(MAXSP),DGDUM(MAXSP),DGCR(MAXSP),DGCRSQ(MAXSP),DGDBAL(MAXSP),&
        &DGHCCF(MAXSP),DGFOR(6,MAXSP),DGDS(4,MAXSP),DGEL(MAXSP),DGEL2(MAXSP),DGSASP(MAXSP),DGCASP(MAXSP),&
@@ -526,14 +526,7 @@ subroutine DGF(DIAM)
 
         case(22)
            BARK = BRATIO(ISPC,D,HT(I))
-           CONST = 3.250531 - 0.003029*BA
-           if (D .le.18.) then
-              DIAGR = CONST - 0.166496*D + 0.004618*D*D
-           else
-              DIAGR = CONST - (CONST/10.)*(D-18.)
-           end if
-           if (DIAGR .lt.0.1) DIAGR = 0.1
-           DDS = ALOG(DIAGR*(2.0*D*BARK+DIAGR))+ALOG(COR2(ISPC))+COR(ISPC)
+           call DGFRA(ISPC,D,BARK,DIAGR,DDS)
 
         end select
 

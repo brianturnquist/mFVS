@@ -10,7 +10,7 @@ P01–P03, D01–D15, C01–C19, B01–B03 and the unbuilt-directory removal (R0
 are complete. Six stub tasks, the metric audits M01–M21 (including M08b/M08c)
 and the implementation tasks M01a–M07a, M08a, M08d/M08e, M09a–M21a
 and M17b/M17d are also complete (M06a is included in M04a). The checklist
-now records 136 completed and 14 pending items, including R09.
+now records 147 completed and 25 pending items, including R09 and L04k–L04v.
 BC/ON simulation parity remains blocked by the existing bugs
 in [FOUND_BUGS.md](FOUND_BUGS.md).
 
@@ -1291,21 +1291,126 @@ suppression idioms are retained; the other nine stub tasks remain pending.
   redundant includes and updated manifests/include classification. AK ESCOMN
   and BC ESHAP layouts remain distinct. `PASS 24/24 variants`; P03 still applies.
 
-## L — Larger families: first bounded comparison only
+## L — Larger families:
 
 These counts describe selected files, not removable lines or proven duplicate
-algorithms. Each item is a **read-only audit of one pair and one block**. Its
-deliverable is a difference map and subsequent small implementation tasks;
-do not consolidate the whole family in one run.
+algorithms. Each item is a **read-only audit**. Its
+deliverable is a difference map and subsequent small implementation tasks.
 
 - [ ] **L01 — PVREF6 (7 files).** Begin with BM/EC and one equation branch or
-  coefficient-table section. Distinguish shared calculation from scientific data.
-- [ ] **L02 — MORTS (21 files).** Begin with IE/KT and one mortality block.
+  coefficient-table section, then generalize the plan to the remaining groups. Distinguish shared calculation from scientific data.
+- [ ] **L02 — MORTS (21 files).** Begin with IE/KT and one mortality block, then generalize the plan to the remaining groups.
   Preserve species-specific model behavior and diagnostic output.
 - [ ] **L03 — REGENT (23 files).** Begin with CA/OC and one regeneration
-  calculation block; record coefficients and state dependencies.
-- [ ] **L04 — DGF (24 files).** Begin with CA/OC and one species/equation
-  group. Do not infer equivalence from matching routine names.
+  calculation block, then generalize the plan to the remaining groups; record coefficients and state dependencies.
+- [x] **L04 — DGF (24 files, complete audit).** Expanded at the user's
+  request on 15 November 2026 at `b4b1ee3d`. All 24 selected implementations,
+  all 979 native species slots, every DGF/DGCONS equation path, and delegated
+  growth equations are mapped in the [complete audit below](#l04-complete-dgf-audit-and-generalization-plan).
+  The initial CA/OC sequoia/redwood comparison is included in that map.
+  All 24 statement/DATA/type/label/FORMAT projections match pinned F77;
+  direct original/current probes reproduce three defects, now recorded in
+  FOUND_BUGS sections 33–35. Source-list validation passes. This completes
+  the source audit and plan, not implementation or whole-family runtime
+  verification. All model code and build inputs remain unchanged.
+- [x] **L04a — Share the CA/OC GS/RW growth block (implementation).**
+  The Castle GS/RW block is `DGFRWGS` in `vbase/dgfeqs.f90` (equation core
+  `RWGSDG`), called once by the shared Pacific body for CA/OC.
+- [x] **L04b — Preserve the DGCONS signatures (implementation).** One public
+  DGF/DGCONS in `vbase/dgf.f90`; the build selects `common/DGCONS_ENTRY.f90`
+  (`entry DGCONS`) or EM's `em/common/DGCONS_ENTRY.f90` (`entry
+  DGCONS(IDTYPE)`). RCON calls are unchanged. Each family is an internal
+  procedure behind constant VARIANTCD guards, so its calls (DGFASP, BADIST)
+  are compiled only into its own variants.
+- [x] **L04c — Extend the GS/RW core (implementation).** OP/PN/WC use
+  `DGFRWGS` through the Pacific body, WS calls it directly (its earlier PBAL
+  is the same expression), and NC calls the core `RWGSDG` with its own
+  PBAL<=0 fallback, diagnostics and halving.
+- [x] **L04d — CA/OC ordinary equations (implementation).** CA/OC share one
+  bank and one code path (`DGFPAC`); species-indexed DGDSQ/ATTEN, tanoak
+  doubling and OC's halving kept. OBSERV is integer in all banks: its
+  values are exact integers below 2**24, so the integer and real literals
+  assigned to ATTEN were identical.
+- [x] **L04e — Coastal ordinary equations (implementation).** OP/PN (one
+  20-row bank) and WC (19 rows) joined `DGFPAC` with bank-indexed DATA;
+  WC's forest remapping, equation-indexed DGDSQ/ATTEN (bug 33), ISPDSQ
+  writes, MH/WO site handling, elevation cap and both 9030 formats kept.
+- [x] **L04f — Red-alder calculation (implementation).** `DGFRA` in
+  `vbase/dgfeqs.f90` for EC, SO, OP, PN and WC; each caller keeps its
+  bark call, jump, diagnostics and period wrapper.
+- [x] **L04g — Juniper polynomial (implementation).** `DGFJUN` (future
+  diameter with the one-inch cap) for BM, CI, CR (GEMDG), EM, IE, SO, TT,
+  UT (both uses) and WS; BA floors, stagnation and correction order stay
+  with the callers.
+- [x] **L04h — Cottonwood calculations (implementation).** `DGFCOA` (CI,
+  EM, IE, CR with BAT) and `DGFCOB` (TT, UT, CR); the 36-inch ceiling and
+  the 1.05 multipliers stay with the callers in their original order.
+- [x] **L04i — Interior ordinary equations (implementation).** IE and EM
+  share `DGFIE` (bank-indexed DATA; NI, EM, juniper, aspen and cottonwood
+  groups; per-variant DGCONS habitat, slope, CCF and ATTEN rules). CI and
+  KT moved unchanged into `DGFCI`/`DGFKT` with native table sizes; all 11
+  shared-DGF manifests list CICOM and KOTCOM, which are unused elsewhere.
+- [x] **L04j — TT/UT calculations and preparation (implementation).** TT
+  and UT share `DGFTU`, including the age-range/stagnation preparation;
+  TT PP, UT's PCCF term, species-5 multiplier, DGCCF(8) reset and site
+  classes kept. CR's matching preparation remains for L04s.
+
+  **L04a–j verification (15 November 2026, at `b4b1ee3d`+changes).** For
+  each changed variant a scratch driver linked the variant's real objects
+  with the old or new DGF, set random valid stand/tree/site states (300–600
+  cases, debug on in a third, skipped diameters, PBAL fallback, AVH=0,
+  LDCOR2/COR2 alternatives, all forests and habitat indices), called DGCONS
+  and DGF for DBH and WK3, and hashed every common block after each call.
+  All 17 changed variants matched bit for bit, including debug text, except
+  the undefined diagnostic values recorded in FOUND_BUGS section 36.
+  Planted changes (index, term order, PBAL test, UT multiplier, EM habitat
+  limit, TT elevation-cap species, CI site coefficient) were detected.
+  Original-F77 suite: PASS 22/24; BC/ON differ at the existing Canadian
+  keyword-input boundary and none of their build inputs changed. `git diff
+  --check` clean. `vbase/dgf.f90` replaces 11 native DGFs (6,212 lines)
+  with 3,755; net Fortran change −2,364 lines.
+- [ ] **L04k — CS/LS stand preparation (implementation).** Share only the
+  matching weighted preparation block first, retaining ordered in-place QMD
+  caps and each variant's native selection rules.
+- [ ] **L04l — CS/LS growth calculation (implementation).** Share the matching
+  polynomial and bark conversion with independent 96/68-row tables, native
+  caps and current-DBH calibration behavior. Keep both clamps and diagnostics.
+- [ ] **L04m — EC/SO regional calculations (implementation).** Migrate one
+  regional equation block at a time, retaining distinct banks, WSPR overrides,
+  PCCF switches, site transformations and initialization; reuse only proven
+  common expressions from earlier tasks.
+- [ ] **L04n — NC/WS remaining calculations (implementation).** Migrate
+  their ordinary/revised/size-dependent blocks independently; preserve native
+  density fallbacks, RF routing, site/latitude/period adjustments, stagnation
+  and WS's late ineffective upper bound.
+- [ ] **L04o — AK family kernel (implementation).** Retain the distinct annual
+  and permafrost calculations in a dedicated shared-area kernel; transfer
+  species groups incrementally, preserving LPERM, YR, hardwood factors and
+  DGCONS's dependence on incoming DGCON.
+- [ ] **L04p — SN family kernel (implementation).** Retain the native 90-row
+  model; migrate ordinary, forest/plantation, ecological-unit and IFOR=20
+  blocks separately, preserving global BA/ICR defaults and correction behavior.
+- [ ] **L04q — NE annual kernel (implementation).** Retain all 108 native
+  coefficient rows and BALMOD/BADIST contracts; migrate the iteration and
+  conversion blocks independently, preserving ten annual steps and corrections.
+- [ ] **L04r — ON annual kernel (implementation).** Retain the 35-row model,
+  all 72 mappings and quality pairs, metric iteration, disabled hybrid and
+  bug 34. Require direct original/native-baseline evidence beyond the
+  Canadian integrated-suite boundary.
+- [ ] **L04s — CR/GEMDG integration (implementation).** Reuse GEMDG and earlier
+  proven polynomial helpers; migrate stand preparation and each model/species
+  branch separately, retaining model floors, PP blending, DBHMAX and stagnation.
+- [ ] **L04t — BC LV2 kernel (implementation).** Preserve the native legacy
+  bank, SEILTDG interface, supported/unsupported branches, V2SEICOR state
+  and exact DDS/MAX/LOG sequence. Keep direct and integrated evidence separate.
+- [ ] **L04u — BC V3 kernel (implementation).** Migrate lookup and prediction
+  separately, preserving all 28/25 records, string sanitation, first-match
+  order, fallback/no-match behavior and native power/exponential forms.
+- [ ] **L04v — Complete DGF dispatch and inventory (build change).** After
+  all applicable kernel checkpoints, select one public DGF body in all 24
+  manifests, with the two native ENTRY declarations and unique selected
+  basenames. Retire superseded built copies only after exact state/output
+  comparisons and the whole suite; retain ACD and unrelated growth helpers.
 - [x] **L05 — DGDRIV (22 files).** Consolidated in `vbase/dgdriv.f90` for
   all 24 variants; retained tables, calibration, ORGANON and output differences.
   Original-F77 parity: PASS 24/24; BC/ON additionally checked by statement diff.
@@ -1320,6 +1425,534 @@ do not consolidate the whole family in one run.
   site/height equations, native species indices, age/calibration order and output.
   All 246 species/profile statement comparisons and eight focused real-engine
   cases match the originals/baseline. Original-F77 suite: PASS 24/24 variants.
+
+### L04 complete DGF audit and generalization plan
+
+#### Scope, evidence and entry contracts
+
+Audited 15 November 2026 at `b4b1ee3d`, following the user's expansion of
+L04. The 24 current manifests select 24 distinct DGF files, totalling
+15,838 physical lines and 979 native species slots. These are inventory
+counts, not a forecast of removable code. Every native slot has a primary
+equation classification below; conditional regional, size, management and
+calibration paths are listed separately. Species indices refer to each
+variant's actual BLKDAT/JSP order, including blank/reserved slots. Matching
+species abbreviations across variants do not establish matching equations.
+
+All 24 complete source projections match their own pinned F77 sources at
+`c210536536d81fd9b46dccb9a571f0de1e55e944`: executable statements, DATA
+initializers, declarations/types, labels and FORMAT/literal text. Comparison
+accounts for free-form continuation, declaration syntax, include suffixes,
+labelled-DO conversion and BC's equivalent split CHARACTER declarations.
+Controls reject changed coefficients, diagnostic case, types and labels.
+This establishes preservation of the inspected sources, not interchangeability
+between variants or runtime coverage of every input combination.
+
+The delegated `cr/gemdg.f90`, `ut/dgfasp.f90`, `ne/balmod.f90`, BC's
+SEILTDG entry in `canada/bc/becset.f90`, and unbuilt `acd/dgf.f90` also
+match their original source projections. Source-list static validation
+passes. Direct bounds-checked original/current calls reproduce bugs 33–35;
+those probes use actual DGF routines, native includes and actual bark
+routines, with density/debug callees controlled where needed. Reported growth
+values and all coastal ATTEN slots match original/current bits exactly. No whole-model
+runtime suite was rerun for this documentation-only audit. The current
+Canadian acceptance boundary remains the one in Contributing.md: original
+BC/ON keyword input differs from the repaired current buffers, and BC
+StandStructure still fails later. A matching direct routine is not Canadian
+integrated simulation parity.
+
+All selected DGF consumers use `vbase/dgdriv.f90`: `DGF(DBH)` for projection
+and `DGF(WK3)` at its two calibration calls. DGF must continue using the
+passed diameters where the native implementation does; several models also
+deliberately read current DBH. `ie/rcon.f90` calls argumentless DGCONS for
+23 variants. EM alone selects `em/rcon.f90`, which decodes ICL5 through
+IHCODE(122), passes habitat index 1–118 to `DGCONS(IDTYPE)`, and lets EM DGF
+replace indices above 117 with 30. Do not replace that argument with ITYPE
+or introduce an optional argument without an explicit-interface/ABI review.
+No DGF/DGCONS references were found in C/header/export-map sources; preserve
+their external Fortran entry points regardless of that absence.
+
+The remaining DGF file, `acd/dgf.f90`, is outside all current manifests.
+Its 108-species annual NE-style model has the same B1/B2 data as NE, an
+extra unused X1 declaration, and its own unbuilt support context. Retain it
+under R09; it is not a 25th migrated or runtime-verified variant.
+`em/smdgf.f90`, `tt/smdgf.f90` and `mistoe/misdgf.f90` are separate routines,
+not extra DGF definitions; retain their existing consumers and contracts.
+
+#### Complete species and equation inventory
+
+Each listed path is selected only by the variant named on its row. A range
+or complement covers every native slot in that range, not just species
+present in today's test decks. All 979 slots were checked for omissions
+and double classification. The period column is BLKDAT's native YR; the
+equation-specific conversions described below remain necessary as well.
+
+| Variant / selected path | Native slots / YR | Primary equation paths and data identity |
+|---|---|---|
+| AK — `ak/dgf.f90` | 1–23 / 10 | Species-indexed annual increment; permafrost branch 4–7,13,16–23; postmultipliers 14,21,23 and 22. |
+| BC — `canada/bc/dgf.f90` | 1–15 / 10 | LV2ATV selects legacy tables for all species. V3 uses zone/site lookup and separate power or exponential forms, detailed below. |
+| BM — `bm/dgf.f90` | 1–18 / 10 | Small/large blend 1–5,7–10,17; juniper 6; simple interior 11,12; aspen 15; coastal-style 13,14,16,18. |
+| CA — `ca/dgf.f90` | 1–50 / 10 | 13 mapped equation rows; GS/RW row 12 differs functionally; tanoak row 13 has period conversion. Complete map below. |
+| CI — `ci/dgf.f90` | 1–19 / 10 | Aspen 13; juniper 14; mountain-mahogany 15; cottonwood 17,19; ordinary table form 1–12,16,18, with BAL scaling for 11,12,16. |
+| CR — `cr/dgf.f90` | 1–38 / 10 | Delegates every species to GEMDG; all species/model-type groups listed below. |
+| CS — `cs/dgf.f90` | 1–96 / 10 | One coefficient row per native species, with species-dependent QMD/CR caps and two bark-conversion clamps. |
+| EC — `ec/dgf.f90` | 1–32 / 10 | Original conifer form 1–10,12,16,31; coastal-style form 11,13–15,17–21,23–30,32; red alder 22. |
+| EM — `em/dgf.f90` | 1–19 / 10 | Juniper 6; aspen 12,17; cottonwood 11,13–16,19; simple interior 4,5; managed/unmanaged interior form 1–3,7–10,18. |
+| IE — `ie/dgf.f90` | 1–23 / 10 | Juniper 15,16; aspen 18,20,21; cottonwood 19,22; ordinary interior form 1–14,17,23. |
+| KT — `kt/dgf.f90` | 1–11 / 10 | Native species-indexed quadratic-CCF/management equation; slot 11 has distinct constant/BAL scaling. |
+| LS — `ls/dgf.f90` | 1–68 / 10 | CS-style arithmetic with independent 68-row coefficients and different QMD/CR caps. |
+| NC — `nc/dgf.f90` | 1–12 / 5 | Redwood 12; revised point-density form 2,6,9; ordinary form 1,3–5,7,8,10,11. |
+| NE — `ne/dgf.f90` | 1–108 / 10 | Ten annual potential-basal-area iterations per tree; independent B1/B2 and BALMOD B3 rows for every species. |
+| OC — `oc/dgf.f90` | 1–50 / 5 | Same 13-row map as CA; native observation type and final period conversion differ. |
+| ON — `canada/on/dgf.f90` | 1–72 / 10 | 35 mapped Ontario equation rows; eight species have an IMC-dependent alternative row. All mappings below. |
+| OP — `op/dgf.f90` | 1–39 / 5 | 20-row coastal bank, mapped red alder and redwood exceptions; row 17 is not selected by MAPSPC. |
+| PN — `pn/dgf.f90` | 1–39 / 10 | Same mapping/numeric coefficient values as OP; native OBSERV type and period differ. |
+| SN — `sn/dgf.f90` | 1–90 / 5 | Native species-row model plus forest-type, plantation and ecological-unit terms; IFOR=20 overrides species 8,13. |
+| SO — `so/dgf.f90` | 1–33 / 10 | Juniper 11; aspen 24; red alder 22; native general form for all remaining slots, overridden at IFOR=10 for 1,2,6,7,18,32. |
+| TT — `tt/dgf.f90` | 1–18 / 10 | Conifers 1–3,5,7–9,17; PP 10; aspen 6,14; juniper 4,11,12; mixed hardwoods 13,16; cottonwood/stagnation 15,18. |
+| UT — `ut/dgf.f90` | 1–24 / 10 | Juniper 11–16,24; aspen 6; conifers 1–5,7–10,23; mixed hardwoods 20,21; stagnation group 17–19,22, with a separate polynomial for 17. |
+| WC — `wc/dgf.f90` | 1–39 / 10 | 19-row coastal bank with its own mapping and coefficients; red alder/redwood exceptions. |
+| WS — `ws/dgf.f90` | 1–43 / 10 | California group 9,10,12,14–17,19,20,25–27; MC 41; GB 21; GS/RW 4,23; revised RF 7; remaining slots use the default form and conditional size/period adjustments. |
+
+Paths in this table are as audited at `b4b1ee3d`. Since L04a–j, the CA,
+CI, EM, IE, KT, OC, OP, PN, TT, UT and WC bodies are internal procedures
+of `vbase/dgf.f90`.
+
+CA/OC share the following complete MAPSPC partition. CA calls species 4
+WF and OC calls it GF; the numeric mapping is unchanged. Actual BLKDAT
+calls species 21 WJ, despite the DGF commentary's JU abbreviation.
+
+| Equation row | Native species indices, CA and OC |
+|---|---|
+| 1 — IC/cedars | 1–3 |
+| 2 — WF/GF/BR | 4,22 |
+| 3 — RF/SH | 5,6 |
+| 4 — DF | 7 |
+| 5 — KP group | 11,13,14,20,21,24,47 |
+| 6 — LP/WB | 10,12 |
+| 7 — SP/WH/MH | 8,9,16 |
+| 8 — WP | 17 |
+| 9 — PP group | 15,18,19,25 |
+| 10 — oaks/other hardwoods | 26–36,40,41,43–46,48,49 |
+| 11 — MA/GC/DG | 37–39 |
+| 12 — GS/RW | 23,50 |
+| 13 — TO | 42 |
+
+The coastal maps use native indices as follows. OP's 23/24 are MA/TO;
+PN/WC's are WA/PB. OP/PN slot 6 is SS, whereas WC leaves its slot 6 blank.
+Blank slots still have native table mappings and must not be dropped.
+
+| Equation row | OP / PN native species | WC native species |
+|---|---|---|
+| 1 | 1 | 1 |
+| 2 | 2,3 | 2,3 |
+| 3 | 4 | 4 |
+| 4 | 5,7 | 7 |
+| 5 | 13,14 | 13,14 |
+| 6 | 12,15 | 12,15 |
+| 7 | 16 | 16 |
+| 8 | 18 | 18 |
+| 9 | 19 | 19 |
+| 10 | 20 | 20 |
+| 11 | 9,10,30–33 | 9,10,30–33 |
+| 12 | 21 | 21 |
+| 13 — RA | 22 | 22 |
+| 14 | 23–27,29,34–39 | 23–27,29,34–39 |
+| 15 | 8 | 8 |
+| 16 | 11 | 11 |
+| 17 | Unused coefficient row | 5,6 |
+| 18 | 6 | 28 |
+| 19 | 28 | 17 |
+| 20 | 17 | No row 20 |
+
+ON's full OSPMAP, in native order 1–72, is retained literally here so the
+quality-dependent equation selection is reviewable without species-name
+inference:
+
+```text
+ 1–10:  5, 4, 3, 4, 1, 7, 8,12, 9,14
+11–20: 13,11, 9, 9,26,28,35,17,17,33
+21–30: 17,17,17,19,29,15,15,24,28,24
+31–40: 17,24,15,22,26,26,33,33,17,35
+41–50: 35,35,21,15,31,31,32,31,21,17
+51–60: 17,17,32,17,17,17,17,17,17,17
+61–70: 17,17,17,17,17,17,17,17, 6, 2
+71–72:  8,10
+```
+
+Only native species 15,19,20,24,25,26,28,34 have LQUAL true. For those,
+IMC=1 selects OSPMAP+1 and AGS=1; otherwise use OSPMAP and AGS=0.
+DGCONS's observation lookup still uses OSPMAP, not the quality-shifted row.
+All 35 rows are reachable through this map plus its eight quality choices.
+
+CR's complete GEMDG partition is separate from its DGF stand preparation:
+
+| Native species | GEMDG equation / model-type alternatives |
+|---|---|
+| 1,2 | AF/CB; IMODTY<=2 versus other types. |
+| 3 | DF polynomial. |
+| 4 | Direct log-DDS from CI GF, fixed reference site. |
+| 5 | WF polynomial. |
+| 6 | Direct log-DDS from NI MH, fixed reference site. |
+| 7 | Direct log-DDS from NI RC, fixed reference site. |
+| 8 | Direct log-DDS from NI WL, fixed reference site. |
+| 9,12,16,23–27,29–35,37 | Juniper/pinyon polynomial and one-inch cap. |
+| 10 | Direct log-DDS from UT LM. |
+| 11 | LP polynomial. |
+| 13,36 | PP: SWMC blend, SWPP, Black Hills with age-range transition, or other model types; Black Hills increment multiplier 0.80. |
+| 14 | Direct log-DDS from EM WB, fixed reference site/slope scaling. |
+| 15 | SW polynomial. |
+| 17 | BS polynomial. |
+| 18 | ES: IMODTY<=2 versus other types. |
+| 19 | WS polynomial. |
+| 20–22,28,38 | Cottonwood/aspen polynomial: IMODTY<=2 versus other types, then multiply predicted diameter by 1.05. |
+
+IMODTY=1–5 also changes basal-area floors (1,21,5,5,14) and, for type 1
+below BA=65, BGTTBA. Direct-log and future-diameter branches take different
+routes to DIAGR, then apply DBHMAX where appropriate, ISTAGF/DSTAG and the
+final DDS clamp. The default GEMDG branch remains `DDS=-9.21, IDDS=1`.
+
+#### Coefficient banks, calculations and state differences
+
+**CA/OC and coastal models.** All CA/OC growth/site coefficient and mapping
+DATA blocks agree; OBSERV is integer in CA and real in OC (13 rows, with
+8928/8928. for GS/RW). Their MAPLOC is 10x13 and DGFOR 5x13. Ordinary
+species evaluate two successive DDS assignments; do not combine them or
+add coastal DGBA terms with zero coefficients. DGDSQ is species-indexed.
+Tanoak 42 uses `EXP(DDS)` then `ALOG(TDDS*2.)`. OC additionally applies
+`EXP(DDS)` then `ALOG(TDDS/2.0)` for every species before the -9.21 clamp;
+the two tanoak conversions must not be cancelled algebraically.
+
+OP/PN's other 21 named DATA blocks agree exactly; OBSERV uses real literals
+in OP and integer literals/type in PN. WC's 19-column banks are distinct
+from their 20-column banks, including every corresponding initializer block.
+Coastal ordinary DDS has its additional DGBA*BA term and equation-indexed
+DGDSQ. DGCONS also writes ATTEN by equation index, an existing defect
+(bug 33), while DGCON/SMCON/COR2 handling remains species-indexed. OP
+halves DDS in real scale for all species; PN/WC do not. WC maps IFOR
+7/8/9/10 to JFOR 3/6/5/4, uses IFOR for 1–6, and defaults other forests
+to 3; OP/PN use their native six-forest maps directly. MH site is multiplied
+by 3.281, WO uses the unguarded site transformation, and equation 14's
+elevation is capped at 30. Preserve the native debug FORMAT difference.
+
+**GS/RW common calculation.** CA/OC 23,50; OP/PN/WC 17; NC 12; and WS
+4,23 use the same Castle coefficients and site constant:
+
+```fortran
+DGCON(ISPC) = -3.502444 + 0.415435*LOG(SITEAR(ISPC))
+DGLT = EXP(CONSPP + 0.185911*LOG(D) -0.000073*D*D &
+     -0.001796*PBAL -0.42078*PRD +0.589318*LOG(CR*100) &
+     -0.000926*SLOPE*100 -0.002203*(SLOPE*100)*COS(ASPECT))
+```
+
+Convert outside-bark DGLT by calling native BRATIO once within this block,
+reusing it for D and D+DGLT, then `LOG(TEMPD2**2-TEMPD1**2)`. COR and
+LOG(COR2) are added afterwards, even when LDCOR2 is false; DGCONS excludes
+this group's COR2 addition. CA/OC and OP/PN/WC have the same 11-statement
+PBAL-through-second-debug-write block. NC/WS prepare PBAL outside that
+block and have different diagnostics or period handling. NC substitutes
+BAL when PBAL<=0; the other implementations use PBAL<0. WS already calls
+BRATIO earlier and calls it again inside the block. Preserve those calls,
+the caller's point-density preparation and each variant's period policy.
+
+**Red alder.** EC 22, SO 22 and OP/PN/WC equation 13 (native 22) share
+CONST=3.250531-0.003029*BA, the quadratic through D=18, the declining
+line above 18, and minimum DIAGR=0.1. Their bark selection and debug/control
+flow differ: coastal code uses BRATIO(22,...) then jumps past common tree
+preparation; EC uses ISPC; SO has already called bark and calls it again.
+The return expression adds ALOG(COR2)+COR directly. OP's later period
+conversion still applies. Preserve the skipped/stale debug locals on the
+coastal early-jump path rather than adding general initialization.
+
+**Juniper and cottonwood.** The recurring juniper prediction is
+`0.25897 + 1.03129*DPP -0.0002025464*BATEM +0.00177*SI`, with the
+one-inch increment cap. Consumers are BM 6, CI 14, EM 6, IE 15,16,
+SO 11, TT 4,11,12, UT 11–16,24 and 17, WS 21, and CR's listed group.
+DPP is floored at 1; BATEM is generally floored at 1, but UT 17 and WS
+21 use 5 and CR uses its model-type floors. UT 17/WS 21 apply stagnation.
+Some callers clamp before adding corrections, others afterwards, and the
+placement of CONSPP differs. Share the raw polynomial before sharing
+the conversion/clamp wrapper.
+
+CI 17,19, EM 11,13–16,19 and IE 19,22 share the cottonwood polynomial
+`0.24506 +1.01291*DPP -0.00084659*BA +0.00631*SI`, a DF ceiling of 36,
+and the native correction/clamp sequence. TT 15,18 and UT 18,19,22 use
+the other form `(1.55986 +1.01825*DPP -0.29342*ALOG(BATEM) +0.00672*SI
+-0.00073*BAUTBA)*1.05`, BA floor 5 and optional DSTAG. CR selects related
+forms by IMODTY and multiplies DF by 1.05 at a different point; do not fold
+that multiplier into coefficients. Aspen already has one shared helper,
+`ut/dgfasp.f90`, for BM/CI/EM/IE/SO/TT/UT's listed species. It takes CR in
+percent, uses RMSQD/BA, caps BA>=310 to 305, and returns log-DDS before
+the caller's explicit COR2/COR. No new aspen equation is needed.
+
+**Interior banks.** IE uses 23 species, DGHAB/OBSERV 6x23, habitat maps
+30x23 and forest/DSQ maps 11x23. EM uses 19 species, DGHAB 8x19,
+OBSERV 6x19, habitat maps 117x19 and forest/DSQ maps 7x19. CI uses 19
+species, DGHAB 12x19, ICHBCL 130x19, forest maps 6x19 and integer
+IBSERV(6,3)/OBSERV(19); its ICHBCL column 11 has no DATA initializer.
+KT uses 11 species, habitat maps 175x11, DGHAB/OBSERV 9x11, forest map
+10x11 and DGFOR 7x11, with integer OBSERV. Preserve native table dimensions,
+sparse initialization, observation conversions and row order; another
+variant's MAXSP is not a safe declaration for these banks.
+
+IE's ordinary formula uses BAL/100, factored crown terms and a log(DBH+1)
+denominator. EM uses that form for 4,5, but its ordinary conifers have
+unscaled BAL, log(RELDEN), squared RELDEN and MANAGD-dependent PCCF terms.
+EM species 4 retains both its DGCCF assignment and extra -0.199592 density
+addition. Its DGCONS chooses IDTYPE versus ITYPE by species, rotates aspect
+for 4,6,12,17 and scales slope by 1/10 for 1–3,7–10,18 (zero for 18).
+IE's aspect/site/observation choices are different. CI separates stand BAL
+from point PBAL, scales stand BAL only for 11,12,16, and gives species 15
+its extra BA term and elevation cap. KT retains quadratic RELDEN, two
+management PCCF terms, log(BA), and slot 11's 0.01 and /100 scaling.
+CRMAX/DBHCH are diagnostic/inactive-limit information in KT; do not activate
+the commented constraints while generalizing.
+
+**TT/UT and stand preparation.** TT has 18 species, IDGSIM/DGSIC 5x18,
+forest/DSQ maps 4x18, IBSERV 5x18, ICHBCL(363) and DGHAB(7). UT has 24
+species, IDGSIM 7x24, DGSIC 5x24, maps 6x24 and IBSERV 5x24. Their
+conifer expression uses separate `CR*DGCRS+CR*CR*DGCRS2` operations, rather
+than the interior factored expression. UT additionally uses PCCF, scales
+the whole log-DDS result by 0.95 for species 5, and mutates DGCCF(8) for
+high site classes during DGF. UT uses NINT for that site's class input;
+TT's analogous site-class setup uses INT. TT PP 10 uses point PBAL and
+subtracts 0.257322*ALOG(BA); its TEMBA floor is not used by that logarithm. TT/UT
+mixed hardwoods keep their PCCF/BA terms. DGCONS uses SITEAR(ISISP), native
+ISMAP/IDGSIM, aspect rotations, logarithmic site choices and elevation caps;
+TT PP also has a habitat addition and distinct attenuation counts.
+
+CR/TT/UT share the age-range and stagnation preparation pattern: BADIST,
+ABIRTH/height screening, current DBH/probability sums, optional recent
+mortality at LSTART with FINT/FINTM scaling, and SDICAL(1,...). Keep its
+AGERNG/DSTAG writes, native guards, division behavior and call position.
+IE/EM share only the age-range part and use SDICAL(0,...); WS computes
+QMD from all live records and also uses SDICAL(0,...). They are not one
+interchangeable preparation routine.
+
+**BM.** Eighteen-row large-tree tables coexist with five-row small-tree
+tables, SMMAPS(18), SMMAPH(92,5) and integer IBSERV(5,3). The blend group
+converts the small-tree prediction by doubling diameter increment and
+recomputing squared increment, then blends log-DDS: weight 1 below D=3,
+(10-D)/7 above it, floored at zero. Keep WP's BAL/RMAI additions, WL's BA
+addition and the separate small-tree COR2 update. Species 11,12 use BAL/100;
+the coastal group has log(BA), stand BAL and BA terms. DGCONS rotates
+aspect for 6,11,12,15, transforms species 7's site, converts MH site by
+3.28, caps elevation for 16,18, and uses different attenuation sources.
+Native debug statements can read locals retained from preceding groups;
+do not make those locals shared cross-variant state.
+
+**CS/LS.** The arithmetic is shared, but all 12 corresponding DATA blocks
+differ: 96 rows versus 68. Preparation includes only DIAM>=5, weights by
+PROB, uses 0.005454154, and defaults empty BAGE5 to 10. CR is percent,
+defaults to 10 when nonpositive, then receives native caps. RELDBHSQ is
+`D*D/QMDGE5`, not the square of relative diameter. The native QMD variable
+is reduced in place as species are visited; preserve that order-dependent
+state rather than restoring an uncapped copy during cleanup. After the
+log-DDS equation, both convert with current DBH and native BRATIO, clamp
+before and after conversion, and store WK2. Using passed DIAM in that
+conversion would change calibration behavior.
+
+| Cap | CS native species | LS native species |
+|---|---|---|
+| QMD 11 | 51 | None |
+| QMD 12 | 50 | None |
+| QMD 13 | 3,10–13 | 1,2,10,37–39,59 |
+| QMD 15 | None | 11 |
+| QMD 17 | 91 | None |
+| QMD 20 | 44–46,59 | None |
+| QMD 25 | 14–17,28,53–56 | 17,30–33 |
+| QMD 30 / 40 | 48,49 / 24 | None |
+| CR 50 / 60 | 7 / 28,41 | None / 17 |
+| CR 75 / 80 | 8–10 / 44–46 | None |
+| CR 85 | 32,78–84 | 60,65 |
+
+**EC/SO.** EC's native 32-row bank has forest/DSQ maps 7x32. Its original
+conifer form includes DUMMY, RELHT*PCCF and PCCF squared; slot 1 has an
+extra RELHT term. DUMMY is 1 only for 4,6,16; species 12,31 subtract
+0.000021*RMAI*RELDEN from CONSPP. Its coastal form has BA, WH's relative-height
+subtraction and WO's BAL subtraction. DGCONS retains flat-slope SL0DUM for the conifer
+group, MH/OS site conversion by 3.281, WO's guarded site conversion, AF's
+0.3835 addition, and elevation caps for 19,23–27,29,30,32.
+
+SO's 33-row banks use forest/DSQ maps 10x33 and IBSERV(5,33). At IFOR=10,
+native 1,2 share WP/SP arithmetic, while 6,7,18,32 have their own IC/LP/RC/OS
+equations and site/observation setup. Those branches omit the ordinary
+RELDEN/RMAI constant terms. The general formula retains DGMACC*RMAI*RELDEN,
+PP's log(RELDEN)/PCCF-squared term with the >400 switch, ES relative height,
+SF's -0.799079 dummy and the species-dependent BA/log(BA)/relative-height
+terms. Preserve the flat-slope defaults, MH site handling, aspect rotations
+for 11,16,24 and elevation caps for 21,25,26,28–31,33. EC and SO do not
+become equivalent by filling a common coefficient vector with zeros.
+
+**NC/WS.** NC's fixed 12-row bank has forest/DSQ maps 7x12. Revised
+species 2,6,9 use crown-squared/log(DBH+1), point PBAL/log(PBA), a -8.52
+preclamp and real-scale halving; row 12 also halves after correction.
+Other NC rows are already on the native five-year basis and must not be
+halved. ILAT is fixed at 5; default DGCONS uses LOG(SITEAR(3)).
+
+WS's 43-row bank uses forest map 7x43, DGFOR 3x43, latitude tables and
+species-specific DDSMX bounds. The California group has a BAL term except
+for 9,10; MC 41 uses BA instead of log(BA). GB 21 uses juniper with
+stagnation; RF 7 has its own point-density equation. The default branch
+uses small-tree replacements for D<10 on species 2,3,6,13,22. That nested
+replacement also names species 7, but outer CASE(7) bypasses it. Hardwoods
+28–40,43 double squared increment through EXP/ALOG and use DF's site in
+DGCONS. IC 5 receives its post-equation site adjustment. Relative-height
+caps differ by branch; PBA fallback and PBAL's strict-negative test differ
+from NC. The late DDSMAX assignment does not update WK2 (bug 35).
+
+**AK.** All 23 native rows first predict annual outside-bark increment
+from scaled elevation/slope, COS(aspect), log(site), log(DBH), DBH squared,
+PTBALT, point relative density and log(percent crown). Permafrost modifiers
+for 4–7,13,16–23 use separate PF coefficients: LPERM caps the modifier above
+at 1, while its alternative floors it at 1. Multiply by YR, then by 0.45
+for 14,21,23, by 0.65 for 22, or by 1 otherwise, and perform bark/DDS
+conversion. DGCONS assigns ATTEN and conditionally adds LOG(COR2) to the
+existing DGCON; it does not initialize DGCON, DGDSQ or SMCON like other
+variants. Preserve that initialization/call dependency.
+
+**SN.** Preserve all 90 native coefficient rows as scientific data. The
+ordinary formula uses LOG(percent crown), relative height, BA and point
+PBAL. Nonpositive BA and ICR are replaced in shared state with 25, and
+point PBA/PBAL fall back on nonpositive values. Seven forest-type dummies
+and the MANAGD>0 plantation dummy modify the equation. DGCONS adds site,
+slope/aspect and eleven PCOM ecological-unit terms; mappings include
+221DD/DE to S231T, 251 to P255 and 255CH to S231L. Preserve the complete
+ordered IFORTP and PCOM selectors at `sn/dgf.f90:159–211, 1014–1083`,
+including no-match/default states. The IFOR=20 overrides for native 8/13
+use their two explicit pine equations and DIAGR floor 0.01, replacing the
+earlier DDS rather than appending its correction terms. Their ATTEN values
+are 2056/689. DGCONS does not assign SMCON; do not add a generic reset.
+
+**NE/ON.** Both perform ten annual iterations, but have different state,
+units and equations. NE uses 108 B1/B2 rows and 108 B3 rows in BALMOD;
+BADIST prepares competition, BALMOD shifts/caps its diameter class and
+floors the modifier at 0.5, and potential basal-area growth is multiplied
+by 0.7. After iteration it uses bark at grown diameter, guarded COR2 on
+diameter increment, a 0.0001 increment floor and final ALOG(DDS)+COR.
+
+ON uses its 35-row B0/B1/B2/BBAL/BHT/BSI/BBA/BDBHQ/BAGS/B95 bank in
+metric units. Stand/point competition, height, site and QMD terms are held
+fixed during the ten annual diameter iterations; log increment is clipped
+to [-5,5] and real increment to [0.0001,B95]. Preserve BAMSP quality sums,
+leading-species logic, guarded COR2 and the existing final-loop bark-ratio
+defect (bug 34). LHYBRID is set false after its eligibility calculation,
+so the following stand-level adjustment is inactive; do not activate or
+delete its retained design code during DGF sharing. ON and NE are separate
+kernels, even though their loop counts match.
+
+**BC.** Preserve both complete model banks. LV2 uses native 15-species
+tables, DGHAB/OBSERV 6x15, habitat/CCF maps 30x15 and forest/DSQ maps
+11x15. SEILTDG copies BEC terms into DGF's local BECADJ/SEI arrays, converts
+their units and returns LSPPOK. Unsupported species zero the local SEICCF;
+DGCONS follows its adjusted versus unadjusted branch and writes V2SEICOR.
+Retain the exact current LV2 DDS expression and common MAX/LOG tail; do
+not substitute the superficially similar IE equation's output contract.
+
+V3 has 28 ZNKONST model records and 25 SSKONST site-intercept records,
+with ordered species lists and up to 30 character(15) patterns per record.
+DGCONS sanitizes NUL characters in these DATA-backed strings, remaps the
+KAM ICHmw2 site-series names, then searches native first-match order with
+one `/all` fallback. Overlapping patterns are significant; converting the
+lookup into a dictionary would change selection. Missing either lookup
+skips coefficient/ATTEN/SMCON assignments after setting DGCON=0, so do
+not invent a fallback model or initialization.
+
+| BC native species | ZNKONST records | SSKONST records |
+|---|---|---|
+| 1 PW | 1 | 1 |
+| 2 LW | 2 | 2 |
+| 3 FD,14 OC | 3–9,28 | 3 |
+| 4 BG,9 BL | 17 for both; 26 additionally for 9 | 20–23 |
+| 5 HW | 10 | 4,5 |
+| 6 CW | 11,12 | 6–8 |
+| 7 PL | 13,14,22–24 | 9–14 |
+| 8 SE | 15,16,27 | 15–19 |
+| 10 PY | 18 | 24 |
+| 11 EP,15 OH | 19,20 for both; 25 additionally for 15 | 25 |
+| 12 AT,13 AC | 21 for both; 25 additionally for 12 | 25 |
+
+Records 22–28 cover SBS/SBPS alternatives as stored; many site-intercept
+patterns remain restricted to ICH/IDF. Keep no-match behavior. V3 species
+12/13 use the power form; 11/15 use it in IDF and the exponential form in
+ICH; other species use the exponential form. Retain RELDEN floors of 100
+for HW in ICH, PL in IDF, and EP/OH in ICH/IDF, and 125 for BL in ICH.
+HW's ICH crown ratio and EP/OH's ICH/IDF crown ratios are capped at 0.8.
+Retain the D>=1 power-form bound, native INtoCM and
+basal-area conversions, BRATIO on the converted D argument, CMtoIN squared,
+the 0.001 real-scale floor, final log/clamp and PW's elevation bounds.
+Outside the handled zones, the 11/15 prediction can retain an earlier or
+undefined DDS; this is a source-level hazard, not a verified valid-input
+failure. Keep the original behavior pending a separate model investigation.
+
+#### Generalization design and acceptance
+
+Use one public DGF implementation in `vbase/`, with narrow dispatch to
+family calculations and native coefficient banks. Share actual arithmetic
+blocks; keep distinct AK, SN, NE, ON, CR and BC algorithms as named family
+kernels. A common species-name switch, universal coefficient dot product,
+unit-normalized equation or tolerance-based comparison is insufficient.
+Keep default-real kinds, literal spelling, arithmetic grouping, statement
+boundaries, native table extents/types and the observed global side effects.
+Do not silently repair bugs 33–35, in-place QMD caps, sparse initialization,
+skipped outputs, unguarded logs/divisions, inactive alternatives or debug
+locals while extracting kernels.
+
+For public DGCONS, preserve the two native ENTRY signatures. A concrete
+way to retain one DGF body is two build-selected `DGCONS_ENTRY.f90`
+declaration includes: one containing `entry DGCONS`, the EM selection
+containing `entry DGCONS(IDTYPE)`. This follows the existing selected-include
+pattern; each manifest must select exactly one basename, both includes must
+be classified, and only EM's branch may use IDTYPE. Keep all RCON calls
+unchanged. Validate this adapter stage independently before moving any
+Canadian model. Do not use a missing nonoptional argument or assume an
+implicit-interface caller can safely discover OPTIONAL.
+
+The pending tasks L04a–L04v above form the deployment sequence. Each
+consumer extension or sub-block is a separate implementation/checkpoint;
+the complete audit does not authorize consolidating all families in one
+patch. Keep native DATA with its family initially. Share a coefficient bank
+only after matching every row, declaration and initialization dependency;
+CA/OC and OP/PN are candidates with their observation types kept explicit.
+No numerical savings or performance benefit is claimed before an actual
+implementation is measured.
+
+For every migration checkpoint:
+
+- Compare original F77, the immediate pre-change baseline and the candidate
+  with identical compiler/settings. Use defined native common-block state,
+  each variant's selected includes and actual delegated equations/bark
+  routines. Verify both DGF diameter inputs and every DGCONS entry contract.
+- Exercise every native species slot and every selected equation row,
+  including duplicate species mappings and reserved slots. Check literal
+  data for retained unused rows without inventing a native species route
+  to those rows. Check all DGCON/DGDSQ/DGCCF/ATTEN/SMCON
+  outputs and other mutated state; do not check WK2 alone.
+- Cover equation switches and boundary values: D<=0 and existing WK2,
+  D=1/2/3/5/10/18/36 limits, CR floors/caps and percent/fraction use,
+  AVH/BA/RELDEN guards, PBAL negative/zero and PRD branches, site/habitat/
+  forest/latitude lookups, managed/unmanaged and permafrost alternatives,
+  LSTART/recent mortality, ISTAGF/DSTAG, all period conversions and clamps,
+  COR/COR2/LDCOR2, and debug on/off with the native diagnostic sequence.
+- Add family cases: CS/LS ordered multi-species caps and calibration DBH
+  versus DIAM; SN every IFORTP/PCOM arm and IFOR=20; CR every IMODTY and
+  PP blend; NE/ON full annual iteration, ON all quality pairs and disabled
+  hybrid; BC LV2 supported/unsupported SEI and every V3 record/pattern,
+  first-match overlap, fallback and no-match state. Preserve storage-order
+  defects explicitly until their separate repairs are authorized.
+- Require real mismatches to fail. Compare exact state bits, return/status,
+  output inventory, diagnostics, text, SQLite rows and restart files; retain
+  only the already documented undefined-value exceptions. If a new undefined
+  diagnostic prevents comparison, record its exact source/coverage limit
+  before choosing separate evidence; do not broaden normalization silently.
+- Recheck manifest membership/one selected basename, source/include
+  classification, then run the whole parity suite and `git diff --check`.
+  Report Canadian pristine-reference differences separately from controlled
+  immediate-baseline comparisons. Discard temporary probes/builds/results.
+
+The audit leaves all Fortran, manifests, reference outputs and NVEL unchanged.
+Only this tracker and the three reproduced-defect descriptions are updated.
+
 
 ## Material to preserve
 

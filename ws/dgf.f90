@@ -69,9 +69,9 @@ subroutine DGF(DIAM)
   real    :: DGDBLS,DGPCFS,DGHAHS,DGBAS,D,DPP,HOAVH,CR,ALD,CRID,BAL
   real    :: PBA,PBAL,ALBA,DDS,TDDS,DDSMAX,TSITE,DGDSQS,DGBAL
   real    :: BATEM,DF,DIAGR,BARK,SUMD2,SUMTRE,DGQMD,STDSDI,RELSDI
+  real    :: DGFJUN
   real    :: DDSMX1(MAXSP),DDSMX2(MAXSP),BRATIO,TEMEL
-  real    :: PRD,DLO,DHI,SDICS,SDICZ,A,B,XMAX,DGLT
-  real    :: BRAT,TEMPD1,TEMPD2,DUP
+  real    :: PRD,DLO,DHI,SDICS,SDICZ,A,B,XMAX
   real    :: ZRD(MAXPLT)
 
   !     SPECIES LIST FOR WESTERN SIERRAS VARIANT.
@@ -645,9 +645,7 @@ subroutine DGF(DIAM)
            if (DPP .lt.1.0) DPP = 1.0
            BATEM = BA
            if (BATEM .lt.5.0) BATEM = 5.0
-           DF = 0.25897 + 1.03129 * DPP - 0.0002025464 * BATEM&
-                &+ 0.00177 * SI
-           if ((DF-DPP) .gt.1.0) DF = DPP + 1.0
+           DF = DGFJUN(DPP,BATEM,SI)
            if (DF .lt. DPP) DF = DPP
            DIAGR = (DF - DPP) * BARK
            if (ISTAGF(ISPC).ne.0) DIAGR = DIAGR*DSTAG
@@ -662,31 +660,7 @@ subroutine DGF(DIAM)
            !  RW AND GS EQUATION
 
         case(4,23)
-           if (PBAL .lt.0.) PBAL = BAL
-           DGLT = EXP(CONSPP + 0.185911*LOG(D) -0.000073*D*D&
-                &-0.001796*PBAL - 0.42078*PRD + 0.589318*LOG(CR*100)&
-                &-0.000926*SLOPE*100 - 0.002203*(SLOPE*100)*COS(ASPECT))
-
-           !  CONVERT OUTSIDE BARK DIAMETER INCREMENT TO INSIDE BARK
-           !  CHANGE IN SQUARED DIAMETERS AND LOAD INTO WK2 ARRAY.
-           BRAT = BRATIO(ISPC,D,HT(I))
-           TEMPD1 = D * BRAT ! CURRENT DIB
-           DUP = D + DGLT ! WITH GROWTH DOB
-           TEMPD2 = DUP * BRAT ! WITH GROWTH DIB
-
-           !  LOG OF CHANGE IN DIB SQUARED FOR THE PERIOD
-           DDS = LOG(TEMPD2**2 - TEMPD1**2)
-
-           !  RW/GS DEBUG
-           if (DEBUG)write(JOSTND,*)'IN DGF - RW/GS DEBUG ',' D=',D,&
-                &' PBAL=',PBAL,' PRD=',PRD,' CR=',CR,' SI=',SITEAR(ISPC),&
-                &' SLP=',SLOPE*100,' ASP=',ASPECT, ' BRAT=',BRAT,&
-                &' DGLT=', DGLT,' DDS=',DDS
-
-           !  APPLY COR AND COR2 TO DDS
-           DDS = DDS + COR(ISPC) + LOG(COR2(ISPC))
-           if (DEBUG)write(JOSTND,*)'IN DGF - RW/GS DEBUG ',' DDS=',DDS,&
-                &' COR(ISPC)=',COR(ISPC),' COR2(ISPC)=',COR2(ISPC)
+           call DGFRWGS(I,ISPC,D,CR,BAL,PRD,CONSPP,DEBUG,PBAL,DDS)
 
            !  SPECIES USING ORIGINAL WS EQUATIONS
 

@@ -6,6 +6,7 @@
 ../common/ARRAYS.f90
 ../common/CALCOM.f90
 ../common/CALDEN.f90
+../common/CICOM.f90
 ../common/CLIMATE.f90
 ../common/COEFFS.f90
 ../common/CONTRL.f90
@@ -27,6 +28,7 @@
 ../common/FVSSTDCM.f90
 ../common/GGCOM.f90
 ../canada/bc/BCPLOT.f90
+../common/KOTCOM.f90
 ../common/ORGANON.f90
 ../common/GLBLCNTL.f90
 ../common/HTCAL.f90
@@ -55,7 +57,9 @@
 ../pn/bratio.f90
 ../pn/ccfcal.f90
 ../pn/crown.f90
-../pn/dgf.f90
+../vbase/dgf.f90
+../vbase/dgfeqs.f90
+../common/DGCONS_ENTRY.f90
 ../pn/ecocls.f90
 ../pn/forkod.f90
 ../pn/formcl.f90

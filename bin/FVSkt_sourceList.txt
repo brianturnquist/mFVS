@@ -6,6 +6,7 @@
 ../common/ARRAYS.f90
 ../common/CALCOM.f90
 ../common/CALDEN.f90
+../common/CICOM.f90
 ../common/CLIMATE.f90
 ../common/COEFFS.f90
 ../common/CONTRL.f90
@@ -62,7 +63,9 @@
 ../kt/crown.f90
 ../kt/cubrds.f90
 ../vbase/dgdriv.f90
-../kt/dgf.f90
+../vbase/dgf.f90
+../vbase/dgfeqs.f90
+../common/DGCONS_ENTRY.f90
 ../kt/dubscr.f90
 ../kt/findag.f90
 ../kt/forkod.f90
