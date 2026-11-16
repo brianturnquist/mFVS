@@ -68,9 +68,12 @@ are compared exactly.
 
 Restart files are compared byte for byte after masking run identifiers. Two
 exceptions cover values that original F77 reads from uninitialized memory, so
-that no two runs need agree: one integer in TT restart files (bug 11 in
-[FOUND_BUGS.md](../../FOUND_BUGS.md)) and a tree decay code that is 0 in one
-file and 3 in the other (bug 12). Remove each exception when its bug is fixed.
+that no two runs need agree. The first is one integer in TT restart files
+(bug 11 in [FOUND_BUGS.md](../../FOUND_BUGS.md)). Bug 11 is repaired, so
+only the original side may differ there; the working tree must store 1. The
+second is a tree decay code that is 0 in one file and 3 in the other (bug 12).
+Remove that exception when bug 12 is fixed. The TT exception stays as long as
+comparisons are made with the unrepaired original.
 
 `check_comparator.py` checks the comparator itself against deliberately
 changed IE outputs.
@@ -86,8 +89,14 @@ R8PREPCOEF records. R9HT heights must match pinned original F77 exactly, with
 underflow allowed only in the fixture's original oracle and enabled for the
 repaired calls. R8 checks cover repeated and alternating records, preserved
 geometry, aliases and errors, under default settings and static-local storage.
+The VOLINITNVB check (bug 51) fills the stack with blank, `P`, digit, NUL and
+255 bytes before each of 120 default-equation calls. The repaired routine
+must return identical bits for every fill, and they must equal the frozen
+pre-repair routine's results with a blank. A `P` fill must change the
+pre-repair results, which shows that the fill reaches the undefined byte.
 These checks do not relax the full-suite comparator or establish Canadian
-simulation parity. `--component r9ht` or `--component r8prep` selects one repair.
+simulation parity. `--component r9ht`, `--component r8prep` or
+`--component nvbeqn` selects one repair.
 
 ## Focused NVEL parsing checks
 

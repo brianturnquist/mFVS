@@ -313,14 +313,14 @@ Original F77 has two versions of `ESFLTR`. `estb/esfltr.f` (AK, CI, EM, IE, KT) 
 
 ## 11. TT takes its geographic location code from a table that is never filled
 
-**Status:** found 14 November 2026 while tracing restart files. Present in original F77 (`c2105365:tt/forkod.f`, lines 35 and 88). Deliberately unfixed.
+**Status:** found 14 November 2026 while tracing restart files. Present in original F77 (`c2105365:tt/forkod.f`, lines 35 and 88). Repaired 16 November 2026 as part of prerequisite R01 in `OPTIMIZATION_TASKS.md`.
 **Variant:** TT.
 
-`tt/forkod.f90` declares `KFOR(4)` but gives it no values, then executes `IGL = KFOR(IFOR)` (line 79) whenever a valid forest code is used. Every other variant's `FORKOD` fills `KFOR` with a DATA statement. `IGL` therefore holds whatever was in memory: for example 1798184300 in one build of the original code and 1806851564 in another build of the same code.
+`tt/forkod.f90` declared `KFOR(4)` but gave it no values, then executed `IGL = KFOR(IFOR)` whenever a valid forest code was used. Every other variant's `FORKOD` fills `KFOR` with a DATA statement. `IGL` therefore held whatever was in memory: for example 1798184300 in one build of the original code and 1806851564 in another build of the same code.
 
-No routine that TT compiles reads `IGL`, so results are unaffected. The value is saved in restart files (the 25th integer of each stand's record), which is why TT restart files never match between builds. `tests/parity/check_suite.py` ignores that one integer for TT.
+TT never reads `IGL`, so results were unaffected. Since consolidation, TT compiles shared DGF and REGENT files that read `IGL`, but only in WS's DGF and BC's REGENT branches. The value is saved in restart files (the 25th integer of each stand's record), which is why TT restart files never matched between builds.
 
-**Suggested fix:** add `data KFOR/4*1/`, which keeps the value `GRINIT` assigns (`IGL = 1`). Then remove the TT exception from `check_suite.py`.
+**Repair:** `data KFOR/4*1/` keeps the value `GRINIT` assigns (`IGL = 1`), as UT's FORKOD does. In the suite's TT restart file, only the five stands' `IGL` words changed: 20 bytes, from 1861606772 to 1. All other TT outputs match the immediate baseline. Original F77 still stores an undefined value, so `tests/parity/check_suite.py` keeps the TT exception for comparisons with it. The exception now requires the working tree to store 1, which makes the comparison stricter than before.
 
 ---
 
@@ -1464,8 +1464,9 @@ baseline; the pristine-F77 suite remains 22/24 with the known BC/ON limits.
 
 ## 51. VOLINITNVB passes NSVB an equation whose eleventh character is undefined
 
-**Status:** confirmed on 16 November 2026 while preparing O06–O08; not
-fixed. Present in NVEL `d0e634fa` and pinned original `38548071`
+**Status:** confirmed on 16 November 2026 while preparing O06–O08, and
+repaired the same day as part of prerequisite R01 (before O10). Present in
+NVEL `d0e634fa`/`70fbb02` and pinned original `38548071`
 (`CHARACTER*11 VOLEQ,NVBEQN` in `volinit.f`); not introduced by
 modernization or by the O06–O08 parsing changes.
 
@@ -1498,6 +1499,20 @@ species an NSVB equation, which takes the other branch; its woodland
 species are Jenkins group 10, for which NVB_DefaultEq returns before NVBC.
 Direct NVEL callers receive the affected biomass.
 
-Suggested fix: set `NVBEQN = ' '` before calling NVB_DefaultEq, or give
-NVBEQ the caller's length and assign all eleven characters. This is a
-separate correctness change; O06–O08 leave the branch unchanged.
+**Repair:** VOLINITNVB now sets `NVBEQN = ' '` immediately before calling
+NVB_DefaultEq. NVB_DefaultEq, NVBC, SPEQCOEF and the deliberate `'P'` that
+NVBEQDEF writes for FIAVBC planted stands are unchanged. Results equal the
+former behavior with a blank, NUL, digit or other non-`P` byte.
+
+`tests/parity/check_nvel_repairs.py --component nvbeqn` fills the stack with
+blank, `P`, `0`, `7`, NUL and 255 before each of 120 default-equation calls.
+These cover five regions, 30 species, two tree sizes and live/dead trees; all
+return ERRFLAG 0. The repaired routine gives identical bits for every fill,
+equal to the frozen pre-repair routine with a blank. A `P` fill changes
+the pre-repair results in 114 cases, which shows the fill reaches the byte.
+The other fills change none.
+
+All 24 standard-suite variants match the immediate baseline (bug 11 already
+applied), and the pristine-original suite remains 22/24 with the known
+BC/ON limits. FIAVBC versions of IE `iet01` and SN `snt01` (natural and
+planted origin) also produce identical outputs before and after the repair.

@@ -26,6 +26,8 @@ subroutine FORKOD
   integer :: JFOR(4),KFOR(4),NUMFOR,I
   logical :: USEIGL,FORFOUND
   data JFOR/403,405,415,416/,NUMFOR/4/
+  ! Bug 11: every TT forest keeps GRINIT's IGL = 1; KFOR was never filled.
+  data KFOR/4*1/
 
   USEIGL = .true.
   FORFOUND = .false.

@@ -2,7 +2,8 @@
 
 Created 16 November 2026 from the material in [task_documents](task_documents/).
 This is a new checklist; the deleted working task list is not a source for it.
-O01–O08 were completed on 16 November 2026; the remaining tasks are pending.
+O01–O08 and prerequisite repair R01 were completed on 16 November 2026; the
+remaining tasks are pending. R02 and R03 gate O16 and O21 respectively.
 Creating this document does not start implementation.
 
 The objective is to reduce execution time, build time, memory use or storage
@@ -76,6 +77,13 @@ paths and invalidation rules where they help future debugging.
    candidate that offers no useful benefit. Keep builds and raw results in
    temporary directories outside the repository; discard them when finished.
    Do not add test archives, logs, receipts or separate completion reports.
+
+Prerequisite repairs R01–R03 are separate correctness changes, each placed
+before the tasks whose verification it affects. Complete each one before
+its gated task starts, with its own focused checks, immediate-baseline
+comparison and pristine-original suite result. Record each repair in
+`FOUND_BUGS.md`. Keep repairs out of optimization changes, so that each
+optimization is still compared with an unchanged baseline.
 
 The existing full-suite command is:
 
@@ -265,7 +273,8 @@ new flags were used; use a fresh temporary build/cache when necessary.
 ## 2. Reduce repeated species and equation conversions
 
 Start with O04 after O01–O02. O03 informs the NVEL and compiler experiments;
-an unresolved defect must not be silently corrected by those changes.
+an unresolved defect must not be silently corrected by those changes. R01
+repairs bugs 51 and 11, as separate steps, before O10.
 
 - [x] **O04 — Hoist STKVAL's final-loop species reads.**
   In `vbase/stkval.f90`, parse the needed nonblank FIA codes once per call
@@ -455,8 +464,9 @@ an unresolved defect must not be silently corrected by those changes.
   The suite has no FIAVBC deck. FIAVBC variants of `iet01`, `pnt01`, `cat01`
   and `snt01` (SN natural and planted origin, which differ from each other)
   also match among baseline, O07 and O08 builds. So do all 14 timing-workload
-  output trees. Bug 51 was recorded, not fixed: VOLINITNVB passes NSVB an
-  undefined eleventh character. No FVS output path for it was demonstrated.
+  output trees. Bug 51 was recorded, not fixed, in O08: VOLINITNVB passes
+  NSVB an undefined eleventh character. No FVS output path for it was
+  demonstrated. R01 has since repaired it.
 
   Timings used O02's protocol, toolchain and flags: one warm-up per
   workload/version, then five unprofiled runs interleaved with shuffle seed
@@ -505,6 +515,42 @@ an unresolved defect must not be silently corrected by those changes.
   (`nsvb.f90:1022`), not in conversions. Compiler flags, masks and tolerances
   were not changed. Temporary builds, runs, profiles and probes were removed.
 
+- [x] **R01 — Repair bugs 51 and 11 before O10.**
+  VOLINITNVB passed NVBC an undefined `NVBEQN(11:11)`
+  ([bug 51](FOUND_BUGS.md#51-volinitnvb-passes-nsvb-an-equation-whose-eleventh-character-is-undefined)).
+  O10 and O11 edit VOLINITNVB and NVB_DefaultEq, and their direct checks need
+  deterministic results. TT's FORKOD read an unfilled `KFOR` table
+  ([bug 11](FOUND_BUGS.md#11-tt-takes-its-geographic-location-code-from-a-table-that-is-never-filled)),
+  which forced a suite comparator exception. Acceptance: each repair compared
+  with its own immediate baseline, an unchanged pristine-original result, and
+  focused checks showing that results no longer depend on stack contents.
+
+  Result, 16 November 2026: both repaired on main `61f54960` / NVEL `70fbb02`,
+  each as its own step.
+
+  - Bug 11: `data KFOR/4*1/` in `tt/forkod.f90`. All TT outputs match the
+    immediate baseline; the restart file changes only in its five stands'
+    `IGL` words (1861606772 -> 1). `check_suite.py` keeps the TT exception
+    for unrepaired original F77, but now requires the working tree to store
+    1, and it rejects an undefined value on that side.
+  - Bug 51: `NVBEQN = ' '` before NVB_DefaultEq in `volume/NVEL/volinit.f90`.
+    `check_nvel_repairs.py --component nvbeqn` runs 120 default-equation
+    cases, filling the stack before each call. Results are identical for six
+    fills and equal the pre-repair routine's results with a blank. A `P` fill
+    changes 114 pre-repair results, so the check reaches the byte. All 24
+    variants match the bug-11 baseline. FIAVBC `iet01` and `snt01` (natural
+    and planted origin) are identical before and after the repair.
+
+  The O06–O08 NSVB checks still pass. The pristine-original suite still
+  reports only the known BC/ON differences:
+
+  ```text
+  FAIL 22/24 variants; working tree 61f54960+changes vs original c2105365; failed: bc on
+  ```
+
+  Timings were not remeasured; the repairs add one assignment and one DATA
+  statement. Temporary builds and runs were removed.
+
 - [ ] **O09 — Optimize region, forest and province parsing.**
   Review `GetRegnWF` and `NVB_EcoProv` in `volume/NVEL/nsvb.f90`, applying O06
   one routine at a time. Preserve FORST/DIST padding and in-place mutations,
@@ -512,17 +558,19 @@ an unresolved defect must not be silently corrected by those changes.
   modified arguments for digit, padded and fallback cases.
 
 - [ ] **O10 — Optimize VOLINIT and VOLINITNVB integer reads.**
-  Review `volume/NVEL/volinit.f90` after O06. Preserve substring widths,
-  CONSPEC length-dependent branches, zero/default selection, and NVB/non-NVB
-  dispatch. Acceptance: exact direct and integrated comparisons across the
-  affected equation families, with each entry point verified separately.
+  Prerequisite: R01 (complete). Review `volume/NVEL/volinit.f90` after O06.
+  Preserve substring widths, CONSPEC length-dependent branches, zero/default
+  selection, NVB/non-NVB dispatch and R01's blank `NVBEQN(11:11)`.
+  Acceptance: exact direct and integrated comparisons across the affected
+  equation families, with each entry point verified separately.
 
 - [ ] **O11 — Assess fixed-width integer WRITE replacements.**
-  Separately examine `NVB_DefaultEq` and `VOLINITNVB` equation/species string
-  construction. Preserve field width, blank padding, zero filling, signs and
-  overflow output; retain the original WRITE outside a proven fast-path range.
-  Acceptance: byte-identical strings and errors over the relevant ranges and
-  boundary cases. Skip sites whose remaining cost does not justify the change.
+  Prerequisite: R01 (complete). Separately examine `NVB_DefaultEq` and
+  `VOLINITNVB` equation/species string construction. Preserve field width,
+  blank padding, zero filling, signs and overflow output; retain the original
+  WRITE outside a proven fast-path range. Acceptance: byte-identical strings
+  and errors over the relevant ranges and boundary cases. Skip sites whose
+  remaining cost does not justify the change.
 
 - [ ] **O12 — Reduce NATCRS conversion overhead.**
   Inspect `vvolume/fvsvol.f90:NATCRS` after O06. Review the FIA-code READ,
@@ -555,13 +603,28 @@ an unresolved defect must not be silently corrected by those changes.
 
 ## 3. Avoid repeated snag-volume work
 
+- [ ] **R02 — Repair bugs 42 and 46 before O16.**
+  BC's FMSVOL calls the ten-argument CFTOPK with nine arguments, leaving one
+  input undefined ([bug 42](FOUND_BUGS.md#42-bc-snag-volume-calls-the-ten-argument-cftopk-with-nine-arguments)).
+  O16 therefore cannot show that two BC snag-volume calls are equivalent.
+  ON snag volumes stop on a floating-point trap
+  ([bug 46](FOUND_BUGS.md#46-on-snag-volume-reports-stop-with-a-floating-point-trap)),
+  so that path cannot be exercised. Establish BC's intended total,
+  merchantable and sawtimber handling, then pass a complete, typed argument
+  list. Diagnose ON's non-positive BEHRE argument or zero VOLT, then correct
+  the input or guard. Acceptance: two separately verified repairs, BC/ON snag
+  decks (`FMIN`, `SNAGOUT`, `END`) that complete, immediate-baseline
+  comparisons and an unchanged pristine-original result. If no scientifically
+  defined repair can be established, record that decision here; O16 then
+  proceeds with Canadian snag paths explicitly excluded.
+
 - [ ] **O16 — Audit CWD1/CWD2 volume-call equivalence.**
-  After O15, trace `fire/vbase/fmsnag.f90`, the ENTRY paths in
-  `fire/base/fmcwd.f90`, FMSVL2 and other callers such as FMSALV/CWD3. Check
-  hidden state, mutable arguments, diagnostics, early returns and keyword
-  effects as well as explicit species/diameter/height inputs. Acceptance:
-  establish whether removing a repeated call preserves every observable
-  effect; matching argument values alone are insufficient.
+  Prerequisite: R02. After O15, trace `fire/vbase/fmsnag.f90`, the ENTRY
+  paths in `fire/base/fmcwd.f90`, FMSVL2 and other callers such as
+  FMSALV/CWD3. Check hidden state, mutable arguments, diagnostics, early
+  returns and keyword effects as well as explicit species/diameter/height
+  inputs. Acceptance: establish whether removing a repeated call preserves
+  every observable effect; matching argument values alone are insufficient.
 
 - [ ] **O17 — Reuse volume within a proven snag call pair.**
   Only if O16 establishes equivalence, reuse the computed total volume within
@@ -569,7 +632,7 @@ an unresolved defect must not be silently corrected by those changes.
   and independent CWD callers. Avoid cross-year/stand caches. Acceptance:
   focused fall/breakage/salvage, multi-year, debug and restart comparisons,
   unchanged RNG state, fewer calls and a measured benefit. Retain explicit
-  limits for Canadian snag paths affected by known defects.
+  limits for Canadian snag paths only where R02 leaves a defect unresolved.
 
 ## 4. Evaluate compiler optimization in isolated steps
 
@@ -593,11 +656,33 @@ an unresolved defect must not be silently corrected by those changes.
   the number of SAVE statements alone do not establish a defect. Acceptance:
   relevant hazards are recorded and the next trial is either cleared for
   investigation or explicitly deferred. Do not ship diagnostic initialization.
+  Model-affecting hazards found here are added to R03.
+
+- [ ] **R03 — Repair undefined model-value reads before O21.**
+  After O20 and before any optimized Fortran trial, repair the known
+  undefined reads that feed model calculations. An optimized build changes
+  the leftover values these read. That would produce differences that block
+  O21, or that could be wrongly attributed to the compiler. The bugs are:
+  [12](FOUND_BUGS.md#12-decay-codes-read-from-tree-files-are-set-from-the-previous-records-history-code)
+  (decay codes from the previous tree record),
+  [19](FOUND_BUGS.md#19-kt-cratet-conditionally-reads-unassigned-or-stale-local-values)
+  (KT CRATET `IERRCK`),
+  [37](FOUND_BUGS.md#37-morts-reads-unset-fixmort-flags-and-diagnostic-work-values)
+  (AK MORTS FIXMORT flags),
+  [40](FOUND_BUGS.md#40-cssn-fuel-model-selection-reads-unassigned-moisture-weights)
+  (CS/SN moisture weights), and any further model-affecting hazard that O20
+  records. Each repair changes results. Settle its intended behavior first,
+  then verify it on its own with focused cases and an immediate-baseline
+  comparison. After bug 12, remove the decay-code restart exception from
+  `check_suite.py`. Acceptance: O20's diagnostic builds show no remaining
+  model-affecting undefined reads in the suite and timing workloads, or each
+  remaining one is explicitly deferred and excluded from O21's scope.
 
 - [ ] **O21 — Trial conservative Fortran optimization.**
-  Only after O20, evaluate `-O2 -ffp-contract=off` in fresh controlled builds,
-  retaining other numerical flags. Do not use `-Ofast`, fast-math, native-CPU
-  tuning, expression reassociation or changed precision. Acceptance: exact
+  Prerequisite: R03. Only after O20 and R03, evaluate
+  `-O2 -ffp-contract=off` in fresh controlled builds, retaining other
+  numerical flags. Do not use `-Ofast`, fast-math, native-CPU tuning,
+  expression reassociation or changed precision. Acceptance: exact
   affected/full-suite comparisons plus available larger and repeated/API
   workloads. Any unexplained difference blocks adopting the flag; no model
   bug fixes or blanket SAVE changes are bundled into this task.

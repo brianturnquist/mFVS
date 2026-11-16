@@ -137,8 +137,9 @@ def restart_difference(left: Path, right: Path, variant: str) -> str | None:
     """Compare two restart files, allowing only two documented original defects.
 
     Both read uninitialized memory in original F77, so no two runs need agree:
-    * TT stores a location code (IGL) taken from a table that is never filled
-      (FOUND_BUGS.md, bug 11). It is the 25th integer of each stand's record.
+    * Original TT stores a location code (IGL) taken from a table that is
+      never filled (FOUND_BUGS.md, bug 11). It is the 25th integer of each
+      stand's record. The repaired working tree must store GRINIT's value, 1.
     * A tree's decay code is 0 or 3 depending on the previous record's history
       code, which is undefined for the first tree (bug 12).
     Anything else must match byte for byte.
@@ -152,10 +153,11 @@ def restart_difference(left: Path, right: Path, variant: str) -> str | None:
     allowed: set[int] = set()
     if variant == "tt":
         # The file starts with stop code, year, name length and name, then the
-        # first stand's integers. Every stand repeats the same undefined value.
+        # first stand's integers. Every stand repeats the same undefined value
+        # on the left (original or pre-repair) side; the right must hold 1.
         first = 12 + int.from_bytes(a[8:12], "little") + 24 * 4
         ours, theirs = a[first:first + 4], b[first:first + 4]
-        word = a.find(ours)
+        word = a.find(ours) if theirs == (1).to_bytes(4, "little") else -1
         while word >= 0:
             if b[word:word + 4] == theirs:
                 allowed.update(range(word, word + 4))
