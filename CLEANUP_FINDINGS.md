@@ -6,8 +6,9 @@ The goal is one definition of each calculation, with variant differences
 expressed explicitly in coefficient banks, species mappings or bounded
 branches. The findings below come from current source and the 24 build
 manifests. F01–F14 were authorized and completed on
-15 November 2026, and F15–F25 on 16 November 2026. F21a–F21f, F22a–F22h
-and F26a–F26g are proposed follow-up tasks.
+15 November 2026, and F15–F25 on 16 November 2026. F21a–F21b and
+F22a–F22d were also completed on 16 November 2026. F21c–F21f, F22e–F22h
+and F26a–F26g remain proposed follow-up tasks.
 
 At the audit baseline, excluding include files and NVEL, the manifests
 selected 1,286 Fortran source files. There were 92 repeated filename
@@ -302,7 +303,8 @@ changes; unchecked findings remain proposals.
   immediate baseline. Coverage decks ran every extracted handler in several
   forms, including blank, invalid, PARMS and echo-off, in all 24 variants;
   outputs matched baseline `94c172ea` except the undefined bytes of bugs
-  45 and 47. The remaining volume handlers are F21a–F21e.
+  45 and 47. F21a–F21b below complete four further volume handlers;
+  F21c–F21e remain proposed.
 
   The follow-up tasks below are ordered by complexity. A shared handler
   keeps each differing statement behind `if (LMETRICVAR)`, so every variant
@@ -311,17 +313,23 @@ changes; unchecked findings remain proposals.
   the handler in all 24 variants with values whose imperial and metric
   results differ. Statement counts are US/ON/BC.
 
-- [ ] **F21a — MCFDLN and BFFDLN (low).**
+- [x] **F21a — MCFDLN and BFFDLN (low).**
 
-  The copies differ only in region lists (`case` entries and the FIA-VBC
-  guard, as in VOLEQNUM) and one echo FORMAT. Confirm that each region
-  entry is unreachable where it is absent, then select the FORMAT with
-  `LMETRICVAR`.
+  Completed 16 November 2026 in
+  [vbase/initrevol_mod.f90](vbase/initrevol_mod.f90). Region entries absent
+  from a native copy are unreachable for its variants; BC/ON initialize
+  `LFIANVB` false and do not expose the US FIAVBC keyword. The shared
+  handlers retain that guard, ON's gross-total wording, BC's metric-board
+  wording and each native FORMAT. Verification is recorded below.
 
-- [ ] **F21b — MCDEFECT and BFDEFECT (low–medium).**
+- [x] **F21b — MCDEFECT and BFDEFECT (low–medium).**
 
-  Three or four region hunks and two to four FORMAT hunks; BC differs from
-  ON in up to four places. Same method as F21a.
+  Completed 16 November 2026 in
+  [vbase/initrevol_mod.f90](vbase/initrevol_mod.f90). The shared handlers
+  preserve immediate, grouped and scheduled requests, native region
+  branches, FORMAT spacing and the return from a failed PARMS read.
+  ON's inconsistent species-group heading was recorded as bug 48 and
+  preserved. Verification is recorded below.
 
 - [ ] **F21c — DEFECT (medium–high).**
 
@@ -363,24 +371,35 @@ changes; unchecked findings remain proposals.
   places; F22a–F22h group them by complexity. Each can follow the existing
   `FM*REQ_MOD` pattern with `LMETRICVAR`, verified as described under F21.
 
-- [ ] **F22a — FUELTRET (trivial).**
+- [x] **F22a — FUELTRET (trivial).**
 
-  Identical apart from a space; skipped only because FORMAT 2504 was shared
-  with SALVSP. Extract it with the F21 method.
+  Completed 16 November 2026 in
+  [fire/base/fminkeys_mod.f90](fire/base/fminkeys_mod.f90). Finished the
+  interrupted extraction, retaining its own FORMAT 2504, parameter bounds,
+  PARMS handling and stand-level gate. Verification is recorded below.
 
-- [ ] **F22b — Report-window flags (low).**
+- [x] **F22b — Report-window flags (low).**
 
-  FUELREPT, MORTREPT, CARBREPT, CARBCUT, SOILHEAT and CANFPROF each differ
-  in one place: the imperial year window versus the metric −1 sentinel (the
-  bug 24 rule). Follow `FMFUELREQ_MOD` and `FMDWCVREQ_MOD`.
+  Completed 16 November 2026 in `FMINKEYS_MOD`: FUELREPT, MORTREPT,
+  CARBREPT, CARBCUT, SOILHEAT and CANFPROF. `LMETRICVAR` selects the
+  original metric −1 sentinels or imperial year bounds, including
+  SOILHEAT's negative heading year; bug 24 remains unchanged. Verification
+  is recorded below.
 
-- [ ] **F22c — One unit conversion (low).**
+- [x] **F22c — One unit conversion (low).**
 
-  FUELINIT, SNAGINIT, POTFWIND, POTFTEMP, CARBCALC, FIRECALC and FUELSOFT.
+  Completed 16 November 2026 in `FMINKEYS_MOD`: FUELINIT, SNAGINIT,
+  POTFWIND, POTFTEMP, CARBCALC, FIRECALC and FUELSOFT. Each metric
+  conversion, condition, arithmetic order and echo stays in its original
+  position behind `LMETRICVAR`; local arrays and scheduling variables are
+  passed by reference. Verification is recorded below.
 
-- [ ] **F22d — FORMAT text only (low).**
+- [x] **F22d — FORMAT text only (low).**
 
-  FUELDCAY and POTFMOIS (one FORMAT each) and DUFFPROD (two).
+  Completed 16 November 2026 in `FMINKEYS_MOD`: FUELDCAY, POTFMOIS and
+  DUFFPROD. `LMETRICVAR` selects the original FORMATs; both class-specific
+  and all-class FUELDCAY messages retain their native size labels.
+  Verification is recorded below.
 
 - [ ] **F22e — Two or three places (medium).**
 
@@ -613,3 +632,28 @@ reports stop with a floating-point trap) and 47 (BC prints undefined
 volume-equation codes after an invalid VOLEQNUM) were found and recorded
 unfixed. No model bug fixes were made. Temporary trees, decks and outputs
 were discarded.
+
+F21a–F21b and F22a–F22d were completed 16 November 2026 against baseline
+`c12c9be1`. Four INITRE handlers and 17 FMIN handlers now have one definition
+in their existing modules; all three INITRE callers and both FMIN callers
+use them. No source-list additions were needed. Existing model behavior,
+including bug 24 and the newly recorded diagnostic bug 48, was preserved.
+
+The full regression suite built all 24 variants. All 22 US variants matched
+original F77, including restart files; BC and ON retained their documented
+original-reference differences. All 24 variants' complete regression outputs
+matched `c12c9be1` exactly under the existing comparator. The suite's original
+reference summary was `FAIL 22/24 variants; working tree c12c9be1+changes vs
+original c2105365; failed: bc on`; the separate immediate-baseline comparison
+passed 24/24. This does not establish pristine-original Canadian simulation
+parity, and BC StandStructure still has its existing later failure.
+
+In 118 focused cases across all 24 variants, all 21 handlers were reached
+with blank, explicit, invalid, group, scheduled, PARMS, echo-off and US
+FIAVBC inputs as applicable. Outputs and instrumented state and operation
+bytes matched the immediate baseline. Another 96 cases covered EOF during
+PARMS input, and IE/BC/ON checks matched landscape-request handling. Deliberate
+metric-conversion and report-sentinel mutations were detected. Source-list
+and whitespace checks passed. Temporary builds, instrumentation, decks and
+outputs were discarded; no test infrastructure or result archives were
+added to the repository.

@@ -9,7 +9,8 @@ subroutine INITRE
        &INKCOMPRESS, INKCALBSTAT, INKDELOTAB, INKCUTLIST, INKRESETAGE,&
        &INKMANAGED, INKFVSSTAND, INKPOINTREF, INKECHO, INKCYCLEAT,&
        &INKATRTLIST, INKORGANON
-  use INITREVOL_MOD, only: INVVOLEQNUM
+  use INITREVOL_MOD, only: INVVOLEQNUM, INVMCFDLN, INVBFFDLN,&
+       &INVMCDEFECT, INVBFDEFECT
   implicit none
 
   ! Exit taken by a shared keyword handler (0: next keyword)
@@ -1316,341 +1317,30 @@ subroutine INITRE
   !  ==========  OPTION NUMBER 39: MCFDLN  ============================MCFDLN
 
   4100 continue
-  LCVOLS = .true.
-  call SDEFLN(LNOTBK,ARRAY,KEYWRD,CFLA0,CFLA1,KARD,IS)
-  if (IS .eq. -999) go to 10
-
-  select case (VARACD)
-
-  case ('CS','LS','NE','SN')
-     if (LKECHO)write(JOSTND,4110)
-     4110 format(T12,'DEFECT CORRECTIONS WILL BE APPLIED TO ',&
-          &'PULPWOOD VOLUME.')
-
-  case ('ON')
-     if (LKECHO)write(JOSTND,4111)
-     4111 format(T12,'DEFECT CORRECTIONS WILL BE APPLIED TO ',&
-          &'GROSS TOTAL VOLUME.')
-
-  case default
-     if (LKECHO)write(JOSTND,4120)
-     4120 format(T12,'DEFECT CORRECTIONS WILL BE APPLIED TO ',&
-          &'MERCHANTABLE CUBIC METER VOLUME.')
-
-  end select
-  go to 10
+  call INVMCFDLN(ARRAY,IS,LNOTBK,LKECHO,KARD,KEYWRD)
+  goto 10
 
   !  ==========  OPTION NUMBER 40: BFFDLN  ============================BFFDLN
 
   4200 continue
-  LBVOLS = .true.
-  call SDEFLN(LNOTBK,ARRAY,KEYWRD,BFLA0,BFLA1,KARD,IS)
-  if (IS .eq. -999) go to 10
-
-  select case (VARACD)
-
-  case ('CS','LS','NE','SN','ON')
-     if (LKECHO)write(JOSTND,4210)
-     4210 format(T12,'DEFECT CORRECTIONS WILL BE APPLIED TO ',&
-          &'SAWLOG VOLUME.')
-
-  case default
-     if (LKECHO)write(JOSTND,4220)
-     4220 format(T12,'DEFECT CORRECTIONS WILL BE APPLIED TO ',&
-          &'BOARD FOOT VOLUME.')
-
-  end select
-  go to 10
+  call INVBFFDLN(ARRAY,IS,LNOTBK,LKECHO,KARD,KEYWRD)
+  goto 10
 
   !  ==========  OPTION NUMBER 41:  MCDEFECT  =========================MCDEFECT
 
   4300 continue
-  LCVOLS = .true.
-
-  !     IF THE DATE WAS NOT SPECIFIED (LNOTBK(1)=F), OR = 0;
-  !     THEN: CHANGE THE DEFAULT STANDARDS (DO NOT 'SCHEDULE' THE
-  !     REQUEST TO CHANGE THE STANDARDS).
-
-  if (LNOTBK(1) .and. ARRAY(1).gt.0.) go to 4350
-
-  !     SPECIES CODE PROCESSING.
-
-  call SPDECD (2,IS,NSP(1,1),JOSTND,IRECNT,KEYWRD,&
-       &ARRAY,KARD)
-  if (IS.eq.-999) go to 10
-
-  !     IF (IS<0) CHANGE ALL SPECIES IN THE GROUP
-
-  if (IS .lt.0) then
-     IGRP = -IS
-     IULIM = ISPGRP(IGRP,1)+1
-     do IG = 2,IULIM
-        IGSP = ISPGRP(IGRP,IG)
-        if (LNOTBK(3)) CFDEFT(2,IGSP) = ARRAY(3)
-        if (LNOTBK(4)) CFDEFT(3,IGSP) = ARRAY(4)
-        if (LNOTBK(5)) CFDEFT(4,IGSP) = ARRAY(5)
-        if (LNOTBK(6)) CFDEFT(5,IGSP) = ARRAY(6)
-        if (LNOTBK(7)) then
-           CFDEFT(6,IGSP) = ARRAY(7)
-           CFDEFT(7,IGSP) = ARRAY(7)
-           CFDEFT(8,IGSP) = ARRAY(7)
-           CFDEFT(9,IGSP) = ARRAY(7)
-        end if
-        4321 continue
-     end do
-     ILEN = ISPGRP(-IS,92)
-
-     select case (VARACD)
-
-     case ('CS','LS','NE','SN','ON')
-        if (LKECHO)write(JOSTND,4332) KEYWRD,KARD(2)(1:ILEN),IS,&
-             &(ARRAY(I),I = 3,7)
-
-     case default
-        if (LKECHO)write(JOSTND,4340) KEYWRD,KARD(2)(1:ILEN),IS,&
-             &(ARRAY(I),I = 3,7)
-
-     end select
-     go to 10
-
-     !     IF (IS=0) ALL SPECIES WILL BE CHANGED IN FOLLOWING CODE:
-
-  else if (IS .eq.0) then
-     do IS = 1,MAXSP
-        if (LNOTBK(3)) CFDEFT(2,IS) = ARRAY(3)
-        if (LNOTBK(4)) CFDEFT(3,IS) = ARRAY(4)
-        if (LNOTBK(5)) CFDEFT(4,IS) = ARRAY(5)
-        if (LNOTBK(6)) CFDEFT(5,IS) = ARRAY(6)
-        if (LNOTBK(7)) then
-           CFDEFT(6,IS) = ARRAY(7)
-           CFDEFT(7,IS) = ARRAY(7)
-           CFDEFT(8,IS) = ARRAY(7)
-           CFDEFT(9,IS) = ARRAY(7)
-        end if
-        4310 continue
-     end do
-
-     select case (VARACD)
-
-     case ('CS','LS','NE','SN')
-        if (LKECHO)write(JOSTND,4312) KEYWRD,(ARRAY(I),I = 3,7)
-        4312 format(/A8,T12,'PULPWOOD VOLUME DEFECT',&
-             &' PROPORTIONS HAVE BEEN CHANGED FOR ALL SPECIES:',&
-             &/T12,' 12.7 CM TREES=',F6.2,'; 25.4 CM TREES=',F6.2,&
-             &'; 38.1 CM TREES=',F6.2,/T12,'50.8 CM TREES=',F6.2,&
-             &'; 63.5 CM AND LARGER TREES=',F6.2)
-
-     case ('ON')
-        if (LKECHO)write(JOSTND,4313) KEYWRD,(ARRAY(I),I = 3,7)
-        4313 format(/A8,T12,'GROSS TOTAL VOLUME DEFECT',&
-             &' PROPORTIONS HAVE BEEN CHANGED FOR ALL SPECIES:',&
-             &/T12,' 12.7 CM TREES=',F6.2,'; 25.4 CM TREES=',F6.2,&
-             &'; 38.1 CM TREES=',F6.2,/T12,'50.8 CM TREES=',F6.2,&
-             &'; 63.5 CM AND LARGER TREES=',F6.2)
-
-     case default
-        if (LKECHO)write(JOSTND,4320) KEYWRD,(ARRAY(I),I = 3,7)
-        4320 format(/A8,T12,'CUBIC METRE VOLUME DEFECT',&
-             &' PROPORTIONS HAVE BEEN CHANGED FOR ALL SPECIES:',&
-             &/T12,' 12.7 CM TREES=',F6.2,'; 25.4 CM TREES=',F6.2,&
-             &'; 38.1 CM TREES=',F6.2,/T12,'50.8 CM TREES=',F6.2,&
-             &'; 63.5 CM AND LARGER TREES=',F6.2)
-     end select
-     goto 10
-
-     !     SPECIES CODE IS SPECIFIED (IS>0).
-
-  else
-     if (LNOTBK(3)) CFDEFT(2,IS) = ARRAY(3)
-     if (LNOTBK(4)) CFDEFT(3,IS) = ARRAY(4)
-     if (LNOTBK(5)) CFDEFT(4,IS) = ARRAY(5)
-     if (LNOTBK(6)) CFDEFT(5,IS) = ARRAY(6)
-     if (LNOTBK(7)) then
-        CFDEFT(6,IS) = ARRAY(7)
-        CFDEFT(7,IS) = ARRAY(7)
-        CFDEFT(8,IS) = ARRAY(7)
-        CFDEFT(9,IS) = ARRAY(7)
-     end if
-
-     select case (VARACD)
-
-     case ('CS','LS','NE','SN')
-        ILEN = 3
-        if (LKECHO)write(JOSTND,4332) KEYWRD,KARD(2)(1:ILEN),IS,&
-             &(ARRAY(I),I = 3,7)
-        4332 format(/A8,T12,'PULPWOOD VOLUME DEFECT PROPORTIONS HAVE',&
-             &'BEEN CHANGED FOR SPECIES:',A,' (CODE=',I3,')',&
-             &/T12,' 12.7 CM TREES=',F6.2,'; 25.4 CM TREES=',F6.2,&
-             &'; 38.1 CM TREES=',F6.2,/T12,'50.8 CM TREES=',F6.2,&
-             &'; 63.5 CM AND LARGER TREES=',F6.2)
-
-     case ('ON')
-        ILEN = 3
-        if (LKECHO)write(JOSTND,4333) KEYWRD,KARD(2)(1:ILEN),IS,&
-             &(ARRAY(I),I = 3,7)
-        4333 format(/A8,T12,'GROSS TOTAL VOLUME DEFECT PROPORTIONS ',&
-             &'HAVE BEEN CHANGED FOR SPECIES:',A,' (CODE=',I3,')',&
-             &/T12,' 12.7 CM TREES=',F6.2,'; 25.4 CM TREES=',F6.2,&
-             &'; 38.1 CM TREES=',F6.2,/T12,'50.8 CM TREES=',F6.2,&
-             &'; 63.5 CM AND LARGER TREES=',F6.2)
-
-     case default
-        ILEN = 3
-        if (LKECHO)write(JOSTND,4340) KEYWRD,KARD(2)(1:ILEN),IS,&
-             &(ARRAY(I),I = 3,7)
-        4340 format(/A8,T12,'CUBIC METRE VOLUME DEFECT PROPORTIONS ',&
-             &'HAVE BEEN CHANGED FOR SPECIES:',A,' (CODE=',I3,')',&
-             &/T12,' 12.7 CM TREES=',F6.2,'; 25.4 CM TREES=',F6.2,&
-             &'; 38.1 CM TREES=',F6.2,/T12,'50.8 CM TREES=',F6.2,&
-             &'; 63.5 CM AND LARGER TREES=',F6.2)
-     end select
-
-     goto 10
-  end if
-
-  ! SCHEDULE THE ACTIVITY
-
-  4350 continue
-  call SDEFET (LNOTBK,ARRAY,KEYWRD,LOPEVN,215,KARD,IPRMPT)
-  call fvsGetRtnCode(IRTNCD)
-  if (IRTNCD.ne.0) return
-  go to 10
+  call INVMCDEFECT(ARRAY,IGSP,IG,IULIM,IGRP,ILEN,IS,IPRMPT,I,IRTNCD,LNOTBK,LOPEVN,LKECHO,&
+       &KARD,KEYWRD,IKEXIT)
+  if (IKEXIT .lt. 0) return
+  goto 10
 
   !  ==========  OPTION NUMBER 42:  BFDEFECT  =========================BFDEFECT
 
   4400 continue
-  LBVOLS = .true.
-
-  !     IF THE DATE WAS NOT SPECIFIED (LNOTBK(1)=F), OR = 0;
-  !     THEN: CHANGE THE DEFAULT STANDARDS (DO NOT 'SCHEDULE' THE
-  !     REQUEST TO CHANGE THE STANDARDS).
-
-  if (LNOTBK(1) .and. ARRAY(1).gt.0.) go to 4450
-
-  !     SPECIES CODE PROCESSING.
-
-  call SPDECD (2,IS,NSP(1,1),JOSTND,IRECNT,KEYWRD,&
-       &ARRAY,KARD)
-  if (IS.eq.-999) goto 10
-
-  !     IF (IS<0) CHANGE ALL SPECIES IN THE GROUP
-
-  if (IS .lt.0) then
-     IGRP = -IS
-     IULIM = ISPGRP(IGRP,1)+1
-     do IG = 2,IULIM
-        IGSP = ISPGRP(IGRP,IG)
-        if (LNOTBK(3)) BFDEFT(2,IGSP) = ARRAY(3)
-        if (LNOTBK(4)) BFDEFT(3,IGSP) = ARRAY(4)
-        if (LNOTBK(5)) BFDEFT(4,IGSP) = ARRAY(5)
-        if (LNOTBK(6)) BFDEFT(5,IGSP) = ARRAY(6)
-        if (LNOTBK(7)) then
-           BFDEFT(6,IGSP) = ARRAY(7)
-           BFDEFT(7,IGSP) = ARRAY(7)
-           BFDEFT(8,IGSP) = ARRAY(7)
-           BFDEFT(9,IGSP) = ARRAY(7)
-        end if
-        4021 continue
-     end do
-     ILEN = ISPGRP(-IS,92)
-
-     select case (VARACD)
-
-     case ('CS','LS','NE','SN','ON')
-        if (LKECHO)write(JOSTND,4432) KEYWRD,KARD(2)(1:ILEN),IS,&
-             &(ARRAY(I),I = 3,7)
-
-     case default
-        if (LKECHO)write(JOSTND,4440) KEYWRD,KARD(2)(1:ILEN),IS,&
-             &(ARRAY(I),I = 3,7)
-
-     end select
-     go to 10
-
-     !     IF (IS=0) ALL SPECIES WILL BE CHANGED IN FOLLOWING CODE:
-
-  else if (IS .eq.0) then
-     do IS = 1,MAXSP
-        if (LNOTBK(3)) BFDEFT(2,IS) = ARRAY(3)
-        if (LNOTBK(4)) BFDEFT(3,IS) = ARRAY(4)
-        if (LNOTBK(5)) BFDEFT(4,IS) = ARRAY(5)
-        if (LNOTBK(6)) BFDEFT(5,IS) = ARRAY(6)
-        if (LNOTBK(7)) then
-           BFDEFT(6,IS) = ARRAY(7)
-           BFDEFT(7,IS) = ARRAY(7)
-           BFDEFT(8,IS) = ARRAY(7)
-           BFDEFT(9,IS) = ARRAY(7)
-        end if
-        4410 continue
-     end do
-
-     select case (VARACD)
-
-     case ('CS','LS','NE','SN','ON')
-        if (LKECHO)write(JOSTND,4412) KEYWRD,(ARRAY(I),I = 3,7)
-        4412 format(/A8,T12,'SAWLOG VOLUME DEFECT',&
-             &' PROPORTIONS HAVE BEEN CHANGED FOR ALL SPECIES:',&
-             &/T12,' 12.7 CM TREES=',F6.2,'; 25.4 CM TREES=',F6.2,&
-             &'; 38.1 CM TREES=',F6.2,/T12,'50.8 CM TREES=',F6.2,&
-             &'; 63.5 CM AND LARGER TREES=',F6.2)
-
-     case default
-        if (LKECHO)write(JOSTND,4420) KEYWRD,(ARRAY(I),I = 3,7)
-        4420 format(/A8,T12,'BOARD FOOT VOLUME DEFECT',&
-             &' PROPORTIONS HAVE BEEN CHANGED FOR ALL SPECIES:',&
-             &/T12,' 12.7 CM TREES=',F6.2,'; 25.4 CM TREES=',F6.2,&
-             &'; 38.1 CM TREES=',F6.2,/T12,'50.8 CM TREES=',F6.2,&
-             &'; 63.5 CM AND LARGER TREES=',F6.2)
-     end select
-     goto 10
-
-     !     SPECIES CODE IS SPECIFIED (IS > 0).
-
-  else
-     if (LNOTBK(3)) BFDEFT(2,IS) = ARRAY(3)
-     if (LNOTBK(4)) BFDEFT(3,IS) = ARRAY(4)
-     if (LNOTBK(5)) BFDEFT(4,IS) = ARRAY(5)
-     if (LNOTBK(6)) BFDEFT(5,IS) = ARRAY(6)
-     if (LNOTBK(7)) then
-        BFDEFT(6,IS) = ARRAY(7)
-        BFDEFT(7,IS) = ARRAY(7)
-        BFDEFT(8,IS) = ARRAY(7)
-        BFDEFT(9,IS) = ARRAY(7)
-     end if
-
-     select case (VARACD)
-
-     case ('CS','LS','NE','SN','ON')
-        ILEN = 3
-        if (LKECHO)write(JOSTND,4432) KEYWRD,KARD(2)(1:ILEN),IS,&
-             &(ARRAY(I),I = 3,7)
-        4432 format(/A8,T12,'SAWLOG VOLUME DEFECT PROPORTIONS HAVE ',&
-             &' BEEN CHANGED FOR SPECIES:',A,' (CODE=',I3,')',&
-             &/T12,' 12.7 CM TREES=',F6.2,'; 25.4 CM TREES=',F6.2,&
-             &'; 38.1 CM TREES=',F6.2,/T12,'50.8 CM TREES=',F6.2,&
-             &'; 63.5 CM AND LARGER TREES=',F6.2)
-
-     case default
-        ILEN = 3
-        if (LKECHO)write(JOSTND,4440) KEYWRD,KARD(2)(1:ILEN),IS,&
-             &(ARRAY(I),I = 3,7)
-        4440 format(/A8,T12,'BOARD FOOT VOLUME DEFECT PROPORTIONS ',&
-             &'HAVE BEEN CHANGED FOR SPECIES:',A,' (CODE=',I3,')',&
-             &/T12,' 12.7 CM TREES=',F6.2,'; 25.4 CM TREES=',F6.2,&
-             &'; 38.1 CM TREES=',F6.2,/T12,'50.8 CM TREES=',F6.2,&
-             &'; 63.5 CM AND LARGER TREES=',F6.2)
-
-     end select
-     goto 10
-  end if
-
-  !  SCHEDULE THE ACTIVITY
-
-  4450 continue
-  call SDEFET (LNOTBK,ARRAY,KEYWRD,LOPEVN,216,KARD,IPRMPT)
-  call fvsGetRtnCode(IRTNCD)
-  if (IRTNCD.ne.0) return
-  go to 10
+  call INVBFDEFECT(ARRAY,IGSP,IG,IULIM,IGRP,ILEN,IS,IPRMPT,I,IRTNCD,LNOTBK,LOPEVN,LKECHO,&
+       &KARD,KEYWRD,IKEXIT)
+  if (IKEXIT .lt. 0) return
+  goto 10
 
   !  ==========  OPTION NUMBER 43:  VOLUME  ===========================VOLUME
 

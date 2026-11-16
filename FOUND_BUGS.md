@@ -1321,3 +1321,25 @@ the table prints `---`.
 **Suggested fix:** trace how the default BC equation numbers are assigned
 after VOLEQNUM resets VEQNNC/VEQNNB, find the undefined source, and
 initialize it. Treat as a separate model change.
+
+## 48. ON MCDEFECT labels species-group gross volume as pulpwood
+
+**Variant:** ON.
+
+**Location:** `INVMCDEFECT` in `vbase/initrevol_mod.f90`, formerly the
+MCDEFECT handler in `metric/vbase/initre.f90`.
+
+**Status:** reproduced during F21b verification on 16 November 2026 against
+baseline `c12c9be1`. The same branch and FORMAT are present in original F77
+`c2105365:metric/vbase/initre.f`. Deliberately unfixed.
+
+An immediate MCDEFECT request for a species group includes ON in the
+`CS/LS/NE/SN` branch and uses FORMAT 4332, which calls the result
+"PULPWOOD VOLUME DEFECT". The all-species and single-species ON branches
+instead use their own "GROSS TOTAL VOLUME DEFECT" messages. A two-species
+group reproduced the discrepancy in both baseline and extracted builds;
+the defect arrays and scheduled-operation bytes matched exactly. This is
+a diagnostic inconsistency; no changed calculation was demonstrated.
+
+**Suggested fix:** give ON's species-group echo the same gross-total-volume
+wording as its other MCDEFECT forms in a separate diagnostic change.
