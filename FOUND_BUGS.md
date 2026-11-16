@@ -1461,3 +1461,43 @@ branches. Separate eastern cases require FIA 299's stocking totals/classes
 to match the established FIA-999 fallback while retaining its own forest-type
 mapping. All 24 full-suite variants match the preceding NVEL-repaired
 baseline; the pristine-F77 suite remains 22/24 with the known BC/ON limits.
+
+## 51. VOLINITNVB passes NSVB an equation whose eleventh character is undefined
+
+**Status:** confirmed on 16 November 2026 while preparing O06–O08; not
+fixed. Present in NVEL `d0e634fa` and pinned original `38548071`
+(`CHARACTER*11 VOLEQ,NVBEQN` in `volinit.f`); not introduced by
+modernization or by the O06–O08 parsing changes.
+
+**Location:** `volume/NVEL/volinit.f90:VOLINITNVB`, the branch for a VOLEQ
+that is not an NSVB equation. All 23 variants that use NVEL select it; BC
+uses its separate volume implementation. NVEL's own `vollibcs.f90` entry
+points call the same routine.
+
+`NVBEQN` is a `character(len=11)` local. Its only assignment is through
+`NVB_DefaultEq`, whose dummy `NVBEQ` is `character(len=10)`, so
+`NVBEQN(11:11)` is never defined before NVBC receives it. NVBC and SPEQCOEF
+test `LEN_TRIM(VOLEQ)` and that character. A `'P'` sets STDORG=1, so slash
+pine (111) and loblolly pine (131) use the planted-stand rows and other
+species fall back to Jenkins-group or species-999 coefficients. A digit
+triggers NVBC's four-digit-species reset, which with FIASPCD supplied leaves
+a blank there. Blanks, NUL and other characters leave results unchanged.
+
+A temporary driver called VOLINITNVB for an SN region 8 tree (10 in. DBH,
+60 ft, default `811CLKE` equations) after setting only that byte. With
+`' '` or NUL, the aboveground dry biomass `DRYBIO(1)` was 447.5671 (131),
+622.7170 (111) and 572.9487 (316). With `'P'` it was 473.3537, 567.0146
+and 549.4144; `VOL(1)` was unchanged. A disposable instrumented build saw
+many byte values at this site in IE `ie`/`iet01`, PN `pnt01` and SN
+`snt01`/`sn`, including 80 (`'P'`) and digits in SN.
+
+No FVS output effect has been demonstrated. In this branch FVS takes its
+volumes from VOLINIT, and it uses the NSVB biomass only under FIAVBC
+(`BIODRYIN = BIODRY` when `LFIANVB`). FIAVBC gives every non-woodland
+species an NSVB equation, which takes the other branch; its woodland
+species are Jenkins group 10, for which NVB_DefaultEq returns before NVBC.
+Direct NVEL callers receive the affected biomass.
+
+Suggested fix: set `NVBEQN = ' '` before calling NVB_DefaultEq, or give
+NVBEQ the caller's length and assign all eleven characters. This is a
+separate correctness change; O06–O08 leave the branch unchanged.

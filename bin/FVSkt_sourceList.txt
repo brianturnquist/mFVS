@@ -464,6 +464,7 @@
 ../volume/NVEL/clkcoef_mod.f90
 ../volume/NVEL/crzbiomass.f90
 ../volume/NVEL/debug_mod.f90
+../volume/NVEL/digitread_mod.f90
 ../volume/NVEL/doyal78.f90
 ../volume/NVEL/dvest.f90
 ../volume/NVEL/f_alaska.f90

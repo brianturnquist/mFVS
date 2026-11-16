@@ -2,7 +2,7 @@
 
 Created 16 November 2026 from the material in [task_documents](task_documents/).
 This is a new checklist; the deleted working task list is not a source for it.
-O01–O05 were completed on 16 November 2026; the remaining tasks are pending.
+O01–O08 were completed on 16 November 2026; the remaining tasks are pending.
 Creating this document does not start implementation.
 
 The objective is to reduce execution time, build time, memory use or storage
@@ -360,7 +360,7 @@ an unresolved defect must not be silently corrected by those changes.
   timings, profiles and disposable diagnostic scripts were removed; retained
   additions are the focused regression sources, task summary and bug records.
 
-- [ ] **O06 — Define and verify a narrow integer-read fast path.**
+- [x] **O06 — Define and verify a narrow integer-read fast path.**
   Establish the actual field widths and formats required by O07–O12. Convert
   all-digit fields directly only where equivalent; retain the original
   formatted READ for other input. Check leading/embedded blanks, signs, zero,
@@ -368,18 +368,142 @@ an unresolved defect must not be silently corrected by those changes.
   against the original conversion for valid digit combinations and focused
   fallback cases. Keep the helper small and respect NVEL's separate repository.
 
-- [ ] **O07 — Optimize SPEQCOEF conversions.**
+  Result, 16 November 2026: O07–O12 need only I1–I4 internal READs. Each
+  reads a substring whose length is the field width, except VOLINIT's
+  `read(CONSPEC,'(I3)')`, whose 4-character variable must be passed as
+  `CONSPEC(1:3)`. NVBC's EcoProv READ is list-directed and outside this path.
+  WRITE sites in NVBC, NVB_DefaultEq, VOLINITNVB and NATCRS are left to
+  O11/O12.
+
+  NVEL's new `digitread_mod.f90` provides `DIGITREAD(FIELD,VALUE)`. It
+  converts a field of one to nine characters only when every character is
+  0–9; otherwise it returns `.false.` and leaves VALUE unchanged. Each call
+  site keeps its original statement as the fallback, as in
+  `if (.not.DIGITREAD(f,v)) read (f,'(i3)') v`. Blanks, signs, empty or wider
+  fields, invalid input, runtime error text and stop status therefore still
+  come from the original READ. The module is in the 23 NVEL-consuming
+  manifests (not BC) and NVEL's `vollib.vfproj`.
+
+  `check_nvel_parsing.py --component digits` compares that pattern with the
+  READ alone over 461,248 fields: all-digit fields up to five characters,
+  sampled six- to nine-character fields, every one- and two-character field,
+  and mixed three- and four-character fields. 192,140 were converted
+  directly, 15,042 were accepted only by the READ (blanks or signs) and
+  254,066 were rejected by it. Values, IOSTAT codes and declined variables
+  matched under the suite flags and under `-fcheck=all`.
+
+- [x] **O07 — Optimize SPEQCOEF conversions.**
   Apply O06 within `volume/NVEL/nsvb.f90:SPEQCOEF`. Preserve its in-place
   normalization of `VOLEQ(5:7)`, division/STDORG selection, first-match table
   search and all returned values. Acceptance: direct cases cover normalized
   and nonnormalized equation strings, missing species and fallback equations,
   followed by volume/biomass and integrated parity comparisons.
 
-- [ ] **O08 — Optimize CALC_EQVW and NVBC conversion sites.**
+  Result, 16 November 2026: both SPEQCOEF READs use O06. SPCD is still read
+  from `VOLEQ(8:10)` before `VOLEQ(5:7)` is normalized in place. Normalization
+  leaves `VOLEQ(5:6)` as digits, so that retained READ is only a fallback.
+  The table search and division/STDORG selection are unchanged.
+
+  `check_nvel_parsing.py --component nsvb` links one driver with NVEL
+  `d0e634fa` (before O06) and with the working tree. 93,096 SPEQCOEF cases
+  across all nine coefficient tables match byte for byte, the mutated VOLEQ
+  included. They cover every three-digit table species, absent codes,
+  READ-only species fields, digit/blank/letter/sign forms of `VOLEQ(5:7)`,
+  `M` divisions and blank/`P`/digit/other eleventh characters; 28,512 find no
+  row. The fallback-equation, volume/biomass, integrated and timing checks
+  under O08 also cover O07, and the timing table separates the two steps.
+
+- [x] **O08 — Optimize CALC_EQVW and NVBC conversion sites.**
   After O07, handle each remaining conversion in these routines as a bounded
   edit. Preserve short-tree error returns, Jenkins-group branches, call order
   and mutations made by callees. Acceptance: identical volumes, biomass,
   errors and strings for normal and fallback paths; no arithmetic rewrite.
+
+  Result, 16 November 2026: CALC_EQVW's species READ, NVBC's division READ
+  and NVBC's three species READs for `FIASPCD<=0` (I3/I4/I3) use O06. Short-
+  tree returns still precede the species READ; the Jenkins-group, species-999
+  and four-digit reset branches, call order and callee mutations are
+  unchanged. Two sites were left as they were. NVBC's list-directed EcoProv
+  READ runs only when `VOLEQ(7:7)` is not `0`. NVBC's two WRITEs run only for
+  the four-digit reset, and their replacement is for O11 to assess.
+
+  On FVS's common path (FIA code supplied, total height known, intact top),
+  each NVBC call performs 31 formatted READs. O07 removes 22 of them and O08
+  removes 8 more. GetRegnWF's FORST READ (O09) remains; in regions 8–9 MRULES
+  also reads the species once per call. All 11 READ call sites remain in the
+  compiled `nsvb.o`, alongside 2 DIGITREAD calls after O07 and 7 after O08.
+
+  Direct checks also pass. 59,820 CALC_EQVW cases cover seven tables, Jenkins
+  codes 1–9, missing species with Jenkins and species-999 fallbacks, and
+  `D<1`/`H<5` returns. 6,392 NVBC cases cover structured equation forms and
+  6,000 sampled trees across regions, padded forests/districts, products,
+  estimated heights, broken tops, live/dead/decay, cull, crown ratio, cruise
+  types, explicit provinces and four-digit species; 5,564 return no error.
+  All match byte for byte, including VOL/DRYBIO/GRNBIO, log arrays and mutated
+  arguments. Invalid fields stop both builds with status 2 and
+  `Bad value during integer read` in SPEQCOEF, CALC_EQVW and NVBC. A planted
+  wrong-substring mutation in each routine was detected.
+
+  The full suite matches the immediate pre-change baseline for all 24
+  variants, databases and restart files included. The pristine-original
+  command still reports only the known BC/ON differences:
+
+  ```text
+  FAIL 22/24 variants; working tree e8f85521+changes vs original c2105365; failed: bc on
+  ```
+
+  The suite has no FIAVBC deck. FIAVBC variants of `iet01`, `pnt01`, `cat01`
+  and `snt01` (SN natural and planted origin, which differ from each other)
+  also match among baseline, O07 and O08 builds. So do all 14 timing-workload
+  output trees. Bug 51 was recorded, not fixed: VOLINITNVB passes NSVB an
+  undefined eleventh character. No FVS output path for it was demonstrated.
+
+  Timings used O02's protocol, toolchain and flags: one warm-up per
+  workload/version, then five unprofiled runs interleaved with shuffle seed
+  1602, a fresh test folder per run and separate builds. Values are median
+  wall / user-plus-system CPU seconds. The inventory decks were regenerated
+  from O02's definition with the same stand and tree counts, so compare them
+  within this table only.
+
+  | Workload | Before | O07 | O08 | Wall reduction, O07 / total |
+  |---|---:|---:|---:|---:|
+  | IE `ie` | 1.26 / 1.25 | 0.99 / 0.98 | 0.90 / 0.90 | 21.4% / 28.6% |
+  | IE `iet01` | 0.52 / 0.51 | 0.45 / 0.44 | 0.43 / 0.42 | 13.5% / 17.3% |
+  | IE `DBReportTest` | 14.56 / 14.54 | 11.76 / 11.75 | 10.89 / 10.87 | 19.2% / 25.2% |
+  | PN `pnt01` | 0.46 / 0.44 | 0.34 / 0.33 | 0.30 / 0.29 | 26.1% / 34.8% |
+  | CA `cat01` | 0.44 / 0.43 | 0.34 / 0.33 | 0.31 / 0.30 | 22.7% / 29.5% |
+  | SN `snt01` | 0.38 / 0.37 | 0.32 / 0.31 | 0.31 / 0.30 | 15.8% / 18.4% |
+  | SN `sn` | 0.42 / 0.42 | 0.35 / 0.35 | 0.34 / 0.34 | 16.7% / 19.0% |
+  | IE `iet02` stop/restart | 0.52 / 0.52 | 0.46 / 0.44 | 0.44 / 0.41 | 11.5% / 15.4% |
+  | PN `pnt02` stop/restart | 0.46 / 0.45 | 0.35 / 0.33 | 0.30 / 0.29 | 23.9% / 34.8% |
+  | CA `cat02` stop/restart | 0.43 / 0.42 | 0.35 / 0.33 | 0.32 / 0.30 | 18.6% / 25.6% |
+  | SN `snt02` stop/restart | 0.41 / 0.39 | 0.34 / 0.32 | 0.31 / 0.30 | 17.1% / 24.4% |
+  | Native inventory, IE | 11.04 / 11.03 | 8.85 / 8.84 | 8.09 / 8.08 | 19.8% / 26.7% |
+  | Native inventory, CA | 6.97 / 6.96 | 5.12 / 5.12 | 4.53 / 4.53 | 26.5% / 35.0% |
+  | Native inventory, SN | 4.23 / 4.22 | 3.15 / 3.14 | 2.96 / 2.95 | 25.5% / 30.0% |
+
+  Every O08 wall range lies below its baseline range. The O08 step overlaps
+  O07's range for `iet01`, `snt01`, `sn`, `pnt02` and `snt02`, so no separate
+  O08 gain is claimed there. `/usr/bin/time` reports 0.01-second resolution,
+  so short-deck percentages are coarse. Median peak RSS spans 13.28–36.38 MiB
+  before and 13.31–36.42 MiB after; no memory change is claimed. These are
+  local measurements, not production or Windows/Linux claims.
+
+  Separate three-run `sample` profiles (O02 method; profiled times excluded)
+  give these inclusive main-thread shares, before -> after O08. The columns
+  are nested (NVBC contains CALC_EQVW, which contains SPEQCOEF), so they must
+  not be added.
+
+  | Deck | Samples | Formatted I/O % | SPEQCOEF % | CALC_EQVW % | NVBC % |
+  |---|---:|---:|---:|---:|---:|
+  | IE `ie` | 2,669 -> 2,004 | 42.8 -> 20.2 | 24.7 -> 9.9 | 23.2 -> 6.6 | 42.1 -> 22.9 |
+  | PN `pnt01` | 922 -> 510 | 59.1 -> 32.2 | 33.9 -> 12.2 | 30.0 -> 9.0 | 56.5 -> 32.2 |
+  | CA `cat01` | 871 -> 553 | 55.1 -> 24.6 | 32.8 -> 17.7 | 28.1 -> 12.8 | 52.7 -> 35.8 |
+  | SN `snt01` | 754 -> 558 | 59.0 -> 33.7 | 30.0 -> 16.7 | 23.3 -> 11.6 | 50.4 -> 36.2 |
+
+  Most remaining SPEQCOEF samples are in its linear coefficient-table scan
+  (`nsvb.f90:1022`), not in conversions. Compiler flags, masks and tolerances
+  were not changed. Temporary builds, runs, profiles and probes were removed.
 
 - [ ] **O09 — Optimize region, forest and province parsing.**
   Review `GetRegnWF` and `NVB_EcoProv` in `volume/NVEL/nsvb.f90`, applying O06

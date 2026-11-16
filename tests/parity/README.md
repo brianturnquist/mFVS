@@ -89,6 +89,25 @@ geometry, aliases and errors, under default settings and static-local storage.
 These checks do not relax the full-suite comparator or establish Canadian
 simulation parity. `--component r9ht` or `--component r8prep` selects one repair.
 
+## Focused NVEL parsing checks
+
+```sh
+python3 -B tests/parity/check_nvel_parsing.py
+```
+
+`digits` compares NVEL's `DIGITREAD` fast path, and the call-site pattern
+that falls back to the original formatted READ, with that READ alone. It
+covers every all-digit field up to five characters, sampled wider fields,
+every one- and two-character field, and three- and four-character fields
+mixing digits with blanks, signs and other characters. Values, IOSTAT codes
+and declined fields must match exactly, under default and `-fcheck=all` builds.
+
+`nsvb` builds NVEL at `d0e634fa`, before O06–O08, and from the working tree,
+and links one compiled driver (`nsvb_cases.f90`) with each. SPEQCOEF,
+CALC_EQVW and NVBC results, including mutated arguments, must match byte for
+byte, and invalid fields must stop both builds with the same runtime error.
+`--component digits` or `--component nsvb` selects one part.
+
 ## Focused stocking checks
 
 ```sh
