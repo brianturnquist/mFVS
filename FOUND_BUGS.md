@@ -257,6 +257,11 @@ finish with exit code zero. All 24 standard-suite variants match the immediate
 pre-repair baseline; the 22 U.S. variants still match pristine original F77,
 with the existing BC/ON comparison limits retained. No masks were changed.
 
+O10's direct VOLINITNVB cases (16 November 2026) also reached R9DIB's
+unguarded power: a 9-inch, 12-foot SN tree with equation `811CLKE611` stops
+with the same underflow trap in both the pre-change and current NVEL. Those
+cases now use plausible diameter/height pairs; R9DIB remains unrepaired.
+
 ---
 
 ## 7. Historical NC crown-mapping comment disagrees with its table
@@ -1516,3 +1521,72 @@ All 24 standard-suite variants match the immediate baseline (bug 11 already
 applied), and the pristine-original suite remains 22/24 with the known
 BC/ON limits. FIAVBC versions of IE `iet01` and SN `snt01` (natural and
 planted origin) also produce identical outputs before and after the repair.
+
+## 52. NVB_RefSpcData leaves its outputs undefined for species codes below 10
+
+**Status:** confirmed on 16 November 2026 during O10's direct checks; not
+fixed. Present in NVEL `9655442` and pinned original `38548071`
+(`nsvb.f` NVB_RefSpcData and GetRegnWF).
+
+**Location:** `volume/NVEL/nsvb.f90:NVB_RefSpcData`, used by GetRegnWF in
+the same file and by VOLINITNVB in `volinit.f90`. All 23 variants that use
+NVEL select them; NVEL's own `vollibcs.f90` entry points call them too.
+
+For a species code below 10, NVB_RefSpcData sets `ERRFLG = 6` and returns
+before assigning SPGRPCD, WDSG, SFTHRD, CF, SPGRNWF or SPDRYWF. An unknown
+code of 10 or more instead receives species 999's values. GetRegnWF ignores
+the error flag and copies its own unassigned SPGRNWF into WtFac and DeadWF.
+VOLINITNVB's DBH-only branch uses the unassigned CF, SPGRNWF and SPDRYWF in
+the same way. Its default-equation branch tests SPGRPCD after the lookup has
+failed.
+
+**Confirmation:** in a pre-change NVEL build, two direct VOLINIT cruise-weight
+cases (`CTYPE='C'`) stopped with a floating-point trap at GetRegnWF's
+`DeadWF = WtFac*...`. One supplied species 1 (`CONSPEC='1   '`). The other
+used R6's default equation `616BEHW000`, whose species field gives 0 when
+CONSPEC is not numeric. NVBC rejects codes below 10 before its own
+GetRegnWF calls.
+
+**FVS reachability:** not demonstrated. FVS passes VOLINITNVB the variant's
+FIA code with cruise type `F` or `I`. Reaching the defect needs a missing or
+one-digit FIA code on a DBH-only tree or a failed default-equation lookup.
+Direct NVEL callers can reach it with cruise type `C` or such a code. The
+O09–O12 direct cases avoid these inputs, because no comparison of them is
+meaningful.
+
+**Suggested fix:** return species 999's values for codes below 10, as for
+other unknown codes, or define every output before returning. Callers
+should also honor `ERRFLG`. This is a separate correctness change.
+
+## 53. R1KEMP's cubic sawlog volume subtracts an unassigned percentage
+
+**Status:** confirmed on 16 November 2026 during O10's direct checks; not
+fixed. Present in NVEL `9655442` and pinned original `38548071`
+(`r1kemp.f`, the NONSAW lines).
+
+**Location:** `volume/NVEL/r1kemp.f90`, reached through DVEST for region 1
+equations `102`–`106...DVE`. These are, for example, IE's defaults for grand
+fir and several other species (`102DVEW017`, `102DVEW108`, `102DVEW106`).
+All 23 variants that use NVEL select it.
+
+The statements that set NONSAW (`NONSAW = IDEF`) are commented out, but
+`CBSAW = CBGRS - NONSAW / 100.0 * CBGRS` still uses it. NONSAW is an unsaved
+local, so `VOL(5)`, the cubic sawlog volume, depends on whatever integer the
+stack holds.
+
+**Confirmation:** during O10's direct checks the current NVEL build gave
+`VOL(5)` = 2.0423009 in one run and 2.0629303 in another for
+`102DVEW017` (6-inch tree), consistent with NONSAW of 1 and 0. In 80 runs of
+the same executable, 14 differed, only in `VOL(5)` and only for that
+equation. The pre-change build's 100 runs happened to agree, because each
+build leaves different values on the stack.
+
+**FVS impact:** none demonstrated. FVS uses `VOL(1)`, `VOL(2)`, `VOL(4)`,
+`VOL(7)` and `VOL(10)` from NVEL, and VOLINITNVB does not use `VOL(5)`.
+Direct NVEL callers receive the undefined value. As a test-only control,
+`check_nvel_parsing.py` sets NONSAW to 0 in both of its temporary builds, so
+it can compare `VOL(5)` meaningfully. Repository sources are unchanged.
+
+**Suggested fix:** decide NONSAW's intended source. With no defect input,
+`NONSAW = 0` (sawlog volume equal to gross cubic volume) appears to be the
+intent. This is a separate correctness change.

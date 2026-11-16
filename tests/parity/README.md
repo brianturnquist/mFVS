@@ -104,18 +104,37 @@ simulation parity. `--component r9ht`, `--component r8prep` or
 python3 -B tests/parity/check_nvel_parsing.py
 ```
 
-`digits` compares NVEL's `DIGITREAD` fast path, and the call-site pattern
-that falls back to the original formatted READ, with that READ alone. It
-covers every all-digit field up to five characters, sampled wider fields,
-every one- and two-character field, and three- and four-character fields
-mixing digits with blanks, signs and other characters. Values, IOSTAT codes
-and declined fields must match exactly, under default and `-fcheck=all` builds.
+`digits` compares NVEL's `DIGITREAD` and `DIGITWRITE` helpers, through the
+call-site pattern that falls back to the original formatted READ or WRITE,
+with that statement alone. DIGITREAD must take exactly the fields of digits
+and blanks, following the READ's `BLANK='NULL'` rule. The cases cover every
+all-digit field up to five characters, sampled wider fields, every one- and
+two-character field, three- and four-character fields mixing digits with
+blanks, signs and other characters, and narrower reads of 4-character
+records. DIGITWRITE is compared over widths 1–9, record lengths, signs,
+powers of ten and overflow. Values, IOSTAT codes, records and declined
+calls must match exactly, under default and `-fcheck=all` builds.
 
-`nsvb` builds NVEL at `d0e634fa`, before O06–O08, and from the working tree,
-and links one compiled driver (`nsvb_cases.f90`) with each. SPEQCOEF,
-CALC_EQVW and NVBC results, including mutated arguments, must match byte for
-byte, and invalid fields must stop both builds with the same runtime error.
-`--component digits` or `--component nsvb` selects one part.
+`nsvb` and `volinit` build NVEL twice, at a frozen revision and from the
+working tree, and link one compiled driver with each. All case outputs,
+including mutated arguments, must match byte for byte, and invalid fields
+must stop both builds with the same runtime error.
+- `nsvb` (`nsvb_cases.f90`, NVEL `d0e634fa`, before O06) covers SPEQCOEF,
+  CALC_EQVW and NVBC.
+- `volinit` (`volinit_cases.f90`, NVEL `9655442`, before O09) covers
+  NVB_EcoProv, GetRegnWF, NVB_DefaultEq, VOLINIT and VOLINITNVB. It uses every
+  district, forest, region and regional weight-factor row, the default
+  equations of 23 variant/region pairs, FIA, Hann, blank and NSVB equations,
+  and cruise types F, I, C and B.
+
+Both builds receive one test-only control: R1KEMP's unassigned NONSAW is set
+to 0 (bug 53), so that `VOL(5)` can be compared. Inputs that reach bug 52's
+undefined species data or bug 6's unrepaired R9DIB underflow are avoided.
+
+`natcrs` compares O12's NATCRS statements with the originals. It uses every
+FIA and alpha species code in the variants' block data and forest numbers
+from -150 to 1200. `--component` selects one of `digits`, `nsvb`, `volinit`
+or `natcrs`.
 
 ## Focused stocking checks
 

@@ -1,17 +1,27 @@
-"""Check NVEL's all-digit integer fast path and the NSVB routines that use it.
+"""Check NVEL's digit conversion helpers and the routines that use them.
 
-`digits` compares DIGITREAD, and the call-site pattern that falls back to the
-original formatted READ, with that READ alone: every all-digit field up to five
-characters, sampled wider fields, all one- and two-character fields and
-selected three- and four-character fields with blanks, signs and other
-characters. Values and IOSTAT codes must match, and a declined field must
-leave the variable unchanged.
+`digits` compares each helper's call-site pattern, which falls back to the
+original formatted statement, with that statement alone.
+- DIGITREAD: every all-digit field up to five characters, sampled wider fields
+  with and without blanks, all one- and two-character fields, and selected
+  three- and four-character fields with blanks, signs and other characters.
+  DIGITREAD must take exactly the fields of digits and blanks. A narrower READ
+  of a 4-character record must equal DIGITREAD of its leading characters.
+- DIGITWRITE: widths 1-9 with records up to three characters longer, every
+  value from -1000 to 99999, powers of ten, the integer limits and samples.
+Values, IOSTAT codes and records (bytes beyond them included) must match, and
+a declined call must leave its variable unchanged.
 
-`nsvb` builds the NVEL sources listed in the variant source lists twice: at
-the frozen pre-optimization NVEL revision and from the working tree. One
-compiled driver (nsvb_cases.f90) is linked with each. SPEQCOEF, CALC_EQVW and
-NVBC case outputs, mutated arguments included, must match byte for byte.
-Invalid fields must stop both builds with the same runtime error.
+`nsvb` and `volinit` build the NVEL sources listed in the variant source lists
+twice: at a frozen revision before the changes and from the working tree.
+One compiled driver is linked with each build, and every case output,
+mutated arguments included, must match byte for byte. Invalid fields must stop
+both builds with the same runtime error. `nsvb` (nsvb_cases.f90, before O06)
+covers SPEQCOEF, CALC_EQVW and NVBC. `volinit` (volinit_cases.f90, before
+O09) covers NVB_EcoProv, GetRegnWF, NVB_DefaultEq, VOLINIT and VOLINITNVB.
+
+`natcrs` compares O12's NATCRS statements with the originals over every FIA and
+alpha species code in the variants' block data and forest numbers -150-1200.
 """
 
 from __future__ import annotations
@@ -27,10 +37,11 @@ import tempfile
 
 sys.dont_write_bytecode = True
 
-from prepare_builds import ROOT, archive
+from prepare_builds import ROOT, archive, copy_working_tree
 
 NVEL = ROOT / "volume/NVEL"
 BASELINE_NVEL = "d0e634fad1f91a2897bdc5f0c07bd0d21f658750"  # before O06-O08
+PRE_O09_NVEL = "9655442c7097305285720c89081215ad15bab868"  # before O09-O11
 # The suite's Fortran flags, without warnings or version macros.
 FLAGS = ["-g", "-cpp", "-DCMPgcc",
          "-ffpe-trap=invalid,zero,underflow,overflow,denormal", "-fbacktrace"]
@@ -75,8 +86,16 @@ DIGITS_DRIVER = """program DIGITS_CHECK
         TEXT(J:J) = achar(48+int(mod(STATE,10_8)))
       end do
       call CHECK(TEXT(1:W))
+      ! The same width with about a quarter of the characters blank.
+      do J = 1,W
+        STATE = mod(48271_8*STATE,2147483647_8)
+        if (mod(STATE,4_8).eq.0) TEXT(J:J) = ' '
+      end do
+      call CHECK(TEXT(1:W))
     end do
   end do
+  call CHECK('         ')
+  call CHECK('    7    ')
   ! Ten digits can overflow; DIGITREAD must leave them to the READ.
   call CHECK('0000000001')
   call CHECK('2147483647')
@@ -103,16 +122,105 @@ DIGITS_DRIVER = """program DIGITS_CHECK
   write(*,'(a,i9,a,i8,a,i8,a,i9,a)') 'PASS DIGITREAD:',N,' fields;',FAST, &
     ' converted directly,',FALLBACK,' accepted only by the READ,',REJECTED, &
     ' rejected by the READ'
+  ! A narrower READ of a longer variable, as in READ(CONSPEC,'(I3)') with a
+  ! 4-character CONSPEC, must equal DIGITREAD of the leading characters.
+  N = 0
+  do I = 1,size(ALPHABET)
+    do J = 1,size(ALPHABET)
+      do K = 1,size(ALPHABET)
+        do L = 1,size(ALPHABET)
+          do W = 1,3
+            call CHECK_PREFIX(ALPHABET(I)//ALPHABET(J)//ALPHABET(K)//ALPHABET(L),W)
+          end do
+        end do
+      end do
+    end do
+  end do
+  write(*,'(a,i9,a)') 'PASS DIGITREAD prefix:',N,' I1-I3 reads of 4-character records'
+  ! DIGITWRITE against the original internal WRITE: widths 1-9, records up to
+  ! three characters longer, every value from -1000 to 99999, both sides of
+  ! every power of ten, the integer limits and a sample of each width.
+  N = 0
+  FAST = 0
+  do W = 1,9
+    do L = W,W+3
+      do I = -1000,99999
+        call CHECK_WRITE(I,W,L)
+      end do
+      do K = 0,9
+        call CHECK_WRITE(10**K-1,W,L)
+        call CHECK_WRITE(10**K,W,L)
+        call CHECK_WRITE(10**K+1,W,L)
+        call CHECK_WRITE(-(10**K),W,L)
+      end do
+      call CHECK_WRITE(huge(0),W,L)
+      call CHECK_WRITE(-huge(0)-1,W,L)
+      do J = 1,5000
+        STATE = mod(48271_8*STATE,2147483647_8)
+        call CHECK_WRITE(int(mod(STATE,2_8*10_8**W)),W,L)
+      end do
+    end do
+  end do
+  write(*,'(a,i9,a,i9,a)') 'PASS DIGITWRITE:',N,' writes;',FAST,' converted directly'
 contains
+  subroutine CHECK_WRITE(VALUE,W,L)
+    integer, intent(in) :: VALUE,W,L
+    character(len=12) :: ORIGINAL,CANDIDATE
+    character(len=8) :: FORM
+    integer :: IOS1,IOS2
+    logical :: TAKEN
+    write(FORM,'(a,i0,a)') '(i',W,')'
+    ! Bytes past the record must stay untouched on both sides.
+    ORIGINAL = repeat('Q',12)
+    CANDIDATE = ORIGINAL
+    IOS1 = 0
+    IOS2 = 0
+    write(ORIGINAL(1:L),FORM,iostat=IOS1) VALUE
+    TAKEN = DIGITWRITE(VALUE,CANDIDATE(1:L),W)
+    if (TAKEN.neqv.(VALUE.ge.0.and.VALUE.lt.10**W)) stop 6
+    if (.not.TAKEN) then
+      if (CANDIDATE.ne.repeat('Q',12)) stop 7
+      write(CANDIDATE(1:L),FORM,iostat=IOS2) VALUE
+    end if
+    if (ORIGINAL.ne.CANDIDATE.or.IOS1.ne.IOS2) then
+      write(*,*) 'write differs:',VALUE,W,L,' [',ORIGINAL,'] [',CANDIDATE,']',IOS1,IOS2
+      stop 8
+    end if
+    if (TAKEN.and.IOS1.ne.0) stop 9
+    N = N+1
+    if (TAKEN) FAST = FAST+1
+  end subroutine CHECK_WRITE
+
+  subroutine CHECK_PREFIX(RECORD,W)
+    character(len=4), intent(in) :: RECORD
+    integer, intent(in) :: W
+    character(len=8) :: FORM
+    integer :: ORIGINAL,CANDIDATE,IOS1,IOS2
+    write(FORM,'(a,i0,a)') '(i',W,')'
+    ORIGINAL = -987654321
+    IOS1 = 0
+    read(RECORD,FORM,iostat=IOS1) ORIGINAL
+    CANDIDATE = -987654321
+    IOS2 = 0
+    if (.not.DIGITREAD(RECORD(1:W),CANDIDATE)) read(RECORD,FORM,iostat=IOS2) CANDIDATE
+    if (IOS1.ne.IOS2.or.ORIGINAL.ne.CANDIDATE) then
+      write(*,*) 'prefix differs: [',RECORD,']',W,ORIGINAL,CANDIDATE,IOS1,IOS2
+      stop 5
+    end if
+    N = N+1
+  end subroutine CHECK_PREFIX
+
   subroutine CHECK(FIELD)
     character(len=*), intent(in) :: FIELD
     character(len=8) :: FORM
     integer :: ORIGINAL,CANDIDATE,IOS1,IOS2,I
     logical :: DIGITS,TAKEN
     write(FORM,'(a,i0,a)') '(i',max(len(FIELD),1),')'
+    ! DIGITREAD takes exactly the one- to nine-character fields of digits
+    ! and blanks; everything else must go to the READ.
     DIGITS = len(FIELD).ge.1.and.len(FIELD).le.9
     do I = 1,len(FIELD)
-      if (FIELD(I:I).lt.'0'.or.FIELD(I:I).gt.'9') DIGITS = .false.
+      if (FIELD(I:I).ne.' '.and.(FIELD(I:I).lt.'0'.or.FIELD(I:I).gt.'9')) DIGITS = .false.
     end do
     ! The original statement alone.
     ORIGINAL = -987654321
@@ -164,6 +272,66 @@ GETTABLE = """subroutine GETTABLE(K,CNT,SP,JK)
 end subroutine GETTABLE
 """
 
+NATCRS_DRIVER = """program NATCRS_CHECK
+  use DIGITREAD_MOD
+  implicit none
+  include 'natcrs_codes.inc'
+  character(len=4) :: OLD4,NEW4
+  character(len=2) :: OLD2,NEW2
+  integer :: I,V1,V2,IOS1,IOS2,FAST
+  ! FIA code READ: every code defined by any variant's block data.
+  FAST = 0
+  do I = 1,size(FIACODES)
+    V1 = -987654321
+    V2 = V1
+    IOS1 = 0
+    IOS2 = 0
+    read(FIACODES(I),'(I4)',iostat=IOS1) V1
+    if (DIGITREAD(FIACODES(I),V2)) then
+      FAST = FAST+1
+    else
+      read(FIACODES(I),'(I4)',iostat=IOS2) V2
+    end if
+    if (V1.ne.V2.or.IOS1.ne.IOS2) then
+      write(*,*) 'FIA code differs: [',FIACODES(I),']',V1,V2,IOS1,IOS2
+      stop 1
+    end if
+  end do
+  write(*,'(a,i5,a,i5,a)') 'PASS NATCRS FIA codes:',size(FIACODES),' distinct codes,',FAST, &
+    ' converted directly'
+  ! Forest number WRITE and zero fill, over and beyond two digits.
+  FAST = 0
+  do I = -150,1200
+    OLD2 = 'QQ'
+    NEW2 = 'QQ'
+    write(OLD2,'(I2)') I
+    if (I.lt.10) OLD2(1:1) = '0'
+    if (DIGITWRITE(I,NEW2,2)) then
+      FAST = FAST+1
+    else
+      write(NEW2,'(I2)') I
+    end if
+    if (I.lt.10) NEW2(1:1) = '0'
+    if (OLD2.ne.NEW2) then
+      write(*,*) 'forest differs:',I,' [',OLD2,'] [',NEW2,']'
+      stop 2
+    end if
+  end do
+  write(*,'(a,i5,a)') 'PASS NATCRS forest numbers -150 to 1200;',FAST,' converted directly'
+  ! The (A) WRITE of an alpha species code and the assignment that replaces it.
+  do I = 1,size(ALPHACODES)
+    OLD4 = 'QQQQ'
+    write(OLD4,('(A)')) ALPHACODES(I)
+    NEW4 = ALPHACODES(I)
+    if (OLD4.ne.NEW4) then
+      write(*,*) 'alpha code differs: [',ALPHACODES(I),']'
+      stop 3
+    end if
+  end do
+  write(*,'(a,i5,a)') 'PASS NATCRS alpha codes:',size(ALPHACODES),' distinct codes copied exactly'
+end program NATCRS_CHECK
+"""
+
 MODULE = re.compile(r"^\s*module\s+(?!procedure\b)\w+", re.I | re.M)
 RUNTIME_ERROR = re.compile(r"^Fortran runtime error: .*$", re.M)
 
@@ -213,36 +381,50 @@ def check_digits(directory: Path) -> None:
         subprocess.run([str(directory / "digits")], cwd=directory, check=True)
 
 
-def check_nsvb(directory: Path, jobs: int) -> None:
+# Test-only controls for undefined values that no conversion change can make
+# defined. Each is applied identically to the reference and current copies,
+# so the comparison still isolates the code under test. Repository sources
+# and the full-suite comparator are unchanged.
+CONTROLS = {
+    # Bug 53: R1KEMP subtracts NONSAW percent of the cubic volume, but never
+    # assigns NONSAW, so VOL(5) depends on leftover memory.
+    "r1kemp.f90": ("  if (NONSAW .gt.100) NONSAW = 100\n",
+                   "  NONSAW = 0\n  if (NONSAW .gt.100) NONSAW = 100\n"),
+}
+
+
+def build_pair(directory: Path, revision: str, label: str, jobs: int) -> dict[str, Path]:
+    """Build the listed NVEL sources at REVISION and from the working tree."""
     current = listed_nvel()
-    reference_source = directory / "reference"
-    archive(NVEL, BASELINE_NVEL, reference_source, directory / "reference.tar")
-    reference = [name for name in current if (reference_source / name).is_file()]
+    sources = {"reference": directory / f"{label}-reference", "current": directory / f"{label}-current"}
+    archive(NVEL, revision, sources["reference"], directory / f"{label}-reference.tar")
+    copy_working_tree(NVEL, sources["current"])
+    reference = [name for name in current if (sources["reference"] / name).is_file()]
     added = sorted(set(current) - set(reference))
-    if added != ["digitread_mod.f90"]:
+    if added not in ([], ["digitread_mod.f90"]):
         raise RuntimeError(f"unexpected NVEL source-list additions: {added}")
-    libraries = {"reference": compile_nvel(reference_source, reference, directory / "reference-build", jobs),
-                 "current": compile_nvel(NVEL, current, directory / "current-build", jobs)}
-    # One driver object, compiled once against unchanged table includes.
-    tables = "".join(TABLE.format(k=k) for k in range(1, 10))
-    cases = "".join(f"  case ({k})\n    call TABLE{k}(CNT,SP,JK)\n" for k in range(1, 10))
-    (directory / "tables.f90").write_text(tables + GETTABLE.format(cases=cases))
-    driver = []
-    for name in ("nsvb_cases.f90", "tables.f90"):
-        path = Path(__file__).with_name(name) if name == "nsvb_cases.f90" else directory / name
-        target = directory / (Path(name).stem + ".o")
-        subprocess.run(["gfortran", *FLAGS, f"-I{NVEL}", f"-J{directory}", "-c", str(path),
-                        "-o", str(target)], cwd=directory, check=True)
-        driver.append(str(target))
-    for label, library in libraries.items():
-        subprocess.run(["gfortran", *FLAGS, *driver, str(library), "-o", f"cases-{label}"],
+    for source in sources.values():
+        for name, (old, new) in CONTROLS.items():
+            text = (source / name).read_text()
+            if text.count(old) != 1:
+                raise RuntimeError(f"control for {name} no longer applies")
+            (source / name).write_text(text.replace(old, new))
+    return {"reference": compile_nvel(sources["reference"], reference, directory / f"{label}-reference-build", jobs),
+            "current": compile_nvel(sources["current"], current, directory / f"{label}-current-build", jobs)}
+
+
+def compare_modes(directory: Path, label: str, libraries: dict[str, Path], driver: list[str],
+                  modes: tuple[str, ...], bad_modes: tuple[str, ...]) -> None:
+    """Link one compiled driver with each library; outputs must match byte for byte."""
+    for side, library in libraries.items():
+        subprocess.run(["gfortran", *FLAGS, *driver, str(library), "-o", f"cases-{label}-{side}"],
                        cwd=directory, check=True)
-    for mode in ("speqcoef", "calc", "nvbc"):
+    for mode in modes:
         outputs = {}
-        for label in libraries:
-            outputs[label] = directory / f"{mode}-{label}.txt"
-            with outputs[label].open("wb") as handle:
-                subprocess.run([str(directory / f"cases-{label}"), mode], cwd=directory,
+        for side in libraries:
+            outputs[side] = directory / f"{label}-{mode}-{side}.txt"
+            with outputs[side].open("wb") as handle:
+                subprocess.run([str(directory / f"cases-{label}-{side}"), mode], cwd=directory,
                                stdout=handle, check=True)
         if not filecmp.cmp(outputs["reference"], outputs["current"], shallow=False):
             pairs = zip(outputs["reference"].read_text().splitlines(),
@@ -253,9 +435,9 @@ def check_nsvb(directory: Path, jobs: int) -> None:
                                f"  reference {left[:160]}\n  current   {right[:160]}")
         lines = outputs["current"].read_text().splitlines()
         print(f"PASS {mode}: {len(lines) - 1} cases identical; {lines[-1]}")
-    for mode in ("bad-speqcoef", "bad-calc", "bad-nvbc"):
-        results = [subprocess.run([str(directory / f"cases-{label}"), mode], cwd=directory,
-                                  capture_output=True, text=True) for label in libraries]
+    for mode in bad_modes:
+        results = [subprocess.run([str(directory / f"cases-{label}-{side}"), mode], cwd=directory,
+                                  capture_output=True, text=True) for side in libraries]
         errors = [RUNTIME_ERROR.findall(result.stderr) for result in results]
         if (results[0].returncode != results[1].returncode or errors[0] != errors[1]
                 or len(errors[0]) != 1 or results[0].returncode == 0):
@@ -263,9 +445,73 @@ def check_nsvb(directory: Path, jobs: int) -> None:
         print(f"PASS {mode}: both stop with status {results[0].returncode}: {errors[0][0]}")
 
 
+def compile_driver(directory: Path, sources: list[Path]) -> list[str]:
+    """Compile a driver once, so both libraries are linked with the same object."""
+    objects = []
+    for path in sources:
+        target = directory / (path.stem + ".o")
+        subprocess.run(["gfortran", *FLAGS, f"-I{NVEL}", f"-I{directory}", f"-J{directory}", "-c",
+                        str(path), "-o", str(target)], cwd=directory, check=True)
+        objects.append(str(target))
+    return objects
+
+
+def check_nsvb(directory: Path, jobs: int) -> None:
+    libraries = build_pair(directory, BASELINE_NVEL, "nsvb", jobs)
+    # The table wrappers use the unchanged coefficient includes.
+    tables = "".join(TABLE.format(k=k) for k in range(1, 10))
+    cases = "".join(f"  case ({k})\n    call TABLE{k}(CNT,SP,JK)\n" for k in range(1, 10))
+    (directory / "tables.f90").write_text(tables + GETTABLE.format(cases=cases))
+    driver = compile_driver(directory, [Path(__file__).with_name("nsvb_cases.f90"),
+                                        directory / "tables.f90"])
+    compare_modes(directory, "nsvb", libraries, driver, ("speqcoef", "calc", "nvbc"),
+                  ("bad-speqcoef", "bad-calc", "bad-nvbc"))
+
+
+def check_volinit(directory: Path, jobs: int) -> None:
+    libraries = build_pair(directory, PRE_O09_NVEL, "volinit", jobs)
+    # The driver needs the module files of one build; both builds define them identically.
+    for module in (directory / "volinit-current-build").glob("*.mod"):
+        (directory / module.name).write_bytes(module.read_bytes())
+    driver = compile_driver(directory, [Path(__file__).with_name("volinit_cases.f90")])
+    compare_modes(directory, "volinit", libraries, driver,
+                  ("ecoprov", "regnwf", "defaulteq", "volinit", "volinitnvb"),
+                  ("bad-forst", "bad-han"))
+
+
+def block_data_codes(name: str) -> list[str]:
+    """Distinct 4-character values given to NAME by any variant's DATA statements."""
+    values = set()
+    statement = re.compile(rf"^\s*data\s+{name}\s*/(.*?)/", re.I | re.M | re.S)
+    for manifest in (ROOT / "bin").glob("FVS??_sourceList.txt"):
+        for entry in manifest.read_text().split():
+            if entry.endswith("blkdat.f90"):
+                text = (manifest.parent / entry).read_text()
+                for block in statement.findall(text):
+                    values.update(v.ljust(4)[:4] for v in re.findall(r"'([^']*)'", block))
+    return sorted(values)
+
+
+def check_natcrs(directory: Path) -> None:
+    """O12: NATCRS's FIA-code READ, forest WRITE and (A) WRITE replacements."""
+    fia, alpha = block_data_codes("FIAJSP"), block_data_codes("JSP")
+    if len(fia) < 100 or len(alpha) < 100:
+        raise RuntimeError(f"too few block-data codes found: {len(fia)} FIA, {len(alpha)} alpha")
+    def array(name: str, values: list[str]) -> str:
+        items = ",&\n  ".join("'" + v.replace("'", "''") + "'" for v in values)
+        # Initialized variables, not parameters: a READ cannot use a constant as its unit.
+        return f"character(len=4) :: {name}({len(values)}) = [character(len=4) ::&\n  {items}]\n"
+    (directory / "natcrs_codes.inc").write_text(array("FIACODES", fia) + array("ALPHACODES", alpha))
+    (directory / "natcrs.f90").write_text(NATCRS_DRIVER)
+    subprocess.run(["gfortran", *FLAGS, "-fcheck=all", str(NVEL / "digitread_mod.f90"), "natcrs.f90",
+                    "-o", "natcrs"], cwd=directory, check=True)
+    subprocess.run([str(directory / "natcrs")], cwd=directory, check=True)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--component", choices=("all", "digits", "nsvb"), default="all")
+    parser.add_argument("--component", choices=("all", "digits", "nsvb", "volinit", "natcrs"),
+                        default="all")
     parser.add_argument("--jobs", type=int, default=8, help="Compiler processes for the NVEL builds")
     args = parser.parse_args()
     with tempfile.TemporaryDirectory(prefix="mfvs-nvel-parsing-") as temporary:
@@ -274,6 +520,10 @@ def main() -> None:
             check_digits(directory)
         if args.component in ("all", "nsvb"):
             check_nsvb(directory, args.jobs)
+        if args.component in ("all", "volinit"):
+            check_volinit(directory, args.jobs)
+        if args.component in ("all", "natcrs"):
+            check_natcrs(directory)
 
 
 if __name__ == "__main__":

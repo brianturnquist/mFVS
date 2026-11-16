@@ -2,7 +2,7 @@
 
 Created 16 November 2026 from the material in [task_documents](task_documents/).
 This is a new checklist; the deleted working task list is not a source for it.
-O01–O08 and prerequisite repair R01 were completed on 16 November 2026; the
+O01–O12 and prerequisite repair R01 were completed on 16 November 2026; the
 remaining tasks are pending. R02 and R03 gate O16 and O21 respectively.
 Creating this document does not start implementation.
 
@@ -551,20 +551,85 @@ repairs bugs 51 and 11, as separate steps, before O10.
   Timings were not remeasured; the repairs add one assignment and one DATA
   statement. Temporary builds and runs were removed.
 
-- [ ] **O09 — Optimize region, forest and province parsing.**
+- [x] **O09 — Optimize region, forest and province parsing.**
   Review `GetRegnWF` and `NVB_EcoProv` in `volume/NVEL/nsvb.f90`, applying O06
   one routine at a time. Preserve FORST/DIST padding and in-place mutations,
   lookup order and regional defaults. Acceptance: identical outputs and
   modified arguments for digit, padded and fallback cases.
 
-- [ ] **O10 — Optimize VOLINIT and VOLINITNVB integer reads.**
+  Result, 16 November 2026: NVB_EcoProv's FORST and DIST READs (after its
+  in-place padding, as before) and GetRegnWF's FORST READ use DIGITREAD.
+  VOLINITNVB writes one-digit districts as `' 1'` and FVS stores FIA codes as
+  `'202 '`, so O06's all-digit path would skip these fields. O09 therefore
+  extended DIGITREAD to fields of digits and blanks. It follows the READ's
+  `BLANK='NULL'` rule: blanks are ignored, and an all-blank field reads 0.
+  The digits check now requires DIGITREAD to take exactly those fields. Over
+  541,250 fields, 272,594 convert directly with identical values and IOSTAT
+  codes. 452 blank-containing fields moved from the READ to the fast path,
+  and the rejected set is unchanged. The O06–O08 NSVB checks still pass,
+  with their blank-containing species fields now taking the fast path.
+
+  `check_nvel_parsing.py --component volinit` compares the working tree with
+  NVEL `9655442` (before O09). 29,229 NVB_EcoProv calls cover every district,
+  forest and regional table row in padded and blank spellings, and every
+  two-character FORST/DIST field its READs accept. 2,371 GetRegnWF calls cover
+  every regional weight-factor row, absent species and absent regions.
+  Results and padded arguments match byte for byte. All 24 suite variants
+  match the immediate baseline (`f67c0eaf`).
+
+- [x] **O10 — Optimize VOLINIT and VOLINITNVB integer reads.**
   Prerequisite: R01 (complete). Review `volume/NVEL/volinit.f90` after O06.
   Preserve substring widths, CONSPEC length-dependent branches, zero/default
   selection, NVB/non-NVB dispatch and R01's blank `NVBEQN(11:11)`.
   Acceptance: exact direct and integrated comparisons across the affected
   equation families, with each entry point verified separately.
 
-- [ ] **O11 — Assess fixed-width integer WRITE replacements.**
+  Result, 16 November 2026: all 11 `Iw` READs in VOLINIT and VOLINITNVB use
+  DIGITREAD. They are:
+  - the FIA `CU`/`BD` CONSPEC widths (I4 to I1);
+  - the blank-equation default;
+  - the forest number;
+  - the Hann, stump-fallback and cruise-weight species;
+  - VOLINITNVB's species for an omitted FIA code.
+
+  An I3 READ of the 4-character CONSPEC passes `CONSPEC(1:3)`. A new digits
+  case proves this prefix rule over 583,443 I1–I3 reads of 4-character
+  records. Branches, defaults, NSVB dispatch and R01's blank are unchanged.
+
+  The `volinit` direct check runs 2,372 VOLINIT cases. They cover:
+  - default equations for 23 variant/region pairs and 25 species;
+  - FIA `CU`/`BD` equations with every CONSPEC width;
+  - Hann, blank-equation and cruise-weight equations;
+  - padded, blank and NUL forest spellings.
+
+  It also runs 4,000 VOLINITNVB cases. They cover:
+  - default, NSVB, FIA and blank equations;
+  - supplied, omitted, remapped and 4-digit FIA codes;
+  - DBH-only, broken-top, woodland, live, dead and decayed trees;
+  - cruise types F, I, C and B, and districts 0–99.
+
+  Results and mutated arguments match byte for byte, and invalid forest and
+  Hann species fields stop both builds identically. A coverage build of the
+  final direct cases executes every converted O09–O11 line except one: the
+  stump-fallback species READ in VOLINIT (runs only when no stump diameter is
+  computed). An earlier case set reached it once and matched. That site uses
+  the same verified DIGITREAD pattern, but the final cases leave it
+  unexercised. All 24 suite variants match O09.
+
+  Two pre-existing NVEL defects surfaced; neither has a demonstrated FVS
+  output effect.
+  - [Bug 53](FOUND_BUGS.md#53-r1kemps-cubic-sawlog-volume-subtracts-an-unassigned-percentage):
+    R1KEMP never assigns NONSAW, so `VOL(5)` for region 1 Kemp equations
+    depends on leftover memory. One O10 executable gave differing `VOL(5)`
+    in 14 of 80 runs, because the changed stack layout leaves different
+    values. FVS does not use `VOL(5)`. Both builds of the direct check set
+    NONSAW to 0 as a test-only control.
+  - [Bug 52](FOUND_BUGS.md#52-nvb_refspcdata-leaves-its-outputs-undefined-for-species-codes-below-10):
+    NVB_RefSpcData leaves its outputs undefined for species codes below 10.
+    The direct cases avoid those inputs. They also avoid the unrepaired
+    R9DIB underflow now noted under bug 6.
+
+- [x] **O11 — Assess fixed-width integer WRITE replacements.**
   Prerequisite: R01 (complete). Separately examine `NVB_DefaultEq` and
   `VOLINITNVB` equation/species string construction. Preserve field width,
   blank padding, zero filling, signs and overflow output; retain the original
@@ -572,12 +637,111 @@ repairs bugs 51 and 11, as separate steps, before O10.
   and errors over the relevant ranges and boundary cases. Skip sites whose
   remaining cost does not justify the change.
 
-- [ ] **O12 — Reduce NATCRS conversion overhead.**
+  Result, 16 November 2026: a new DIGITWRITE function in the same module
+  handles `Iw` WRITEs of values from 0 to 10^w - 1. It right-justifies the
+  digits in the first w characters and blanks the rest of the record, as
+  the internal WRITE does. Negative and overflowing (`***`) values keep the
+  original WRITE. The digits check makes 3,817,512 comparisons with the
+  WRITE, covering:
+  - widths 1–9, with records of length w to w+3;
+  - values from -1000 to 99,999;
+  - both sides of each power of ten, the integer limits and samples.
+
+  Records and IOSTAT codes match exactly, and bytes past the record are
+  untouched.
+
+  Seven per-tree WRITEs use DIGITWRITE:
+  - NVB_DefaultEq's province (I4) and species (I3) codes;
+  - the VOLINIT and VOLINITNVB districts (I2);
+  - VOLINITNVB's I4, I3 and I2 CONSPEC writes.
+
+  NVBC's two WRITEs run only for its four-digit species reset, which FVS
+  never reaches, so they are not worth changing and were left as they were.
+  The `volinit` direct check adds 149,985 NVB_DefaultEq calls. These cover
+  every district row in nine FORST/DIST spellings with valid, absent,
+  one-digit and four-digit species, including the I3 overflow that the
+  original WRITE handles. FIA code 5091 reaches the I4 CONSPEC write. These
+  and the O10 cases all match byte for byte, and all 24 suite variants match
+  O10.
+
+- [x] **O12 — Reduce NATCRS conversion overhead.**
   Inspect `vvolume/fvsvol.f90:NATCRS` after O06. Review the FIA-code READ,
   forest-number WRITE and character-only WRITE separately. Preserve exact
   character assignment/padding semantics, COMMON state and ENTRY contracts.
   Acceptance: identical volume results, strings and diagnostics; add any new
   source/include to every consuming manifest if a helper is introduced.
+
+  Result, 16 November 2026: NATCRS changes three statements.
+  - The FIA-code READ uses DIGITREAD.
+  - The forest-number WRITE uses DIGITWRITE, before the existing zero fill.
+  - `write(FIASP,('(A)')) JSP(ISPC)` became `FIASP = JSP(ISPC)`. Both are
+    4 characters, so the copy is exact; FIASP is otherwise unused.
+
+  FVSVOL now uses DIGITREAD_MOD. That module is already in every manifest
+  that compiles `fvsvol.f90` (BC and ON do not), so no manifest changed.
+  `check_nvel_parsing.py --component natcrs` compares the old and new
+  statements over all 249 FIA and 226 alpha codes in the variants' block
+  data, and forest numbers from -150 to 1,200. All match. Every FIA code,
+  stored like `'202 '`, takes the fast path through O09's blank rule.
+
+  All 24 suite variants match O11 and the pre-O09 baseline. The
+  pristine-original suite still reports only the known BC/ON differences:
+
+  ```text
+  FAIL 22/24 variants; working tree f67c0eaf+changes vs original c2105365; failed: bc on
+  ```
+
+  FIAVBC versions of `iet01`, `pnt01`, `cat01` and `snt01` (natural and
+  planted origin) match across the baseline and each of O09–O12. So do all
+  14 timing-workload output trees. In each step's IE objects, the expected
+  helper calls are added, and every original READ/WRITE call site remains as
+  a fallback (except the replaced `(A)` WRITE).
+
+  Timings for O09–O12 used O08's protocol, toolchain and flags. Values are
+  median wall / CPU seconds; the inventory decks are regenerated as for O08.
+
+  | Workload | Before (`f67c0eaf`) | O09 | O10 | O11 | O12 | Total wall reduction |
+  |---|---:|---:|---:|---:|---:|---:|
+  | IE `ie` | 0.91 / 0.91 | 0.83 / 0.83 | 0.82 / 0.82 | 0.74 / 0.74 | 0.72 / 0.71 | 20.9% |
+  | IE `iet01` | 0.43 / 0.43 | 0.42 / 0.41 | 0.41 / 0.40 | 0.40 / 0.39 | 0.38 / 0.37 | 11.6% |
+  | IE `DBReportTest` | 10.94 / 10.92 | 10.10 / 10.10 | 9.80 / 9.79 | 8.95 / 8.93 | 8.54 / 8.53 | 21.9% |
+  | PN `pnt01` | 0.30 / 0.29 | 0.26 / 0.25 | 0.25 / 0.24 | 0.22 / 0.22 | 0.21 / 0.20 | 30.0% |
+  | CA `cat01` | 0.31 / 0.30 | 0.27 / 0.26 | 0.26 / 0.25 | 0.25 / 0.24 | 0.24 / 0.23 | 22.6% |
+  | SN `snt01` | 0.30 / 0.29 | 0.28 / 0.27 | 0.27 / 0.26 | 0.24 / 0.24 | 0.24 / 0.23 | 20.0% |
+  | SN `sn` | 0.33 / 0.32 | 0.30 / 0.29 | 0.30 / 0.29 | 0.29 / 0.28 | 0.28 / 0.27 | 15.2% |
+  | IE `iet02` stop/restart | 0.43 / 0.42 | 0.42 / 0.42 | 0.42 / 0.40 | 0.39 / 0.37 | 0.39 / 0.37 | 9.3% |
+  | PN `pnt02` stop/restart | 0.30 / 0.29 | 0.27 / 0.25 | 0.25 / 0.24 | 0.23 / 0.22 | 0.22 / 0.20 | 26.7% |
+  | CA `cat02` stop/restart | 0.32 / 0.30 | 0.28 / 0.27 | 0.28 / 0.27 | 0.25 / 0.25 | 0.24 / 0.22 | 25.0% |
+  | SN `snt02` stop/restart | 0.31 / 0.30 | 0.29 / 0.27 | 0.27 / 0.26 | 0.27 / 0.25 | 0.25 / 0.23 | 19.4% |
+  | Native inventory, IE | 8.13 / 8.12 | 7.41 / 7.39 | 7.21 / 7.19 | 6.60 / 6.59 | 6.35 / 6.33 | 21.9% |
+  | Native inventory, CA | 4.54 / 4.54 | 3.96 / 3.95 | 3.90 / 3.90 | 3.36 / 3.36 | 3.14 / 3.13 | 30.8% |
+  | Native inventory, SN | 2.93 / 2.92 | 2.64 / 2.62 | 2.54 / 2.53 | 2.33 / 2.33 | 2.17 / 2.17 | 25.9% |
+
+  Every O12 wall range lies below its baseline range. Each step's range is
+  separate from the previous one for `DBReportTest` and the IE inventory. On
+  the short decks the O10 and O12 increments often overlap; no separate gain
+  is claimed there. The baseline medians reproduce O08's final timings.
+  Measured in separate sessions, O06–O12 together cut median wall time by
+  25–55% from O08's first baseline (for example, `DBReportTest` 14.56 ->
+  8.54 seconds, PN `pnt01` 0.46 -> 0.21 seconds). Median
+  peak RSS spans 13.34–36.48 MiB before and 13.30–36.58 MiB after; no memory
+  change is claimed. These are local measurements only.
+
+  Three-run `sample` profiles show inclusive main-thread formatted-I/O shares
+  falling as follows:
+
+  | Deck | Before | After O12 |
+  |---|---:|---:|
+  | IE `ie` | 19.4% | 0.4% |
+  | PN `pnt01` | 29.6% | 2.6% |
+  | CA `cat01` | 20.4% | 1.9% |
+  | SN `snt01` | 34.6% | 21.1% |
+
+  Most of SN's remaining I/O is in region 8/9 NVEL routines outside
+  O09–O12: R8PREP (8.1%), MRULES (4.5%) and R9CLARK (1.7%), plus PRTRLS
+  report output (3.8%). These are candidates for O15's refreshed ranking.
+  Compiler flags, masks and tolerances were not changed. Temporary builds,
+  runs, profiles and probes were removed.
 
 - [ ] **O13 — Audit the lifetime of FIA species-code data.**
   Re-inventory active `READ(FIAJSP...)` sites using current manifests; the

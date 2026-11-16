@@ -3,6 +3,7 @@
 !======================!
 ! VVOLUME $Id$
 subroutine FVSVOL
+  use DIGITREAD_MOD
   use MRULES_MOD
   implicit none
 
@@ -82,7 +83,9 @@ subroutine FVSVOL
   VOLEQ = VEQNNC(ISPC)
   call FORMCL(ISPC,IFOR,D,FC)
   IFC = IFIX(FC)
-  read(FIAJSP(ISPC), '(I4)')FIASPCD
+  ! DIGITREAD converts digit-and-blank codes such as '202 '; any other field
+  ! keeps the READ.
+  if (.not.DIGITREAD(FIAJSP(ISPC),FIASPCD)) read(FIAJSP(ISPC), '(I4)')FIASPCD
   if ((LFIANVB .or. VOLEQ(1:3) .eq. "NVB") .and.&
        &TKILL .and. LIVEDEAD .eq. 'L') then
      BRKHT = FLOAT(ITRNC)/100
@@ -146,9 +149,11 @@ subroutine FVSVOL
 
   if (VARACD.eq.'SN')IDIST = KODFOR-(KODFOR/100)*100
 
-  write(FORST,'(I2)')INTFOR
+  ! DIGITWRITE writes forest numbers that fit as digits; others keep the WRITE.
+  if (.not.DIGITWRITE(INTFOR,FORST,2)) write(FORST,'(I2)')INTFOR
   if (INTFOR.lt.10)FORST(1:1) = '0'
-  write(FIASP,('(A)'))JSP(ISPC)
+  ! Both are 4 characters long, so the former WRITE with (A) copied JSP exactly.
+  FIASP = JSP(ISPC)
   HTTYPE = 'F'
   IERR = 0
   DBTBH = D*(1-BARK)
