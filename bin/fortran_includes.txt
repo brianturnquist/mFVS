@@ -1,4 +1,3 @@
-acd/common/PRGPRM.f90
 ak/common/CRCOEF.f90
 ak/common/PRGPRM.f90
 bm/common/PRGPRM.f90

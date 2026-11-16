@@ -105,8 +105,12 @@ Each test runs a variant on the keyword files in its `tests/FVSxx` folder. It th
 | `volume/`, `fiavbc/` | Volume, biomass and carbon equations; `volume/NVEL` is a git submodule holding the mFVS fork of the National Volume Estimator Library (see its README) |
 | `pg/` | Stop and restart support |
 | `tests/` | Regression tests |
-| `acd/` | Acadian variant code, not yet built; see [acd/README.md](acd/README.md) |
 | `changeNotes/` | Historical upstream change notes |
+
+The unsupported Acadian sources were retired on 16 November 2026; they
+remain available in Git history. Separate Acadian development is available
+in [fvs-modern](https://github.com/advanced-forestry-systems/fvs-modern).
+See F25 in [CLEANUP_FINDINGS.md](CLEANUP_FINDINGS.md) for the retirement decision.
 
 ## Known issues
 

@@ -7,8 +7,9 @@ expressed explicitly in coefficient banks, species mappings or bounded
 branches. The findings below come from current source and the 24 build
 manifests. F01–F14 were authorized and completed on
 15 November 2026, and F15–F25 on 16 November 2026. F21a–F21b and
-F22a–F22d were also completed on 16 November 2026. F21c–F21f, F22e–F22h
-and F26a–F26g remain proposed follow-up tasks.
+F22a–F22d were also completed on 16 November 2026. F21c–F21f and F22e–F22h
+remain proposed follow-up tasks. The Acadian sources were retired on
+16 November 2026 under F25; F26 and F26a–F26g are closed without implementation.
 
 At the audit baseline, excluding include files and NVEL, the manifests
 selected 1,286 Fortran source files. There were 92 repeated filename
@@ -450,71 +451,32 @@ changes; unchecked findings remain proposals.
   and BC/ON matched the immediate baseline. 22 files became two; net
   change: −514 lines.
 
-- [x] **F25 — Acadian support review, without deletion.**
+- [x] **F25 — Acadian retirement.**
 
-  Decided 16 November 2026: `acd/` is unsupported and is to be retired in a
-  separate, authorized step; nothing was deleted. Upstream has never built
-  it (no source list at `c2105365`), and it has not compiled upstream since
-  `a8f62643` (June 2018) renamed TWIGCOM's `BAU` to `EBAU`; three of its 26
-  files still use `BAU`. No test covers it, and FVS-ACD development
-  appears to continue separately at the University of Maine.
+  Completed 16 November 2026 with explicit authorization to retire and
+  remove it. Deleted the unsupported `acd/` directory (25 implementation
+  files, its parameter include and its README) and removed its unused
+  entry from `bin/fortran_includes.txt`. None of the 24 build manifests
+  selected an Acadian file, and there was no Acadian build target or test
+  directory. Source-list checks passed; the selected source files, includes
+  and manifests for all 24 active variants were verified byte-identical
+  before and after removal. The include inventory changed only by deleting
+  the unused Acadian entry; its effective build classifications are unchanged.
 
-  Revised 16 November 2026: the preferred direction is now to support ACD
-  by following the University of Maine fork and using its build as the
-  reference (option A in [acd/README.md](acd/README.md), tracked as F26).
-  Nothing is to be retired meanwhile.
+  This supersedes the earlier support proposal. The retired sources and
+  their review remain available in Git history. Independent Acadian
+  development is available in
+  [fvs-modern](https://github.com/advanced-forestry-systems/fvs-modern).
+  Historical change notes and shared damage-code handling remain unchanged.
 
-- [ ] **F26 — Acadian variant support (option A).**
+- **F26 — Acadian variant support (closed; out of scope).**
 
-  Bring ACD into the build by following fvs-modern, the University of
-  Maine fork that already builds it, and verify against that fork's ACD
-  build. [acd/README.md](acd/README.md) records the evidence and the other
-  options. Licensing (the fork is MIT; mFVS is CC0) must be settled before
-  any of the fork's source is copied.
-
-- [ ] **F26a — Coordinate with the fvs-modern authors.**
-
-  Confirm which ACD code is current, whether newer equations exist outside
-  the repository, what test data exist, and whether their ACD changes can
-  be released under CC0.
-
-- [ ] **F26b — Build the reference.**
-
-  Build FVSacd and FVSne (the control) from a pinned fvs-modern commit,
-  outside the repository, and record the commit and compiler in the
-  parity tools as for original F77.
-
-- [ ] **F26c — Create `tests/FVSacd`.**
-
-  Write decks with alpha species codes (ACD shares 106 of NE's 108 codes in
-  a different order), starting from NE's `net01`, plus any University of
-  Maine data.
-
-- [ ] **F26d — Control comparison.**
-
-  Run the NE decks in fvs-modern's NE and in mFVS's NE. The fork tracks
-  upstream `b183c10f` (November 2025), not `c2105365`, so this measures
-  base-code differences before any ACD result is judged.
-
-- [ ] **F26e — Port the ACD routines.**
-
-  Compare fvs-modern's `acd/` with mFVS's statement by statement, bring
-  mFVS's copy to the same behaviour (at least `BAU` to `EBAU`), and add
-  `VARIANTCD = 'AC'` and `LMETRICVAR = .false.` to its PRGPRM.
-
-- [ ] **F26f — Integrate into the consolidated code.**
-
-  Write `bin/FVSacd_sourceList.txt` against mFVS's shared files (the
-  fork's list names pre-consolidation LS, IE, NE-fire and STRP files). In
-  each of the 31 shared routines that select on `VARIANTCD`, give `'AC'`
-  the branch of the variant whose file the fork uses. Extend the parity
-  tools to the three-letter variant name.
-
-- [ ] **F26g — Verify against the reference.**
-
-  Compare every generated file, restart files included, with the fork's
-  ACD build. Explain any differences by the F26d control comparison or
-  record them.
+  Closed without implementation on 16 November 2026 following F25's
+  authorized retirement. The proposed tasks retain their IDs: F26a
+  (author coordination), F26b (reference build), F26c (test decks), F26d
+  (NE control comparison), F26e (port), F26f (integration) and F26g
+  (verification). All are closed without implementation; adding Acadian
+  support would require a new decision and a validated reference.
 
 ## Bugs recorded during this audit
 
