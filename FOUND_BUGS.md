@@ -1,6 +1,6 @@
 # Found Bugs
 
-The first five confirmed model defects below were found during the 2026-11 consolidation of duplicated routines. Every one is already present in the pre-modernization source (commit `c2105365`), so none was introduced by the conversion to free-form Fortran or by the consolidation. M02a–M07a resolve the interfaces in section 1 and the missing arguments in section 2, and remove DBSIN's part of section 5; M12a subsequently repairs BC INITRE/MISIN's buffers in section 5, and M17a repairs ON INITRE's buffers. The remaining defects are deliberately retained. These interface repairs define behavior where the original calls were undefined and cannot establish simulation parity on those paths. Sections 6–8 separately record an unconfirmed historical numerical concern, a historical documentation discrepancy, and ESADDT data-flow concerns requiring follow-up. Section 9 records a reproduced SQLite resource defect with scientific-output impact still unmeasured. Section 10 records a restart-file difference that modernization itself introduced, now corrected. Sections 11 and 12 record two original defects that read undefined values and so make restart files vary between runs. Sections 13 and 14 record an invalid stub diagnostic and a fuel-model fallback defect found during the safe reapplication; neither was fixed. Sections 15–18 record DGDRIV tripling/bounds defects and undefined local reads found during L05; all were preserved. Section 19 records conditional undefined local reads in KT CRATET; these were also retained. Sections 20 and 21 record two defects in the former metric copy of EVLDX found during the M01 audit; the M01a merge carried both into `base/evldx.f90` unfixed. Sections 22–24 were found during the M02–M07 audits: section 22 is an output difference in BC and ON that the free-form conversion introduced, six of whose FORMATs are now corrected by M05a/M07a; sections 23 and 24 are original defects retained in the shared STATS and FMDOUT.
+The first five confirmed model defects below were found during the 2026-11 consolidation of duplicated routines. Every one is already present in the pre-modernization source (commit `c2105365`), so none was introduced by the conversion to free-form Fortran or by the consolidation. M02a–M07a resolve the interfaces in section 1 and the missing arguments in section 2, and remove DBSIN's part of section 5; M12a subsequently repairs BC INITRE/MISIN's buffers in section 5, and M17a repairs ON INITRE's buffers. The remaining defects are deliberately retained. These interface repairs define behavior where the original calls were undefined and cannot establish simulation parity on those paths. Sections 6–8 separately record a reproduced R9 Clark power trap, a historical documentation discrepancy, and ESADDT data-flow concerns requiring follow-up. Section 9 records a reproduced SQLite resource defect with scientific-output impact still unmeasured. Section 10 records a restart-file difference that modernization itself introduced, now corrected. Sections 11 and 12 record two original defects that read undefined values and so make restart files vary between runs. Sections 13 and 14 record an invalid stub diagnostic and a fuel-model fallback defect found during the safe reapplication; neither was fixed. Sections 15–18 record DGDRIV tripling/bounds defects and undefined local reads found during L05; all were preserved. Section 19 records conditional undefined local reads in KT CRATET; these were also retained. Sections 20 and 21 record two defects in the former metric copy of EVLDX found during the M01 audit; the M01a merge carried both into `base/evldx.f90` unfixed. Sections 22–24 were found during the M02–M07 audits: section 22 is an output difference in BC and ON that the free-form conversion introduced, six of whose FORMATs are now corrected by M05a/M07a; sections 23 and 24 are original defects retained in the shared STATS and FMDOUT.
 
 Unless a later status or location is given, file and line references are to the tree at commit `b5657da3` plus the then-uncommitted `VARIANTCD` change. Bugs 1 and 2 have the same root cause: FVS calls external procedures with no explicit interface, so gfortran cannot check argument lists across files. Moving these routines into modules would let the compiler catch this class of bug.
 
@@ -205,16 +205,41 @@ and remain unfixed.
 
 ---
 
-## 6. Deferred investigation: historical R9 Clark power guard
+## 6. Reproduced R9 Clark power trap; historical guard still under investigation
 
-**Status:** unconfirmed numerical concern; no demonstrated failure on valid tree inputs and no fix authorized.
-**Potential scope:** variants selecting NVEL `r9clark.f90` (all current variants except BC), when the relevant R9 equation path is used.
+**Status:** a reachable SN run failure was reproduced on 16 November 2026
+during O02, in both current code and pinned original F77. The precise
+floating-point exception and suitability of the historical guard remain
+unresolved; no fix is authorized.
+**Demonstrated scope:** SN using the bundled native inventory record below.
+**Potential wider scope:** variants selecting NVEL `r9clark.f90` (all current
+variants except BC), when the relevant R9 equation path is used.
 
 D11 found that the formerly selected `volume/r9clark_fvsMod.f90` guards the power term in `r9dib` and `r9ht`: when `(1.0-17.3/totht) < 0.005748` and `p > 14`, it sets `Y=0` instead of evaluating `(1.0-17.3/totht)**p`. The selected NVEL implementation evaluates that power directly at these two sites. Related guards exist elsewhere in NVEL; this is not evidence that the whole library lacks underflow handling. The pinned original NVEL `38548071` also evaluates these two powers directly.
 
 The local workaround entered build selection in `a19c41b4` (4 March 2024); ON selected it in `d495d604` (26 June 2024). The lists returned to canonical NVEL in `08e833b2` (28 August 2025), before the pinned original F77 reference. The available history establishes that selection change, but does not explain whether these two guards were deliberately dropped, made unnecessary, or overlooked.
 
-Before proposing a fix, reproduce a reachable valid-input case, measure any exception or output effect, and establish why the library selection changed. A small positive power base and large exponent can motivate an underflow investigation, but this cleanup does not establish a model bug or a safe replacement threshold. Keep any eventual correction separate from original-F77 parity work.
+O02's larger inventory sweep reached a trap on `Stand_CN=3009010602`
+(`Stand_ID=08030101310002`, inventory year 2014, 40 input tree records) in
+`tests/FVSie/FVS_Data.db`, whose native variant is SN. A separate single-stand
+deck reproduces it: read this Stand_CN from both FVS_StandInit and FVS_TreeInit,
+request ten cycles and `FMIN/POTFIRE/FUELOUT/SNAGSUM/END`, then PROCESS/STOP.
+The database records were not changed. With O01's Mac toolchain and default
+trap flags, both main `b344e862` / NVEL `a73e697e` and original main
+`c2105365` / NVEL `38548071` terminate with `SIGILL` (process return code -4).
+Symbolized backtraces locate `Y=(1.0-17.3/totHt)**p` in R9HT at current
+`volume/NVEL/r9clark.f90:1285` and original `r9clark.f:1286`, through
+R9CLARK, VOLINIT/VOLINITNVB, NATCRS and VOLS. All four partial output files
+from the larger SN sweep match between original and current code after the
+existing comparator's run-header and CaseID masks.
+
+This establishes a reachable inherited stop and lost projection output,
+without establishing whether the power faults from underflow, an invalid
+base/exponent combination or another operand issue. Before proposing a fix,
+inspect the operands and upstream equation selection, identify the exception,
+and establish why the library selection changed. Neither a safe replacement
+threshold nor the correctness of reinstating the old guard has been shown.
+Keep any eventual correction separate from original-F77 parity work.
 
 The workaround remains available with `git show 9bc35a16:volume/r9clark_fvsMod.f90`. No guard was added to NVEL and no active model code changed.
 

@@ -2,7 +2,8 @@
 
 Created 16 November 2026 from the material in [task_documents](task_documents/).
 This is a new checklist; the deleted working task list is not a source for it.
-All tasks below are pending. Creating this document does not start implementation.
+O01 and O02 were completed on 16 November 2026; the remaining tasks are pending.
+Creating this document does not start implementation.
 
 The objective is to reduce execution time, build time, memory use or storage
 without changing model results. Work through one bounded change at a time,
@@ -88,7 +89,7 @@ new flags were used; use a fresh temporary build/cache when necessary.
 
 ## 1. Establish the comparison and performance baseline
 
-- [ ] **O01 — Establish the current parity baseline.**
+- [x] **O01 — Establish the current parity baseline.**
   Confirm the current main/NVEL revisions, compiler versions, effective flags,
   selected variants and available decks. Use the pinned original F77 main
   revision `c210536536d81fd9b46dccb9a571f0de1e55e944` and its pinned NVEL
@@ -97,7 +98,40 @@ new flags were used; use a fresh temporary build/cache when necessary.
   Acceptance: a concise baseline outcome, current test count and explicit
   Canadian comparison limits; no attempt to repair unrelated failures.
 
-- [ ] **O02 — Refresh representative timings and profiles.**
+  Result, 16 November 2026: main `b344e8624f4f065d3193defeec249b9ac46abd20`,
+  NVEL `a73e697e220ffd0f792aa7ac10d84c911edb7ad7`; no model-source changes.
+  A fresh, uncached full suite used the pinned main/NVEL references above,
+  with `--workers 4 --jobs 4`. All 22 U.S. variants matched, including restart
+  files; only the documented BC/ON differences remained. The final line was:
+
+  ```text
+  FAIL 22/24 variants; working tree b344e862+changes vs original c2105365; failed: bc on
+  ```
+
+  Selection: all 24 manifests (`ak bc bm ca ci cr cs ec em ie kt ls nc ne oc
+  on op pn sn so tt ut wc ws`). Their default suites contain 66 make targets,
+  43 distinct keyword decks within variants and 90 model launches per tree.
+  Separate API, AllCycleActivities and nested economics tests are outside
+  this command. The transcript's 177-test count is not the current count.
+  Original BC/ON stop with `STOP 20` at keyword input; current BC StandStructure
+  still traps later, while YSM-SkyRanch and ON Hardwood run farther. This run
+  establishes neither pristine-original Canadian simulation parity nor a new
+  controlled Canadian comparison. No failures were repaired or masks changed.
+
+  Environment for O01/O02: macOS 26.6.2, arm64 Apple M5 Pro, 18 cores, 64 GB;
+  GNU Fortran 15.2.0, GNU C 16.2.0, GNU Make 3.81, Python 3.14.4 and SQLite
+  3.51.0. Actual compiler commands used the following flags, with no `-O`
+  option (effective `-O0`) and no PIC option on this Mac:
+
+  ```text
+  Fortran: -g -cpp -DCMPgcc -Wall -Wno-integer-division -ffpe-trap=invalid,zero,underflow,overflow,denormal -fbacktrace
+  C: -DANSI -DCMPgcc -DSQLITE_THREADSAFE=0 -DSQLITE_OMIT_LOAD_EXTENSION -Dunix
+  ```
+
+  Snapshot version macros were `unknown`, as expected outside Git. The build
+  commands and generated binaries were inspected; cached results were not used.
+
+- [x] **O02 — Refresh representative timings and profiles.**
   After O01, time IE `ie`, `iet01` and `DBReportTest`, PN `pnt01`, CA `cat01`,
   and SN `snt01`/`sn` where available. Include multi-stand and stop/restart
   coverage, and an available larger real workload before generalizing results.
@@ -106,6 +140,93 @@ new flags were used; use a fresh temporary build/cache when necessary.
   Acceptance: a reproducible workload and concise measurements identifying
   which transcript priorities still apply; Windows/Linux claims remain
   unverified unless measured on those platforms.
+
+  Result, 16 November 2026: the following are local baseline measurements,
+  using O01's sources, tools and flags. Each workload had one warm-up and five
+  unprofiled runs, interleaved with fixed shuffle seed 1602, without concurrent
+  builds. Each run started with a fresh copy of its `tests/FVSxx` folder;
+  copying and inspection were outside `/usr/bin/time -l -p`. Model processes
+  used `LC_ALL=C TZ=UTC`, with the suite's ambient build switches cleared.
+  CPU is user plus system time; RSS is the median peak resident size in MiB.
+
+  | Workload | Median wall seconds (range) | Median CPU seconds | Peak RSS MiB |
+  |---|---:|---:|---:|
+  | IE `ie` | 1.28 (1.23–1.29) | 1.28 | 16.48 |
+  | IE `iet01` | 0.56 (0.56–0.57) | 0.55 | 17.53 |
+  | IE `DBReportTest` | 14.62 (14.48–14.79) | 14.59 | 36.45 |
+  | PN `pnt01` | 0.55 (0.54–0.58) | 0.54 | 14.14 |
+  | CA `cat01` | 0.57 (0.55–0.59) | 0.56 | 13.30 |
+  | SN `snt01` | 0.62 (0.59–0.63) | 0.61 | 14.47 |
+  | SN `sn` | 0.60 (0.57–0.64) | 0.60 | 16.73 |
+  | Native inventory, IE: 8 populated stands, 469 input trees | 10.96 (10.70–11.12) | 10.94 | 14.88 |
+  | Native inventory, CA: 5 populated stands, 373 input trees | 7.06 (6.91–7.49) | 7.05 | 13.73 |
+
+  Stop/restart pairs used the existing `iet02`, `pnt02`, `cat02` and `snt02`
+  commands: stop point `2,2040` for IE/PN/CA and `2,2020` for SN, followed by
+  `--restart`. Median combined wall/CPU seconds were respectively 0.58/0.58,
+  0.55/0.54, 0.58/0.56 and 0.66/0.64; peak RSS was 15.39, 14.89, 14.02 and
+  15.23 MiB. Retained baseline exit codes were `iet01=20`, `iet02=20,0` and
+  `sn=10`; the other standard cases returned zero. CA inventory returned 10
+  with habitat-default warnings after completing all five stands.
+
+  The larger temporary inventory workload came from `tests/FVSie/FVS_Data.db`:
+  select populated stands by `lower(trim(Variant))`, order by `Stand_CN`, use
+  their original Stand_ID/Inv_Year, and read stand/tree rows with
+  `WHERE Stand_CN= '%Stand_CN%'`. Each stand requested ten cycles and
+  `FMIN/POTFIRE/FUELOUT/SNAGSUM/END`, then `PROCESS`. No tree records were
+  changed or transferred between variants. An additional nine-stand SN sweep
+  (660 input trees) stopped on its eighth stand at R9HT's power statement;
+  its 3.99-second median wall time is an incomplete run, excluded above.
+  Original F77 reproduced the trap and matched all four partial output files.
+  The isolated offending stand also traps in both versions; see
+  [bug 6](FOUND_BUGS.md#6-reproduced-r9-clark-power-trap-historical-guard-still-under-investigation).
+  There is no production deck on this Mac, so these results do not establish
+  production performance. Windows/Linux timings and speedup estimates remain
+  unverified.
+
+  Separate sampling used `/usr/bin/sample PID 60 1 -mayDie -file REPORT`
+  (a ten-second limit sufficed for the short decks), three fresh runs per deck,
+  with capture through process exit. Percentages below are inclusive shares
+  of main-thread stack samples, not speedups; nested columns must not be added.
+  Formatted I/O counts the union of stacks containing gfortran transfer,
+  formatted read/write or transfer-completion routines.
+
+  | Workload | Samples | Formatted I/O % | STKVAL % | SPEQCOEF % | FMSNAG % |
+  |---|---:|---:|---:|---:|---:|
+  | IE `ie` | 3,187 | 45.5 | 2.3 | 26.9 | 40.8 |
+  | IE `iet01` | 1,417 | 41.0 | 9.0 | 13.3 | 0.0 |
+  | IE `DBReportTest` | 38,913 | 41.0 | 0.8 | 24.5 | 51.8 |
+  | PN `pnt01` | 1,110 | 63.8 | 16.3 | 25.8 | 26.7 |
+  | CA `cat01` | 1,142 | 56.3 | 20.8 | 22.5 | 16.7 |
+  | SN `snt01` | 1,370 | 69.7 | 34.2 | 19.1 | 11.2 |
+  | SN `sn` | 1,402 | 61.0 | 28.7 | 18.5 | 11.9 |
+
+  Profiled median wall times were 1.7–14.0% higher than unprofiled medians;
+  CPU differences ranged from -1.2% to +8.3%, including run variation.
+  For `DBReportTest`, profiled wall/CPU medians were 15.39/14.61 seconds.
+  Profiled times are excluded from the timing table. Most STKVAL samples point
+  to the final-loop READ at `vbase/stkval.f90:639`, supporting O04. NVEL parsing
+  remains prominent, supporting O06–O12. FMSNAG remains worth O16's audit,
+  without establishing that its calls are interchangeable. SQLite accounts
+  for 21.2% of `iet01` samples but only 2.1% of `DBReportTest`; database changes
+  need workload-specific evidence. No compiler or caching change was adopted.
+
+  Build/storage measurements were separate: one fresh `make FVSxx.setup -j4`
+  per variant, sequentially, producing both executable and shared library.
+  Sizes below are logical MiB; build directories include copied inputs and
+  compiled files, excluding the two final binaries. These are single-build
+  baselines, not repeated estimates or all-variant projections.
+
+  | Variant | Wall seconds | CPU seconds | Compile commands | Build directory MiB | Executable / library MiB |
+  |---|---:|---:|---:|---:|---:|
+  | IE | 19.24 | 60.32 | 712 | 35.28 | 8.23 / 8.23 |
+  | PN | 18.04 | 57.19 | 695 | 35.97 | 8.57 / 8.57 |
+  | CA | 17.08 | 53.64 | 629 | 33.68 | 8.10 / 8.10 |
+  | SN | 15.62 | 49.33 | 575 | 31.33 | 7.44 / 7.44 |
+
+  Source-list checks and `git diff --check` passed. Temporary builds, raw
+  timings, profiles and generated outputs were discarded; only this summary
+  and the updated bug record are retained.
 
 - [ ] **O03 — Investigate the R8PREPCOEF state hazard.**
   Inspect `volume/NVEL/r8clkdib.f90`, its callers and the pinned original.
