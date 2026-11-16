@@ -78,12 +78,12 @@
 ../nc/htgf.f90
 ../nc/htgr5.f90
 ../nc/logs.f90
-../nc/morts.f90
+../vbase/morts.f90
 ../nc/nwcmrt.f90
 ../vbase/mortalloc.f90
 ../ca/pvref5.f90
-../nc/pvref6.f90
-../nc/regent.f90
+../vbase/pvref6.f90
+../vbase/regent.f90
 ../nc/sichg.f90
 ../nc/sitset.f90
 

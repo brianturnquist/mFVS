@@ -996,3 +996,93 @@ AK prints `PFCOMP2 NaN` where the original printed `0.00000000`).
 **Suggested fix:** assign CR, BAL and PFCOMP2 (or print only defined
 values) in these branches, in a separate diagnostic-only change. Until then,
 comparisons of DGF debug output must expect these fields to vary.
+
+## 37. MORTS reads unset FIXMORT flags and diagnostic work values
+
+**Variants:** AK for the control-flow defect; the shared MORTS consumers
+for the pre-loop FIXMORT diagnostic; OP/PN/WC for the Pacific diagnostics.
+**Location:** `ak/morts.f90`, the FIXMORT block and following reallocation;
+`vbase/morts.f90`, FIXMRT and MORPAC.
+**Status:** reproduced during L01–L03 on 15 November 2026. The same reads
+are present in pinned original F77 (`c2105365`). Deliberately unfixed.
+
+AK assigns KBIG and KPOINT only inside the scheduled FIXMORT activity loop,
+then tests them outside that loop. With no scheduled activity they, and the
+other activity locals used by the selected branch, can be unset. A scratch
+extraction with identical executable statements entered the reallocation
+branch on later cycles of the ordinary AK deck, printed garbage flag values,
+and sorted IWORK1/WORK3 where the immediate baseline did not. Summaries and
+database rows matched in these cases; wider model impact was not measured.
+AK therefore retains its original selected `ak/morts.f90`; its extraction
+is deferred until this separate model defect has an authorized resolution.
+
+FIXMORT also prints ITODO before starting the loop that defines it. In
+OP/PN/WC, the `IN MORTS EQ I,XCHECK,...` diagnostic prints XCHECK even when
+the establishment branch that assigns it was skipped. The final per-tree
+diagnostic prints RELDBH1(I) for records whose calculation was skipped
+because of zero probability, or OP's already-computed ORGANON mortality.
+Those entries can be unset or stale. Raw old/shared debug comparisons
+reproduced differences in precisely these fields while model files matched.
+
+For focused comparison only, temporary copies initialize ITODO, and Pacific
+XCHECK/RELDBH1, to the same sentinel on both sides. This establishes a
+separate diagnostic comparison contract; repository code and the whole-suite
+comparator are unchanged. It does not legitimize masking AK's control-flow
+differences or changing any defined diagnostic value.
+
+**Suggested fix:** separately define AK's no-activity reallocation behavior
+and initialize its flags at the appropriate point. Print the activity count
+or a defined counter before FIXMORT, and restrict Pacific diagnostics to
+values assigned on the executed path. Test these changes separately from
+consolidation, including repeated cycles and scheduled/unscheduled activities.
+
+## 38. EM REGENT calls a different DUBSCR argument contract
+
+**Variant:** EM.
+**Location:** REGEM in `vbase/regent.f90` (formerly `em/regent.f90`), the
+small-tree transition call; `em/dubscr.f90`.
+**Status:** source-confirmed during L03. Both contracts are present in
+pinned original F77. Deliberately preserved; prevalence and total projection
+impact have not been measured.
+
+REGENT calls `DUBSCR(ISPC,DNEW,HK,BA,CR,TPCCF,AVH,RMAI)`, the eight-argument
+contract used by IE/CI. EM's selected routine instead declares
+`DUBSCR(ISPC,D,H,CR,TPCT,TPCCF)`. Thus the callee's crown-ratio output aliases
+the caller's stand BA, while the intended crown-ratio argument occupies the
+unused TPCT slot; the final two actual arguments are extra. DUBSCR writes its
+CR argument, so this call can overwrite stand basal area. Consolidation keeps
+the call unchanged and leaves this one legacy interface implicit instead of
+inventing a corrected contract.
+
+**Suggested fix:** separately determine the intended EM transition equation
+and argument mapping, then add a matching explicit interface and targeted
+before/after model tests. Merely making the signatures compile together
+would not establish the intended scientific behavior.
+
+## 39. REGENT calibration prints unset tree and table indices
+
+**Variants:** OP, PN, WC and UT.
+**Location:** REGPAC in `vbase/regent.f90`, the calibration section's
+`1ST-K` and `2ND-K` diagnostics (formerly `op/regent.f90` and
+`wc/regent.f90`), and REGUT's `SI,RELSI,X,ISPC,J` diagnostic (formerly
+`ut/regent.f90`).
+**Status:** reproduced in immediate-baseline/shared real-engine comparisons
+with REGENT debugging enabled. Present in pinned original F77; unfixed.
+
+The initial LSTART calibration path selects the tree with I but prints K
+after its two SMHGDG calls. K is assigned in the separate growth path,
+which has not yet executed on the first call. The index printed in these
+two diagnostics consequently varies with stack layout. The paired probes
+matched model outputs and common-block state while printing different K
+values. Temporary comparison copies initialize only this diagnostic index
+on both sides; repository routines and the suite comparator are unchanged.
+
+UT's initial calibration diagnostic similarly prints J without assigning it
+on that path. The paired runs printed 1 and 0 with otherwise matching state
+and output. J is defined by species-table searches on the growth path; the
+calibration diagnostic cannot rely on those earlier calls. Temporary copies
+initialize this diagnostic local consistently too.
+
+**Suggested fix:** print the calibration loop's I, or explicitly assign the
+intended index on this path, in a separate diagnostic change. Preserve the
+existing SMHGDG calls, arithmetic, random draws and period conversion.

@@ -68,9 +68,9 @@
 ../sn/htcalc.f90
 ../sn/htdbh.f90
 ../sn/htgf.f90
-../sn/morts.f90
+../vbase/morts.f90
 ../sn/nbolt.f90
-../sn/regent.f90
+../vbase/regent.f90
 ../sn/sitset.f90
 ../sn/varget.f90
 ../pg/varchget.f90

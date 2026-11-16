@@ -82,10 +82,10 @@
 ../ie/htgf.f90
 ../ie/logs.f90
 ../ie/maical.f90
-../ie/morts.f90
+../vbase/morts.f90
 ../ie/pvref1.f90
 ../ie/rcon.f90
-../ie/regent.f90
+../vbase/regent.f90
 ../ie/sitset.f90
 ../ie/vols.f90
 

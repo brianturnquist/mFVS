@@ -76,7 +76,7 @@
 ../ls/htgf.f90
 ../ls/nbolt.f90
 ../ls/pvref9.f90
-../ls/regent.f90
+../vbase/regent.f90
 ../ls/sitset.f90
 ../ls/varmrt.f90
 
@@ -88,7 +88,7 @@
 ../nc/logs.f90
 ../so/adjmai.f90
 ../so/avht40.f90
-../vls/morts.f90
+../vbase/morts.f90
 ../vls/spctrn.f90
 ../ie/vols.f90
 

@@ -72,9 +72,9 @@
 ../ci/habtyp.f90
 ../ci/htgf.f90
 ../ie/logs.f90
-../ci/morts.f90
+../vbase/morts.f90
 ../ci/pvref4.f90
-../ci/regent.f90
+../vbase/regent.f90
 ../ci/siterange.f90
 ../ci/sitset.f90
 ../ci/smhtgf.f90

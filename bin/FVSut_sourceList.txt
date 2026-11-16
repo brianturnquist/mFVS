@@ -75,9 +75,9 @@
 ../ut/htgf.f90
 ../ut/logs.f90
 ../ut/maical.f90
-../ut/morts.f90
+../vbase/morts.f90
 ../ut/pvref4.f90
-../ut/regent.f90
+../vbase/regent.f90
 ../ut/siterange.f90
 ../ut/sitset.f90
 ../ut/utmrt.f90

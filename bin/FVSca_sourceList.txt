@@ -75,10 +75,10 @@
 ../ca/htcalc.f90
 ../ca/htdbh.f90
 ../ca/htgf.f90
-../ca/morts.f90
+../vbase/morts.f90
 ../ca/pvref5.f90
-../ca/pvref6.f90
-../ca/regent.f90
+../vbase/pvref6.f90
+../vbase/regent.f90
 ../ca/sichg.f90
 ../ca/sitset.f90
 ../ca/smhtgf.f90

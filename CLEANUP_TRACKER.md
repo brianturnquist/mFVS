@@ -10,7 +10,8 @@ P01–P03, D01–D15, C01–C19, B01–B03 and the unbuilt-directory removal (R0
 are complete. Six stub tasks, the metric audits M01–M21 (including M08b/M08c)
 and the implementation tasks M01a–M07a, M08a, M08d/M08e, M09a–M21a
 and M17b/M17d are also complete (M06a is included in M04a). The checklist
-now records 159 completed and 13 pending items, including R09.
+now records 162 completed and 10 pending items, including R09. L01–L03
+are complete with the explicit AK MORTS retention decision below.
 BC/ON simulation parity remains blocked by the existing bugs
 in [FOUND_BUGS.md](FOUND_BUGS.md).
 
@@ -1293,16 +1294,91 @@ suppression idioms are retained; the other nine stub tasks remain pending.
 
 ## L — Larger families:
 
-These counts describe selected files, not removable lines or proven duplicate
-algorithms. Each item is a **read-only audit**. Its
-deliverable is a difference map and subsequent small implementation tasks.
+These counts describe the originally selected files, not removable lines or
+proven duplicate algorithms. L01–L03 now record their difference maps,
+implementation and explicit retention decisions. L04 retains its complete
+audit and separately verified implementation stages.
 
-- [ ] **L01 — PVREF6 (7 files).** Begin with BM/EC and one equation branch or
-  coefficient-table section, then generalize the plan to the remaining groups. Distinguish shared calculation from scientific data.
-- [ ] **L02 — MORTS (21 files).** Begin with IE/KT and one mortality block, then generalize the plan to the remaining groups.
-  Preserve species-specific model behavior and diagnostic output.
-- [ ] **L03 — REGENT (23 files).** Begin with CA/OC and one regeneration
-  calculation block, then generalize the plan to the remaining groups; record coefficients and state dependencies.
+- [x] **L01 — PVREF6 (7 files).** Completed 15 November 2026 in
+  `vbase/pvref6.f90` for BM/CA/EC/NC/OC/OP/PN/SO/WC. One 4,277-row union
+  stores each PV/reference pair once, with seven separate habitat columns
+  (CA/OC and OP/PN already shared native tables). Scientific habitat values
+  remain variant-specific. An absent row is distinct from a real blank
+  habitat; partial-match flags, leading blanks, unchanged ARRAY2 on a miss
+  and BM's first-match blank-pair behavior are retained. Removed seven native
+  copies: 18,088 lines become 4,463. Against both pinned F77 and the immediate
+  baseline, all nine compiled variants pass 76,008 queries each, including
+  every native pair, misses, partial matches and all initial flag states.
+- [x] **L02 — MORTS (21 files).** Completed 15 November 2026 with 23 variants
+  selecting `vbase/morts.f90`; AK explicitly retains `ak/morts.f90`.
+  Shared families are SDI mortality (BM/CA/CR/CS/EC/EM/LS/NC/NE/OC/SN/SO/
+  TT/UT/WS), Prognosis (CI/IE/KT), and Pacific (OP/PN/WC), with separate
+  BC and ON kernels. MORCOF retains regional coefficients and species maps;
+  PRGCON retains habitat/forest lookup banks. The species multipliers,
+  diameter-period conversions, redwood/sequoia floors, SN rate, EM/TT hybrid
+  paths, ORGANON, climate calls and diagnostic formats remain explicit.
+  MORTMULT and FIXMORT processing are shared where their contracts agree.
+  The public MORTS/MORCON entries are unchanged. Ontario's four-argument
+  public VARMRT is retained in `canada/on/onmrt.f90`, with a local explicit
+  interface distinguishing it from other variants' three-argument calls.
+  Unread CI PMD and Pacific PMSC/PSP tables are not carried forward.
+  Removed 20 superseded files: 20,212 lines become 4,190.
+
+  **AK retention:** its original code reads KBIG/KPOINT outside the activity
+  loop that defines them. A scratch extraction changed control flow on this
+  undefined path, so that extraction was discarded. The native file and its
+  selection are preserved. FOUND_BUGS section 37 records the defect and the
+  separate prerequisite for any future AK extraction; no model repair is
+  included here.
+- [x] **L03 — REGENT (23 files).** Completed 15 November 2026 in
+  `vbase/regent.f90` for all 24 variants, retaining public REGENT/REGCON
+  contracts. Nineteen family kernels retain the regional models:
+
+  - CA/OC share SMHTGF, height/diameter blending and calibration; OC retains
+    its ORGANON tree flags, full-weight growth overrides and diagnostics.
+  - CS/LS/NE share the height-age calculation, with native DIAM tables
+    (96/68/108 slots), HTCALC equation selectors, LS tree age, CS BAL, NE
+    crown rounding and its 1.5-inch blending threshold. A local adapter
+    preserves NE's three-argument BALMOD beside CS/LS's six-argument forms.
+  - OP/PN/WC share SMHGDG processing. OP retains one five-year step and
+    ORGANON overrides; PN/WC retain two steps and a ten-year REGYR. Native
+    redwood arithmetic, random draws and reporting columns are unchanged.
+  - AK/BM/BC/ON/CI/CR/EC/EM/IE/KT/NC/SN/SO/TT/UT/WS retain separate native
+    equation bodies, tables, types and initialization. BC's metric/V2/V3
+    state and the differing SMHTGF/HTCALC/DUBSCR contracts are preserved.
+
+  Local DATA arrays retain native extents; common blocks retain the selected
+  variant's includes. REGCON enters without passing REGENT's absent dummy
+  arguments, and its native RHCON, READCORR and ZRAND initialization remains
+  in the corresponding kernel. Removed 23 superseded copies: 20,575 lines
+  become 18,527. EM's existing DUBSCR mismatch and unset calibration indices
+  are recorded in FOUND_BUGS sections 38–39, not repaired.
+
+  **L01–L03 verification (15 November 2026, `7d02d6c7` + changes):** 382
+  native DATA blocks match the immediate baseline, with NE's blending and
+  PN/WC's period selectors checked separately. All 528 focused real-engine
+  cases pass against that baseline (16 mortality and eight regeneration
+  scenarios per US variant): model files, database rows, exit status and
+  diagnostic text, plus 32 common-block fingerprints before/after 12,144
+  routine calls. Scenarios cover mortality multipliers, FIXMORT modes,
+  density/BA limits, thinning, period lengths, calibration, random growth,
+  tripling, regeneration multipliers and size caps. Temporary comparison
+  copies define only the unset diagnostic locals in FOUND_BUGS 37/39;
+  TT's existing undefined IGL (bug 11) is masked during hashing and restored
+  before model execution. Repository routines and comparators are unchanged
+  by these controls. Planted habitat, mortality and growth changes are all
+  rejected by the comparisons.
+
+  The whole existing suite matches the immediate baseline for **24/24
+  variants, 229 generated files**, including all 11 BC and five ON outputs.
+  The pristine-original suite ends `FAIL 22/24 variants; working tree
+  7d02d6c7+changes vs original c2105365; failed: bc on`: only the already
+  documented Canadian keyword-buffer differences remain. This does not
+  establish pristine-original BC/ON simulation parity. Source lists and
+  `git diff --check` pass; ACD, NVEL, test inputs and reference outputs are
+  unchanged. Main-repository Fortran files decrease from 1,455 to 1,408,
+  a net reduction of 31,691 source lines. Temporary builds/results are
+  discarded; no test archive or separate completion report is retained.
 - [x] **L04 — DGF (24 files, complete audit).** Expanded at the user's
   request on 15 November 2026 at `b4b1ee3d`. All 24 selected implementations,
   all 979 native species slots, every DGF/DGCONS equation path, and delegated

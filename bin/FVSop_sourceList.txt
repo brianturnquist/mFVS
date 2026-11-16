@@ -63,9 +63,9 @@
 ../op/grinit.f90
 ../vbase/grohed.f90
 ../op/htgf.f90
-../op/morts.f90
+../vbase/morts.f90
 ../organon/orgspc.f90
-../op/regent.f90
+../vbase/regent.f90
 ../op/sitset.f90
 
 ../ie/cftopk.f90
@@ -82,7 +82,7 @@
 ../pn/habtyp.f90
 ../pn/htcalc.f90
 ../pn/htdbh.f90
-../pn/pvref6.f90
+../vbase/pvref6.f90
 ../pn/sichg.f90
 ../so/avht40.f90
 ../vie/cwcalc.f90

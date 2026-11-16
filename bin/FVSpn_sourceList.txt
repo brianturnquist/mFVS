@@ -68,7 +68,7 @@
 ../pn/habtyp.f90
 ../pn/htcalc.f90
 ../pn/htdbh.f90
-../pn/pvref6.f90
+../vbase/pvref6.f90
 ../pn/sichg.f90
 ../pn/sitset.f90
 
@@ -83,7 +83,7 @@
 ../vie/cwcalc.f90
 ../vie/spctrn.f90
 ../vso/r6crwd.f90
-../vwc/morts.f90
+../vbase/morts.f90
 ../vwc/smhgdg.f90
 ../vws/r5crwd.f90
 ../wc/bfvol.f90
@@ -95,7 +95,7 @@
 ../wc/findag.f90
 ../wc/htgf.f90
 ../wc/logs.f90
-../wc/regent.f90
+../vbase/regent.f90
 
 ../vbase/cuts.f90
 ../vbase/disply.f90

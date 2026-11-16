@@ -73,10 +73,10 @@
 ../base/keyopn.f90
 ../canada/bc/log.f90
 ../canada/bc/min.f90
-../canada/bc/morts.f90
+../vbase/morts.f90
 ../canada/bc/natcrz.f90
 ../canada/bc/r6crwd.f90
-../canada/bc/regent.f90
+../vbase/regent.f90
 ../vbase/revise.f90
 ../canada/bc/sitset.f90
 ../canada/bc/spctrn.f90

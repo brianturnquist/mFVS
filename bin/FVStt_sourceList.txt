@@ -71,8 +71,8 @@
 ../vbase/grohed.f90
 ../tt/htgf.f90
 ../bm/maical.f90
-../tt/morts.f90
-../tt/regent.f90
+../vbase/morts.f90
+../vbase/regent.f90
 ../tt/siterange.f90
 ../tt/sitset.f90
 ../tt/smdgf.f90

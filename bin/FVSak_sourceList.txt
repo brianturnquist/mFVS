@@ -73,7 +73,7 @@
 ../ak/logs.f90
 ../ak/maical.f90
 ../ak/morts.f90
-../ak/regent.f90
+../vbase/regent.f90
 ../ak/seamrt.f90
 ../ak/sitset.f90
 

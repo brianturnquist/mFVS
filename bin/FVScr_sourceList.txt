@@ -79,10 +79,10 @@
 ../cr/habtyp.f90
 ../cr/htgf.f90
 ../cr/maical.f90
-../cr/morts.f90
+../vbase/morts.f90
 ../cr/pvref2.f90
 ../cr/pvref3.f90
-../cr/regent.f90
+../vbase/regent.f90
 ../cr/sitset.f90
 ../cr/varget.f90
 ../pg/varchget.f90

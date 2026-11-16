@@ -75,9 +75,9 @@
 ../ec/htcalc.f90
 ../ec/htdbh.f90
 ../ec/htgf.f90
-../ec/morts.f90
-../ec/pvref6.f90
-../ec/regent.f90
+../vbase/morts.f90
+../vbase/pvref6.f90
+../vbase/regent.f90
 ../ec/sichg.f90
 ../ec/sitset.f90
 ../ec/smhtgf.f90

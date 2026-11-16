@@ -1,12 +1,16 @@
-!========================!
-!   canada/on : varmrt   !
-!========================!
+!=======================!
+!   canada/on : onmrt   !
+!=======================!
 ! CANADA-ON $Id$
 subroutine VARMRT(TOKILL,DEBUG,SUMKIL,DQ10)
   implicit none
 
   ! SUBROUTINE TO DISTRIBUTE MORTALITY ACCORDING TO PERCENTILE AND
   ! SPECIES TOLERANCE.
+
+  ! ON'S PUBLIC FOUR-ARGUMENT VARMRT CONTRACT IS RETAINED. THE SHARED
+  ! vbase/morts.f90 USES A LOCAL EXPLICIT INTERFACE IN MORON TO KEEP
+  ! THIS DISTINCT FROM THE OTHER VARIANTS' THREE-ARGUMENT VARMRT.
 
   ! Common blocks
   include 'PRGPRM.f90'

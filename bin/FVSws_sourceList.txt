@@ -76,9 +76,9 @@
 ../ws/htdbh.f90
 ../ws/htgf.f90
 ../ws/logs.f90
-../ws/morts.f90
+../vbase/morts.f90
 ../ca/pvref5.f90
-../ws/regent.f90
+../vbase/regent.f90
 ../ws/sichg.f90
 ../ws/sitset.f90
 ../ws/smhtgf.f90

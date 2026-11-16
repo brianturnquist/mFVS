@@ -74,11 +74,11 @@
 ../em/htgf.f90
 ../em/logs.f90
 ../em/maical.f90
-../em/morts.f90
+../vbase/morts.f90
 ../em/pothtg.f90
 ../em/pvref1.f90
 ../em/rcon.f90
-../em/regent.f90
+../vbase/regent.f90
 ../em/sitset.f90
 ../em/smdgf.f90
 ../em/smhtgf.f90

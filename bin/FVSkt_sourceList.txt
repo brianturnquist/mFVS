@@ -76,9 +76,9 @@
 ../kt/ktfctr.f90
 ../kt/logs.f90
 ../kt/maical.f90
-../kt/morts.f90
+../vbase/morts.f90
 ../kt/pvref1.f90
-../kt/regent.f90
+../vbase/regent.f90
 ../kt/sitset.f90
 ../kt/smhtrg.f90
 ../kt/varget.f90

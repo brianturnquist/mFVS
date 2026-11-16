@@ -69,7 +69,7 @@
 ../ne/htgf.f90
 ../ne/logs.f90
 ../ne/nbolt.f90
-../ne/regent.f90
+../vbase/regent.f90
 ../ne/sitset.f90
 ../ne/varmrt.f90
 
@@ -89,7 +89,7 @@
 ../ls/htcalc.f90
 ../so/adjmai.f90
 ../so/avht40.f90
-../vls/morts.f90
+../vbase/morts.f90
 ../vls/spctrn.f90
 ../ie/vols.f90
 

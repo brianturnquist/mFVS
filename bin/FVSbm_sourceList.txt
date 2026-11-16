@@ -77,9 +77,9 @@
 ../bm/htdbh.f90
 ../bm/htgf.f90
 ../bm/maical.f90
-../bm/morts.f90
-../bm/pvref6.f90
-../bm/regent.f90
+../vbase/morts.f90
+../vbase/pvref6.f90
+../vbase/regent.f90
 ../bm/sichg.f90
 ../bm/siterange.f90
 ../bm/sitset.f90
