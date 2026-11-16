@@ -1,7 +1,7 @@
-!=================!
-!   ls : varmrt   !
-!=================!
-! LS $Id$
+!==========================================================!
+!   Distribute mortality using species shade tolerance     !
+!==========================================================!
+! CS, LS, NE $Id$
 subroutine VARMRT(TOKILL,DEBUG,SUMKIL)
   implicit none
 
@@ -20,14 +20,34 @@ subroutine VARMRT(TOKILL,DEBUG,SUMKIL)
   include 'PDEN.f90'
 
   ! Variables
-  real    :: VARADJ(MAXSP),TEMWK2(MAXTRE),EFFTR(MAXTRE)
+  real    :: VARADJ,TEMWK2(MAXTRE),EFFTR(MAXTRE)
+  real    :: VARADJCS(96),VARADJLS(68),VARADJNE(108)
   real    :: SUMKIL,TOKILL,PEFF,XKILL,RELHTA
   integer :: I,JPASS,MINSTP
   integer :: JSPC,IG,NPASS,ISWTCH
   real    :: SHORT,TEMKIL,ADJUST,PASS1,TPALFT,OTEM2,TEMSUM
   logical :: DEBUG
 
-  data VARADJ/&
+  !  KEEP EACH TOLERANCE BANK IN ITS ORIGINAL NATIVE SPECIES ORDER.
+  !  FIXED EXTENTS AVOID RESIZING ONE VARIANT'S DATA USING ANOTHER'S MAXSP.
+
+  !  CS SHADE TOLERANCE.
+
+  data VARADJCS/&
+       &0.20, 0.70, 0.30, 0.30, 0.30, 0.30, 0.50, 0.30, 0.30, 0.30,&
+       &0.70, 0.30, 0.30, 0.50, 0.50, 0.90, 0.30, 0.50, 0.50, 0.50,&
+       &0.50, 0.50, 0.50, 0.70, 0.30, 0.50, 0.30, 0.10, 0.85, 0.70,&
+       &0.70, 0.40, 0.50, 0.50, 0.50, 0.30, 0.50, 0.50, 0.70, 0.50,&
+       &0.30, 0.70, 0.90, 0.30, 0.30, 0.70, 0.50, 0.50, 0.50, 0.50,&
+       &0.10, 0.70, 0.30, 0.50, 0.50, 0.30, 0.30, 0.70, 0.50, 0.30,&
+       &0.30, 0.30, 0.50, 0.30, 0.90, 0.30, 0.70, 0.50, 0.30, 0.30,&
+       &0.70, 0.90, 0.70, 0.10, 0.10, 0.10, 0.10, 0.30, 0.50, 0.50,&
+       &0.30, 0.30, 0.90, 0.10, 0.30, 0.90, 0.30, 0.90, 0.30, 0.10,&
+       &0.30, 0.50, 0.50, 0.30, 0.70, 0.70/
+
+  !  LS SHADE TOLERANCE.
+
+  data VARADJLS/&
        &0.30, 0.30, 0.30, 0.30, 0.50, 0.50, 0.50, 0.90, 0.70, 0.10,&
        &0.70, 0.70, 0.30, 0.20, 0.30, 0.70, 0.10, 0.70, 0.85, 0.40,&
        &0.50, 0.70, 0.50, 0.50, 0.70, 0.90, 0.10, 0.70, 0.30, 0.50,&
@@ -35,6 +55,21 @@ subroutine VARMRT(TOKILL,DEBUG,SUMKIL)
        &0.10, 0.10, 0.30, 0.10, 0.30, 0.30, 0.70, 0.10, 0.30, 0.70,&
        &0.90, 0.50, 0.90, 0.90, 0.50, 0.90, 0.30, 0.40, 0.30, 0.50,&
        &0.10, 0.50, 0.30, 0.90, 0.10, 0.50, 0.30, 0.50/
+
+  !  NE SHADE TOLERANCE.
+
+  data VARADJNE/&
+       &0.90, 0.10, 0.50, 0.80, 0.50, 0.70, 0.50, 0.30, 0.50, 0.30,&
+       &0.30, 0.70, 0.50, 0.20, 0.50, 0.70, 0.90, 0.30, 0.30, 0.30,&
+       &0.30, 0.30, 0.30, 0.30, 0.30, 0.85, 0.90, 0.10, 0.70, 0.50,&
+       &0.30, 0.30, 0.30, 0.30, 0.50, 0.50, 0.90, 0.50, 0.30, 0.70,&
+       &0.30, 0.30, 0.30, 0.70, 0.50, 0.30, 0.30, 0.50, 0.10, 0.10,&
+       &0.10, 0.10, 0.30, 0.40, 0.50, 0.50, 0.30, 0.30, 0.30, 0.10,&
+       &0.30, 0.30, 0.30, 0.50, 0.50, 0.30, 0.50, 0.50, 0.50, 0.30,&
+       &0.30, 0.70, 0.70, 0.30, 0.50, 0.90, 0.90, 0.30, 0.30, 0.30,&
+       &0.70, 0.50, 0.40, 0.30, 0.30, 0.70, 0.30, 0.50, 0.30, 0.10,&
+       &0.10, 0.30, 0.70, 0.70, 0.50, 0.50, 0.70, 0.30, 0.70, 0.90,&
+       &0.30, 0.50, 0.90, 0.90, 0.30, 0.70, 0.30, 0.10/
 
   ! ADJUST = FINAL SCALAR ADJUSTMENT NEEDED TO SCALE MORTALITY VALUES
   !          TO ACHIEVE THE DESIRED MORTALITY LEVEL
@@ -82,12 +117,23 @@ subroutine VARMRT(TOKILL,DEBUG,SUMKIL)
 
   do I = 1,ITRN
      JSPC = ISP(I)
+
+     !  VARIANTCD IS CONSTANT FOR THE BUILD; ONLY ITS NATIVE BANK IS READ.
+
+     select case (VARIANTCD)
+     case ('CS')
+        VARADJ = VARADJCS(JSPC)
+     case ('LS')
+        VARADJ = VARADJLS(JSPC)
+     case ('NE')
+        VARADJ = VARADJNE(JSPC)
+     end select
      RELHTA = 100.
      if (AVH .gt.0.)RELHTA = MIN((HT(I)/AVH),1.0)*100.
      PEFF = 0.84525 - 0.01074*RELHTA + 0.0000002*RELHTA**3.0
      if (PEFF .gt.1.0) PEFF = 1.0
      if (PEFF .lt.0.01) PEFF = 0.01
-     EFFTR(I) = PEFF * (1.0-VARADJ(JSPC)) * 0.1
+     EFFTR(I) = PEFF * (1.0-VARADJ) * 0.1
      PASS1 = PASS1 + PROB(I)*EFFTR(I)
   end do
   if (DEBUG)write(JOSTND,30)ITRN,(EFFTR(IG),IG = 1,ITRN)

@@ -5,10 +5,12 @@ Fresh source audit: 15 November 2026, checkout `1cf093f3`.
 The goal is one definition of each calculation, with variant differences
 expressed explicitly in coefficient banks, species mappings or bounded
 branches. The findings below come from current source and the 24 build
-manifests. They are proposed work; implementation has not been authorized.
+manifests. F01, F02, F03 and F07 were authorized and completed on
+15 November 2026. The remaining unchecked findings are proposed work.
 
-Excluding include files and NVEL, the manifests select 1,286 Fortran source
-files. There are 92 repeated filename families covering 666 files. These
+At the audit baseline, excluding include files and NVEL, the manifests
+selected 1,286 Fortran source files. There were 92 repeated filename
+families covering 666 files. These
 counts identify comparison candidates, not interchangeable implementations
 or a measured amount of removable code.
 
@@ -30,29 +32,41 @@ or a measured amount of removable code.
 For implementation, run the appropriate focused comparisons and the existing
 regression suite. BC/ON need their documented controlled-baseline comparisons
 and focused coverage; agreement at an original early-failure boundary does
-not establish simulation parity. All findings remain unchecked below.
+not establish simulation parity. Completion notes below identify verified
+changes; unchecked findings remain proposals.
 
 ## Bounded consolidation candidates
 
-- [ ] **F01 — ESNUTR: AK and shared establishment.**
+- [x] **F01 — ESNUTR: AK and shared establishment.**
 
-  [ak/esnutr.f90](ak/esnutr.f90) and [estb/esnutr.f90](estb/esnutr.f90)
-  have matching executable logic; declaration ordering and comments differ.
-  Use one definition with the existing variant-selected includes.
+  Completed 15 November 2026 in [estb/esnutr.f90](estb/esnutr.f90).
+  AK now selects the existing shared definition, and its duplicate was
+  removed. Executable logic and variant-selected includes are unchanged.
+  AK's complete regression set matched original F77 (7 generated files).
 
-- [ ] **F02 — VARMRT: CS, LS and NE.**
+- [x] **F02 — VARMRT: CS, LS and NE.**
 
-  [cs/varmrt.f90](cs/varmrt.f90), [ls/varmrt.f90](ls/varmrt.f90) and
-  [ne/varmrt.f90](ne/varmrt.f90) differ only in the `VARADJ`
-  species-tolerance table. Share the allocator and retain separate
-  coefficient banks. Other VARMRT implementations require separate review.
+  Completed 15 November 2026 in [vbase/varmrt.f90](vbase/varmrt.f90).
+  One allocator retains the original CS/LS/NE tolerance banks at 96/68/108
+  entries, selected by `VARIANTCD`. The three duplicate files were removed.
+  All three regression sets matched original F77. Direct checks across all
+  native species matched original F77 and baseline `b8894858` exactly in
+  45 cases, including allocation state, background mortality, height handling
+  and diagnostics. Changing a selected coefficient was detected for each
+  variant. Other VARMRT implementations remain separate findings.
 
-- [ ] **F03 — BFVOL: CI, EC, KT and WS.**
+- [x] **F03 — BFVOL: CI, EC, KT and WS.**
 
-  [ci/bfvol.f90](ci/bfvol.f90), [ec/bfvol.f90](ec/bfvol.f90),
-  [kt/bfvol.f90](kt/bfvol.f90) and [ws/bfvol.f90](ws/bfvol.f90)
-  share the calculation body. Their `D2HBRK` and `COFBVS` tables differ.
-  Preserve each table's species order and extent in a shared calculation.
+  Completed 15 November 2026 in [vbase/bfvol.f90](vbase/bfvol.f90).
+  One calculation retains each original breakpoint/coefficient bank at its
+  native 19/32/11/43-row extent and preserves the species/surrogate comments.
+  `VARIANTCD` selects coefficients after the existing log-rule and
+  user-equation bypasses. All four duplicate files were removed, and all
+  four regression sets matched original F77. In 22,680 direct cases, all
+  species and methods 1/2/3/4/5/7 matched original F77 and baseline
+  `b8894858` exactly, including arguments and flags, top kill, transitions
+  and the actual form-class/log/scaling helpers. Changing a selected
+  coefficient was detected for each variant.
 
 - [ ] **F04 — LOGS: repeated taper and log calculations.**
 
@@ -78,11 +92,16 @@ not establish simulation parity. All findings remain unchecked below.
   different age-basis tables and [bm/siterange.f90](bm/siterange.f90)'s
   additional caller mode as subsequent bounded steps.
 
-- [ ] **F07 — DUNN: CA and NC.**
+- [x] **F07 — DUNN: CA and NC.**
 
-  [ca/dunn.f90](ca/dunn.f90) and [nc/dunn.f90](nc/dunn.f90) share the
-  interpolation/calculation. Preserve their species adjustment tables in
-  one definition.
+  Completed 15 November 2026 in [vbase/dunn.f90](vbase/dunn.f90).
+  CA, NC and the existing CA consumer OC now select one definition, with
+  the original 50-row CA and 12-row NC factors and unchanged `GETDUNN`
+  entry. Both duplicate files were removed. All three regression sets
+  matched original F77. Direct checks matched original F77 and baseline
+  `b8894858` exactly for every species, all eight codes and fractional-code
+  cases (66 cases), including `GETDUNN` before and after `DUNN`. Changing a
+  selected factor was detected for each consuming variant.
 
 - [ ] **F08 — ESDLAY: CI, IE and establishment.**
 
@@ -238,16 +257,28 @@ tracker; they are separate from the consolidation tasks.
 | [41](FOUND_BUGS.md#41-cssn-redcedar-fuel-selection-divides-unweighted-heights-by-tree-density) | CS/SN cedar-height calculation divides unweighted heights by density; splitting the same stand into two records changes fuel-candidate weights. | Actual original/current routines and classifiers reproduced the changed weights. Integrated fire-output impact was not measured. |
 | [42](FOUND_BUGS.md#42-bc-snag-volume-calls-the-ten-argument-cftopk-with-nine-arguments) | BC passes nine arguments to the ten-argument CFTOPK, shifting argument types and omitting the final argument. | Compiling actual caller/callee sources together produced argument-type diagnostics in original/current code. Runtime volume effects and crash frequency were not measured. |
 
-## Suggested starting sequence
+## Original starting sequence
 
 1. F01 — ESNUTR.
 2. F02 — CS/LS/NE VARMRT.
 3. F03 — CI/EC/KT/WS BFVOL.
 4. F07 — CA/NC DUNN.
 
-These have particularly clear boundaries between shared calculation and
-differing data. This ordering is a proposal, not implementation approval.
+All four steps above are complete. Further findings require separate
+implementation authorization.
 
-The audit's source-list check and `git diff --check` passed. No model source
-was changed, and no full regression run was performed for this read-only
-assessment. Temporary defect-verification files were discarded.
+The initial read-only audit's source-list check and `git diff --check`
+passed; its temporary defect-verification files were discarded. The four
+subsequent authorized consolidations replace 11 source files with four
+shared definitions, reducing this source set from 2,830 to 1,257 lines
+(seven fewer files and 1,573 fewer lines). Scientific values and existing
+defects are preserved.
+
+Final verification on 15 November 2026 built all 24 variants. All 22 U.S.
+regression sets matched original F77; BC/ON retained the documented
+pre-existing differences from the failing original keyword readers. Their
+manifests and every selected main-tree file were verified unchanged from
+baseline `b8894858`; these tasks do not claim new Canadian simulation
+parity. The source-list and formatting checks passed. Temporary direct
+checks, comparison outputs and build copies were discarded; no new defects
+were found during these four consolidations.

@@ -65,7 +65,7 @@
 ../common/DGCONS_ENTRY.f90
 ../vbase/dgfeqs.f90
 ../nc/dubscr.f90
-../nc/dunn.f90
+../vbase/dunn.f90
 ../nc/ecocls.f90
 ../nc/findag.f90
 ../nc/forkod.f90

@@ -69,7 +69,7 @@
 ../cs/nbolt.f90
 ../vbase/regent.f90
 ../cs/sitset.f90
-../cs/varmrt.f90
+../vbase/varmrt.f90
 
 ../ak/habtyp.f90
 ../ie/cftopk.f90

@@ -78,7 +78,7 @@
 ../ls/pvref9.f90
 ../vbase/regent.f90
 ../ls/sitset.f90
-../ls/varmrt.f90
+../vbase/varmrt.f90
 
 ../ie/cftopk.f90
 ../ie/dgbnd.f90

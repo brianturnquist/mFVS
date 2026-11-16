@@ -379,7 +379,7 @@
 ../ak/esdlay.f90
 ../ak/esgent.f90
 ../ak/esnspe.f90
-../ak/esnutr.f90
+../estb/esnutr.f90
 ../ak/espadv.f90
 ../ak/esprep.f90
 ../ak/espsub.f90

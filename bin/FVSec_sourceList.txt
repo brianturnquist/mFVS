@@ -53,7 +53,7 @@
 ../common/VOLSTD.f90
 ../common/WORKCM.f90
 
-../ec/bfvol.f90
+../vbase/bfvol.f90
 ../ec/blkdat.f90
 ../ec/bratio.f90
 ../ec/ccfcal.f90

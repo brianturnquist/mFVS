@@ -72,7 +72,7 @@
 ../ca/ccfcal.f90
 ../ca/cubrds.f90
 ../ca/dubscr.f90
-../ca/dunn.f90
+../vbase/dunn.f90
 ../ca/ecocls.f90
 ../ca/findag.f90
 ../ca/forkod.f90
