@@ -383,7 +383,7 @@
 ../estb/esadvh.f90
 ../estb/esblkd.f90
 ../estb/escprs.f90
-../estb/esdlay.f90
+../vbase/esdlay.f90
 ../estb/esetpr.f90
 ../estb/esfltr.f90
 ../estb/esgent.f90
@@ -624,7 +624,8 @@
 
 ../fire/base/fmbrkt.f90
 ../fire/kt/fmcba.f90
-../fire/kt/fmcblk.f90
+../fire/base/fmcblk.f90
+../fire/kt/FMBIOGRP.f90
 ../fire/base/fmcrow.f90
 ../fire/kt/fmvinit.f90
 ../fire/ie/fmcons.f90

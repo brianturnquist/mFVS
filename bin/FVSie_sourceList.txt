@@ -58,7 +58,7 @@
 
 ../ie/bfvol.f90
 ../ie/blkdat.f90
-../ie/bratio.f90
+../vbase/bratio.f90
 ../ie/ccfcal.f90
 ../ie/cftopk.f90
 ../ie/cfvol.f90
@@ -80,7 +80,7 @@
 ../vbase/grohed.f90
 ../ie/habtyp.f90
 ../ie/htgf.f90
-../ie/logs.f90
+../vbase/logs.f90
 ../ie/maical.f90
 ../vbase/morts.f90
 ../ie/pvref1.f90
@@ -377,7 +377,7 @@
 
 ../ie/esadvh.f90
 ../ie/esfixh.f90
-../ie/esdlay.f90
+../vbase/esdlay.f90
 ../ie/espadv.f90
 ../estb/espsub.f90
 ../estb/espxcs.f90
@@ -628,7 +628,8 @@
 
 ../fire/base/fmbrkt.f90
 ../fire/ie/fmcba.f90
-../fire/ie/fmcblk.f90
+../fire/base/fmcblk.f90
+../fire/ie/FMBIOGRP.f90
 ../fire/ie/fmcfmd.f90
 ../fire/ie/fmcons.f90
 ../fire/ie/fmcrow.f90

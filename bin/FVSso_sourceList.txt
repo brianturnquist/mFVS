@@ -78,7 +78,7 @@
 ../so/htcalc.f90
 ../so/htdbh.f90
 ../so/htgf.f90
-../so/logs.f90
+../vbase/logs.f90
 ../so/maical.f90
 ../vbase/morts.f90
 ../vbase/pvref6.f90
@@ -86,7 +86,7 @@
 ../so/scomrt.f90
 ../vbase/mortalloc.f90
 ../so/sichg.f90
-../so/siterange.f90
+../vbase/siterange.f90
 ../so/sitset.f90
 ../so/smhtgf.f90
 

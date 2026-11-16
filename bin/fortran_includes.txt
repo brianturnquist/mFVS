@@ -7,6 +7,7 @@ ca/common/PRGPRM.f90
 canada/bc/BCPLOT.f90
 canada/bc/ESHAP.f90
 canada/bc/PRGPRM.f90
+canada/fire/bc/FMBIOGRP.f90
 canada/newmist/DMCOM.f90
 canada/on/PRGPRM.f90
 ci/common/PRGPRM.f90
@@ -75,6 +76,8 @@ fire/base/common/FMPARM.f90
 fire/base/common/FMPROP.f90
 fire/base/common/FMSNGL.f90
 fire/base/common/FMSVCM.f90
+fire/ie/FMBIOGRP.f90
+fire/kt/FMBIOGRP.f90
 ie/common/PRGPRM.f90
 kt/common/PRGPRM.f90
 ls/common/PRGPRM.f90

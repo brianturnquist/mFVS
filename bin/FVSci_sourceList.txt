@@ -71,11 +71,11 @@
 ../vbase/grohed.f90
 ../ci/habtyp.f90
 ../ci/htgf.f90
-../ie/logs.f90
+../vbase/logs.f90
 ../vbase/morts.f90
 ../ci/pvref4.f90
 ../vbase/regent.f90
-../ci/siterange.f90
+../vbase/siterange.f90
 ../ci/sitset.f90
 ../ci/smhtgf.f90
 ../ci/varget.f90
@@ -381,7 +381,7 @@
 
 ../ci/esadvh.f90
 ../ci/esfixh.f90
-../ci/esdlay.f90
+../vbase/esdlay.f90
 ../ci/esinit.f90
 ../ci/espadv.f90
 ../estb/espsub.f90

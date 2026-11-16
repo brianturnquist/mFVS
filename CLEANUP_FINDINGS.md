@@ -5,7 +5,7 @@ Fresh source audit: 15 November 2026, checkout `1cf093f3`.
 The goal is one definition of each calculation, with variant differences
 expressed explicitly in coefficient banks, species mappings or bounded
 branches. The findings below come from current source and the 24 build
-manifests. F01, F02, F03 and F07 were authorized and completed on
+manifests. F01–F09 were authorized and completed on
 15 November 2026. The remaining unchecked findings are proposed work.
 
 At the audit baseline, excluding include files and NVEL, the manifests
@@ -68,29 +68,43 @@ changes; unchecked findings remain proposals.
   and the actual form-class/log/scaling helpers. Changing a selected
   coefficient was detected for each variant.
 
-- [ ] **F04 — LOGS: repeated taper and log calculations.**
+- [x] **F04 — LOGS: repeated taper and log calculations.**
 
-  Ten definitions remain. [ie/logs.f90](ie/logs.f90) and
-  [wc/logs.f90](wc/logs.f90), and [ne/logs.f90](ne/logs.f90) and
-  [so/logs.f90](so/logs.f90), contain matching calculation blocks.
-  Extract the common taper/log calculation while retaining species mappings
-  and special-case returns. Review the remaining copies separately.
+  Completed 15 November 2026 in [vbase/logs.f90](vbase/logs.f90), replacing
+  the IE/WC/NE/SO definitions for ten consuming variants. One calculation
+  preserves the two special-case returns, the common CI/IE/SO mapping
+  prefix and suffix, WC's model-1 mapping, and NE's native 108-row mapping.
+  All ten complete regression sets matched original F77. In 110,376 direct
+  cases, all native species and size/top/minimum/stump combinations matched
+  original F77 and baseline `96f1abcb` exactly, including argument values.
+  A changed taper coefficient was detected for every consumer.
 
-- [ ] **F05 — BRATIO: IE, EM and BC.**
+  The remaining six implementations were reviewed and retained: AK/UT/KT/WS
+  have different mappings or special-case handling, EM is a zero-volume
+  stub, and NC has a different ten-argument interface and calculation.
+  Their possible later consolidations require separate scope.
 
-  [ie/bratio.f90](ie/bratio.f90), [em/bratio.f90](em/bratio.f90) and
-  [canada/bc/bratio.f90](canada/bc/bratio.f90) share equation selection,
-  diameter handling and output bounds. Keep bark coefficients and species
-  mappings in variant-specific banks around one calculation.
+- [x] **F05 — BRATIO: IE, EM and BC.**
 
-- [ ] **F06 — SITERANGE: shared lookup structure.**
+  Completed 15 November 2026 in [vbase/bratio.f90](vbase/bratio.f90).
+  One calculation retains the native 23/19/15-row coefficient and equation
+  banks, diameter handling and output bounds. All 2,736 direct cases matched
+  original F77 and baseline `96f1abcb` exactly across native species,
+  diameter floors/caps and ignored heights; selected coefficient mutations
+  were detected. IE/EM complete regression sets matched original F77.
+  BC's complete generated outputs matched the immediate baseline separately;
+  this does not establish pristine-original Canadian simulation parity.
 
-  Begin with [ci/siterange.f90](ci/siterange.f90),
-  [so/siterange.f90](so/siterange.f90) and
-  [tt/siterange.f90](tt/siterange.f90), which share the lookup structure.
-  Retain separate range tables. Handle [ut/siterange.f90](ut/siterange.f90)'s
-  different age-basis tables and [bm/siterange.f90](bm/siterange.f90)'s
-  additional caller mode as subsequent bounded steps.
+- [x] **F06 — SITERANGE: shared lookup structure.**
+
+  Completed 15 November 2026 in [vbase/siterange.f90](vbase/siterange.f90).
+  CI/SO/TT migrated first, then UT and BM in separately verified steps.
+  The five native range banks retain their original extents and values.
+  UT keeps its alternate REGENT age basis; only BM accepts caller mode 3.
+  Other modes return 0/999 before reading a species index. All five complete
+  regression sets matched original F77. All 832 direct cases matched
+  original F77 and baseline `96f1abcb` exactly, including unsupported modes
+  with invalid species indices; selected table mutations were detected.
 
 - [x] **F07 — DUNN: CA and NC.**
 
@@ -103,20 +117,30 @@ changes; unchecked findings remain proposals.
   cases (66 cases), including `GETDUNN` before and after `DUNN`. Changing a
   selected factor was detected for each consuming variant.
 
-- [ ] **F08 — ESDLAY: CI, IE and establishment.**
+- [x] **F08 — ESDLAY: CI, IE and establishment.**
 
-  [ci/esdlay.f90](ci/esdlay.f90), [ie/esdlay.f90](ie/esdlay.f90) and
-  [estb/esdlay.f90](estb/esdlay.f90) repeat the delay calculation around
-  coefficient banks. Share the calculation while preserving table
-  dimensions and species-specific values.
+  Completed 15 November 2026 in [vbase/esdlay.f90](vbase/esdlay.f90) for
+  CI/IE/KT. One delay calculation retains the native 19/23/11-species scale
+  and shape banks, including unused zero rows, plus all six shared budworm
+  banks. Thresholds, clamping and arithmetic are unchanged. All three
+  complete regression sets matched original F77. All 155,820 direct cases
+  matched original F77 and baseline `96f1abcb` exactly across native rows,
+  advance/subsequent modes and age/BA/budworm/draw boundaries, including
+  argument/common-state values; selected coefficient mutations were detected.
 
-- [ ] **F09 — FMCBLK: IE, KT and BC.**
+- [x] **F09 — FMCBLK: IE, KT and BC.**
 
-  [fire/ie/fmcblk.f90](fire/ie/fmcblk.f90),
-  [fire/kt/fmcblk.f90](fire/kt/fmcblk.f90) and
-  [canada/fire/bc/fmcblk.f90](canada/fire/bc/fmcblk.f90) have matching
-  carbon-product tables and different biomass-group mappings. Centralize
-  the common tables while preserving initialization before execution begins.
+  Completed 15 November 2026 in [fire/base/fmcblk.f90](fire/base/fmcblk.f90).
+  One BLOCK DATA definition initializes the common carbon-product tables.
+  Manifests select the native mapping from
+  [IE](fire/ie/FMBIOGRP.f90), [KT](fire/kt/FMBIOGRP.f90) or
+  [BC](canada/fire/bc/FMBIOGRP.f90) data-only includes, classified in
+  `bin/fortran_includes.txt`. The FMPROP common layout is unchanged and no
+  runtime initializer is needed. All 7,321 initialized values matched
+  original F77 and baseline `96f1abcb` before any model call; carbon-table
+  and native-mapping mutations were detected for all three variants.
+  IE/KT complete regression sets matched original F77. BC's complete
+  generated outputs matched the immediate baseline separately.
 
 - [ ] **F10 — FMCBA: IE, KT and BC.**
 
@@ -268,17 +292,33 @@ All four steps above are complete. Further findings require separate
 implementation authorization.
 
 The initial read-only audit's source-list check and `git diff --check`
-passed; its temporary defect-verification files were discarded. The four
-subsequent authorized consolidations replace 11 source files with four
-shared definitions, reducing this source set from 2,830 to 1,257 lines
+passed; its temporary defect-verification files were discarded. The first
+four authorized consolidations (F01/F02/F03/F07) replace 11 source files
+with four shared definitions, reducing this source set from 2,830 to 1,257 lines
 (seven fewer files and 1,573 fewer lines). Scientific values and existing
 defects are preserved.
 
-Final verification on 15 November 2026 built all 24 variants. All 22 U.S.
-regression sets matched original F77; BC/ON retained the documented
+Verification of F01/F02/F03/F07 on 15 November 2026 built all 24 variants.
+All 22 U.S. regression sets matched original F77; BC/ON retained the documented
 pre-existing differences from the failing original keyword readers. Their
 manifests and every selected main-tree file were verified unchanged from
 baseline `b8894858`; these tasks do not claim new Canadian simulation
 parity. The source-list and formatting checks passed. Temporary direct
 checks, comparison outputs and build copies were discarded; no new defects
 were found during these four consolidations.
+
+The second batch (F04/F05/F06/F08/F09), completed 15 November 2026 against
+baseline `96f1abcb`, replaces 18 source/data files with five shared definitions
+and three native data includes. This source set shrank from 3,488 to 1,538
+lines: ten fewer files and 1,950 fewer source/data lines. Native table values,
+dimensions, common-block layout and initialization timing were preserved.
+
+Each bounded migration passed its focused regression and direct checks.
+The final full run built all 24 variants; all 22 U.S. variants matched
+original F77, including generated databases and restart files. BC's complete
+generated outputs matched the immediate baseline after F05 and again after
+F09. Its changed components also matched original F77 directly. BC/ON retain
+the documented pristine-original comparison failures; this batch does not
+claim Canadian pristine-original simulation parity. Source-list, formatting,
+native-table and tracker-link checks passed. No model bug fixes were made.
+Temporary drivers, outputs and build copies were discarded.

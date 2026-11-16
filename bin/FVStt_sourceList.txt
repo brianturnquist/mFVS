@@ -73,7 +73,7 @@
 ../bm/maical.f90
 ../vbase/morts.f90
 ../vbase/regent.f90
-../tt/siterange.f90
+../vbase/siterange.f90
 ../tt/sitset.f90
 ../tt/smdgf.f90
 ../tt/smhtgf.f90

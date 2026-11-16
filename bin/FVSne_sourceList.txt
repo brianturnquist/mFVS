@@ -67,7 +67,7 @@
 ../vbase/grohed.f90
 ../ne/htdbh.f90
 ../ne/htgf.f90
-../ne/logs.f90
+../vbase/logs.f90
 ../ne/nbolt.f90
 ../vbase/regent.f90
 ../ne/sitset.f90

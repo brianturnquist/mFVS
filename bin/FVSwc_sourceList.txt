@@ -76,7 +76,7 @@
 ../wc/htcalc.f90
 ../wc/htdbh.f90
 ../wc/htgf.f90
-../wc/logs.f90
+../vbase/logs.f90
 ../vbase/pvref6.f90
 ../vbase/regent.f90
 ../wc/sichg.f90

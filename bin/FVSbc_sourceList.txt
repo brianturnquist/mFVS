@@ -53,7 +53,7 @@
 ../common/WORKCM.f90
 ../canada/bc/becset.f90
 ../canada/bc/blkdat.f90
-../canada/bc/bratio.f90
+../vbase/bratio.f90
 ../canada/bc/ccfcal.f90
 ../canada/bc/cfvol.f90
 ../vbase/cratet.f90
@@ -418,7 +418,8 @@
 ../fire/vbase/fmburn.f90
 ../canada/fire/bc/fmcanc.f90
 ../canada/fire/bc/fmcba.f90
-../canada/fire/bc/fmcblk.f90
+../fire/base/fmcblk.f90
+../canada/fire/bc/FMBIOGRP.f90
 ../canada/fire/bc/fmcfim.f90
 ../canada/fire/bc/fmcons.f90
 ../canada/fire/bc/fmcrow.f90

@@ -99,7 +99,7 @@
 ../vso/r6crwd.f90
 ../vws/r5crwd.f90
 ../wc/bfvol.f90
-../wc/logs.f90
+../vbase/logs.f90
 
 ../vbase/cuts.f90
 ../vbase/disply.f90

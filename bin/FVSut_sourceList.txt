@@ -78,7 +78,7 @@
 ../vbase/morts.f90
 ../ut/pvref4.f90
 ../vbase/regent.f90
-../ut/siterange.f90
+../vbase/siterange.f90
 ../ut/sitset.f90
 ../ut/utmrt.f90
 ../vbase/mortalloc.f90

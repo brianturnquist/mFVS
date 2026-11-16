@@ -94,7 +94,7 @@
 ../wc/dubscr.f90
 ../wc/findag.f90
 ../wc/htgf.f90
-../wc/logs.f90
+../vbase/logs.f90
 ../vbase/regent.f90
 
 ../vbase/cuts.f90

@@ -97,7 +97,7 @@
 ../ie/rcon.f90
 ../ie/vols.f90
 ../so/adjmai.f90
-../wc/logs.f90
+../vbase/logs.f90
 ../vie/cwcalc.f90
 ../vie/spctrn.f90
 ../vws/r5crwd.f90

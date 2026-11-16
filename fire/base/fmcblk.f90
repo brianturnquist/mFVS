@@ -1,13 +1,18 @@
 !======================!
 !   fire/ie : fmcblk   !
 !======================!
-! FIRE-IE $Id$
+! FIRE-IE, KT, BC $Id$
 block data FMCBLK
   implicit none
 
   ! Common blocks
   include 'PRGPRM.f90'
   include 'FMPROP.f90'
+
+  !  THE CARBON-PRODUCT TABLES BELOW MATCH THE ORIGINAL IE, KT AND BC
+  !  BANKS. KEEP THEM IN BLOCK DATA SO THEY EXIST BEFORE ANY MODEL CALL.
+  !  THE MANIFEST SELECTS ONE NATIVE BIOMASS-MAPPING INCLUDE; THIS DOES
+  !  NOT CHANGE THE FMPROP COMMON-BLOCK LAYOUT OR REQUIRE A RUNTIME INIT.
 
   ! Variables
   integer :: J
@@ -26,12 +31,7 @@ block data FMCBLK
   !       9=HARD MAPLE/OAK/HICKORY/BEECH
   !      10=WOODLAND JUNIPER/OAK/MESQUITE
 
-  data BIOGRP/&
-       &4, 1, 2, 3, 3,&
-       &1, 4, 5, 3, 4,& ! 10
-       &3, 4, 4, 1, 4,&
-       &10, 3, 6, 6, 7,& ! 20
-       &7, 6, 3/
+  include 'FMBIOGRP.f90'
 
   ! DATA Statement Debug Information
   !         Variant   = IE
