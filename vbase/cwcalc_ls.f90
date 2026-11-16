@@ -1,7 +1,7 @@
-!========================!
-!   canada/on : cwcalc   !
-!========================!
-! CANADA-ON $Id$
+!=========================!
+!   vbase : cwcalc_ls     !
+!=========================!
+! CS, LS, NE, SN, ON $Id$
 subroutine CWCALC(ISPC,P,D,H,CR,IICR,CW,IWHO,JOSTND)
   implicit none
 
@@ -12,6 +12,11 @@ subroutine CWCALC(ISPC,P,D,H,CR,IICR,CW,IWHO,JOSTND)
   !  IT IS CALLED FROM **CWIDTH** TO PRODUCE CROWTH WIDTH ESTIMATES FOR
   !  OF FOREST GROWN TREES, AND IT IS CALLED FROM **CCFCAL** TO PRODUCE
   !  CROWN WIDTH ESTIMATES OF OPEN GROWN TREES.
+
+  !  SHARED BY CS, LS, NE, SN AND ON. THE US VARIANTS SELECT EQUATIONS BY
+  !  THEIR OWN 2-CHARACTER SPECIES CODES. ON MAPS ITS 72 SPECIES TO US CODES
+  !  (JSP2ON) AND USES FIVE CASES (CH, HS, NC, OL, UH) THAT NO US VARIANT'S
+  !  CODES REACH.
 
   !  DEFINITION OF VARIABLES:
   ! JSP(ISPC) = FVS SPECIES ALPHA NUMBER
@@ -62,15 +67,20 @@ subroutine CWCALC(ISPC,P,D,H,CR,IICR,CW,IWHO,JOSTND)
   ! Variables
   integer :: ISPC,IWHO,IICR,JOSTND
   character(len=5) :: CWEQ
-  character(len=4) :: JSP2(MAXSP)
+  character(len=4) :: SPCODE
+  character(len=4) :: JSP2ON(72)
   real    :: D,CW,HI,HILAT,HILONG,HIELEV,MIND,CR,OMIND
   real    :: P,H
+  real    :: RDANUW
+  integer :: IDANUW
+
+  ! Data statements
   data MIND/5./,OMIND/3./
 
-  !     FOR COMPLIANCE WITH US CROWN WIDTH EQUATIONS, THE 2-CHAR US SPECIES CODES
-  !     ARE USED HERE, RATHER THAN THE 2-CHAR CDN CODES
+  !     ON: FOR COMPLIANCE WITH US CROWN WIDTH EQUATIONS, THE 2-CHAR US SPECIES
+  !     CODES ARE USED HERE, RATHER THAN THE 2-CHAR CDN CODES
 
-  data JSP2    /'JP ','SC ','RN ','RP ','WP ','WS ','NS ','BF ',&
+  data JSP2ON  /'JP ','SC ','RN ','RP ','WP ','WS ','NS ','BF ',&
        &'BS ','TA ','WC ','EH ','OS ','RC ','BA ','GA ','CW ','SV ',&
        &'RM ','BC ','AE ','RL ','RE ','YB ','BW ','SM ','BM ','AB ',&
        &'WA ','WO ','SW ','BR ','CK ','RO ','BO ','NP ','BH ','PH ',&
@@ -78,6 +88,13 @@ subroutine CWCALC(ISPC,P,D,H,CR,IICR,CW,IWHO,JOSTND)
        &'NC ','BE ','ST ','MM ','AH ','AC ','HB ','DW ','HT ','AP ',&
        &'BG ','SY ','PR ','CC ','PL ','WI ','BL ','DM ','SS ','MA ',&
        &'JP ','WP ','WS ','BS '/
+
+  !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
+
+  RDANUW = H
+  RDANUW = P
+  IDANUW = IICR
+  IDANUW = JOSTND
 
   !  INITIALIZE RETURN VARIABLES.
 
@@ -94,8 +111,13 @@ subroutine CWCALC(ISPC,P,D,H,CR,IICR,CW,IWHO,JOSTND)
 
   !  SET THE EQUATION NUMBER
 
-  select case (JSP2(ISPC))
+  if (VARIANTCD .eq. 'ON') then
+     SPCODE = JSP2ON(ISPC)
+  else
+     SPCODE = NSP(ISPC,1)(1:2)
+  end if
 
+  select case (SPCODE)
   case('AB ') !AMERICAN BEECH (531)
      CWEQ = '53101'
   case('AC ') !AMERICAN CHESTNUT (421)                        MAPPED TO SH
@@ -194,7 +216,7 @@ subroutine CWCALC(ISPC,P,D,H,CR,IICR,CW,IWHO,JOSTND)
      else
         CWEQ = '40701'
      end if
-  case('BW ') !AMERICAN BASSWOOD (951)
+  case('BW ','BD ') !AMERICAN BASSWOOD (951) AND BASSWOOD (950)
      CWEQ = '95101'
   case('BY ') !BALDCYPRESS (221)
      CWEQ = '22101'
@@ -204,7 +226,7 @@ subroutine CWCALC(ISPC,P,D,H,CR,IICR,CW,IWHO,JOSTND)
      CWEQ = '81201'
   case('CC ') !CHOKECHERRY (763)                              MAPPED TO PR
      CWEQ = '76102'
-  case('CH ') !OTHER COMMERCIAL HARDWOODS (na)                MAPPED TO BW
+  case('CH ') !OTHER COMMERCIAL HARDWOODS (na; ON)            MAPPED TO BW
      CWEQ = '60201'
   case('CK ') !CHINKAPIN OAK (826)
      CWEQ = '82601'
@@ -292,7 +314,7 @@ subroutine CWCALC(ISPC,P,D,H,CR,IICR,CW,IWHO,JOSTND)
      CWEQ = '55201'
   case('HM ') !HEMLOCK (260)                                  MAPPED TO EH
      CWEQ = '26101'
-  case('HS ') !SELECT HICKORY (na)                            MAPPED TO SH
+  case('HS ') !SELECT HICKORY (na; ON)                        MAPPED TO SH
      if (IWHO.eq.1) then
         CWEQ = '40703'
      else
@@ -352,7 +374,7 @@ subroutine CWCALC(ISPC,P,D,H,CR,IICR,CW,IWHO,JOSTND)
      CWEQ = '65301'
   case('MV ') !SWEETBAY (653)
      CWEQ = '65301'
-  case('NC ') !NON-COMMERCIAL SPECIES (na)                    MAPPED TO DW
+  case('NC ') !NON-COMMERCIAL SPECIES (na; ON)                MAPPED TO DW
      CWEQ = '49101'
   case('NK ') !NUTALL OAK (828)                               MAPPED TO SK
      CWEQ = '81201'
@@ -382,7 +404,7 @@ subroutine CWCALC(ISPC,P,D,H,CR,IICR,CW,IWHO,JOSTND)
      else
         CWEQ = '80201'
      end if
-  case('OL ') !OTHER LOWLAND SPECIES (na)                     MAPPED TO SY
+  case('OL ') !OTHER LOWLAND SPECIES (na; ON)                 MAPPED TO SY
      CWEQ = '73101'
   case('OO ') !OSAGE ORANGE (641)                             MAPPED TO SS
      CWEQ = '93101'
@@ -392,7 +414,7 @@ subroutine CWCALC(ISPC,P,D,H,CR,IICR,CW,IWHO,JOSTND)
      else
         CWEQ = '12901'
      end if
-  case('OS ') !OTHER SOFTWOODS (298 fmsc)                     MAPPED TO RC
+  case('OS ') !OTHER SOFTWOODS (299 fmsc)                     MAPPED TO RC
      CWEQ = '06801'
   case('OT ') !OTHER (999 FIA, UNKNOWN DEAD)                  MAPPED TO RM
      if (IWHO.eq.1) then
@@ -598,7 +620,7 @@ subroutine CWCALC(ISPC,P,D,H,CR,IICR,CW,IWHO,JOSTND)
      CWEQ = '69401'
   case('UA ') !BLUE ASH (546)                                 MAPPED TO WA
      CWEQ = '54101'
-  case('UH ') !OTHER UPLAND HARDWOODS (na)                    MAPPED TO SS
+  case('UH ') !OTHER UPLAND HARDWOODS (na; ON)                MAPPED TO SS
      CWEQ = '93101'
   case('VP ') !VIRGINIA PINE (132)
      CWEQ = '13201'

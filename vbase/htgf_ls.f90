@@ -1,7 +1,7 @@
 !======================================!
 !   Compute large tree height growth   !
 !======================================!
-! NE $Id$
+! CS, LS, NE $Id$
 subroutine HTGF
   implicit none
 
@@ -12,6 +12,12 @@ subroutine HTGF
   !  **TREGRO** DURING REGULAR CYCLING.  ENTRY **HTCONS**
   !  IS CALLED FROM **RCON** TO LOAD SITE DEPENDENT CONSTANTS
   !  THAT NEED ONLY BE RESOLVED ONCE.
+
+  !  SHARED BY CS, LS AND NE. THE VARIANTS DIFFER ONLY IN THE HTCALC
+  !  EQUATION SET (IVAR: CS 2, LS 1, NE 3), THE BALMOD FORM (CS: BAL AND
+  !  BA; LS: BA AND RMSQD; NE: THREE ARGUMENTS) AND THE UNIT OF TWO
+  !  DIAGNOSTICS (CS/NE: 16; LS: JOSTND). EXPLICIT INTERFACES CHECK EACH
+  !  BALMOD CALL.
 
   ! Common blocks
   include 'PRGPRM.f90'
@@ -26,8 +32,32 @@ subroutine HTGF
   ! Variables
   logical :: DEBUG
 
-  integer :: ISPC,I1,I2,I3,I,MODE0,IVAR,ITFN
-  real    :: SCALE,XHT,YRS,H,HTG1,HTMAX,AGET,GMOD,RELHTA,TEMHTG
+  integer :: I,ISPC,I1,I2,I3,ITFN
+  real    :: SCALE,XHT,TEMHTG,BAL
+  integer :: MODE0,IVAR,IVARSP
+  real    :: YRS,H,HTG1,HTMAX,AGET,GMOD,RELHTA
+
+  interface
+     subroutine BALMOD(ISPC,D,BAL,BA,GMOD,DEBUG)
+       integer :: ISPC
+       real :: D
+       real :: BAL
+       real :: BA
+       real :: GMOD
+       logical :: DEBUG
+     end subroutine BALMOD
+  end interface
+
+  !  HTCALC EQUATION SET
+
+  select case (VARIANTCD)
+  case ('CS')
+     IVARSP = 2
+  case ('NE')
+     IVARSP = 3
+  case default
+     IVARSP = 1
+  end select
 
   ! Check whether debugging is enabled
   call DBCHK (DEBUG,'HTGF',4,ICYC)
@@ -51,11 +81,12 @@ subroutine HTGF
 
      do I3 = I1,I2
         I = IND1(I3)
+        if (VARIANTCD .eq. 'CS') BAL = (1.0-(PCT(I)/100.))*BA
 
         !   CALL HTCALC TO CALCULATE AGE BASED ON CURRENT TREE HEIGHT
 
         MODE0 = 0
-        IVAR = 3
+        IVAR = IVARSP
         YRS = 10.
         H = HT(I)
         AGET = 0.
@@ -65,7 +96,7 @@ subroutine HTGF
         !   CALL HTCALC TO CALCULATE HTG BASED ON AGE GIVEN CURRENT TREE HEIGHT
 
         MODE0 = 9
-        IVAR = 3
+        IVAR = IVARSP
         YRS = 10.
         H = HT(I)
         HTG1 = 0.
@@ -81,16 +112,32 @@ subroutine HTGF
         !  TEMPER THE ADJUSTMENT BY RELATIVE HEIGHT
         !  ADD A RANDOM INCREMENT COMMENSURATE WITH DG RANDOM INCREMENT.
 
-        call BALMOD(ISPC,DBH(I),GMOD)
-        if (DEBUG)write(16,*)' AFTER BALMOD GMOD,HT,AVH= ',GMOD,HT(I),AVH
+        if (VARIANTCD .eq. 'CS') then
+           call BALMOD(ISPC,DBH(I),BAL,BA,GMOD,DEBUG)
+        else if (VARIANTCD .eq. 'LS') then
+           call BALMOD(ISPC,DBH(I),BA,RMSQD,GMOD,DEBUG)
+        else
+           call NEBALM(ISPC,DBH(I),GMOD)
+        end if
+        if (VARIANTCD .eq. 'LS') then
+           if (DEBUG)write(JOSTND,*)' AFTER BALMOD GMOD,HT,AVH= ',&
+                &GMOD,HT(I),AVH
+        else
+           if (DEBUG)write(16,*)' AFTER BALMOD GMOD,HT,AVH= ',GMOD,HT(I),AVH
+        end if
         !      GMOD = (GMOD+1.0)/2.0
         RELHTA = 0.
         if (AVH .gt.0.)RELHTA = MIN((HT(I)/AVH),1.0)
         GMOD = (1.0-((1.0-GMOD)*(1.0-RELHTA)))*0.8
         HTG(I) = HTG(I)*(1.0+OLDRN(I))*GMOD
 
-        if (DEBUG)write(16,*)' I,HTG,RELHTA,GMOD,OLDRN= ',&
-             &I,HTG(I),RELHTA,GMOD,OLDRN(I)
+        if (VARIANTCD .eq. 'LS') then
+           if (DEBUG)write(JOSTND,*)' I,HTG,RELHTA,GMOD,OLDRN= ',&
+                &I,HTG(I),RELHTA,GMOD,OLDRN(I)
+        else
+           if (DEBUG)write(16,*)' I,HTG,RELHTA,GMOD,OLDRN= ',&
+                &I,HTG(I),RELHTA,GMOD,OLDRN(I)
+        end if
 
         if (HTG(I) .lt.0.1)HTG(I) = 0.1
         HTG(I) = SCALE*XHT*HTG(I)*EXP(HTCON(ISPC))
@@ -158,4 +205,24 @@ subroutine HTGF
      60 continue
   end do
   return
+
+contains
+
+  subroutine NEBALM(ISPC,D,GMOD)
+    implicit none
+
+    ! NE'S THREE-ARGUMENT BALMOD IS DISTINCT FROM CS/LS'S SIX-ARGUMENT
+    ! FORM. THE LOCAL INTERFACE KEEPS THAT EXTERNAL CONTRACT EXPLICIT.
+    integer :: ISPC
+    real :: D,GMOD
+    interface
+       subroutine BALMOD(ISPC,D,GMOD)
+         integer :: ISPC
+         real :: D,GMOD
+       end subroutine BALMOD
+    end interface
+
+    call BALMOD(ISPC,D,GMOD)
+  end subroutine NEBALM
+
 end

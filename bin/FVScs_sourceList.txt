@@ -62,10 +62,10 @@
 ../common/DGCONS_ENTRY.f90
 ../cs/findag.f90
 ../cs/forkod.f90
-../cs/grinit.f90
+../vbase/grinit_ls.f90
 ../vbase/grohed.f90
 ../cs/htdbh.f90
-../cs/htgf.f90
+../vbase/htgf_ls.f90
 ../cs/nbolt.f90
 ../vbase/regent.f90
 ../cs/sitset.f90
@@ -81,7 +81,7 @@
 ../ls/bfvol.f90
 ../ls/ccfcal.f90
 ../ls/cfvol.f90
-../ls/cwcalc.f90
+../vbase/cwcalc_ls.f90
 ../ls/gvrvol.f90
 ../ls/htcalc.f90
 ../nc/logs.f90

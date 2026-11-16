@@ -1214,3 +1214,54 @@ fuel-candidate weights; integrated fire-output impact was not measured.
 **Suggested fix:** review the plantation-species treatment in the crown
 cover and understory tests, then include the appropriate native aliases
 consistently. Validate resulting fuel selection as a separate model change.
+
+## 44. ON CRNMULT processing uses an unset species index
+
+**Variants:** ON
+
+**Location:** `canada/on/crown.f90:98-130`.
+
+**Status:** reproduced during F15–F20 verification on 16 November 2026.
+Present in original F77 `c2105365` (`canada/on/crown.f:116-146`);
+deliberately unfixed.
+
+For each scheduled CRNMULT activity, CROWN reads the keyword parameters with
+OPGET but never assigns `ISPCC = INT(PRM(1))`, which the other variants'
+CROWN routines do immediately after OPDONE. `ISPCC` is an unset local, so
+the species/group/all-species branch is chosen from whatever value is on the
+stack, and `CRNMLT(ISPCC)`, `DLOW(ISPCC)`, `DHI(ISPCC)` and `ICFLG(ISPCC)` can
+be written outside their bounds. The keyword's species field is ignored.
+
+**Confirmation:** ON's Hardwood deck with two CRNMULT keywords and DEBUG
+added completed with HEAD `1fefe63c` but stopped with a segmentation fault
+at line 126 (`CRNMLT(ISPCC) = PRM(2)`) when routines elsewhere in the
+executable changed the stack contents. The regression decks do not use
+CRNMULT. Scientific impact of the original run's stray writes was not
+measured.
+
+**Suggested fix:** add `ISPCC = INT(PRM(1))` after `call OPDONE(I,IDT)`,
+as in the US CROWN routines, and verify CRNMULT runs as a separate model
+change.
+
+## 45. PN/WC/OP HTGF diagnostics print an unassigned variable
+
+**Variants:** PN, WC, OP
+
+**Location:** `wc/htgf.f90:31,380-381` (PN and WC) and
+`op/htgf.f90:32,406-407`.
+
+**Status:** reproduced during F18 verification on 16 November 2026.
+Present in original F77 `c2105365` (`wc/htgf.f:51,410` and
+`op/htgf.f:54,435`); deliberately unfixed.
+
+The redwood height-growth diagnostic writes `'MAP=',MAPPHD`, but `MAPPHD` is
+declared and never assigned. The printed value is stack contents, so it
+changes whenever another routine's stack frame changes. Model results are
+unaffected; debug output is not reproducible.
+
+**Confirmation:** decks with DEBUG enabled for HTGF matched line for line
+between HEAD `1fefe63c` and the F18 working tree except for the `MAP=`
+values (2,030, 2,014 and 185 lines in PN, WC and OP).
+
+**Suggested fix:** remove `MAPPHD` from the diagnostic, or print the
+intended mapping value.

@@ -1,7 +1,7 @@
 !============================================!
 !   Compute crown ratios and crown changes   !
 !============================================!
-! PN $Id$
+! PN, WC, OP $Id$
 subroutine CROWN
   implicit none
 
@@ -17,6 +17,11 @@ subroutine CROWN
   !  CROWN RATIO WHEN DBH IS LESS THAN 1 INCH.  PROCESSING OF
   !  CROWN CHANGE FOR SMALL TREES IS CONTROLLED BY **REGENT**.
 
+  !  SHARED BY PN, WC AND OP. PN AND OP USE THE SAME 17-ROW COEFFICIENT
+  !  BANKS AND SPECIES MAP; WC USES ITS OWN 16-ROW BANKS AND MAP. OP ALONE
+  !  TAKES ORGANON CROWN RATIOS AND SKIPS THE TWO MINIMUM-CROWN
+  !  ADJUSTMENTS UNDER THE ORIGINAL ORGANON CONDITIONS.
+
   ! Common blocks
   include 'PRGPRM.f90'
   include 'PLOT.f90'
@@ -26,12 +31,13 @@ subroutine CROWN
   include 'OUTCOM.f90'
   include 'PDEN.f90'
   include 'VARCOM.f90'
+  include 'ORGANON.f90'
 
   ! Variables
   logical :: DEBUG
-  real    :: CRNEW(MAXTRE),WEIBA(17),WEIBB0(17),WEIBB1(17),WEIBC0(17)
-  real    :: WEIBC1(17),C0(17),C1(17)
-  integer :: IMAP(MAXSP),ISORT(MAXTRE)
+  real    :: CRNEW(MAXTRE),WEIBA(33),WEIBB0(33),WEIBB1(33),WEIBC0(33)
+  real    :: WEIBC1(33),C0(33),C1(33)
+  integer :: IMAP(MAXSP),IMAPWC(MAXSP),ISORT(MAXTRE)
   real    :: CRNMLT(MAXSP),DLOW(MAXSP),DHI(MAXSP)
   integer :: MYACTS(1)
   real    :: PRM(5)
@@ -45,8 +51,19 @@ subroutine CROWN
   real    :: BAPLT,DBHHI,DBHLO,HDR,PRD,QMDPLT,SDICS,SDICZ,TPAPLT,XMAX
   real    :: ZRD(MAXPLT)
 
+  !  THE COEFFICIENT BANKS CONCATENATE PN/OP'S 17 AND WC'S 16 NATIVE ROWS.
+  !  THE CONSTANT OFFSET SELECTS WC'S ROWS WITHOUT CHANGING THEIR VALUES.
+
+  integer, parameter :: IBANK = merge(17, 0, VARIANTCD .eq. 'WC')
+
   data MYACTS/81/
+
+  !  PN AND OP
   data IMAP/1,2*2,2*3,17,4,15,2*11,16,6,2*5,6,7,11,&
+       &8,9,10,12,13,7*14,4*11,6*14/
+
+  !  WC
+  data IMAPWC/1,2*2,3*3,4,15,2*11,16,6,2*5,6,7,11,&
        &8,9,10,12,13,7*14,4*11,6*14/
 
   !  SPECIES ORDER 1=SF,  2=WF,  3=GF,  4=AF,  5=RF,  6=SS,  7=NF,  8=YC,
@@ -185,7 +202,11 @@ subroutine CROWN
      I1 = ISCT(ISPC,1)
      if (I1.eq.0) go to 70
      I2 = ISCT(ISPC,2)
-     JSPC = IMAP(ISPC)
+     if (VARIANTCD .eq. 'WC') then
+        JSPC = IMAPWC(ISPC) + IBANK
+     else
+        JSPC = IMAP(ISPC)
+     end if
 
      ! ESTIMATE MEAN CROWN RATIO FROM SDI, AND ESTIMATE WEIBULL PARAMETERS
 
@@ -266,6 +287,21 @@ subroutine CROWN
 
         if (D.lt.1.0.and. LSTART) go to 58
 
+        !  OP: START ORGANON
+
+        if (VARIANTCD .eq. 'OP') then
+           if (LORGANON .and. (IORG(I) .eq.1)) then
+              CRNEW(I) = ANINT( CR2(I) * 100.0 ) ! INTEGER - CROWN RATIO
+              CHG = CRNEW(I) - real(ICR(I))
+              if (DEBUG)&
+                   &write(JOSTND,*)' ORG CROWN I,CR2,CRNEW,ICR,CHG,IORG= ',&
+                   &I,CR2(I),CRNEW(I),ICR(I),CHG,IORG(I)
+              go to 41
+           end if
+        end if
+
+        !  END ORGANON
+
         !  CALCULATE THE PREDICTED CURRENT CROWN RATIO
         !    USING SWITCH CASE FOR RW BRANCH
 
@@ -319,6 +355,7 @@ subroutine CROWN
         if (DEBUG)write(JOSTND,9020)I,CRNEW(I),ICR(I),PDIFPY,CHG
         9020 format(/'  IN CROWN 9020 I,CRNEW,ICR,PDIFPY,CHG =',&
              &I5,F10.3,I5,3F10.3)
+        41 continue
         if (DBH(I).ge.DLOW(ISPC) .and. DBH(I).le.DHI(ISPC)) then
            CRNEW(I) = real(ICR(I)) + CHG * CRNMLT(ISPC)
         else
@@ -349,7 +386,13 @@ subroutine CROWN
         ! IF NEW CROWN EXCEEDS MAX POSSIBLE LIMIT IT TO MAX POSSIBLE
 
         if (ICRI.gt.CRMAX) ICRI = INT(CRMAX + 0.5)
-        if (ICRI.lt.10.and. CRNMLT(ISPC).eq.1.0)ICRI = INT(CRMAX + 0.5)
+
+        ! OP: DON'T DO THIS NEXT STATEMENT FOR ORGANON TREES
+
+        if (VARIANTCD .ne. 'OP' .or.&
+             &((.not. LORGANON) .and. (IORG(I) .ne.1))) then
+           if (ICRI.lt.10.and. CRNMLT(ISPC).eq.1.0)ICRI = INT(CRMAX + 0.5)
+        end if
 
         !  REDUCE CROWNS OF TREES  FLAGGED AS TOP-KILLED ON INVENTORY
 
@@ -383,7 +426,13 @@ subroutine CROWN
 
         59 continue
         if (ICRI.gt.95) ICRI = 95
-        if (ICRI .lt.10.and. CRNMLT(ISPC).eq.1) ICRI = 10
+
+        ! OP: DON'T DO THIS NEXT STATEMENT FOR ORGANON TREES
+
+        if (VARIANTCD .ne. 'OP' .or.&
+             &((.not. LORGANON) .and. (IORG(I) .ne.1))) then
+           if (ICRI .lt.10.and. CRNMLT(ISPC).eq.1) ICRI = 10
+        end if
         if (ICRI.lt.1)ICRI = 1
         ICR(I) = ICRI
         60 continue
@@ -462,49 +511,73 @@ subroutine CROWN
 
   !  ENTRY POINT FOR LOADING CROWN RATIO MODEL COEFFICIENTS
 
-  !  COEFF ORDER 1=SF,  2=WF,  3=RF,  4=NF,  5=WP,  6=PP,  7=DF,
+  !  PN/OP COEFF ORDER (ROWS 1-17)
+  !              1=SF,  2=WF,  3=RF,  4=NF,  5=WP,  6=PP,  7=DF,
   !              8=RC,  9=WH, 10=MH, 11=RW, 12=BM, 13=RA, 14=OH,
   !             15=IC, 16=LP, 17=SS
+  !  WC COEFF ORDER (ROWS 18-33, NATIVE ROWS 1-16)
+  !              1=PSF,  2=WF,  3=RF,  4=NF,  5=WWP,  6=PP, 7=DF,
+  !              8=WRC,  9=WH, 10=MH, 11=RW, 12=MAP, 13=ALD,
+  !             14=OH, 15=IC, 16=LP
 
   ! LOAD WEIBULL 'A' PARAMETER BY SPECIES
 
-  data WEIBA/ 2*0.0, 1.0, 8*0.0, 1.0, 2*0.0, 1.0, 2*0.0/
+  data (WEIBA(I),I=1,17)/ 2*0.0, 1.0, 8*0.0, 1.0, 2*0.0, 1.0, 2*0.0/
+  data (WEIBA(I),I=18,33)/ 2*0.0, 1.0, 8*0.0, 2*1.0, 0.0, 1.0, 0.0/
 
   ! LOAD WEIBULL 'B' PARAMETER EQUATION CONSTANT COEFFICIENT
 
-  data WEIBB0/ -0.171680,  0.130939, -0.981113, -0.135807, 0.019948,&
+  data (WEIBB0(I),I=1,17)/ -0.171680,  0.130939, -0.981113, -0.135807, 0.019948,&
        &-0.036696, -0.012061, -0.062693,  0.073435,  0.162672, 0.196054,&
        &-0.818809,  0.035786, -0.238295, -0.811424, -0.131210,-0.107413/
+  data (WEIBB0(I),I=18,33)/ -0.173100,  0.130939, -0.981113, -0.135807, 0.019948,&
+       &-0.036696, -0.082379,  0.179839,  0.490848,  0.162672, 0.196054,&
+       &-0.818809, -1.112738, -0.238295, -0.811424, -0.131210/
 
   ! LOAD WEIBULL 'B' PARAMETER EQUATION SLOPE COEFFICIENT
 
-  data WEIBB1/ 1.161549, 1.093406, 1.092273, 1.147712, 1.108738,&
+  data (WEIBB1(I),I=1,17)/ 1.161549, 1.093406, 1.092273, 1.147712, 1.108738,&
        &1.132792, 1.119712, 1.139657, 1.107183, 1.073404, 1.073909,&
        &1.054176, 1.121389, 1.180163, 1.056190, 1.159760, 1.140775/
+  data (WEIBB1(I),I=18,33)/ 1.080573, 1.093406, 1.092273, 1.147712, 1.108738,&
+       &1.132792, 1.137459, 1.084924, 1.014138, 1.073404, 1.073909,&
+       &1.054176, 1.123138, 1.180163, 1.056190, 1.159760/
 
   ! LOAD WEIBULL 'C' PARAMETER EQUATION CONSTANT COEFFICIENT
 
-  data WEIBC0/ 2.8263  , 1.355139,  1.326047, 3.017494, 2.621230,&
+  data (WEIBC0(I),I=1,17)/ 2.8263  , 1.355139,  1.326047, 3.017494, 2.621230,&
        &2.876094, 3.2126  , 1.7664  ,  2.6237  , 3.288501, 0.345647,&
        &-2.366108, 2.0408  , 3.044134, -3.831124, 2.598238, 3.0712  /
+  data (WEIBC0(I),I=18,33)/ 1.062168, 1.355139,  1.326047, 3.017494, 2.621230,&
+       &2.876094, 2.914892, 0.122967,  3.164558, 3.288501, 0.345647,&
+       &-2.366108, 2.533158, 3.044134, -3.831124, 2.598238/
 
   ! LOAD WEIBULL 'C' PARAMETER EQUATION SLOPE COEFFICIENT
 
-  data WEIBC1 / 0.0     , 0.350472, 0.318386, 0.0     , 0.186734,&
+  data (WEIBC1(I),I=1,17) / 0.0     , 0.350472, 0.318386, 0.0     , 0.186734,&
        &0.0     , 0.0     , 0.0     , 0.0     , 0.0     , 0.620145,&
        &1.202413, 0.0     , 0.0     , 1.401938, 0.0     , 0.0     /
+  data (WEIBC1(I),I=18,33) / 0.445799, 0.350472, 0.318386, 0.000000, 0.186734,&
+       &0.000000, 0.000000, 0.567784, 0.000000, 0.000000, 0.620145,&
+       &1.202413, 0.000000, 0.000000, 1.401938, 0.000000/
 
   ! LOAD CR=F(SDI) EQUATION CONSTANT COEFFICIENT
 
-  data C0/    5.073342, 5.212394, 4.860467, 5.568864, 4.279655,&
+  data (C0(I),I=1,17)/    5.073342, 5.212394, 4.860467, 5.568864, 4.279655,&
        &5.073273, 5.666442, 4.481330, 5.671345, 6.484942, 5.417431,&
        &4.420000, 4.656659, 4.625125, 5.200550, 4.890318, 5.812879/
+  data (C0(I),I=18,33)/    5.614200, 5.212394, 4.860467, 5.568864, 4.279655,&
+       &5.073273, 5.067560, 5.570928, 5.488532, 6.484942, 5.417431,&
+       &4.420000, 4.120478, 4.625125, 5.200550, 4.890318/
 
   ! LOAD CR=F(SDI) EQUATION SLOPE COEFFICIENT
 
-  data C1/   -0.011430, -0.011623, -0.006173, -0.021293, -0.002484,&
+  data (C1(I),I=1,17)/   -0.011430, -0.011623, -0.006173, -0.021293, -0.002484,&
        &-0.020988, -0.025199, -0.018092, -0.023463, -0.023248, -0.011608,&
        &-0.010660, -0.022612, -0.016042, -0.014890, -0.018837, -0.028504/
+  data (C1(I),I=18,33)/   -0.016547, -0.011623, -0.006173, -0.021293, -0.002484,&
+       &-0.020988, -0.010484, -0.012043, -0.007173, -0.023248, -0.011608,&
+       &-0.010660, -0.006357, -0.016042, -0.014890, -0.018837/
 
   data CRNMLT/MAXSP*1.0/
   data ICFLG/MAXSP*0/

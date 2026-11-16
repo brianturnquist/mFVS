@@ -6,7 +6,8 @@ The goal is one definition of each calculation, with variant differences
 expressed explicitly in coefficient banks, species mappings or bounded
 branches. The findings below come from current source and the 24 build
 manifests. F01–F14 were authorized and completed on
-15 November 2026. The remaining unchecked findings are proposed work.
+15 November 2026, and F15–F20 on 16 November 2026. The remaining unchecked
+findings are proposed work.
 
 At the audit baseline, excluding include files and NVEL, the manifests
 selected 1,286 Fortran source files. There were 92 repeated filename
@@ -213,48 +214,78 @@ changes; unchecked findings remain proposals.
 
 ## Larger consolidation opportunities
 
-- [ ] **F15 — CWCALC: LS and ON.**
+- [x] **F15 — CWCALC: LS and ON.**
 
-  [ls/cwcalc.f90](ls/cwcalc.f90) and
-  [canada/on/cwcalc.f90](canada/on/cwcalc.f90) largely share the eastern
-  equation banks and calculation, including one run of 992 matching
-  statements after comment/whitespace normalization. Preserve ON's species
-  aliases and additional lookup cases in a shared implementation.
+  Completed 16 November 2026 in [vbase/cwcalc_ls.f90](vbase/cwcalc_ls.f90),
+  formerly the LS file that CS, NE and SN already used. ON now selects it
+  and its copy was removed. ON keeps its 72-entry table of US species codes
+  and its five additional cases (CH, HS, NC, OL, UH), which no US variant's
+  codes reach. All four US regression sets matched original F77; ON's
+  complete outputs matched the immediate baseline. In 2,269,156 direct cases
+  (353,956 model calls plus sweeps of every native species, both crown-width
+  modes, diameter/crown-ratio boundaries and three locations), results and
+  COMMON memory matched baseline `1fefe63c` bit for bit. A changed ON alias
+  (ON) and a changed shared coefficient (CS/LS/NE/SN) were detected.
 
-- [ ] **F16 — GRINIT: CS, LS and NE.**
+- [x] **F16 — GRINIT: CS, LS and NE.**
 
-  [cs/grinit.f90](cs/grinit.f90), [ls/grinit.f90](ls/grinit.f90) and
-  [ne/grinit.f90](ne/grinit.f90) repeat substantial initialization. Share
-  the common assignments while preserving variant identifiers, default
-  forest codes and NE's `EBAU` initialization.
+  Completed 16 November 2026 in [vbase/grinit_ls.f90](vbase/grinit_ls.f90).
+  The variant code comes from `VARIANTCD`; the default forest codes (CS 1,
+  LS 5, NE 2) and NE's `EBAU` initialization are kept. The only other
+  differences were reordered independent assignments. Two duplicates were
+  removed. All three regression sets matched original F77. In 180 direct
+  cases, including COMMON memory pre-filled with three byte patterns, every
+  value GRINIT sets matched baseline `1fefe63c` byte for byte; changed forest
+  codes (CS, LS) and `EBAU` (NE) were detected. CS and LS executables now
+  also contain the unused 50-value TWIGCOM block.
 
-- [ ] **F17 — CROWN: CA and OC.**
+- [x] **F17 — CROWN: CA and OC.**
 
-  [oc/crown.f90](oc/crown.f90) largely adds ORGANON handling to
-  [ca/crown.f90](ca/crown.f90)'s calculation. Share the ordinary calculation
-  with explicit ORGANON gates, preserving the existing conditions and
-  mutation order.
+  Completed 16 November 2026 in [vbase/crown_ca.f90](vbase/crown_ca.f90).
+  OC's ORGANON crown-ratio branch and its two original minimum-crown
+  conditions are guarded by `VARIANTCD` at their original positions. OC's
+  copy was removed. Both regression sets matched original F77. In 4,563
+  direct cases (every call from the regression decks and an added CRNMULT
+  deck, plus trials varying the start flag, crown ratios, small, top-killed
+  and dead trees, density, species and ORGANON flags), COMMON memory matched
+  baseline `1fefe63c` bit for bit. Mutations in CA's minimum-crown path and
+  OC's ORGANON branch were detected.
 
-- [ ] **F18 — CROWN: PN, WC and OP.**
+- [x] **F18 — CROWN: PN, WC and OP.**
 
-  [pn/crown.f90](pn/crown.f90), [wc/crown.f90](wc/crown.f90) and
-  [op/crown.f90](op/crown.f90) contain large matching calculation blocks.
-  Preserve differing coefficient banks, mapping dimensions and ORGANON
-  behavior. Treat this separately from F17.
+  Completed 16 November 2026 in [vbase/crown_pn.f90](vbase/crown_pn.f90).
+  PN/OP's 17-row and WC's 16-row coefficient banks are concatenated and
+  selected by a constant offset; each variant keeps its native species map.
+  Only OP takes the ORGANON branch, guarded as in F17. Two copies were
+  removed. All three regression sets matched original F77. In 6,708 direct
+  cases, checked as for F17 with species reassigned across all 39 species,
+  COMMON memory matched baseline `1fefe63c` bit for bit. PN-row, WC-row and
+  OP ORGANON mutations were detected. Debug output matched except for the
+  unassigned value recorded as bug 45.
 
-- [ ] **F19 — HTGF: CS, LS and NE.**
+- [x] **F19 — HTGF: CS, LS and NE.**
 
-  [cs/htgf.f90](cs/htgf.f90), [ls/htgf.f90](ls/htgf.f90) and
-  [ne/htgf.f90](ne/htgf.f90) have closely duplicated height-growth drivers.
-  Preserve variant equation selection and provide checked adapters for
-  the different `BALMOD` argument contracts.
+  Completed 16 November 2026 in [vbase/htgf_ls.f90](vbase/htgf_ls.f90).
+  Each variant keeps its HTCALC equation set and diagnostic unit (CS/NE
+  unit 16, LS `JOSTND`). CS/LS call their six-argument BALMOD through an
+  explicit interface; NE calls its three-argument form through a local
+  adapter with its own interface. Two copies were removed. All three
+  regression sets matched original F77. In 6,282 direct HTGF/HTCONS cases
+  varying random increments, site, heights, BAL inputs, size caps, tripling,
+  species and height corrections, COMMON memory matched baseline `1fefe63c`
+  bit for bit. CS BAL, LS equation-set and NE adapter mutations were
+  detected. Debug output matched for all three variants.
 
-- [ ] **F20 — HTDBH: LS and ON.**
+- [x] **F20 — HTDBH: LS and ON.**
 
-  [ls/htdbh.f90](ls/htdbh.f90) and
-  [canada/on/htdbh.f90](canada/on/htdbh.f90) share the equation calculation
-  and common coefficient rows. Retain ON's four additional species rows
-  and table dimensions.
+  Completed 16 November 2026 in [vbase/htdbh_ls.f90](vbase/htdbh_ls.f90).
+  The banks have 72 rows: rows 1–68 are shared and rows 69–72 are ON's
+  planted species, which LS never indexes. ON's copy was removed. LS's
+  regression matched original F77; ON's complete outputs matched the
+  immediate baseline. In 36,653 direct cases (21,517 model calls plus sweeps
+  of every native species, both modes and diameter/height boundaries),
+  results and COMMON memory matched baseline `1fefe63c` bit for bit. An LS
+  shared-row and an ON planted-row mutation were detected.
 
 - [ ] **F21 — INITRE: extract individual shared keyword handlers.**
 
@@ -376,3 +407,24 @@ Source-list, formatting, native-bank and tracker-link checks passed. Bug 43
 was reproduced and recorded; bugs 40–41 were reproduced and retained. No
 model bug fixes were made. Temporary drivers, outputs and build copies were
 discarded; no verification archives or new test infrastructure were retained.
+
+The fourth batch (F15–F20), completed 16 November 2026 against baseline
+`1fefe63c`, consolidates 15 source files into six shared definitions. This
+source set shrank from 9,680 to 4,556 lines: nine fewer files and 5,124 fewer
+lines. Native coefficient banks, species maps and aliases, ENTRY and BALMOD
+contracts, ORGANON conditions, diagnostics and their output units were
+preserved.
+
+Direct checks ran the baseline and shared routines side by side inside each
+affected variant's executable. Each call started from identical memory.
+The checks covered every call from the regression decks and, where a deck
+reads a tree file, an added CRNMULT deck, plus perturbed trials and argument
+sweeps. All 2,323,542 cases matched in results
+and COMMON memory, and planted mutations were detected in every affected
+variant. Debug-enabled decks matched the baseline in all ten variants, apart
+from bug 45's unassigned value; ON's deck omitted CRNMULT because of bug 44.
+The final full run built all 24 variants. All 22 U.S. variants matched
+original F77, including restart files; BC and ON matched the immediate
+baseline, and their documented pristine-original failures remain. Bugs 44–45
+were found and recorded unfixed. No model bug fixes were made. Temporary
+drivers, outputs and build copies were discarded.

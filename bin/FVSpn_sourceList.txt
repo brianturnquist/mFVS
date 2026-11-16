@@ -56,7 +56,7 @@
 ../pn/blkdat.f90
 ../pn/bratio.f90
 ../pn/ccfcal.f90
-../pn/crown.f90
+../vbase/crown_pn.f90
 ../vbase/dgf.f90
 ../vbase/dgfeqs.f90
 ../common/DGCONS_ENTRY.f90

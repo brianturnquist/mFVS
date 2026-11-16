@@ -87,7 +87,7 @@
 ../ls/bfvol.f90
 ../ls/ccfcal.f90
 ../ls/cfvol.f90
-../ls/cwcalc.f90
+../vbase/cwcalc_ls.f90
 ../nc/logs.f90
 ../vls/spctrn.f90
 ../ie/vols.f90

@@ -1,11 +1,15 @@
 !=======================================!
 !   Initialize growth model variables   !
 !=======================================!
-! CS $Id$
+! CS, LS, NE $Id$
 subroutine GRINIT
   implicit none
 
   !  INITIALIZE PROGNOSIS MODEL VARIABLES
+
+  !  SHARED BY CS, LS AND NE. THE VARIANTS DIFFER ONLY IN THEIR VARIANT
+  !  CODE, THE DEFAULT FOREST CODE (IFOR: CS 1, LS 5, NE 2) AND NE'S
+  !  INITIALIZATION OF THE TWIGCOM COMMON.
 
   ! Common blocks
   include 'PRGPRM.f90'
@@ -23,16 +27,17 @@ subroutine GRINIT
   include 'VARCOM.f90'
   include 'CWDCOM.f90'
   include 'CALCOM.f90'
+  include 'TWIGCOM.f90'
 
   ! Variables
+  integer :: I,J,K
   character(len=26) :: DBLK
   character(len=4) :: none
   character(len=2) :: ANINDEX
   data DBLK/'                          '/
   data none/'NONE'/
-  integer :: I,J,K
 
-  VARACD = 'CS'
+  VARACD = VARIANTCD
   ECOREG = ''
   CFCTYPE = 'F'
   BFCTYPE = 'F'
@@ -51,17 +56,17 @@ subroutine GRINIT
      VEQNNB(I) = '           '
      VEQNNC(I) = '           '
      STMP(I) = 0.5
-     DBHMIN(I) = 0.
-     BFTOPD(I) = 0.
-     BFMIND(I) = 0.
-     SCFTOPD(I) = 0.
-     SCFMIND(I) = 0.
      TOPD(I) = 0.
+     DBHMIN(I) = 0.
      FRMCLS(I) = 80.0
      METHB(I) = 6
      METHC(I) = 6
      BFSTMP(I) = 1.0
+     BFTOPD(I) = 0.
+     BFMIND(I) = 0.
      SCFSTMP(I) = 1.0
+     SCFTOPD(I) = 0.
+     SCFMIND(I) = 0.
      BFLA0(I) = 0.0
      BFLA1(I) = 1.0
      CFLA0(I) = 0.0
@@ -155,7 +160,14 @@ subroutine GRINIT
   IDG = 0
   IFINT = 10
   IFINTH = 5
-  IFOR = 1
+  select case (VARIANTCD)
+  case ('CS')
+     IFOR = 1
+  case ('NE')
+     IFOR = 2
+  case default
+     IFOR = 5
+  end select
   KODFOR = 0
   IFST = 1
   IGL = 1
@@ -313,6 +325,14 @@ subroutine GRINIT
   do I = 1,MAXSP
      ISTAGF(I) = 0
   end do
+
+  !  NE: INITIALIZE TWIGCOM COMMON VARIABLES
+
+  if (VARIANTCD .eq. 'NE') then
+     do I = 1,50
+        EBAU(I) = 0.
+     end do
+  end if
 
   return
 end

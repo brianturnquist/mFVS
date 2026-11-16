@@ -1,14 +1,13 @@
 !============================================!
 !   Compute crown ratios and crown changes   !
 !============================================!
-! OP $Id$
+! CA, OC $Id$
 subroutine CROWN
   implicit none
 
   !  THIS SUBROUTINE IS USED TO DUB MISSING CROWN RATIOS AND
   !  COMPUTE CROWN RATIO CHANGES FOR TREES THAT ARE GREATER THAN
   !  1 INCH DBH.
-
   !  THIS ROUTINE IS CALLED FROM **CRATET** TO DUB
   !  MISSING VALUES, AND BY **TREGRO** TO COMPUTE CHANGE DURING
   !  REGULAR CYCLING.  ENTRY **CRCONS** IS CALLED BY **RCON** TO
@@ -17,49 +16,55 @@ subroutine CROWN
   !  CROWN RATIO WHEN DBH IS LESS THAN 1 INCH.  PROCESSING OF
   !  CROWN CHANGE FOR SMALL TREES IS CONTROLLED BY **REGENT**.
 
+  !  SHARED BY CA AND OC. OC ALONE TAKES ORGANON CROWN RATIOS AND SKIPS
+  !  THE TWO MINIMUM-CROWN ADJUSTMENTS UNDER THE ORIGINAL ORGANON
+  !  CONDITIONS; THOSE BRANCHES ARE GUARDED BY VARIANTCD.
+
   ! Common blocks
   include 'PRGPRM.f90'
-  include 'PLOT.f90'
   include 'ARRAYS.f90'
   include 'COEFFS.f90'
   include 'CONTRL.f90'
   include 'OUTCOM.f90'
+  include 'PLOT.f90'
   include 'PDEN.f90'
   include 'VARCOM.f90'
   include 'ORGANON.f90'
 
   ! Variables
-  logical :: DEBUG
-  real    :: CRNEW(MAXTRE),WEIBA(17),WEIBB0(17),WEIBB1(17),WEIBC0(17)
-  real    :: WEIBC1(17),C0(17),C1(17)
-  integer :: IMAP(MAXSP),ISORT(MAXTRE)
+  real    :: CRNEW(MAXTRE),WEIBA(17),WEIBB0(17)
+  real    :: WEIBB1(17),WEIBC0(17),WEIBC1(17),C0(17),C1(17)
   real    :: CRNMLT(MAXSP),DLOW(MAXSP),DHI(MAXSP)
-  integer :: MYACTS(1)
   real    :: PRM(5)
-  integer :: ICFLG(MAXSP)
-  integer :: JJ,NTODO,I,NP,IACTK,IDATE,IDT,ISPCC,IGRP,IULIM,IG,IGSP
-  integer :: J1,ISPC,I1,I2,JSPC,I3,IITRE,ICRI
+  integer :: JJ,NTODO,I,NP,IACTK,IDATE,IDT,ISPCC,IGRP,IULIM
+  integer :: IG,IGSP,J1,ISPC,I1,I2,JSPC,I3,IITRE,ICRI
   real    :: RELSDI,ACRNEW,A,B,C,D,H,SCALE,X,RNUMB
-  real    :: CHG,PDIFPY,CRLN,CRMAX,HN,HD,CL,TPCT,TPCCF,CR
-
-  !  VARIABLES ADDED JUNE 2021 W/ RW EDITS
-  integer :: IWHO
-  real    :: BAPLT,DBHHI,DBHLO,HDR,PRD,QMDPLT,SDICS,SDICZ,TPAPLT,XMAX
+  real    :: CHG,PDIFPY,CRLN,CRMAX,HN,HD,CL,TPCT,TPCCF,CR,HDR
+  real    :: BAPLT,QMDPLT,TPAPLT,PRD,DBHLO,DBHHI,SDICS,SDICZ,XMAX
   real    :: ZRD(MAXPLT)
+  integer :: IWHO
+
+  integer :: ISORT(MAXTRE),ICFLG(MAXSP),IMAP(MAXSP),MYACTS(1)
 
   data MYACTS/81/
-  data IMAP/1,2*2,2*3,17,4,15,2*11,16,6,2*5,6,7,11,&
-       &8,9,10,12,13,7*14,4*11,6*14/
 
-  !  SPECIES ORDER 1=SF,  2=WF,  3=GF,  4=AF,  5=RF,  6=SS,  7=NF,  8=YC,
-  !                9=IC, 10=ES, 11=LP, 12=JP, 13=SP, 14=WP, 15=PP, 16=DF,
-  !               17=RW, 18=RC, 19=WH, 20=MH, 21=BM, 22=RA, 23=MA, 24=TO,
-  !               25=GC, 26=AS, 27=CW, 28=WO, 29=J , 30=LL, 31=WB, 32=KP,
-  !               33=PY, 34=DG, 35=HT, 36=CH, 37=WI, 38=  , 39=OT
+  data IMAP/  6,  6,  6,  4,  9,  9,  3, 12, 12, 13,&
+       &13, 17, 13, 13, 10,  2,  2, 10, 10, 10,&
+       &1,  1,  1,  1,  3,  7,  7,  7,  7, 7,&
+       &7,  7,  7, 14, 16, 15,  5, 16, 16, 16,&
+       &16,  8, 16, 16, 16, 16, 16, 16, 16, 1/
+
+  ! SPECIES ORDER IN CA AND OC VARIANTS (4 IS WF IN CA, GF IN OC):
+  !  1=PC  2=IC  3=RC  4=WF  5=RF  6=SH  7=DF  8=WH  9=MH 10=WB
+  ! 11=KP 12=LP 13=CP 14=LM 15=JP 16=SP 17=WP 18=PP 19=MP 20=GP
+  ! 21=JU 22=BR 23=GS 24=PY 25=OS 26=LO 27=CY 28=BL 29=EO 30=WO
+  ! 31=BO 32=VO 33=IO 34=BM 35=BU 36=RA 37=MA 38=GC 39=DG 40=FL
+  ! 41=WN 42=TO 43=SY 44=AS 45=CW 46=WI 47=CN 48=CL 49=OH 50=RW
+
+  logical :: DEBUG
 
   ! Check whether debugging is enabled
   call DBCHK (DEBUG,'CROWN',5,ICYC)
-
   if (DEBUG) write(JOSTND,3)ICYC
   3 format(' ENTERING SUBROUTINE CROWN  CYCLE =',I5)
 
@@ -73,7 +78,7 @@ subroutine CROWN
   !  LOAD SDI (ZEIDI) FOR INDIVIDUAL POINTS.
   !  ALL SPECIES AND ALL SIZES INCLUDED FOR THIS CALCULATION.
   !  SDI USED IN CR CALCULATION
-  !  POINT SDI IS USED IN CR CALCULATION FOR RW
+  !  POINT SDI IS USED IN CR CALCULATION FOR RW/GS
 
   DBHLO = 0.0
   DBHHI = 500.0
@@ -197,8 +202,8 @@ subroutine CROWN
      if (C .lt.2.0) C = 2.0
      if (DEBUG) write(JOSTND,9001) ISPC,SDIAC,ORMSQD,RELSDI,&
           &ACRNEW,A,B,C,SDIDEF(ISPC)
-     9001 format(' IN CROWN 9001 ISPC,SDIAC,ORMSQD,RELSDI,ACRNEW,A,B,',&
-          &'C,SDIDEF = '/1X,I5,F8.2,F8.4,F8.2,F8.2,4F10.4)
+     9001 FORMAT(' IN CROWN 9001 ISPC,SDIAC,ORMSQD,RELSDI,ACRNEW,A,B,       &
+          &C,SDIDEF = ',/,1H ,I5,F8.2,F8.4,F8.2,F8.2,4F10.4)
      do I3 = I1,I2
         I = IND1(I3)
         IITRE = ITRE(I)
@@ -212,7 +217,7 @@ subroutine CROWN
         !  PEST DYNAMICS EXTENSION.  SWITCH THE SIGN ON ICR(I) AND BYPASS
         !  CHANGE CALCULATIONS.
 
-        if (LSTART) go to 40
+        if (LSTART) goto 40
         if (ICR(I).ge.0) go to 40
         ICR(I) = -ICR(I)
         if (DEBUG) write (JOSTND,35) I,ICR(I)
@@ -225,7 +230,7 @@ subroutine CROWN
         !  CALCULATE HEIGHT DIAMETER RATIO
         HDR = (H*12)/D
 
-        !  CALCULATE PLOT LEVEL QMD - USED IN RW CR CALCULATION
+        !  CALCULATE PLOT LEVEL QMD - USED IN RW/GS CR CALCULATION
         !  IF THERE ARE NO LIVE TREES ON INVENTORY POINT, SET QMD OF INVENTORY
         !  POINT TO 1. THE VALUE OF 1 SHOULD ONLY EVER BE ASSUMED HERE IF THERE
         !  ARE NO LIVE TREES IN THE STAND.
@@ -243,7 +248,7 @@ subroutine CROWN
         !  RELATIONSHIPS.
         if (QMDPLT .le.1.0) QMDPLT = 1.0
 
-        !  CALCULATE RELATIVE DENSITY OF INVENTORY POINT - USED IN RW CR CALCULATION.
+        !  CALCULATE RELATIVE DENSITY OF INVENTORY POINT
         !  IF SDI MAX OF INVENTORY POINT IS EVER LE 0, SET POINT RELATIVE DENSITY
         !  TO 0.
         if (XMAXPT(ITRE(I)).le.0.0) then
@@ -256,33 +261,39 @@ subroutine CROWN
 
         if (D.lt.1.0.and. LSTART) go to 58
 
-        !  START ORGANON
+        !  OC: START ORGANON
 
-        if (LORGANON .and. (IORG(I) .eq.1)) then
-           CRNEW(I) = ANINT( CR2(I) * 100.0 ) ! INTEGER - CROWN RATIO
-           CHG = CRNEW(I) - real(ICR(I))
-           if (DEBUG)&
-                &write(JOSTND,*)' ORG CROWN I,CR2,CRNEW,ICR,CHG,IORG= ',&
-                &I,CR2(I),CRNEW(I),ICR(I),CHG,IORG(I)
-           go to 41
+        if (VARIANTCD .eq. 'OC') then
+           if (LORGANON .and. (IORG(I) .eq.1)) then
+              CRNEW(I) = ANINT( CR2(I) * 100.0 ) ! INTEGER - CROWN RATIO
+              CHG = CRNEW(I) - real(ICR(I))
+              if (DEBUG)&
+                   &write(JOSTND,*)' ORG CROWN I,CR2,CRNEW,ICR,CHG,IORG= ',&
+                   &I,CR2(I),CRNEW(I),ICR(I),CHG,IORG(I)
+              go to 41
+           end if
         end if
 
         !  END ORGANON
 
         !  CALCULATE THE PREDICTED CURRENT CROWN RATIO
-        !    SELECT CASE ADDED JUNE 2021 TO BRANCH TO RW LOGIC
 
         select case(ISPC)
-        case(17)
+
+           ! BRANCH FOR RW/GS
+
+        case(23,50)
            X = -1.021064 + 0.309296*LOG(HDR) +&
                 &0.869720*PRD - 0.116274*(D/QMDPLT)
            X = 1.0/(1.0+EXP(X))
 
-           if (DEBUG)write(JOSTND,*)' IN CROWN - RW DEBUG', ' D=',D,&
+           if (DEBUG)write(JOSTND,*)' IN CROWN - RW/GS DEBUG', ' D=',D,&
                 &' H=',H,' PRD=',PRD,' QMDPLT=',QMDPLT,' HDR=',HDR,' CR=',X
 
+           ! ALL OTHER SPECIES
+
         case default
-           SCALE = (1.0 - .00167 * (RELDEN-100.0))
+           SCALE = 1.5-RELSDI
            if (SCALE .gt.1.0) SCALE = 1.0
            if (SCALE .lt.0.30) SCALE = 0.30
            if (DBH(I) .gt.0.0) then
@@ -293,12 +304,12 @@ subroutine CROWN
            end if
         end select
 
-        !  CONSTRAIN CR
+        ! CONSTRAIN CR
         if (X .lt..05) X = .05
         if (X .gt..95) X = .95
 
         ! DETERMINE CRNEW BASED ON SPECIES
-        if (ISPC .eq.17) then
+        if (ISPC .eq.23.or. ISPC .eq.50) then
            CRNEW(I) = X * 10
         else
            CRNEW(I) = A + B*((-1.0*ALOG(1-X))**(1.0/C))
@@ -306,8 +317,9 @@ subroutine CROWN
 
         !  WRITE DEBUG INFO IF DESIRED
 
-        if (DEBUG)write(JOSTND,9002) I,X,CRNEW(I),ICR(I)
-        9002 format(' IN CROWN 9002 WRITE I,X,CRNEW,ICR = ',I5,2F10.5,I5)
+        if (DEBUG)write(JOSTND,9002) I,X,CRNEW(I),ICR(I),LSTART
+        9002 format(' IN CROWN 9002 I,X,CRNEW,ICR,LSTART = ',I5,2F10.5,&
+             &I5,L2)
         CRNEW(I) = CRNEW(I)*10.0
 
         !  COMPUTE THE CHANGE IN CROWN RATIO
@@ -323,19 +335,16 @@ subroutine CROWN
         9020 format(/'  IN CROWN 9020 I,CRNEW,ICR,PDIFPY,CHG =',&
              &I5,F10.3,I5,3F10.3)
         41 continue
-        if (DBH(I).ge.DLOW(ISPC) .and. DBH(I).le.DHI(ISPC)) then
+        if (DBH(I) .ge. DLOW(ISPC) .and. DBH(I) .le. DHI(ISPC)) then
            CRNEW(I) = real(ICR(I)) + CHG * CRNMLT(ISPC)
         else
            CRNEW(I) = real(ICR(I)) + CHG
         end if
-        9052 ICRI = INT(CRNEW(I)+0.5)
+        9052 ICRI = INT(CRNEW(I) + 0.5)
         if (LSTART .or. ICR(I).eq.0) then
-           if (DBH(I).ge.DLOW(ISPC) .and. DBH(I).le.DHI(ISPC)) then
-              ICRI = INT(real(ICRI) * CRNMLT(ISPC))
-           end if
+           if (DBH(I).ge.DLOW(ISPC) .and. DBH(I).le.DHI(ISPC))&
+                &ICRI = INT(real(ICRI) * CRNMLT(ISPC))
         end if
-        !      IF(DEBUG)WRITE(JOSTND,*)' 9052,ISPC,I,ICFLG,CRNMLT,ICRI= ',ISPC,
-        !     &I,ICFLG(ISPC),CRNMLT(ISPC),ICRI
 
         ! CALC CROWN LENGTH NOW
 
@@ -352,16 +361,14 @@ subroutine CROWN
 
         ! IF NEW CROWN EXCEEDS MAX POSSIBLE LIMIT IT TO MAX POSSIBLE
 
-        if (real(ICRI).gt.CRMAX) ICRI = INT(CRMAX+0.5)
+        if (ICRI.gt.CRMAX) ICRI = INT(CRMAX+0.5)
 
-        ! START ORGANON
-        ! DON'T DO THIS NEXT STATEMENT FOR ORGANON TREES
+        ! OC: DON'T DO THIS NEXT STATEMENT FOR ORGANON TREES
 
-        if ((.not. LORGANON) .and. (IORG(I) .ne.1)) then
+        if (VARIANTCD .ne. 'OC' .or.&
+             &((.not. LORGANON) .and. (IORG(I) .ne.1))) then
            if (ICRI.lt.10.and. CRNMLT(ISPC).eq.1.0)ICRI = INT(CRMAX+0.5)
         end if
-
-        ! END ORGANON
 
         !  REDUCE CROWNS OF TREES  FLAGGED AS TOP-KILLED ON INVENTORY
 
@@ -376,7 +383,7 @@ subroutine CROWN
              &3I5,2F10.3,I5,F10.3)
         go to 59
 
-        !  CROWNS FOR TREES WITH DBH LT 1 INCH ARE DUBBED HERE.  NO CHANGE
+        !  CROWNS FOR TREES WITH DBH LT 1.0 IN ARE DUBBED HERE.  NO CHANGE
         !  IS CALCULATED UNTIL THE TREE ATTAINS A DBH OF 1 INCH.
 
         58 continue
@@ -386,8 +393,9 @@ subroutine CROWN
         call DUBSCR(ISPC,D,H,PRD,QMDPLT,CR,TPCT,TPCCF)
         if (DEBUG) write(JOSTND,*) 'RETURN FORM DUBSCR IN CROWN'
         ICRI = INT(CR*100.0+0.5)
-        if (DBH(I).ge.DLOW(ISPC) .and. DBH(I).le.DHI(ISPC))&
-             &ICRI = INT(real(ICRI) * CRNMLT(ISPC))
+        if (DBH(I).ge.DLOW(ISPC) .and. DBH(I).le.DHI(ISPC)) then
+           ICRI = INT(real(ICRI) * CRNMLT(ISPC))
+        end if
 
         !  BALANCING ACT BETWEEN TWO CROWN MODELS OCCURS HERE
         !  END OF CROWN RATIO CALCULATION LOOP.  BOUND CR ESTIMATE AND FILL
@@ -396,15 +404,12 @@ subroutine CROWN
         59 continue
         if (ICRI.gt.95) ICRI = 95
 
-        ! START ORGANON
-        ! DON'T DO THIS NEXT STATEMENT FOR ORGANON TREES
+        ! OC: DON'T DO THIS NEXT STATEMENT FOR ORGANON TREES
 
-        if ((.not. LORGANON) .and. (IORG(I) .ne.1)) then
-           if (ICRI .lt.10.and. CRNMLT(ISPC).eq.1.0) ICRI = 10
+        if (VARIANTCD .ne. 'OC' .or.&
+             &((.not. LORGANON) .and. (IORG(I) .ne.1))) then
+           if (ICRI .lt.10.and. CRNMLT(ISPC).eq.1) ICRI = 10
         end if
-
-        ! END ORGANON
-
         if (ICRI.lt.1)ICRI = 1
         ICR(I) = ICRI
         60 continue
@@ -412,8 +417,6 @@ subroutine CROWN
      if (LSTART .and. ICFLG(ISPC).eq.1) then
         CRNMLT(ISPC) = 1.0
         ICFLG(ISPC) = 0
-        !      IF(DEBUG)WRITE(JOSTND,*)' 60-70-ISPC,LSTART,ICFLG(ISPC)= ',
-        !     &ISPC,LSTART,ICFLG(ISPC)
      end if
      70 continue
   end do
@@ -431,10 +434,10 @@ subroutine CROWN
      IITRE = ITRE(I)
      TPCCF = PCCF(IITRE)
 
-     !  CALCULATE PLOT LEVEL QMD - USED IN RW CR CALCULATION
-     !  IF THERE ARE NO LIVE TREES ON INVENTORY POINT, SET QMD OF INVENTORY
-     !  POINT TO 1. THE VALUE OF 1 SHOULD ONLY EVER BE ASSUMED HERE IF THERE
-     !  ARE NO LIVE TREES IN THE STAND.
+     !  CALCULATE PLOT LEVEL QMD - USED IN RW/GS CR CALCULATION
+     !  IF THERE ARE NO LIVE TREES ON INVENTORY POINT, SET QMD OF
+     !  INVENTORY POINT TO 1. THE VALUE OF 1 SHOULD ONLY EVER BE ASSUMED
+     !  HERE IF THERE ARE NO LIVE TREES IN THE STAND.
      BAPLT = PTBAA(IITRE)
      TPAPLT = PTPA(IITRE)
      if (TPAPLT .gt.0.0) then
@@ -449,7 +452,7 @@ subroutine CROWN
      !  RELATIONSHIPS.
      if (QMDPLT .le.1.0) QMDPLT = 1.0
 
-     !  CALCULATE RELATIVE DENSITY OF INVENTORY POINT - USED IN RW CR CALCULATION.
+     !  CALCULATE RELATIVE DENSITY OF INVENTORY POINT
      !  IF SDI MAX OF INVENTORY POINT IS EVER LE 0, SET POINT RELATIVE DENSITY
      !  TO 0.
      if (XMAXPT(IITRE).le.0.0) then
@@ -458,11 +461,12 @@ subroutine CROWN
         PRD = ZRD(IITRE) / XMAXPT(IITRE)
      end if
 
+     !  CALL DUBSCR
      call DUBSCR (ISPC,D,H,PRD,QMDPLT,CR,TPCT,TPCCF)
      ICRI = INT(CR*100.0 + 0.5)
      if (ITRUNC(I).eq.0) go to 78
-     HN = real(NORMHT(I))/100.0
-     HD = HN-real(ITRUNC(I))/100.0
+     HN = NORMHT(I)/100.0
+     HD = HN-ITRUNC(I)/100.0
      CL = (real(ICRI)/100.)*HN-HD
      ICRI = INT((CL*100./HN)+.5)
      78 continue
@@ -474,7 +478,7 @@ subroutine CROWN
 
   80 continue
   if (DEBUG)write(JOSTND,9010)ITRN,(ICR(JJ),JJ = 1,ITRN)
-  9010 format(' LEAVING CROWN 9010 FORMAT ITRN,ICR= ',I10,/,&
+  9010 format(/' LEAVING CROWN 9010 ITRN,ICR= ',I10,/,&
        &43(1H ,32I4,/))
   if (DEBUG)write(JOSTND,90)ICYC
   90 format(' LEAVING SUBROUTINE CROWN  CYCLE =',I5)
@@ -483,49 +487,54 @@ subroutine CROWN
 
   !  ENTRY POINT FOR LOADING CROWN RATIO MODEL COEFFICIENTS
 
-  !  COEFF ORDER 1=SF,  2=WF,  3=RF,  4=NF,  5=WP,  6=PP,  7=DF,
-  !              8=RC,  9=WH, 10=MH, 11=RW, 12=BM, 13=RA, 14=OH,
-  !             15=IC, 16=LP, 17=SS
+  ! SPECIES ORDER IN CA AND OC VARIANTS (4 IS WF IN CA, GF IN OC):
+  !  1=PC  2=IC  3=RC  4=WF  5=RF  6=SH  7=DF  8=WH  9=MH 10=WB
+  ! 11=KP 12=LP 13=CP 14=LM 15=JP 16=SP 17=WP 18=PP 19=MP 20=GP
+  ! 21=JU 22=BR 23=GS 24=PY 25=OS 26=LO 27=CY 28=BL 29=EO 30=WO
+  ! 31=BO 32=VO 33=IO 34=BM 35=BU 36=RA 37=MA 38=GC 39=DG 40=FL
+  ! 41=WN 42=TO 43=SY 44=AS 45=CW 46=WI 47=CN 48=CL 49=OH 50=RW
 
   ! LOAD WEIBULL 'A' PARAMETER BY SPECIES
 
-  data WEIBA/ 2*0.0, 1.0, 8*0.0, 1.0, 2*0.0, 1.0, 2*0.0/
+  data WEIBA/ 13*0.0, 2*1.0, 2*0.0 /
 
   ! LOAD WEIBULL 'B' PARAMETER EQUATION CONSTANT COEFFICIENT
 
-  data WEIBB0/ -0.171680,  0.130939, -0.981113, -0.135807, 0.019948,&
-       &-0.036696, -0.012061, -0.062693,  0.073435,  0.162672, 0.196054,&
-       &-0.818809,  0.035786, -0.238295, -0.811424, -0.131210,-0.107413/
+  data WEIBB0/  0.52909,  0.25115,  0.52909,  0.48464,  0.08402,&
+       &0.29964,  0.06607,  0.25667,  0.16601,  0.03685,  0.25667,&
+       &0.49085,  0.16267, -0.81881, -1.11274, -0.23830, -0.13121/
 
   ! LOAD WEIBULL 'B' PARAMETER EQUATION SLOPE COEFFICIENT
 
-  data WEIBB1/ 1.161549, 1.093406, 1.092273, 1.147712, 1.108738,&
-       &1.132792, 1.119712, 1.139657, 1.107183, 1.073404, 1.073909,&
-       &1.054176, 1.121389, 1.180163, 1.056190, 1.159760, 1.140775/
+  data WEIBB1/  1.00677,  1.05987,  1.00677,  1.01272,  1.10297,&
+       &1.05398,  1.10705,  1.06474,  1.08150,  1.09499,  1.06474,&
+       &1.01414,  1.07340,  1.05418,  1.12314,  1.18016,  1.15976/
 
   ! LOAD WEIBULL 'C' PARAMETER EQUATION CONSTANT COEFFICIENT
 
-  data WEIBC0/ 2.8263  , 1.355139,  1.326047, 3.017494, 2.621230,&
-       &2.876094, 3.2126  , 1.7664  ,  2.6237  , 3.288501, 0.345647,&
-       &-2.366108, 2.0408  , 3.044134, -3.831124, 2.598238, 3.0712  /
+  data WEIBC0/ -3.48211,  0.33383, -3.48211, -2.78353,  0.91078,&
+       &-1.09270,  2.04714,  0.11729,  0.91420,  4.01340,  0.11729,&
+       &3.16456,  3.28850, -2.36611,  2.53316,  3.04413,  2.59824/
 
   ! LOAD WEIBULL 'C' PARAMETER EQUATION SLOPE COEFFICIENT
 
-  data WEIBC1 / 0.0     , 0.350472, 0.318386, 0.0     , 0.186734,&
-       &0.0     , 0.0     , 0.0     , 0.0     , 0.0     , 0.620145,&
-       &1.202413, 0.0     , 0.0     , 1.401938, 0.0     , 0.0     /
+  data WEIBC1/  1.38780,  0.63833,  1.38780,  1.27283,  0.45819,&
+       &0.80687,  0.15070,  0.61681,  0.45768,  0.04946,  0.61681,&
+       &0.00000,  0.00000,  1.20241,  0.00000,  0.00000,  0.00000/
 
   ! LOAD CR=F(SDI) EQUATION CONSTANT COEFFICIENT
 
-  data C0/    5.073342, 5.212394, 4.860467, 5.568864, 4.279655,&
-       &5.073273, 5.666442, 4.481330, 5.671345, 6.484942, 5.417431,&
-       &4.420000, 4.656659, 4.625125, 5.200550, 4.890318, 5.812879/
+  data C0/     7.48846,  6.92893,  7.48846,  7.44422,  3.64292,&
+       &5.12357,  6.82187,  5.95912,  6.14578,  6.04928,  5.95912,&
+       &5.48853,  6.48494,  4.42000,  4.12048,  4.62512,  4.89032/
 
   ! LOAD CR=F(SDI) EQUATION SLOPE COEFFICIENT
 
-  data C1/   -0.011430, -0.011623, -0.006173, -0.021293, -0.002484,&
-       &-0.020988, -0.025199, -0.018092, -0.023463, -0.023248, -0.011608,&
-       &-0.010660, -0.022612, -0.016042, -0.014890, -0.018837, -0.028504/
+  data C1/     -0.02899, -0.04053, -0.02899, -0.04779, -0.00317,&
+       &-0.01042, -0.02247, -0.01812, -0.02781, -0.01091, -0.01812,&
+       &-0.00717, -0.02325, -0.01066, -0.00636, -0.01604, -0.01884/
+
+  ! LOAD COEFFICIENTS FOR COASTAL REDWOOD (RW) AND GIANT SEQUIOA (GS) CR EQUATION
 
   data CRNMLT/MAXSP*1.0/
   data ICFLG/MAXSP*0/

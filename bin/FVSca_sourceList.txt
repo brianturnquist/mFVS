@@ -57,7 +57,7 @@
 ../ca/bratio.f90
 ../ca/ccfcal.f90
 ../vbase/cratet.f90
-../ca/crown.f90
+../vbase/crown_ca.f90
 ../ca/cubrds.f90
 ../vbase/dgdriv.f90
 ../vbase/dgf.f90

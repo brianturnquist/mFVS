@@ -1,7 +1,7 @@
-!================!
-!   ls : htdbh   !
-!================!
-! LS $Id$
+!=======================!
+!   vbase : htdbh_ls    !
+!=======================!
+! LS, ON $Id$
 subroutine HTDBH (IFOR,ISPC,D,H,MODE)
   implicit none
 
@@ -11,6 +11,10 @@ subroutine HTDBH (IFOR,ISPC,D,H,MODE)
   !  CASES THAT LHTDRG IS SET TO .TRUE.).
 
   !  COEFFICIENTS DEVELOPED FOR THE SN VARIANT USING SOUTHERN TREE DATA.
+
+  !  SHARED BY LS AND ON. ROWS 1-68 ARE THE LAKE STATES SPECIES USED BY
+  !  BOTH VARIANTS; ROWS 69-72 ARE ON'S FOUR PLANTED SPECIES, WHICH LS
+  !  NEVER INDEXES.
 
   !  DEFINITION OF VARIABLES:
   !         D = DIAMETER AT BREAST HEIGHT
@@ -35,8 +39,8 @@ subroutine HTDBH (IFOR,ISPC,D,H,MODE)
   include 'CONTRL.f90'
 
   ! Variables
-  real    :: SNALL(3,68),SNDBAL(68)
-  integer :: IWYKCA(68)
+  real    :: SNALL(3,72),SNDBAL(72)
+  integer :: IWYKCA(72)
   integer :: MODE,ISPC,IFOR,I,J
   real    :: H,D,P2,P3,P4,DB,HAT3
   logical :: DEBUG
@@ -112,6 +116,12 @@ subroutine HTDBH (IFOR,ISPC,D,H,MODE)
   !    66 = DIAMOND WILLOW (DM)
   !    67 = SASSAFRAS (SS)
   !    68 = AMERICAN MOUNTAIN ASH (MA)
+  ! - ONtario species -
+
+  !    69 = PLANTED JACK PINE (JP) (was jack pine (plantation)) 1
+  !    70 = PLANTED WHITE PINE (WP) (was white pine (plantation)) 5
+  !    71 = PLANTED WHITE SPRUCE (SP) (was white spruce (plantation)) 6
+  !    72 = PLANTED BLACK SPRUCE (BP) (was black spruce (plantation)) 9
 
   !     CURTIS-ARNEY COEFFICIENTS
   !     ALL SOUTHERN DATA SNALL(I,J) I1=>P2, I2=>P3, I3=>P4, J= SPECIES
@@ -262,19 +272,31 @@ subroutine HTDBH (IFOR,ISPC,D,H,MODE)
        ! 68=AM. MOUNTAIN ASH      USE SN HACKBERRY (SP.) (29)
        &484.7529797,     3.93933286,     -0.25998833 /
 
+  ! ONtario species
+  data ((SNALL(I,J),I = 1,3), J = 69,72)/&
+       ! 1=JACK PINE              USE SN EASTERN HEMLOCK (17)
+       &266.4562239,     3.99313675,     -0.38600287 ,&
+       ! 5=EASTERN WHITE PINE     USE SN EASTERN WHITE PINE (12)
+       &2108.844224,     5.65948135,     -0.18563136 ,&
+       ! 6=WHITE SPRUCE           USE SN SPRUCE (3)
+       &2163.946776,     6.26880851,     -0.2161439  ,&
+       ! 9=BLACK SPRUCE           USE SN SPRUCE (3)
+       &2163.946776,     6.26880851,     -0.2161439 /
+
   !  TRANSITION VALUES (INCHES) IN EXTRAPOLATION TO SHORTER HEIGHTS.
   !  THESE CORRESPOND TO THE BUDWIDTH PHYSICAL ATTRIBUTE.  IF THESE
   !  ARE MODIFIED, ALSO MODIFY THE DIAM ARRAY IN THE REGCON ENTRY
   !  IN **REGENT.
 
-  data (SNDBAL(I), I = 1,68)/&
+  data (SNDBAL(I), I = 1,72)/&
        &0.1, 0.5, 0.1, 0.1, 0.4, 0.2, 0.2, 0.1, 0.2, 0.1,&
        &0.1, 0.1, 0.3, 0.5, 0.2, 0.2, 0.1, 0.2, 0.2, 0.1,&
        &0.1, 0.1, 0.1, 0.1, 0.1, 0.2, 0.2, 0.1, 0.2, 0.2,&
        &0.1, 0.2, 0.1, 0.2, 0.2, 0.2, 0.3, 0.3, 0.3, 0.2,&
        &0.3, 0.2, 0.1, 0.2, 0.3, 0.4, 0.2, 0.1, 0.1, 0.3,&
        &0.1, 0.1, 0.2, 0.1, 0.1, 0.1, 0.1, 0.2, 0.2, 0.1,&
-       &0.1, 0.1, 0.2, 0.1, 0.1, 0.1, 0.1, 0.1/
+       &0.1, 0.1, 0.2, 0.1, 0.1, 0.1, 0.1, 0.1,&
+       &0.1, 0.4, 0.2, 0.2 /
 
   !  FLAGS WHETHER TO USE WYKOFF EQUATIONS (0), OR CURTIS-ARNEY
   !  EQUATIONS (1).
@@ -283,7 +305,8 @@ subroutine HTDBH (IFOR,ISPC,D,H,MODE)
        &0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0,&
        &0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,&
        &0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0,&
-       &1, 0, 0, 0, 0, 0, 1, 0/
+       &1, 0, 0, 0, 0, 0, 1, 0,&
+       &0, 1, 1, 1/
 
   !  DUMMY ARGUMENT NOT USED WARNING SUPPRESSION SECTION
 

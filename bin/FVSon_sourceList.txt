@@ -58,7 +58,7 @@
 ../canada/on/crown.f90
 ../canada/on/cubrds.f90
 ../canada/on/cutstk.f90
-../canada/on/cwcalc.f90
+../vbase/cwcalc_ls.f90
 ../canada/on/dgbnd.f90
 ../vbase/dgdriv.f90
 ../vbase/dgf.f90
@@ -69,7 +69,7 @@
 ../canada/on/grinit.f90
 ../vbase/grohed.f90
 ../canada/on/htcalc.f90
-../canada/on/htdbh.f90
+../vbase/htdbh_ls.f90
 ../canada/on/htgf.f90
 ../canada/on/htont.f90
 ../vbase/morts.f90
