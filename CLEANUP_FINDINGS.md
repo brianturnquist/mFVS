@@ -6,8 +6,8 @@ The goal is one definition of each calculation, with variant differences
 expressed explicitly in coefficient banks, species mappings or bounded
 branches. The findings below come from current source and the 24 build
 manifests. F01–F14 were authorized and completed on
-15 November 2026, and F15–F20 on 16 November 2026. The remaining unchecked
-findings are proposed work.
+15 November 2026, and F15–F25 on 16 November 2026. F21–F23 record what
+was extracted and what remains.
 
 At the audit baseline, excluding include files and NVEL, the manifests
 selected 1,286 Fortran source files. There were 92 repeated filename
@@ -287,48 +287,73 @@ changes; unchecked findings remain proposals.
   results and COMMON memory matched baseline `1fefe63c` bit for bit. An LS
   shared-row and an ON planted-row mutation were detected.
 
-- [ ] **F21 — INITRE: extract individual shared keyword handlers.**
+- [x] **F21 — INITRE: extract individual shared keyword handlers.**
 
-  [vbase/initre.f90](vbase/initre.f90),
-  [metric/vbase/initre.f90](metric/vbase/initre.f90) and
-  [canada/bc/initre.f90](canada/bc/initre.f90) total 19,252 lines.
-  Volume-equation keyword processing contains hundreds of matching
-  statements. Extract individual handlers, preserving unit conversions,
-  diagnostics and error-return paths; avoid one wholesale merge.
+  Completed 16 November 2026. The 21 handlers that were statement-identical
+  in the US, ON and BC INITRE moved to
+  [vbase/initrekeys_mod.f90](vbase/initrekeys_mod.f90), and VOLEQNUM moved to
+  [vbase/initrevol_mod.f90](vbase/initrevol_mod.f90). The VOLEQNUM copies
+  differed only in code no variant could reach: the US FIA-VBC guard
+  (`LFIANVB` is set only by the US FIAVBC keyword), the AK forest branch,
+  ON/BC's `'BC'`/`'ON'` region entries and BC's 10-blank reset of the
+  11-character `VEQNNC`. Each handler takes INITRE's locals by reference;
+  an exit code reproduces INITRE's other exits. Net change: −1,373 lines.
+  All 22 US regression sets matched original F77; BC/ON matched the
+  immediate baseline. Coverage decks ran every extracted handler in several
+  forms, including blank, invalid, PARMS and echo-off, in all 24 variants;
+  outputs matched baseline `94c172ea` except the undefined bytes of bugs
+  45 and 47. VOLUME, BFVOLUME, DEFECT, MCDEFECT, BFDEFECT, MCFDLN and BFFDLN
+  remain: they differ by unit conversions (up to about 110 statements) and
+  need `LMETRICVAR` branches.
 
-- [ ] **F22 — FMIN: extract remaining shared keyword handlers.**
+- [x] **F22 — FMIN: extract remaining shared keyword handlers.**
 
-  [fire/base/fmin.f90](fire/base/fmin.f90) and
-  [metric/fire/base/fmin.f90](metric/fire/base/fmin.f90) still contain
-  several matching keyword-processing blocks. Share one handler at a time,
-  retaining conversion and report-flag behavior.
+  Completed 16 November 2026 in
+  [fire/base/fminkeys_mod.f90](fire/base/fminkeys_mod.f90): the 15
+  handlers identical in the imperial and metric FMIN (SALVSP, MOISTURE,
+  POTFIRE, SNAGFALL, SNAGBRK, SNAGDCAY, SNAGOUT, FUELPOOL, PILEBURN,
+  FUELMULT, DROUGHT, SNAGPSFT, FUELMODL, FUELFOTO, FMODLIST), using the
+  F21 method. Net change: −344 lines. Verification as for F21. The 27
+  handlers that differ by metric conversion can follow the existing
+  `FM*REQ` pattern with `LMETRICVAR`.
 
-- [ ] **F23 — REGENT: consolidate calculations within the shared file.**
+- [x] **F23 — REGENT: consolidate calculations within the shared file.**
 
-  [vbase/regent.f90](vbase/regent.f90) is 18,527 lines and repeats
-  substantial calculations among its private variant routines. Begin with
-  matching growth-blending, perturbation and diameter-update blocks.
-  Preserve random-number consumption and mutation order. Track each
-  extraction as a separate verified step under this finding.
+  Two extractions completed 16 November 2026 in
+  [vbase/regent.f90](vbase/regent.f90), each verified separately:
+  `REGHCAL`, the small-tree calibration ratio estimator and range trap
+  (17 families; BC/ON differ), and `REGCALOUT`, the calibration database
+  and CALBSTAT output (18 families). Native scale-factor arrays are passed
+  assumed-size. Net change: −772 lines. All 22 US regression sets matched
+  original F77, including CALBSTAT output; BC/ON matched the immediate
+  baseline. With the trap thresholds changed identically in both trees,
+  IE and SO took the trap 7 times with identical outputs. The suggested
+  growth-blending block occurs in only three families, each different;
+  the remaining repeats are tied to shared labels.
 
 ## Additional review opportunities
 
-- [ ] **F24 — VARGET/VARPUT: share serialization structure.**
+- [x] **F24 — VARGET/VARPUT: share serialization structure.**
 
-  Nine definitions of each remain; examples are
-  [ci/varget.f90](ci/varget.f90), [ci/varput.f90](ci/varput.f90),
-  [em/varget.f90](em/varget.f90) and [em/varput.f90](em/varput.f90).
-  Share matching serialization structure while preserving binary field
-  order, sizes and variant payloads exactly. Migrate readers and writers
-  in separately verified steps.
+  Completed 16 November 2026. [vbase/varput.f90](vbase/varput.f90) and
+  [vbase/varget.f90](vbase/varget.f90) replace the nine copies of each and
+  the PG character stubs. `VARIANTCD` selects each payload, which is kept
+  verbatim in its own internal procedure, so field order and sizes are
+  unchanged. AK's two ESCOMN members and BC's `ZBRSH` were appended to the
+  common includes, and their private copies removed (BC's ESHAP member
+  order changed). Writers and readers were verified in separate steps: all
+  22 US regression sets matched original F77, including restart files,
+  and BC/ON matched the immediate baseline. 22 files became two; net
+  change: −514 lines.
 
-- [ ] **F25 — Acadian support review, without deletion.**
+- [x] **F25 — Acadian support review, without deletion.**
 
-  Current manifests select every remaining main-tree `.f90` file outside
-  [acd/](acd/). Acadian files are unselected. Establish whether that model
-  should remain supported or preserved before proposing any retirement.
-  Completing this task means documenting the support decision; it does not
-  authorize deleting code.
+  Decided 16 November 2026: `acd/` is unsupported and is to be retired in a
+  separate, authorized step; nothing was deleted. Upstream has never built
+  it (no source list at `c2105365`), and it has not compiled upstream since
+  `a8f62643` (June 2018) renamed TWIGCOM's `BAU` to `EBAU`; three of its 26
+  files still use `BAU`. No test covers it, and FVS-ACD development
+  appears to continue separately at the University of Maine.
 
 ## Bugs recorded during this audit
 
@@ -428,3 +453,21 @@ original F77, including restart files; BC and ON matched the immediate
 baseline, and their documented pristine-original failures remain. Bugs 44–45
 were found and recorded unfixed. No model bug fixes were made. Temporary
 drivers, outputs and build copies were discarded.
+
+The fifth batch (F21–F25), completed 16 November 2026 against baseline
+`94c172ea`, moved 37 keyword handlers and two REGENT calibration blocks
+into shared procedures, and replaced 22 serialization files and private
+includes with two. Fortran source shrank by a net 3,003 lines; 22 files
+were removed and five added. Seven steps (VARPUT, VARGET, FMIN, INITRE, two REGENT steps,
+VOLEQNUM) were each verified separately. Every step built all 24 variants;
+all 22 US variants matched original F77, including restart files, and BC
+and ON matched the immediate baseline.
+
+Statement-identical blocks were extracted mechanically. Each block's jumps,
+labels and local names were checked against its host, and only the needed
+COMMON files were included. Keyword-coverage decks and a forced-trap run
+covered paths the regression decks do not reach. Bugs 46 (ON snag-volume
+reports stop with a floating-point trap) and 47 (BC prints undefined
+volume-equation codes after an invalid VOLEQNUM) were found and recorded
+unfixed. No model bug fixes were made. Temporary trees, decks and outputs
+were discarded.

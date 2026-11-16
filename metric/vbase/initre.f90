@@ -4,7 +4,16 @@
 ! METRIC-VBASE $Id$
 subroutine INITRE
   use INITDESIGN_MOD, only: INITDESIGN
+  use INITREKEYS_MOD, only: INKTIMEINT, INKNUMCYCLE, INKTREELIST, INKDEBUG,&
+       &INKADDFILE, INKTHINAUTO, INKNOCALIB, INKNOHTDREG, INKCHEAPO,&
+       &INKCOMPRESS, INKCALBSTAT, INKDELOTAB, INKCUTLIST, INKRESETAGE,&
+       &INKMANAGED, INKFVSSTAND, INKPOINTREF, INKECHO, INKCYCLEAT,&
+       &INKATRTLIST, INKORGANON
+  use INITREVOL_MOD, only: INVVOLEQNUM
   implicit none
+
+  ! Exit taken by a shared keyword handler (0: next keyword)
+  integer :: IKEXIT
 
   !  THIS ROUTINE PROCESSES OPTIONS AND INITIATES THE
   !  PROGNOSIS RUN.  CALLED FROM **MAIN**.
@@ -511,29 +520,8 @@ subroutine INITRE
   !  ==========  OPTION NUMBER 2: TIMEINT  ============================TIMEINT
 
   1200 continue
-  I2 = 10
-  if (LNOTBK(2)) I2 = IFIX(ARRAY(2))
-  if (.not.LNOTBK(1)) go to 1220
-  I = IABS(IFIX(ARRAY(1))) + 1
-  if (I.eq.1) goto 1220
-  if (I.gt.MAXCY1) then
-     call KEYDMP (JOSTND,IRECNT,KEYWRD,ARRAY,KARD)
-     call ERRGRO (.true.,4)
-     goto 10
-  end if
-  IY(I) = I2
-  I = I-1
-  if (LKECHO)write(JOSTND,1215) KEYWRD,I,I2
-  1215 format(/A8,3X,'CYCLE=',I3,'; PERIOD LENGTH=',I3)
-  go to 10
-  1220 continue
-  do I = 2,MAXCY1
-     IY(I) = I2
-     1230 continue
-  end do
-  if (LKECHO)write(JOSTND,1235) KEYWRD,I2
-  1235 format(/A8,3X,'ALL CYCLES;  PERIOD LENGTH=',I3)
-  go to 10
+  call INKTIMEINT(I2,LNOTBK,ARRAY,I,KEYWRD,KARD,LKECHO)
+  goto 10
 
   !  ==========  OPTION NUMBER 3: FIXCW     =============================FIXCW
 
@@ -768,15 +756,8 @@ subroutine INITRE
   !  ==========  OPTION NUMBER 11: NUMCYCLE  ==========================NUMCYCLE
 
   2100 continue
-  if (ARRAY(1).ge.1..and. IFIX(ARRAY(1)).le.MAXCYC) goto 2110
-  call KEYDMP (JOSTND,IRECNT,KEYWRD,ARRAY,KARD)
-  call ERRGRO (.true.,4)
+  call INKNUMCYCLE(ARRAY,KEYWRD,KARD,LKECHO)
   goto 10
-  2110 continue
-  NCYC = IFIX ( ARRAY(1) )
-  if (LKECHO)write(JOSTND,2120) KEYWRD,NCYC
-  2120 format (/A8,'   NUMBER OF CYCLES=',I3)
-  go to 10
 
   !  ==========  OPTION NUMBER 12: TFIXAREA  ==========================TFIXAREA
 
@@ -921,32 +902,7 @@ subroutine INITRE
   !  ==========  OPTION NUMBER 17: TREELIST  ==========================TREELIST
 
   2700 continue
-  IDT = 1
-  if (LNOTBK(1)) IDT = IFIX(ARRAY(1))
-  if (.not.LNOTBK(2)) ARRAY(2) = FLOAT(JOLIST)
-  NP = 2
-  if (LNOTBK(4)) NP = 3
-  if (LNOTBK(5) .and. ARRAY(5).gt.0) then
-     NP = 4
-  end if
-  if (LNOTBK(6) .and. ARRAY(6).gt.0) NP = 5
-  if (LNOTBK(7).and.ARRAY(7).gt.0.and.(IDT.eq.0.or.IDT.eq.1)&
-       &.and.(.not.(LNOTBK(4).and.ARRAY(4).eq.1)))NP = 6
-  call OPNEW (KODE,IDT,80,NP,ARRAY(2))
-  if (KODE.gt.0) goto 10
-  if (LKECHO)write(JOSTND,2710) KEYWRD,IDT,ARRAY(2),ARRAY(3)
-  2710 format (/A8,'   DATE/CYCLE=',I5,'; DATA SET REFERENCE ',&
-       &'NUMBER =',F4.0,'; HEADING SUPPRESSION CODE =',F3.0/&
-       &T12,'(0=WITH HEADING, OTHER VALUES=SUPPRESS HEADING).')
-  if ((NP.ge.3).and.(ARRAY(4).eq.1.).and.LKECHO)write(JOSTND,2720)
-  2720 format (T12,'CYCLE ZERO TREELIST SUPPRESSED.')
-  if ((NP.ge.3).and.(ARRAY(4).eq.2.).and.LKECHO)write(JOSTND,2721)
-  2721 format (T12,'CYCLE ONE TREELIST SUPPRESSED.')
-  if ((ARRAY(5).gt.0).and.LKECHO)write(JOSTND,2740)
-  2740 format(T12,'TREELIST WILL REPORT DEAD TREE STATISTICS.')
-  if ((NP.eq.6).and.LKECHO)write(JOSTND,2745)
-  2745 format(T12,'ESTIMATED DIAMETER GROWTHS WILL BE PRINTED ON THE',&
-       &' CYCLE 0 TREELIST FOR TREES WITH NO MEASURED DIAMETER GROWTH.')
+  call INKTREELIST(IDT,LNOTBK,ARRAY,NP,KODE,LKECHO,KEYWRD)
   goto 10
 
   !  ==========  OPTION NUMBER 18: REWIND  ============================REWIND
@@ -969,26 +925,9 @@ subroutine INITRE
   !  ==========  OPTION NUMBER 20: DEBUG  =============================DEBUG
 
   3000 continue
-  if (LNOTBK(3)) JOSTND = IFIX(ARRAY(3))
-  IDBCYC = IFIX(ARRAY(1))
-  if ((IDBCYC.lt.0).or.(IDBCYC.gt.MAXCYC)) IDBCYC = 0
-  if (IDBCYC.eq.0) then
-     if (LKECHO)write(JOSTND,3010) KEYWRD
-     3010 format (/A8,'   DEBUG, ALL CYCLES. ')
-  else
-     if (LKECHO)write(JOSTND,3020) KEYWRD,IDBCYC
-     3020 format (/A8,'   DEBUG, CYCLE=',I2,'. ')
-  end if
-  if (LNOTBK(2)) then
-     call DBPRSE (IREAD,RECORD,JOSTND,IDBCYC,IRC)
-     if (IRC.eq.1) goto 80
-  else
-     call DBALL (IDBCYC)
-  end if
-
-  ! Check whether debugging is enabled
-  call DBCHK (DEBUG,'INITRE',6,0)
-  go to 10
+  call INKDEBUG(LNOTBK,ARRAY,IDBCYC,LKECHO,KEYWRD,RECORD,IRC,DEBUG,IKEXIT)
+  if (IKEXIT .eq. 80) goto 80
+  goto 10
 
   !  ==========  OPTION NUMBER 21: ECHOSUM  ===========================ECHOSUM
 
@@ -1003,49 +942,15 @@ subroutine INITRE
   !  ==========  OPTION NUMBER 22: ADDFILE  ===========================ADDFILE
 
   3200 continue
-  if (LNOTBK(1)) goto 3210
-  call KEYDMP (JOSTND,IRECNT,KEYWRD,ARRAY,KARD)
-  call ERRGRO (.true.,4)
+  call INKADDFILE(LNOTBK,KEYWRD,ARRAY,KARD,LKECHO)
   goto 10
-  3210 continue
-  ICL1 = IREAD
-  IREAD = IFIX(ARRAY(1))
-  if (LKECHO)write(JOSTND,1410) KEYWRD,IREAD
-  go to 10
 
   !  ==========  OPTION NUMBER 23: THINAUTO  ==========================THINAUTO
 
   3300 continue
-  IDT = 1
-  if (LNOTBK(1)) IDT = IFIX(ARRAY(1))
-
-  !     IF THE KEYWORD RECORD HAS THE 'PARMS' OPTION, CALL OPNEWC
-  !     TO PROCESS IT.
-
-  if (IPRMPT.gt.0) then
-     if (IPRMPT.ne.2) then
-        call KEYDMP (JOSTND,IRECNT,KEYWRD,ARRAY,KARD)
-        call ERRGRO (.true.,25)
-     else
-        call OPNEWC (KODE,JOSTND,IREAD,IDT,222,KEYWRD,KARD,&
-             &IPRMPT,IRECNT,ICYC)
-        call fvsGetRtnCode(IRTNCD)
-        if (IRTNCD.ne.0) return
-     end if
-     goto 10
-  end if
-  PRMS(1) = AUTMIN
-  PRMS(2) = AUTMAX
-  PRMS(3) = EFF
-  if (LNOTBK(2))PRMS(1) = ARRAY(2)
-  if (LNOTBK(3))PRMS(2) = ARRAY(3)
-  if (LNOTBK(4))PRMS(3) = ARRAY(4)
-  call OPNEW (KODE,IDT,222,3,PRMS)
-  if (KODE .gt.0) goto 10
-  if (LKECHO)write(JOSTND,3310) KEYWRD,IDT,(PRMS(I),I = 1,3)
-  3310 format (/A8,'   DATE/CYCLE=',I5,'; MIN=',F8.1,'; MAX=',&
-       &F8.1,' PERCENT OF FULL STOCKING',&
-       &';  PROPORTION OF SELECTED TREES REMOVED=',F6.3)
+  call INKTHINAUTO(IDT,LNOTBK,ARRAY,IPRMPT,KEYWRD,KARD,KODE,IRTNCD,PRMS,&
+       &LKECHO,I,IKEXIT)
+  if (IKEXIT .lt. 0) return
   goto 10
 
   !  ==========  OPTION NUMBER 24: THINBTA  ===========================THINBTA
@@ -2534,50 +2439,8 @@ subroutine INITRE
 
   5800 continue
 
-  !   SPECIES CODE PROCESSING.
-
-  call SPDECD (1,IS,NSP(1,1),JOSTND,IRECNT,KEYWRD,&
-       &ARRAY,KARD)
-  if (IS.eq.-999) go to 10
-
-  !     IF (IS<0) CHANGE ALL SPECIES IN THE GROUP
-
-  if (IS .lt.0) then
-     IGRP = -IS
-     IULIM = ISPGRP(IGRP,1)+1
-     do IG = 2,IULIM
-        IGSP = ISPGRP(IGRP,IG)
-        LDGCAL(IGSP) = .false.
-        LHTCAL(IGSP) = .false.
-        5801 continue
-     end do
-     ILEN = ISPGRP(-IS,92)
-     if (LKECHO)write(JOSTND,5808) KEYWRD,KARD(1)(1:ILEN),IS
-
-     !     IF (IS=0) ALL SPECIES WILL BE CHANGED IN FOLLOWING CODE:
-
-  else if (IS .eq.0) then
-     do J = 1,MAXSP
-        LDGCAL(J) = .false.
-        LHTCAL(J) = .false.
-        5803 continue
-     end do
-     if (LKECHO)write(JOSTND,5804) KEYWRD
-     5804 format(/A8,'   CALIBRATION USING GROWTH DATA FROM TREE',&
-          &' RECORDS HAS BEEN SUPPRESSED FOR ALL SPECIES')
-
-     !     SPECIES CODE IS SPECIFIED (IS>0).
-
-  else
-     LDGCAL(IS) = .false.
-     LHTCAL(IS) = .false.
-     ILEN = 3
-     if (IS.lt.0)ILEN = ISPGRP(-IS,92)
-     if (LKECHO)write(JOSTND,5808) KEYWRD,KARD(1)(1:ILEN),IS
-     5808 format (/A8,'   CALIBRATION USING GROWTH DATA FROM TREE',&
-          &' RECORDS WILL BE SUPPRESSED FOR SPECIES= ',A,' (CODE= ',I3,')')
-  end if
-  go to 10
+  call INKNOCALIB(IS,KEYWRD,ARRAY,KARD,IGRP,IULIM,IG,IGSP,ILEN,LKECHO,J)
+  goto 10
 
   !  ==========  OPTION NUMBER 57: DGSTDEV  ===========================DGSTDEV
 
@@ -2688,81 +2551,9 @@ subroutine INITRE
 
   6200 continue
 
-  !     PROCESS BASED ON SPECIES CODE.
-
-  call SPDECD (1,IS,NSP(1,1),JOSTND,IRECNT,KEYWRD,&
-       &ARRAY,KARD)
-  if (IS.eq.-999) goto 10
-
-  !     IF (IS<0) CHANGE ALL SPECIES IN THE GROUP
-
-  if (IS .lt.0) then
-     IGRP = -IS
-     IULIM = ISPGRP(IGRP,1)+1
-     do IG = 2,IULIM
-        IGSP = ISPGRP(IGRP,IG)
-        if (LNOTBK(2).and.ARRAY(2).gt.0.) then
-           LHTDRG(IGSP) = .true.
-        else
-           LHTDRG(IGSP) = .false.
-        end if
-        6201 continue
-     end do
-     ILEN = ISPGRP(-IS,92)
-     if (LNOTBK(2).and.ARRAY(2).gt.0.) then
-        if (LKECHO)write(JOSTND,6215) KEYWRD,KARD(1)(1:ILEN),IS
-     else
-        if (LKECHO)write(JOSTND,6230) KEYWRD,KARD(1)(1:ILEN),IS
-     end if
-
-     !     IF (IS=0) ALL SPECIES WILL BE CHANGED IN FOLLOWING CODE:
-
-  else if (IS .eq.0) then
-
-     !        IF FIELD 2 IS BLANK OR ZERO SUPPRESS CALIBRATION FOR ALL
-     !        SPECIES, OTHERWISE INVOKE CALIBRATION FOR ALL SPECIES.
-
-     if (LNOTBK(2).and.ARRAY(2).gt.0) then
-        do J = 1,MAXSP
-           LHTDRG(J) = .true.
-           6205 continue
-        end do
-        if (LKECHO)write(JOSTND,6206) KEYWRD
-        6206 format(/A8,'   CALIBRATION OF HEIGHT-DIAMETER',&
-             &' RELATIONSHIP WILL BE  INVOKED   FOR ALL SPECIES')
-     else
-        do J = 1,MAXSP
-           LHTDRG(J) = .false.
-           6210 continue
-        end do
-        if (LKECHO)write(JOSTND,6220) KEYWRD
-        6220 format(/A8,'   CALIBRATION OF HEIGHT-DIAMETER',&
-             &' RELATIONSHIP WILL BE SUPPRESSED FOR ALL SPECIES')
-     end if
-
-     !     SPECIES CODE IS SPECIFIED (IS>0).
-
-  else
-
-     !        IF FIELD 2 IS BLANK OR ZERO ONLY ONE SPECIES GETS SUPPRESSED;
-     !        OTHERWISE ONE SPECIES GETS INVOKED.
-
-     ILEN = 3
-     if (LNOTBK(2).and.ARRAY(2).gt.0.) then
-        LHTDRG(IS) = .true.
-        if (LKECHO)write(JOSTND,6215) KEYWRD,KARD(1)(1:ILEN),IS
-        6215 format (/A8,'   CALIBRATION OF HEIGHT-DIAMETER ',&
-             &'RELATIONSHIP WILL BE  INVOKED   FOR SPECIES= ',A,&
-             &' (CODE= ',I3,')')
-     else
-        LHTDRG(IS) = .false.
-        if (LKECHO)write(JOSTND,6230) KEYWRD,KARD(1)(1:ILEN),IS
-        6230 format (/A8,'   CALIBRATION OF HEIGHT-DIAMETER ',&
-             &'RELATIONSHIP WILL BE SUPPRESSED FOR SPECIES= ',A,&
-             &' (CODE= ',I3,')')
-     end if
-  end if
-  go to 10
+  call INKNOHTDREG(IS,KEYWRD,ARRAY,KARD,IGRP,IULIM,IG,IGSP,LNOTBK,ILEN,LKECHO,&
+       &J)
+  goto 10
 
   !  ==========  OPTION NUMBER 61: RANNSEED  ==========================RANNSEED
 
@@ -2782,15 +2573,8 @@ subroutine INITRE
   !  ==========  OPTION NUMBER 63: CHEAPO  ============================CHEAPO
 
   6500 continue
-  if ( LNOTBK(1) ) JOSUME = IFIX(ARRAY(1))
-  LECBUG = LNOTBK(6)
-  LECON = .true.
-  if (LKECHO)write(JOSTND,1410) KEYWRD,JOSUME
-  LECON = .true.
-  if (LECBUG.and.LKECHO)write(JOSTND,6510) LECBUG
-  6510 format (T12,'ECONOMIC SUMMARY DEBUG REQUESTED.  LECBUG=',L2)
-  call ECAVAL
-  go to 10
+  call INKCHEAPO(LNOTBK,ARRAY,LKECHO,KEYWRD)
+  goto 10
 
   !  ==========  OPTION NUMBER 64: NUMTRIP  ===========================NUMTRIP
 
@@ -2965,20 +2749,8 @@ subroutine INITRE
   !  ==========  OPTION NUMBER 78: COMPRESS  ==========================COMPRESS
 
   8000 continue
-  if (.not.LNOTBK(2)) ARRAY(2) = MAXTRE/2
-  if (.not.LNOTBK(3)) ARRAY(3) = 50.
-  IDT = 1
-  if (LNOTBK(1)) IDT = IFIX(ARRAY(1))
-  call OPNEW (KODE,IDT,250,2,ARRAY(2))
-  if (KODE.gt.0) goto 10
-  if (LKECHO)write(JOSTND,8020) KEYWRD,IDT,(ARRAY(I),I = 2,3)
-  8020 format(/A8,'   DATE/CYCLE=',I5,'; TARGET TREE RECORDS=',F5.0,&
-       &'; FIND ',F5.0,' PERCENT OF THE NEW RECORDS BY DEFINING'/&
-       &T12,'TREE-CLASS BOUNDARIES WHERE THE LARGEST ',&
-       &'DIFFERENCES ARE BETWEEN TREES.  DEFINE THE REMAINING'/&
-       &T12,'CLASSES BY SPLITTING THOSE WHICH HAVE THE LARGEST ',&
-       &'RANGES.')
-  go to 10
+  call INKCOMPRESS(LNOTBK,ARRAY,IDT,KODE,LKECHO,KEYWRD,I)
+  goto 10
 
   !  ==========  OPTION NUMBER 79:  THEN     ==========================THEN
 
@@ -3017,23 +2789,7 @@ subroutine INITRE
   !  ==========  OPTION NUMBER 83:  CALBSTAT ==========================CALBSTAT
 
   8500 continue
-  JOCALB = JOSUME
-  if (LNOTBK(1)) JOCALB = IFIX(ARRAY(1))
-  if (LNOTBK(2)) FNMIN = ARRAY(2)
-  if (FNMIN.lt.3.)FNMIN = 3.
-  if (LNOTBK(3)) NCALHT = IFIX(ARRAY(3))
-  if (NCALHT.lt.3) NCALHT = 3
-  if (LKECHO)write(JOSTND,8510) KEYWRD,JOCALB,FNMIN,NCALHT
-  8510 format (/A8,'   CALIBRATION STATISTICS WILL BE ',&
-       &'WRITTEN TO FILE REFERENCED BY NUMBER ',I2/&
-       &T12,'MINIMUM NUMBER OF DIA. GROWTH OBSERVATIONS PER ',&
-       &'SPECIES TO CALIBRATE '/&
-       &T12,'THE LARGE TREE DIAMETER INCREMENT ',&
-       &'MODEL FOR LOCAL CONDITIONS= ',F6.0/&
-       &T12,'MINIMUM NUMBER OF HEIGHT GROWTH OBSERVATIONS PER ',&
-       &'SPECIES TO CALIBRATE '/&
-       &T12,'THE SMALL TREE HEIGHT INCREMENT ',&
-       &'MODEL FOR LOCAL CONDITIONS= ',I6)
+  call INKCALBSTAT(LNOTBK,ARRAY,LKECHO,KEYWRD)
   goto 10
 
   !  ==========  OPTION NUMBER 84: OPEN      ==========================OPEN
@@ -3271,44 +3027,8 @@ subroutine INITRE
   !  ==========  OPTION NUMBER 90: DELOTAB   ==========================DELOTAB
 
   9200 continue
-  JJTAB = 0
-  if (LNOTBK(1)) JJTAB = IFIX(ARRAY(1))
-
-  if (JJTAB .eq.0) then
-     do I = 1,5
-        ITABLE(I) = 1
-        9210 continue
-     end do
-     if (LKECHO)write(JOSTND,9215)KEYWRD
-     9215 format(/A8,'   NO TABLE SPECIFIED, ALL OPTIONAL TABLES',&
-          &' WILL BE DELETED.')
-     go to 10
-  end if
-
-  if (JJTAB .gt.4) then
-     if (LKECHO)write(JOSTND,9220) KEYWRD,JJTAB
-     9220 format(/A8,'   TABLE NUMBER',I4,'  SPECIFIED. THIS IS',&
-          &' AN INVALID TABLE NUMBER. KEYWORD IGNORED.')
-     go to 10
-  end if
-
-  ITABLE(JJTAB) = 1
-  if ((JJTAB .eq.1).and.LKECHO)write(JOSTND,9226)KEYWRD,JJTAB
-  9226 format(/A8,'   TABLE NUMBER',I4,'  SPECIFIED. ',&
-       &' STAND COMPOSITION TABLE WILL BE DELETED.')
-  if ((JJTAB .eq.2).and.LKECHO)write(JOSTND,9225)KEYWRD,JJTAB
-  9225 format(/A8,'   TABLE NUMBER',I4,'  SPECIFIED. ',&
-       &' SAMPLE TREE TABLE WILL BE DELETED.')
-  if ((JJTAB .eq.3).and.LKECHO)write(JOSTND,9227)KEYWRD,JJTAB
-  9227 format(/A8,'   TABLE NUMBER',I4,'  SPECIFIED. ',&
-       &' SUMMARY OUTPUT TABLE WILL BE DELETED.')
-  if ((JJTAB .eq.4).and.LKECHO)write(JOSTND,9228)KEYWRD,JJTAB
-  9228 format(/A8,'   TABLE NUMBER',I4,'  SPECIFIED. ',&
-       &' ACTIVITY SCHEDULE TABLE WILL BE DELETED.')
-  if ((JJTAB .eq.5).and.LKECHO)write(JOSTND,9229)KEYWRD,JJTAB
-  9229 format(/A8,'   TABLE NUMBER',I4,'  SPECIFIED. ',&
-       &' THIS IS NOT FUNCTIONAL AT THIS TIME.')
-  go to 10
+  call INKDELOTAB(JJTAB,LNOTBK,ARRAY,I,LKECHO,KEYWRD)
+  goto 10
 
   !  ==========  OPTION NUMBER 91: SERLCORR  ==========================SERLCORR
 
@@ -3323,50 +3043,15 @@ subroutine INITRE
   !  ==========  OPTION NUMBER 92: CUTLIST   ==========================CUTLIST
 
   9400 continue
-  IDT = 1
-  if (LNOTBK(1)) IDT = IFIX(ARRAY(1))
-  NP = 2
-  if (LNOTBK(4)) NP = 3
-  if (LNOTBK(6)) NP = 5
-  if (.not.LNOTBK(2)) ARRAY(2) = FLOAT(JOLIST)
-  call OPNEW (KODE,IDT,199,NP,ARRAY(2))
-  if (KODE.gt.0) goto 10
-  if (LKECHO)write(JOSTND,9410) KEYWRD,IDT,ARRAY(2),ARRAY(3)
-  9410 format (/A8,'   DATE/CYCLE=',I5,'; DATA SET REFERENCE ',&
-       &'NUMBER =',F4.0,'; HEADING SUPPRESSION CODE =',F3.0/&
-       &T12,'(0=WITH HEADING, OTHER VALUES=SUPPRESS HEADING).')
-  if ((NP.eq.3) .and. (ARRAY(4).eq.2).and.LKECHO)write(JOSTND,9411)
-  9411 format(T12,'CYCLE ONE CUTLIST SUPRESSED')
-  if ((NP.eq.5) .and. (ARRAY(6).gt.0).and.LKECHO)write(JOSTND,9412)
-  9412 format(T12,'CUTLIST WILL BE IN OLD FORMAT')
+  call INKCUTLIST(IDT,LNOTBK,ARRAY,NP,KODE,LKECHO,KEYWRD)
   goto 10
 
   !  ==========  OPTION NUMBER 93: RESETAGE  ==========================RESETAGE
 
   9500 continue
-  IDT = 1
-
-  !     IF THE KEYWORD RECORD HAS THE 'PARMS' OPTION, CALL OPNEWC
-  !     TO PROCESS IT.
-
-  if (IPRMPT.gt.0) then
-     if (IPRMPT.ne.2) then
-        call KEYDMP (JOSTND,IRECNT,KEYWRD,ARRAY,KARD)
-        call ERRGRO (.true.,25)
-     else
-        call OPNEWC (KODE,JOSTND,IREAD,IDT,443,KEYWRD,KARD,&
-             &IPRMPT,IRECNT,ICYC)
-        call fvsGetRtnCode(IRTNCD)
-        if (IRTNCD.ne.0) return
-     end if
-     goto 10
-  end if
-
-  if (LNOTBK(1)) IDT = IFIX(ARRAY(1))
-  call OPNEW (KODE,IDT,443,1,ARRAY(2))
-  if (KODE.gt.0) goto 10
-  if (LKECHO)write(JOSTND,9510) KEYWRD,IDT,ARRAY(2)
-  9510 format (/A8,'   DATE/CYCLE=',I5,'; NEW AGE=',F6.0)
+  call INKRESETAGE(IDT,IPRMPT,KEYWRD,ARRAY,KARD,KODE,IRTNCD,LNOTBK,LKECHO,&
+       &IKEXIT)
+  if (IKEXIT .lt. 0) return
   goto 10
 
   !  ==========  OPTION NUMBER 94: SITECODE  ==========================SITECODE
@@ -3711,25 +3396,8 @@ subroutine INITRE
   !  ==========  OPTION NUMBER 102: MANAGED  ==========================MANAGED
 
   10000 continue
-  IDT = 0
-  if (LNOTBK(1)) IDT = IFIX(ARRAY(1))
-  if (IDT .gt.0) then
-     call OPNEW (KODE,IDT,82,1,ARRAY(2))
-     if (KODE.gt.0) go to 10
-     if (LKECHO)write(JOSTND,10010) KEYWRD,IDT,ARRAY(2)
-     10010 format(/A8,'   DATE/CYCLE=',I5,'; MANAGED = ',F5.0)
-  else
-     if (LNOTBK(2) .and. ARRAY(2).eq.0.) then
-        if (LKECHO)write(JOSTND,10015) KEYWRD,IDT
-        10015 format(/A8,'   DATE/CYCLE=',I5,'; MANAGED = 0 (NO)')
-     else
-        if (LKECHO)write(JOSTND,10020) KEYWRD,IDT
-        10020 format(/A8,'   DATE/CYCLE=',I5,'; MANAGED = 1 (YES)')
-        ARRAY(2) = 1.
-     end if
-  end if
-  if (IDT .le.0) MANAGD = IFIX(ARRAY(2))
-  go to 10
+  call INKMANAGED(IDT,LNOTBK,ARRAY,KODE,LKECHO,KEYWRD)
+  goto 10
 
   !  ==========  OPTION NUMBER 103: YARDLOSS  =========================YARDLOSS
 
@@ -3862,27 +3530,7 @@ subroutine INITRE
   !  ==========  OPTION NUMBER 107: FVSSTAND  =========================FVSSTAND
 
   10500 continue
-  IDT = 1
-  if (LNOTBK(1)) IDT = IFIX(ARRAY(1))
-  NP = 1
-  if (LNOTBK(2)) NP = 2
-  call OPNEW (KODE,IDT,204,NP,ARRAY(2))
-  if (KODE.gt.0) goto 10
-  if (NP.eq.2.and. ARRAY(2).eq.1) then
-     if (LKECHO)write(JOSTND,10510) KEYWRD,IDT
-     10510 format (/A8,'   DATE/CYCLE=',I5,&
-          &'; CYCLE 0 FVSSTAND SUPPRESSED; CYCLE 1 FVSSTAND DONE')
-  else if (NP.eq.2.and. ARRAY(2).eq.2) then
-     if (LKECHO)write(JOSTND,10515) KEYWRD,IDT
-     10515 format (/A8,'   DATE/CYCLE=',I5,&
-          &'; CYCLE 0 FVSSTAND DONE; CYCLE 1 FVSSTAND SUPPRESSED')
-  else
-     if (LKECHO)write(JOSTND,10520) KEYWRD,IDT
-     10520 format (/A8,'   DATE/CYCLE=',I5)
-  end if
-  !     NOTRIP = .TRUE.
-  !     IF(LKECHO)WRITE(JOSTND,10530)
-  !0530 FORMAT(11X,'** RECORD TRIPLING TURNED OFF **')
+  call INKFVSSTAND(IDT,LNOTBK,ARRAY,NP,KODE,LKECHO,KEYWRD)
   goto 10
 
   !  ==========  OPTION NUMBER 108: PRUNE   ===========================PRUNE
@@ -5181,546 +4829,22 @@ subroutine INITRE
 
   13000 continue
 
-  !  IF WE DONT HAVE A KODFOR VALUE YET SET REGION BASED ON VARIANT 'VAR'
-
-  if (KODFOR.le.0) then
-     select case(VARACD)
-     case('EM','KT','NI','IE','BC')
-        IRDUM = 1
-     case( 'CR')
-        IRDUM = 2
-     case('CI','TT','UT')
-        IRDUM = 4
-     case('CA','NC','SO','WS')
-        IRDUM = 5
-     case('BM','PN','WC','EC')
-        IRDUM = 6
-     case('OC','OP')
-        IRDUM = 7
-     case('SN')
-        IRDUM = 8
-     case('CS','LS','NE','ON')
-        IRDUM = 9
-     case('AK')
-        IRDUM = 10
-     end select
-  else
-
-     !   FOREST CODE PROCESSING
-
-     if ((VARACD.eq.'SN').and.&
-          &(KODFOR.ge.1000)) then
-        IREGN = KODFOR/10000
-        IRDUM = IREGN
-        IFORST = KODFOR/100-IREGN*100
-        write(FORST,'(I2)')IFORST
-        if (IFORST.lt.10)FORST(1:1) = '0'
-        INTDIST = KODFOR - (KODFOR/100)*100
-        write(DIST,'(I2)')INTDIST
-        if (INTDIST.lt.10)DIST(1:1) = '0'
-     else
-        IREGN = KODFOR/100
-        IRDUM = IREGN
-        IFOREST = KODFOR-900
-        write(FORST,'(I2)')IFOREST
-        if (IFOREST.lt.10)FORST(1:1) = '0'
-     end if
-
-     !  USE SPECIAL FORESTS FOR BIA AND PRIVATE VOLUME EQS.
-     !  PN-QUINAULT IR (FC=800 USES OLYMIC 609)
-     !  NC SIMPSOM TIMBER (FC=800 USES R5 SAY 510)
-     !  SO INDUSTRY LANDS (FC=701 USES R5 SAY 505)
-     !  SO WARM SPRINGS (FC=799 USES R6 FC=601)
-
-     if (VARACD.eq.'PN' .or. VARACD.eq.'OP') then
-        if (IREGN.eq.8) then
-           IRDUM = 6
-           FORDUM = '09'
-        else
-           IRDUM = IREGN
-           FORDUM = FORST
-        end if
-     else if (VARACD.eq.'NC') then
-        if (IREGN.eq.8) then
-           IRDUM = 5
-           FORDUM = '10'
-        else
-           IRDUM = IREGN
-           FORDUM = FORST
-        end if
-     else if (VARACD.eq.'SO') then
-        if (IREGN.eq.7) then
-           select case (KODFOR)
-           case (701)
-              IRDUM = 5
-              FORDUM = '05'
-           case (799)
-              IRDUM = 6
-              FORDUM = '01'
-           end select
-        else
-           IRDUM = IREGN
-           FORDUM = FORST
-        end if
-     else
-        IRDUM = IREGN
-        FORDUM = FORST
-     end if
-  end if
-
-  !   SPECIES CODE PROCESSING.
-
-  call SPDECD (1,IS,NSP(1,1),JOSTND,IRECNT,KEYWRD,&
-       &ARRAY,KARD)
-  if (IS .eq. -999) go to 10
-
-  !  SPECIES GROUP PROCESSING
-
-  if (IS .lt.0) then
-     IGRP = -IS
-     IULIM = ISPGRP(IGRP,1)+1
-     if (LNOTBK(2)) then
-        do IG = 2,IULIM
-           IGSP = ISPGRP(IGRP,IG)
-           VEQNNC(IGSP) = KARD(2)
-        end do
-
-        !  CHECK FOR VALID CUBIC FT EQUATION NUMBER
-
-        ISPEC = 9999
-        PROD = '02'
-        call VOLEQDEF(VARACD,IRDUM,FORDUM,DIST,ISPEC,PROD,&
-             &VEQNNC(IGSP),ERRFLAG)
-
-        !  CHECK FOR CASES WHERE VARIANTS CROSS REGIONAL BOUNDARIES
-
-        if ((KODFOR.le.0).and.(ISPEC.ne.8888)) then
-           select case(IRDUM)
-           case(1)
-              if (VARACD.eq.'IE') then
-                 IRDUM = 6
-                 call VOLEQDEF(VARACD,IRDUM,FORDUM,DIST,ISPEC,PROD,&
-                      &VEQNNC(IGSP),ERRFLAG)
-              end if
-           case(2)
-              if (VARACD.eq.'CR') then
-                 IRDUM = 3
-                 call VOLEQDEF(VARACD,IRDUM,FORDUM,DIST,ISPEC,PROD,&
-                      &VEQNNC(IGSP),ERRFLAG)
-              end if
-           case(5)
-              if ((VARACD.eq.'CA').or.(VARACD.eq.'NC').or.&
-                   &(VARACD.eq.'SO').or.(VARACD.eq.'OC')) then
-                 IRDUM = 6
-                 call VOLEQDEF(VARACD,IRDUM,FORDUM,DIST,ISPEC,PROD,&
-                      &VEQNNC(IGSP),ERRFLAG)
-              end if
-           case(7)
-              if (VARACD.eq.'OC') then
-                 IRDUM = 6
-                 call VOLEQDEF(VARACD,IRDUM,FORDUM,DIST,ISPEC,PROD,&
-                      &VEQNNC(IGSP),ERRFLAG)
-                 if (ISPEC.ne.8888) then
-                    IRDUM = 5
-                    call VOLEQDEF(VARACD,IRDUM,FORDUM,DIST,ISPEC,PROD,&
-                         &VEQNNC(IGSP),ERRFLAG)
-                 end if
-              end if
-           end select
-        end if
-
-        if (ISPEC.ne.8888) then
-           do IG = 2,IULIM
-              IGSP = ISPGRP(IGRP,IG)
-              VEQNNC(IGSP) = '           '
-           end do
-           ILEN = ISPGRP(-IS,92)
-           write(JOSTND,13003)KEYWRD,KARD(1)(1:ILEN),IS
-        else
-           ILEN = ISPGRP(-IS,92)
-           if (LKECHO)write(JOSTND,13008)KEYWRD,KARD(1)(1:ILEN),IS
-        end if
-     end if
-     if (LNOTBK(3)) then
-        do IG = 2,IULIM
-           IGSP = ISPGRP(IGRP,IG)
-           VEQNNB(IGSP) = KARD(3)
-        end do
-
-        !  CHECK FOR VALID BOARD FT EQUATION NUMBER
-
-        ISPEC = 9999
-        PROD = '01'
-        call VOLEQDEF(VARACD,IRDUM,FORDUM,DIST,ISPEC,PROD,&
-             &VEQNNB(IGSP),ERRFLAG)
-
-        !  CHECK FOR CASES WHERE VARIANTS CROSS REGIONAL BOUNDARIES
-
-        if ((KODFOR.le.0).and.(ISPEC.ne.8888)) then
-           select case(IRDUM)
-           case(1)
-              if (VARACD.eq.'IE') then
-                 IRDUM = 6
-                 call VOLEQDEF(VARACD,IRDUM,FORDUM,DIST,ISPEC,PROD,&
-                      &VEQNNB(IGSP),ERRFLAG)
-              end if
-           case(2)
-              if (VARACD.eq.'CR') then
-                 IRDUM = 3
-                 call VOLEQDEF(VARACD,IRDUM,FORDUM,DIST,ISPEC,PROD,&
-                      &VEQNNB(IGSP),ERRFLAG)
-              end if
-           case(5)
-              if ((VARACD.eq.'CA').or.(VARACD.eq.'NC').or.&
-                   &(VARACD.eq.'SO').or.(VARACD.eq.'OC')) then
-                 IRDUM = 6
-                 call VOLEQDEF(VARACD,IRDUM,FORDUM,DIST,ISPEC,PROD,&
-                      &VEQNNB(IGSP),ERRFLAG)
-              end if
-           case(7)
-              if (VARACD.eq.'OC') then
-                 IRDUM = 6
-                 call VOLEQDEF(VARACD,IRDUM,FORDUM,DIST,ISPEC,PROD,&
-                      &VEQNNB(IGSP),ERRFLAG)
-                 if (ISPEC.ne.8888) then
-                    IRDUM = 5
-                    call VOLEQDEF(VARACD,IRDUM,FORDUM,DIST,ISPEC,PROD,&
-                         &VEQNNB(IGSP),ERRFLAG)
-                 end if
-              end if
-           end select
-        end if
-
-        if (ISPEC.ne.8888) then
-           do IG = 2,IULIM
-              IGSP = ISPGRP(IGRP,IG)
-              VEQNNB(IGSP) = '           '
-           end do
-           ILEN = ISPGRP(-IS,92)
-           if (LNOTBK(2))KEYWRD = '        '
-           write(JOSTND,13004)KEYWRD,KARD(1)(1:ILEN),IS
-        else
-           ILEN = ISPGRP(-IS,92)
-           if (LNOTBK(2))KEYWRD = '        '
-           if (LKECHO)write(JOSTND,13009)KEYWRD,KARD(1)(1:ILEN),IS
-        end if
-     end if
-     goto 10
-     13003 format(/A8,'   INVALID VOLUME EQUATION NUMBER: THE DEFAULT ',&
-          &'CUBIC FT EQUATION NUMBER WILL BE USED FOR SPECIES GROUP=',A,&
-          &' (CODE=',I3,');')
-     13004 format(/A8,'   INVALID VOLUME EQUATION NUMBER: THE DEFAULT ',&
-          &'BOARD FT EQUATION NUMBER WILL BE USED FOR SPECIES GROUP=',A,&
-          &' (CODE=',I3,');')
-     13008 format(/A8,'   NATIONAL CRUISE SYSTEM CUBIC FT VOLUME EQUA',&
-          &'TION NUMBERS CHANGED FOR SPECIES GROUP=',A,' (CODE=',I3,');')
-     13009 format(/A8,'   NATIONAL CRUISE SYSTEM BOARD FT VOLUME EQUA',&
-          &'TION NUMBERS CHANGED FOR SPECIES GROUP=',A,' (CODE=',I3,');')
-
-     !  ALL SPECIES PROCESSING
-
-  else if (IS.eq.0) then
-     if (LNOTBK(2)) then
-        do I = 1,MAXSP
-           VEQNNC(I) = KARD(2)
-        end do
-
-        !  CHECK FOR VALID CUBIC FT EQUATION NUMBER
-
-        ISPEC = 9999
-        PROD = '02'
-        call VOLEQDEF(VARACD,IRDUM,FORDUM,DIST,ISPEC,PROD,&
-             &VEQNNC(1),ERRFLAG)
-
-        !  CHECK FOR CASES WHERE VARIANTS CROSS REGIONAL BOUNDARIES
-
-        if ((KODFOR.le.0).and.(ISPEC.ne.8888)) then
-           select case(IRDUM)
-           case(1)
-              if (VARACD.eq.'IE') then
-                 IRDUM = 6
-                 call VOLEQDEF(VARACD,IRDUM,FORDUM,DIST,ISPEC,PROD,&
-                      &VEQNNC(1),ERRFLAG)
-              end if
-           case(2)
-              if (VARACD.eq.'CR') then
-                 IRDUM = 3
-                 call VOLEQDEF(VARACD,IRDUM,FORDUM,DIST,ISPEC,PROD,&
-                      &VEQNNC(1),ERRFLAG)
-              end if
-           case(5)
-              if ((VARACD.eq.'CA').or.(VARACD.eq.'NC').or.&
-                   &(VARACD.eq.'SO').or.(VARACD.eq.'OC')) then
-                 IRDUM = 6
-                 call VOLEQDEF(VARACD,IRDUM,FORDUM,DIST,ISPEC,PROD,&
-                      &VEQNNC(1),ERRFLAG)
-              end if
-           case(7)
-              if (VARACD.eq.'OC') then
-                 IRDUM = 6
-                 call VOLEQDEF(VARACD,IRDUM,FORDUM,DIST,ISPEC,PROD,&
-                      &VEQNNC(1),ERRFLAG)
-                 if (ISPEC.ne.8888) then
-                    IRDUM = 5
-                    call VOLEQDEF(VARACD,IRDUM,FORDUM,DIST,ISPEC,PROD,&
-                         &VEQNNC(1),ERRFLAG)
-                 end if
-              end if
-           end select
-        end if
-
-        if (ISPEC.ne.8888) then
-           do I = 1,MAXSP
-              VEQNNC(I) = '           '
-           end do
-           write(JOSTND,13006)KEYWRD
-        else
-           if (LKECHO)write(JOSTND,13020)KEYWRD
-        end if
-     end if
-     if (LNOTBK(3)) then
-        do I = 1,MAXSP
-           VEQNNB(I) = KARD(3)
-        end do
-
-        !  CHECK FOR VALID BOARD FT EQUATION NUMBER
-
-        ISPEC = 9999
-        PROD = '01'
-        call VOLEQDEF(VARACD,IRDUM,FORDUM,DIST,ISPEC,PROD,&
-             &VEQNNB(1),ERRFLAG)
-
-        !  CHECK FOR CASES WHERE VARIANTS CROSS REGIONAL BOUNDARIES
-
-        if ((KODFOR.le.0).and.(ISPEC.ne.8888)) then
-           select case(IRDUM)
-           case(1)
-              if (VARACD.eq.'IE') then
-                 IRDUM = 6
-                 call VOLEQDEF(VARACD,IRDUM,FORDUM,DIST,ISPEC,PROD,&
-                      &VEQNNB(1),ERRFLAG)
-              end if
-           case(2)
-              if (VARACD.eq.'CR') then
-                 IRDUM = 3
-                 call VOLEQDEF(VARACD,IRDUM,FORDUM,DIST,ISPEC,PROD,&
-                      &VEQNNB(1),ERRFLAG)
-              end if
-           case(5)
-              if ((VARACD.eq.'CA').or.(VARACD.eq.'NC').or.&
-                   &(VARACD.eq.'SO').or.(VARACD.eq.'OC')) then
-                 IRDUM = 6
-                 call VOLEQDEF(VARACD,IRDUM,FORDUM,DIST,ISPEC,PROD,&
-                      &VEQNNB(1),ERRFLAG)
-              end if
-           case(7)
-              if (VARACD.eq.'OC') then
-                 IRDUM = 6
-                 call VOLEQDEF(VARACD,IRDUM,FORDUM,DIST,ISPEC,PROD,&
-                      &VEQNNB(1),ERRFLAG)
-                 if (ISPEC.ne.8888) then
-                    IRDUM = 5
-                    call VOLEQDEF(VARACD,IRDUM,FORDUM,DIST,ISPEC,PROD,&
-                         &VEQNNB(1),ERRFLAG)
-                 end if
-              end if
-           end select
-        end if
-
-        if (ISPEC.ne.8888) then
-           do I = 1,MAXSP
-              VEQNNB(I) = '           '
-           end do
-           if (LNOTBK(2))KEYWRD = '        '
-           write(JOSTND,13016)KEYWRD
-        else
-           if (LNOTBK(2))KEYWRD = '        '
-           if (LKECHO)write(JOSTND,13021)KEYWRD
-        end if
-     end if
-     goto 10
-     13006 format(/A8,'   INVALID VOLUME EQUATION NUMBER: THE',&
-          &' DEFAULT CUBIC FT EQUATION NUMBERS WILL BE USED FOR ALL ',&
-          &'SPECIES:')
-     !       IF(LKECHO)WRITE(JOSTND,13021)KEYWRD
-     13020 format(/A8,'   NATIONAL CRUISE SYSTEM CUBIC FT ',&
-          &'VOLUME EQUATION NUMBERS CHANGED FOR ALL SPECIES:')
-     13016 format(/A8,'   INVALID VOLUME EQUATION NUMBER: THE',&
-          &' DEFAULT BOARD FT EQUATION NUMBERS WILL BE USED FOR ALL ',&
-          &'SPECIES:')
-     !       IF(LKECHO)WRITE(JOSTND,13021)KEYWRD
-     13021 format(/A8,'   NATIONAL CRUISE SYSTEM BOARD FT VOLUME ',&
-          &'EQUATION NUMBERS CHANGED FOR ALL SPECIES:')
-
-     !  SINGLE SPECIES PROCESSING
-
-  else
-
-     !  CHECK FOR VALID EQUATION NUMBER CUBIC FT
-
-     if (LNOTBK(2)) then
-        VEQNNC(IS) = KARD(2)
-        ISPEC = 9999
-        PROD = '02'
-        call VOLEQDEF(VARACD,IRDUM,FORDUM,DIST,ISPEC,PROD,&
-             &VEQNNC(IS),ERRFLAG)
-
-        !  CHECK FOR CASES WHERE VARIANTS CROSS REGIONAL BOUNDARIES
-
-        if ((KODFOR.le.0).and.(ISPEC.ne.8888)) then
-           select case(IRDUM)
-           case(1)
-              if (VARACD.eq.'IE') then
-                 IRDUM = 6
-                 call VOLEQDEF(VARACD,IRDUM,FORDUM,DIST,ISPEC,PROD,&
-                      &VEQNNC(IS),ERRFLAG)
-              end if
-           case(2)
-              if (VARACD.eq.'CR') then
-                 IRDUM = 3
-                 call VOLEQDEF(VARACD,IRDUM,FORDUM,DIST,ISPEC,PROD,&
-                      &VEQNNC(IS),ERRFLAG)
-              end if
-           case(5)
-              if ((VARACD.eq.'CA').or.(VARACD.eq.'NC').or.&
-                   &(VARACD.eq.'SO').or.(VARACD.eq.'OC')) then
-                 IRDUM = 6
-                 call VOLEQDEF(VARACD,IRDUM,FORDUM,DIST,ISPEC,PROD,&
-                      &VEQNNC(IS),ERRFLAG)
-              end if
-           case(7)
-              if (VARACD.eq.'OC') then
-                 IRDUM = 6
-                 call VOLEQDEF(VARACD,IRDUM,FORDUM,DIST,ISPEC,PROD,&
-                      &VEQNNC(IS),ERRFLAG)
-                 if (ISPEC.ne.8888) then
-                    IRDUM = 5
-                    call VOLEQDEF(VARACD,IRDUM,FORDUM,DIST,ISPEC,PROD,&
-                         &VEQNNC(IS),ERRFLAG)
-                 end if
-              end if
-           end select
-        end if
-
-        if (ISPEC.ne.8888) then
-           VEQNNC(IS) = '           '
-           KARD(2) = '***INVALID'
-           write(JOSTND,13030)KEYWRD,KARD(1)(1:3),IS
-        else
-           if (LKECHO)write(JOSTND,13030)KEYWRD,KARD(1)(1:3),IS
-        end if
-     end if
-
-     !  CHECK FOR VALID EQUATION NUMBER BOARD FT
-
-     if (LNOTBK(3)) then
-        VEQNNB(IS) = KARD(3)
-        ISPEC = 9999
-        PROD = '01'
-        call VOLEQDEF(VARACD,IRDUM,FORDUM,DIST,ISPEC,PROD,&
-             &VEQNNB(IS),ERRFLAG)
-
-        !  CHECK FOR CASES WHERE VARIANTS CROSS REGIONAL BOUNDARIES
-
-        if ((KODFOR.le.0).and.(ISPEC.ne.8888)) then
-           select case(IRDUM)
-           case(1)
-              if (VARACD.eq.'IE') then
-                 IRDUM = 6
-                 call VOLEQDEF(VARACD,IRDUM,FORDUM,DIST,ISPEC,PROD,&
-                      &VEQNNB(IS),ERRFLAG)
-              end if
-           case(2)
-              if (VARACD.eq.'CR') then
-                 IRDUM = 3
-                 call VOLEQDEF(VARACD,IRDUM,FORDUM,DIST,ISPEC,PROD,&
-                      &VEQNNB(IS),ERRFLAG)
-              end if
-           case(5)
-              if ((VARACD.eq.'CA').or.(VARACD.eq.'NC').or.&
-                   &(VARACD.eq.'SO').or.(VARACD.eq.'OC')) then
-                 IRDUM = 6
-                 call VOLEQDEF(VARACD,IRDUM,FORDUM,DIST,ISPEC,PROD,&
-                      &VEQNNB(IS),ERRFLAG)
-              end if
-           case(7)
-              if (VARACD.eq.'OC') then
-                 IRDUM = 6
-                 call VOLEQDEF(VARACD,IRDUM,FORDUM,DIST,ISPEC,PROD,&
-                      &VEQNNB(IS),ERRFLAG)
-                 if (ISPEC.ne.8888) then
-                    IRDUM = 5
-                    call VOLEQDEF(VARACD,IRDUM,FORDUM,DIST,ISPEC,PROD,&
-                         &VEQNNB(IS),ERRFLAG)
-                 end if
-              end if
-           end select
-        end if
-
-        if (ISPEC.ne.8888) then
-           VEQNNB(IS) = '           '
-           KARD(3) = '***INVALID'
-           if (.not.LNOTBK(2))write(JOSTND,13030)KEYWRD,KARD(1)(1:3),IS
-        else
-           if (.not.LNOTBK(2).and.LKECHO)&
-                &write(JOSTND,13030)KEYWRD,KARD(1)(1:3),IS
-        end if
-     end if
-     13030 format(/A8,'   NATIONAL CRUISE SYSTEM VOLUME EQUATION ',&
-          &'NUMBERS CHANGED FOR SPECIES=',A,' (CODE=',I3,');')
-  end if
-  if (LNOTBK(2).and.LNOTBK(3)) then
-     if (LKECHO)write(JOSTND,13040)KARD(2),KARD(3)
-     13040 format(T9,'   CUBIC FOOT = ',A10,'   BOARD FOOT = ',A10)
-  else if (LNOTBK(2)) then
-     if (LKECHO)write(JOSTND,13041)KARD(2)
-     13041 format(T9,'   CUBIC FOOT = ',A10)
-  else if (LNOTBK(3)) then
-     if (LKECHO)write(JOSTND,13042)KARD(3)
-     13042 format(T9,'   BOARD FOOT = ',A10)
-  else
-     write(JOSTND,13043)
-     13043 format(T9,' EQUATION NUMBERS NOT SPECIFIED.',&
-          &'  REQUEST CANCELLED.')
-  end if
-  go to 10
+  call INVVOLEQNUM(LKECHO,KEYWRD,IRDUM,IREGN,IFORST,FORST,INTDIST,DIST,&
+       &IFOREST,FORDUM,IS,ARRAY,KARD,IGRP,IULIM,LNOTBK,IG,IGSP,ISPEC,PROD,&
+       &ERRFLAG,ILEN,I)
+  goto 10
 
   !  ==========  OPTION NUMBER 131: POINTREF ==========================POINTREF
 
   13100 continue
-  if (LNOTBK(1)) ITHNPI = IFIX(ARRAY(1)+0.5)
-  if (ITHNPI.lt.0.or. ITHNPI.gt.2) then
-     call KEYDMP (JOSTND,IRECNT,KEYWRD,ARRAY,KARD)
-     call ERRGRO (.true.,4)
-     write(JOSTND,13105)
-     13105 format(T12,'INVALID POINT INDICATOR. POINT INDICATOR BEING ',&
-          &'RESET TO 1 (POINT NUMBERS FROM DATA) FOR FURTHER PROCESSING.')
-     ITHNPI = 1
-     go to 10
-  end if
-  if (ITHNPI.eq.1.) then
-     if (LKECHO)write(JOSTND,13110)KEYWRD
-     13110 format(/A8,'   POINT NUMBERS ARE AS INPUT IN THE TREE DATA.')
-  else
-     if (LKECHO)write(JOSTND,13111)KEYWRD
-     13111 format(/A8,'   POINT NUMBERS ARE THE FVS SEQUENTIAL POINT ',&
-          &'NUMBERS.')
-  end if
-  go to 10
+  call INKPOINTREF(LNOTBK,ARRAY,KEYWRD,KARD,LKECHO)
+  goto 10
 
   !  ==========  OPTION NUMBER 132: ECHO  ============================ECHO
 
   13200 continue
-  LKECHO = .true.
-  if (IRECNT.gt.JRECNT) then
-     JRECNT = IRECNT-JRECNT-1
-  else
-     JRECNT = IRECNT
-  end if
-  write(JOSTND,13210)KEYWRD,JRECNT
-  13210 format(/A8,'   THERE WERE',I8,' KEYWORD RECORDS PROCESSED.',&
-       &' KEYWORD ECHO WILL RESUME.')
-  go to 10
+  call INKECHO(LKECHO,JRECNT,KEYWRD)
+  goto 10
 
   !  ==========  OPTION NUMBER 133: NOECHO ===========================NOECHO
 
@@ -5735,47 +4859,13 @@ subroutine INITRE
   !  ==========  OPTION NUMBER 134: CYCLEAT ===========================CYCLEAT
 
   13400 continue
-  NEWYR = IFIX(ARRAY(1))
-  if (NEWYR.le.0) then
-     call KEYDMP (JOSTND,IRECNT,KEYWRD,ARRAY,KARD)
-     call ERRGRO (.true.,4)
-  else
-     if (IWORK1(1).eq.0) then
-        IWORK1(1) = 1
-        IWORK1(2) = NEWYR
-     else
-        I = IWORK1(1)+1
-        J = 0
-        do K = 2,I
-           if (IWORK1(K).eq.NEWYR) then
-              J = K
-              exit
-           end if
-        end do
-        if (J.eq.0) then
-           IWORK1(1) = I
-           IWORK1(I+1) = NEWYR
-        end if
-     end if
-     if (LKECHO)write(JOSTND,13410) KEYWRD,NEWYR
-     13410 format(/A8,'   REQUESTED YEAR FOR A CYCLE =',I4)
-  end if
-  go to 10
+  call INKCYCLEAT(NEWYR,ARRAY,KEYWRD,KARD,I,J,K,LKECHO)
+  goto 10
 
   !  ==========  OPTION NUMBER 135: ATRTLIST  ==========================ATRTLIST
 
   13500 continue
-  IDT = 1
-  if (LNOTBK(1)) IDT = IFIX(ARRAY(1))
-  NP = 2
-  if (LNOTBK(4)) NP = 3
-  if (.not.LNOTBK(2)) ARRAY(2) = FLOAT(JOLIST)
-  call OPNEW (KODE,IDT,198,NP,ARRAY(2))
-  if (KODE.gt.0) goto 10
-  if (LKECHO)write(JOSTND,13510) KEYWRD,IDT,ARRAY(2),ARRAY(3)
-  13510 format (/A8,'   DATE/CYCLE=',I5,'; DATA SET REFERENCE ',&
-       &'NUMBER =',F4.0,'; HEADING SUPPRESSION CODE =',F3.0/&
-       &T12,'(0=WITH HEADING, OTHER VALUES=SUPPRESS HEADING).')
+  call INKATRTLIST(IDT,LNOTBK,ARRAY,NP,KODE,LKECHO,KEYWRD)
   goto 10
 
   !  ==========  OPTION NUMBER 136: THINRDSL ==========================THINRDSL
@@ -6293,22 +5383,7 @@ subroutine INITRE
 
   14300 continue
 
-  !  CALL THE SUBROUTINE THAT READS ORGANON CONTROL PARAMETERS FROM THE
-  !  KEYWORD FILE
-
-  select case (VARACD)
-
-  case ('OC','OP')
-     if (LKECHO)write(JOSTND,14310) KEYWRD
-     14310 format (/,A8,'   START OF ORGANON KEYWORDS:')
-     call ORIN (DEBUG,LKECHO,LNOTRE)
-
-  case default
-     if (LKECHO)write(JOSTND,14315) KEYWRD
-     14315 format (/,A8,'   ORGANON KEYWORDS NOT RECOGNIZED IN THIS',&
-          &' VARIANT')
-
-  end select
+  call INKORGANON(LKECHO,KEYWRD,DEBUG,LNOTRE)
   goto 10
 
   !  ==========  OPTION NUMBER 49: SPLEAVE ============================SPLEAVE

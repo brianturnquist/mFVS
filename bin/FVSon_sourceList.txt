@@ -103,6 +103,8 @@
 ../metric/vbase/fvsstd.f90
 ../vbase/fvsstdrec_mod.f90
 ../vbase/gheads.f90
+../vbase/initrekeys_mod.f90
+../vbase/initrevol_mod.f90
 ../metric/vbase/initre.f90
 ../vbase/initdesign_mod.f90
 ../vbase/prtrls.f90
@@ -405,10 +407,8 @@
 ../estb/estime.f90
 ../estb/estump.f90
 
-../pg/varget.f90
-../pg/varchget.f90
-../pg/varput.f90
-../pg/varchput.f90
+../vbase/varget.f90
+../vbase/varput.f90
 ../pg/chget.f90
 ../pg/chput.f90
 ../pg/fmppget.f90
@@ -463,6 +463,7 @@
 ../fire/base/fmdout.f90
 ../fire/base/fmdwdreq_mod.f90
 ../fire/base/fmdwcvreq_mod.f90
+../fire/base/fminkeys_mod.f90
 ../fire/base/fmfuelreq_mod.f90
 ../metric/fire/base/fmin.f90
 ../fire/base/fmsrecord_mod.f90

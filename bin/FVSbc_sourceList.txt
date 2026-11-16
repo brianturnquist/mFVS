@@ -1,5 +1,5 @@
 ../canada/bc/BCPLOT.f90
-../canada/bc/ESHAP.f90
+../common/ESHAP.f90
 ../canada/bc/PRGPRM.f90
 ../common/ARRAYS.f90
 ../common/CALCOM.f90
@@ -68,6 +68,8 @@
 ../vbase/grohed.f90
 ../canada/bc/habtyp.f90
 ../canada/bc/htgf.f90
+../vbase/initrekeys_mod.f90
+../vbase/initrevol_mod.f90
 ../canada/bc/initre.f90
 ../vbase/initdesign_mod.f90
 ../base/keyopn.f90
@@ -387,8 +389,8 @@
 ../metric/strp/esuckr.f90
 
 
-../canada/bc/varget.f90
-../canada/bc/varput.f90
+../vbase/varget.f90
+../vbase/varput.f90
 ../pg/chget.f90
 ../pg/chput.f90
 ../pg/fmppget.f90
@@ -447,6 +449,7 @@
 ../fire/base/fmdout.f90
 ../fire/base/fmdwdreq_mod.f90
 ../fire/base/fmdwcvreq_mod.f90
+../fire/base/fminkeys_mod.f90
 ../fire/base/fmfuelreq_mod.f90
 ../metric/fire/base/fmin.f90
 ../fire/base/fmsrecord_mod.f90

@@ -1265,3 +1265,59 @@ values (2,030, 2,014 and 185 lines in PN, WC and OP).
 
 **Suggested fix:** remove `MAPPHD` from the diagnostic, or print the
 intended mapping value.
+
+## 46. ON snag-volume reports stop with a floating-point trap
+
+**Variants:** ON
+
+**Location:** `ie/cftopk.f90:95-107` (BEHRE calls and the top-kill
+volume ratio) and `base/behre.f90:26`, reached from
+`fire/base/fmsvol.f90:144` by the snag list (FMSOUT, SNAGOUT keyword) and
+the down-wood report (FMDOUT).
+
+**Status:** reproduced during F21–F22 verification on 16 November 2026 at
+`94c172ea`. Original F77 `c2105365` cannot reach this path, because its ON
+decks stop at keyword input (bug 5). Not diagnosed; deliberately unfixed.
+
+ON's Hardwood regression deck with `FMIN`, `SNAGOUT` and `END` added before
+`PROCESS` stops with a trapped invalid floating-point operation while
+computing snag merchantable volume for top-killed snags. Depending on the
+stand, the trap is either in BEHRE's logarithms or in the ratio
+`SCF*VOLTK/VOLT` that follows. The regression decks do not request snag
+reports for ON. BC's own regression deck stops on the same path, via its
+nine-argument call (bug 42).
+
+**Confirmation:** the HEAD build and the F21–F24 working tree stop at the
+same statement with identical output up to that point.
+
+**Suggested fix:** inspect the CFTOPK inputs for ON snags (D, H,
+SCFSTMP/SCFTOPD and the taper coefficients AHAT/BHAT) to find the
+non-positive BEHRE argument or zero VOLT, then correct the input or guard
+the calculation as a separate model change.
+
+## 47. BC prints undefined volume-equation codes after an invalid VOLEQNUM
+
+**Variants:** BC
+
+**Location:** reached from the VOLEQNUM handler (`vbase/initrevol_mod.f90`;
+formerly `canada/bc/initre.f90`) through `volume/voleqdef.f90`; the
+printed values appear in the listing's NATIONAL VOLUME ESTIMATOR LIBRARY
+EQUATION NUMBERS table. Source of the undefined values not diagnosed.
+
+**Status:** reproduced during F21 verification on 16 November 2026 at
+`94c172ea`. Original F77 `c2105365` cannot reach this path for BC (bug 5).
+Deliberately unfixed.
+
+On BC's StandStructure deck, adding `VOLEQNUM` with an invalid cubic-foot
+equation number for all species prints the expected "INVALID VOLUME
+EQUATION NUMBER: THE DEFAULT CUBIC FT EQUATION NUMBERS WILL BE USED"
+message, but the equation table then contains 112 non-printable bytes
+instead of codes or `---`. An invalid board-foot code for one species
+leaves 7 such bytes. The bytes look like memory addresses and differ
+between builds: apart from them, the HEAD and F21 builds produced
+identical output up to BC's later StandStructure stop. Without VOLEQNUM
+the table prints `---`.
+
+**Suggested fix:** trace how the default BC equation numbers are assigned
+after VOLEQNUM resets VEQNNC/VEQNNB, find the undefined source, and
+initialize it. Treat as a separate model change.

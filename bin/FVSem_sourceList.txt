@@ -82,10 +82,8 @@
 ../em/sitset.f90
 ../em/smdgf.f90
 ../em/smhtgf.f90
-../em/varget.f90
-../pg/varchget.f90
-../em/varput.f90
-../pg/varchput.f90
+../vbase/varget.f90
+../vbase/varput.f90
 
 ../cr/badist.f90
 ../ie/cftopk.f90
@@ -109,6 +107,8 @@
 ../vbase/fvsstd.f90
 ../vbase/fvsstdrec_mod.f90
 ../vbase/gheads.f90
+../vbase/initrekeys_mod.f90
+../vbase/initrevol_mod.f90
 ../vbase/initre.f90
 ../vbase/initdesign_mod.f90
 ../vbase/prtexm.f90
@@ -674,6 +674,7 @@
 ../fire/base/fmhide.f90
 ../fire/base/fmdwdreq_mod.f90
 ../fire/base/fmdwcvreq_mod.f90
+../fire/base/fminkeys_mod.f90
 ../fire/base/fmfuelreq_mod.f90
 ../fire/base/fmin.f90
 ../fire/base/fminit.f90

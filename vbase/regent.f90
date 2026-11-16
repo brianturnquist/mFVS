@@ -565,28 +565,7 @@ contains
        !  CALCULATE MEANS FOR THE POPULATION AND FOR THE SAMPLE ON THE
        !  NATURAL SCALE.
 
-       SNX = SNX/SNP
-       SNY = SNY/SNP
-
-       !  CALCULATE RATIO ESTIMATOR.
-
-       CORNEW = SNY/SNX
-       if (CORNEW.le.0.0) CORNEW = 1.0E-4
-       HCOR(ISPC) = ALOG(CORNEW)
-
-       !  TRAP CALIBRATION VALUES OUTSIDE 2.5 STANDARD DEVIATIONS FROM THE
-       !  MEAN. IF C IS THE CALIBRATION TERM, WITH A DEFAULT OF 1.0, THEN
-       !  LN(C) HAS A MEAN OF 0.  -2.5 < LN(C) < 2.5 IMPLIES
-       !  0.0821 < C < 12.1825
-
-       if (CORNEW.lt.0.0821.or. CORNEW.gt.12.1825) then
-          call ERRGRO(.true.,27)
-          write(JOSTND,9194)ISPC,JSP(ISPC),CORNEW
-          9194 format(T28,'SMALL TREE HTG: SPECIES = ',I2,' (',A3,&
-               &') CALCULATED CALIBRATION VALUE = ',F8.2)
-          CORNEW = 1.0
-          HCOR(ISPC) = 0.0
-       end if
+       call REGHCAL(ISPC,SNP,SNX,SNY,CORNEW)
        80 continue
        CORTEM(IREFI) = CORNEW
        NUMCAL(IREFI) = N
@@ -614,34 +593,7 @@ contains
 
     ! OUTPUT CALIBRATION TO DATABASE.
 
-    call DBSCALIB(2,CORTEM,NUMCAL,CORTEM) ! LAST ARG IGNORED
-
-    ! OUTPUT CALIBRATION TERMS IF CALBSTAT KEYWORD WAS PRESENT.
-
-    if (JOCALB .gt.0) then
-       KOUT = 0
-       do K = 1,MAXSP
-          if (CORTEM(K).ne.1.0.or. NUMCAL(K).ge.NCALHT) then
-             SPEC = NSP(MAXSP,1)(1:2)
-             ISPEC = MAXSP
-             do KK = 1,MAXSP
-                if (K .ne. IREF(KK)) go to 203
-                ISPEC = KK
-                SPEC = NSP(KK,1)(1:2)
-                go to 2031
-                203 continue
-             end do
-             2031 write(JOCALB,204)ISPEC,SPEC,NUMCAL(K),CORTEM(K)
-             204 format(' CAL: SH',1X,I2,1X,A2,1X,I4,1X,F6.3)
-             KOUT = KOUT + 1
-          end if
-          207 continue
-       end do
-       if (KOUT .eq.0)write(JOCALB,209)
-       209 format(' NO SH VALUES COMPUTED')
-       write(JOCALB,210)
-       210 format(' CALBSTAT END')
-    end if
+    call REGCALOUT(CORTEM,NUMCAL,KOUT,K,KK,ISPEC,SPEC)
     91 if (DEBUG)write(JOSTND,9995)ICYC
     9995 format('LEAVING SUBROUTINE REGENT  CYCLE =',I5)
 
@@ -1289,28 +1241,7 @@ contains
        !  CALCULATE MEANS FOR THE POPULATION AND FOR THE SAMPLE ON THE
        !  NATURAL SCALE.
 
-       SNX = SNX/SNP
-       SNY = SNY/SNP
-
-       !  CALCULATE RATIO ESTIMATOR.
-
-       CORNEW = SNY/SNX
-       if (CORNEW.le.0.0) CORNEW = 1.0E-4
-       HCOR(ISPC) = ALOG(CORNEW)
-
-       !  TRAP CALIBRATION VALUES OUTSIDE 2.5 STANDARD DEVIATIONS FROM THE
-       !  MEAN. IF C IS THE CALIBRATION TERM, WITH A DEFAULT OF 1.0, THEN
-       !  LN(C) HAS A MEAN OF 0.  -2.5 < LN(C) < 2.5 IMPLIES
-       !  0.0821 < C < 12.1825
-
-       if (CORNEW.lt.0.0821.or. CORNEW.gt.12.1825) then
-          call ERRGRO(.true.,27)
-          write(JOSTND,9194)ISPC,JSP(ISPC),CORNEW
-          9194 format(T28,'SMALL TREE HTG: SPECIES = ',I2,' (',A3,&
-               &') CALCULATED CALIBRATION VALUE = ',F8.2)
-          CORNEW = 1.0
-          HCOR(ISPC) = 0.0
-       end if
+       call REGHCAL(ISPC,SNP,SNX,SNY,CORNEW)
        80 continue
        CORTEM(IREFI) = CORNEW
        NUMCAL(IREFI) = N
@@ -1331,34 +1262,7 @@ contains
 
     ! OUTPUT CALIBRATION TO DATABASE.
 
-    call DBSCALIB(2,CORTEM,NUMCAL,CORTEM) ! LAST ARG IGNORED
-
-    ! OUTPUT CALIBRATION TERMS IF CALBSTAT KEYWORD WAS PRESENT.
-
-    if (JOCALB .gt.0) then
-       KOUT = 0
-       do K = 1,MAXSP
-          if (CORTEM(K).ne.1.0.or. NUMCAL(K).ge.NCALHT) then
-             SPEC = NSP(MAXSP,1)(1:2)
-             ISPEC = MAXSP
-             do KK = 1,MAXSP
-                if (K .ne. IREF(KK)) go to 203
-                ISPEC = KK
-                SPEC = NSP(KK,1)(1:2)
-                go to 2031
-                203 continue
-             end do
-             2031 write(JOCALB,204)ISPEC,SPEC,NUMCAL(K),CORTEM(K)
-             204 format(' CAL: SH',1X,I2,1X,A2,1X,I4,1X,F6.3)
-             KOUT = KOUT + 1
-          end if
-          207 continue
-       end do
-       if (KOUT .eq.0)write(JOCALB,209)
-       209 format(' NO SH VALUES COMPUTED')
-       write(JOCALB,210)
-       210 format(' CALBSTAT END')
-    end if
+    call REGCALOUT(CORTEM,NUMCAL,KOUT,K,KK,ISPEC,SPEC)
     91 if (DEBUG)write(JOSTND,9995)ICYC
     9995 format('LEAVING SUBROUTINE REGENT  CYCLE =',I5)
     return
@@ -1969,28 +1873,7 @@ contains
        !  CALCULATE MEANS FOR THE POPULATION AND FOR THE SAMPLE ON THE
        !  NATURAL SCALE.
 
-       SNX = SNX/SNP
-       SNY = SNY/SNP
-
-       !  CALCULATE RATIO ESTIMATOR.
-
-       CORNEW = SNY/SNX
-       if (CORNEW.le.0.0) CORNEW = 1.0E-4
-       HCOR(ISPC) = ALOG(CORNEW)
-
-       !  TRAP CALIBRATION VALUES OUTSIDE 2.5 STANDARD DEVIATIONS FROM THE
-       !  MEAN. IF C IS THE CALIBRATION TERM, WITH A DEFAULT OF 1.0, THEN
-       !  LN(C) HAS A MEAN OF 0.  -2.5 < LN(C) < 2.5 IMPLIES
-       !  0.0821 < C < 12.1825
-
-       if (CORNEW.lt.0.0821.or. CORNEW.gt.12.1825) then
-          call ERRGRO(.true.,27)
-          write(JOSTND,9194)ISPC,JSP(ISPC),CORNEW
-          9194 format(T28,'SMALL TREE HTG: SPECIES = ',I2,' (',A3,&
-               &') CALCULATED CALIBRATION VALUE = ',F8.2)
-          CORNEW = 1.0
-          HCOR(ISPC) = 0.0
-       end if
+       call REGHCAL(ISPC,SNP,SNX,SNY,CORNEW)
        80 continue
        CORTEM(IREFI) = CORNEW
        NUMCAL(IREFI) = N
@@ -2018,34 +1901,7 @@ contains
 
     ! OUTPUT CALIBRATION TO DATABASE.
 
-    call DBSCALIB(2,CORTEM,NUMCAL,CORTEM) ! LAST ARG IGNORED
-
-    ! OUTPUT CALIBRATION TERMS IF CALBSTAT KEYWORD WAS PRESENT.
-
-    if (JOCALB .gt.0) then
-       KOUT = 0
-       do K = 1,MAXSP
-          if (CORTEM(K).ne.1.0.or. NUMCAL(K).ge.NCALHT) then
-             SPEC = NSP(MAXSP,1)(1:2)
-             ISPEC = MAXSP
-             do KK = 1,MAXSP
-                if (K .ne. IREF(KK)) go to 203
-                ISPEC = KK
-                SPEC = NSP(KK,1)(1:2)
-                go to 2031
-                203 continue
-             end do
-             2031 write(JOCALB,204)ISPEC,SPEC,NUMCAL(K),CORTEM(K)
-             204 format(' CAL: SH',1X,I2,1X,A2,1X,I4,1X,F6.3)
-             KOUT = KOUT + 1
-          end if
-          207 continue
-       end do
-       if (KOUT .eq.0)write(JOCALB,209)
-       209 format(' NO SH VALUES COMPUTED')
-       write(JOCALB,210)
-       210 format(' CALBSTAT END')
-    end if
+    call REGCALOUT(CORTEM,NUMCAL,KOUT,K,KK,ISPEC,SPEC)
     91 if (DEBUG)write(JOSTND,9995)ICYC
     9995 format('LEAVING SUBROUTINE REGENT  CYCLE =',I5)
 
@@ -2623,28 +2479,7 @@ contains
        !  CALCULATE MEANS FOR THE POPULATION AND FOR THE SAMPLE ON THE
        !  NATURAL SCALE.
 
-       SNX = SNX/SNP
-       SNY = SNY/SNP
-
-       !  CALCULATE RATIO ESTIMATOR.
-
-       CORNEW = SNY/SNX
-       if (CORNEW.le.0.0) CORNEW = 1.0E-4
-       HCOR(ISPC) = ALOG(CORNEW)
-
-       !  TRAP CALIBRATION VALUES OUTSIDE 2.5 STANDARD DEVIATIONS FROM THE
-       !  MEAN. IF C IS THE CALIBRATION TERM, WITH A DEFAULT OF 1.0, THEN
-       !  LN(C) HAS A MEAN OF 0.  -2.5 < LN(C) < 2.5 IMPLIES
-       !  0.0821 < C < 12.1825
-
-       if (CORNEW.lt.0.0821 .or. CORNEW.gt.12.1825) then
-          call ERRGRO(.true.,27)
-          write(JOSTND,9194)ISPC,JSP(ISPC),CORNEW
-          9194 format(T28,'SMALL TREE HTG: SPECIES = ',I2,' (',A3, &
-               & ') CALCULATED CALIBRATION VALUE = ',F8.2)
-          CORNEW = 1.0
-          HCOR(ISPC) = 0.0
-       end if
+       call REGHCAL(ISPC,SNP,SNX,SNY,CORNEW)
        80 continue
        CORTEM(IREFI) = CORNEW
        NUMCAL(IREFI) = N
@@ -2665,34 +2500,7 @@ contains
 
     ! OUTPUT CALIBRATION TO DATABASE.
 
-    call DBSCALIB(2,CORTEM,NUMCAL,CORTEM) ! LAST ARG IGNORED
-
-    ! OUTPUT CALIBRATION TERMS IF CALBSTAT KEYWORD WAS PRESENT.
-
-    if (JOCALB .gt. 0) then
-       KOUT = 0
-       do K = 1,MAXSP
-          if (CORTEM(K).ne.1.0 .or. NUMCAL(K).ge.NCALHT) then
-             SPEC = NSP(MAXSP,1)(1:2)
-             ISPEC = MAXSP
-             do KK = 1,MAXSP
-                if (K .ne. IREF(KK)) go to 203
-                ISPEC = KK
-                SPEC = NSP(KK,1)(1:2)
-                go to 2031
-                203 continue
-             end do
-             2031 write(JOCALB,204)ISPEC,SPEC,NUMCAL(K),CORTEM(K)
-             204 format(' CAL: SH',1X,I2,1X,A2,1X,I4,1X,F6.3)
-             KOUT = KOUT + 1
-          end if
-          207 continue
-       end do
-       if (KOUT .eq. 0)write(JOCALB,209)
-       209 format(' NO SH VALUES COMPUTED')
-       write(JOCALB,210)
-       210 format(' CALBSTAT END')
-    end if
+    call REGCALOUT(CORTEM,NUMCAL,KOUT,K,KK,ISPEC,SPEC)
     91 if (DEBUG)write(JOSTND,9995)ICYC
     9995 format('LEAVING SUBROUTINE REGENT  CYCLE =',I5)
     return
@@ -3484,28 +3292,7 @@ contains
        !  CALCULATE MEANS FOR THE POPULATION AND FOR THE SAMPLE ON THE
        !  NATURAL SCALE.
 
-       SNX = SNX/SNP
-       SNY = SNY/SNP
-
-       !  CALCULATE RATIO ESTIMATOR.
-
-       CORNEW = SNY/SNX
-       if (CORNEW.le.0.0) CORNEW = 1.0E-4
-       HCOR(ISPC) = ALOG(CORNEW)
-
-       !  TRAP CALIBRATION VALUES OUTSIDE 2.5 STANDARD DEVIATIONS FROM THE
-       !  MEAN. IF C IS THE CALIBRATION TERM, WITH A DEFAULT OF 1.0, THEN
-       !  LN(C) HAS A MEAN OF 0.  -2.5 < LN(C) < 2.5 IMPLIES
-       !  0.0821 < C < 12.1825
-
-       if (CORNEW.lt.0.0821.or. CORNEW.gt.12.1825) then
-          call ERRGRO(.true.,27)
-          write(JOSTND,9194)ISPC,JSP(ISPC),CORNEW
-          9194 format(T28,'SMALL TREE HTG: SPECIES = ',I2,' (',A3,&
-               &') CALCULATED CALIBRATION VALUE = ',F8.2)
-          CORNEW = 1.0
-          HCOR(ISPC) = 0.0
-       end if
+       call REGHCAL(ISPC,SNP,SNX,SNY,CORNEW)
        80 continue
        CORTEM(IREFI) = CORNEW
        NUMCAL(IREFI) = N
@@ -3526,34 +3313,7 @@ contains
 
     ! OUTPUT CALIBRATION TO DATABASE.
 
-    call DBSCALIB(2,CORTEM,NUMCAL,CORTEM) ! LAST ARG IGNORED
-
-    ! OUTPUT CALIBRATION TERMS IF CALBSTAT KEYWORD WAS PRESENT.
-
-    if (JOCALB .gt.0) then
-       KOUT = 0
-       do K = 1,MAXSP
-          if (CORTEM(K).ne.1.0.or. NUMCAL(K).ge.NCALHT) then
-             SPEC = NSP(MAXSP,1)(1:2)
-             ISPEC = MAXSP
-             do KK = 1,MAXSP
-                if (K .ne. IREF(KK)) go to 203
-                ISPEC = KK
-                SPEC = NSP(KK,1)(1:2)
-                go to 2031
-                203 continue
-             end do
-             2031 write(JOCALB,204)ISPEC,SPEC,NUMCAL(K),CORTEM(K)
-             204 format(' CAL: SH',1X,I2,1X,A2,1X,I4,1X,F6.3)
-             KOUT = KOUT + 1
-          end if
-          207 continue
-       end do
-       if (KOUT .eq.0)write(JOCALB,209)
-       209 format(' NO SH VALUES COMPUTED')
-       write(JOCALB,210)
-       210 format(' CALBSTAT END')
-    end if
+    call REGCALOUT(CORTEM,NUMCAL,KOUT,K,KK,ISPEC,SPEC)
     91 if (DEBUG)write(JOSTND,9995)ICYC
     9995 format('LEAVING SUBROUTINE REGENT  CYCLE =',I5)
     return
@@ -5509,34 +5269,7 @@ contains
 
     ! OUTPUT CALIBRATION TO DATABASE.
 
-    call DBSCALIB(2,CORTEM,NUMCAL,CORTEM) ! LAST ARG IGNORED
-
-    ! OUTPUT CALIBRATION TERMS IF CALBSTAT KEYWORD WAS PRESENT.
-
-    if (JOCALB .gt.0) then
-       KOUT = 0
-       do K = 1,MAXSP
-          if (CORTEM(K).ne.1.0.or. NUMCAL(K).ge.NCALHT) then
-             SPEC = NSP(MAXSP,1)(1:2)
-             ISPEC = MAXSP
-             do KK = 1,MAXSP
-                if (K .ne. IREF(KK)) go to 203
-                ISPEC = KK
-                SPEC = NSP(KK,1)(1:2)
-                go to 2031
-                203 continue
-             end do
-             2031 write(JOCALB,204)ISPEC,SPEC,NUMCAL(K),CORTEM(K)
-             204 format(' CAL: SH',1X,I2,1X,A2,1X,I4,1X,F6.3)
-             KOUT = KOUT + 1
-          end if
-          207 continue
-       end do
-       if (KOUT .eq.0)write(JOCALB,209)
-       209 format(' NO SH VALUES COMPUTED')
-       write(JOCALB,210)
-       210 format(' CALBSTAT END')
-    end if
+    call REGCALOUT(CORTEM,NUMCAL,KOUT,K,KK,ISPEC,SPEC)
     return
 
     9998 continue
@@ -7895,30 +7628,7 @@ contains
        !  CALCULATE MEANS FOR THE FOR THE GROWTH SAMPLE ON THE
        !  NATURAL SCALE.
 
-       SNX = SNX/SNP
-       SNY = SNY/SNP
-
-       !  THE CORRECTION TERM IS THE MEAN OF OBSERVED INCREMENTS
-       !  DIVIDED BY THE MEAN OF PREDICTED INCREMENTS (NOT THE REGRESSION
-       !  ESTIMATE USED FOR DIAMETER INCREMENT CALIBRATION).
-
-       CORNEW = SNY/SNX
-       if (CORNEW.le.0.0) CORNEW = 1.0E-4
-       HCOR(ISPC) = ALOG(CORNEW)
-
-       !  TRAP CALIBRATION VALUES OUTSIDE 2.5 STANDARD DEVIATIONS FROM THE
-       !  MEAN. IF C IS THE CALIBRATION TERM, WITH A DEFAULT OF 1.0, THEN
-       !  LN(C) HAS A MEAN OF 0.  -2.5 < LN(C) < 2.5 IMPLIES
-       !  0.0821 < C < 12.1825
-
-       if (CORNEW.lt.0.0821.or. CORNEW.gt.12.1825) then
-          call ERRGRO(.true.,27)
-          write(JOSTND,9194)ISPC,JSP(ISPC),CORNEW
-          9194 format(T28,'SMALL TREE HTG: SPECIES = ',I2,' (',A3,&
-               &') CALCULATED CALIBRATION VALUE = ',F8.2)
-          CORNEW = 1.0
-          HCOR(ISPC) = 0.0
-       end if
+       call REGHCAL(ISPC,SNP,SNX,SNY,CORNEW)
        80 continue
        CORTEM(IREFI) = CORNEW
        NUMCAL(IREFI) = N
@@ -7939,34 +7649,7 @@ contains
 
     ! OUTPUT CALIBRATION TO DATABASE.
 
-    call DBSCALIB(2,CORTEM,NUMCAL,CORTEM) ! LAST ARG IGNORED
-
-    ! OUTPUT CALIBRATION TERMS IF CALBSTAT KEYWORD WAS PRESENT.
-
-    if (JOCALB .gt.0) then
-       KOUT = 0
-       do K = 1,MAXSP
-          if (CORTEM(K).ne.1.0.or. NUMCAL(K).ge.NCALHT) then
-             SPEC = NSP(MAXSP,1)(1:2)
-             ISPEC = MAXSP
-             do KK = 1,MAXSP
-                if (K .ne. IREF(KK)) go to 203
-                ISPEC = KK
-                SPEC = NSP(KK,1)(1:2)
-                go to 2031
-                203 continue
-             end do
-             2031 write(JOCALB,204)ISPEC,SPEC,NUMCAL(K),CORTEM(K)
-             204 format(' CAL: SH',1X,I2,1X,A2,1X,I4,1X,F6.3)
-             KOUT = KOUT + 1
-          end if
-          207 continue
-       end do
-       if (KOUT .eq.0)write(JOCALB,209)
-       209 format(' NO SH VALUES COMPUTED')
-       write(JOCALB,210)
-       210 format(' CALBSTAT END')
-    end if
+    call REGCALOUT(CORTEM,NUMCAL,KOUT,K,KK,ISPEC,SPEC)
     91 if (DEBUG)write(JOSTND,9995)ICYC
     9995 format('LEAVING SUBROUTINE REGENT  CYCLE =',I5)
     return
@@ -8542,28 +8225,7 @@ contains
        !  CALCULATE MEANS FOR THE POPULATION AND FOR THE SAMPLE ON THE
        !  NATURAL SCALE.
 
-       SNX = SNX/SNP
-       SNY = SNY/SNP
-
-       !  CALCULATE RATIO ESTIMATOR.
-
-       CORNEW = SNY/SNX
-       if (CORNEW.le.0.0) CORNEW = 1.0E-4
-       HCOR(ISPC) = ALOG(CORNEW)
-
-       !  TRAP CALIBRATION VALUES OUTSIDE 2.5 STANDARD DEVIATIONS FROM THE
-       !  MEAN. IF C IS THE CALIBRATION TERM, WITH A DEFAULT OF 1.0, THEN
-       !  LN(C) HAS A MEAN OF 0.  -2.5 < LN(C) < 2.5 IMPLIES
-       !  0.0821 < C < 12.1825
-
-       if (CORNEW.lt.0.0821.or. CORNEW.gt.12.1825) then
-          call ERRGRO(.true.,27)
-          write(JOSTND,9194)ISPC,JSP(ISPC),CORNEW
-          9194 format(T28,'SMALL TREE HTG: SPECIES = ',I2,' (',A3,&
-               &') CALCULATED CALIBRATION VALUE = ',F8.2)
-          CORNEW = 1.0
-          HCOR(ISPC) = 0.0
-       end if
+       call REGHCAL(ISPC,SNP,SNX,SNY,CORNEW)
        80 continue
        CORTEM(IREFI) = CORNEW
        NUMCAL(IREFI) = N
@@ -8584,34 +8246,7 @@ contains
 
     ! OUTPUT CALIBRATION TO DATABASE.
 
-    call DBSCALIB(2,CORTEM,NUMCAL,CORTEM) ! LAST ARG IGNORED
-
-    ! OUTPUT CALIBRATION TERMS IF CALBSTAT KEYWORD WAS PRESENT.
-
-    if (JOCALB .gt.0) then
-       KOUT = 0
-       do K = 1,MAXSP
-          if (CORTEM(K).ne.1.0.or. NUMCAL(K).ge.NCALHT) then
-             SPEC = NSP(MAXSP,1)(1:2)
-             ISPEC = MAXSP
-             do KK = 1,MAXSP
-                if (K .ne. IREF(KK)) go to 203
-                ISPEC = KK
-                SPEC = NSP(KK,1)(1:2)
-                go to 2031
-                203 continue
-             end do
-             2031 write(JOCALB,204)ISPEC,SPEC,NUMCAL(K),CORTEM(K)
-             204 format(' CAL: SH',1X,I2,1X,A2,1X,I4,1X,F6.3)
-             KOUT = KOUT + 1
-          end if
-          207 continue
-       end do
-       if (KOUT .eq.0)write(JOCALB,209)
-       209 format(' NO SH VALUES COMPUTED')
-       write(JOCALB,210)
-       210 format(' CALBSTAT END')
-    end if
+    call REGCALOUT(CORTEM,NUMCAL,KOUT,K,KK,ISPEC,SPEC)
     91 if (DEBUG)write(JOSTND,9995)ICYC
     9995 format('LEAVING SUBROUTINE REGENT  CYCLE =',I5)
     return
@@ -9263,28 +8898,7 @@ contains
        !  CALCULATE MEANS FOR THE POPULATION AND FOR THE SAMPLE ON THE
        !  NATURAL SCALE.
 
-       SNX = SNX/SNP
-       SNY = SNY/SNP
-
-       !  CALCULATE RATIO ESTIMATOR.
-
-       CORNEW = SNY/SNX
-       if (CORNEW.le.0.0) CORNEW = 1.0E-4
-       HCOR(ISPC) = ALOG(CORNEW)
-
-       !  TRAP CALIBRATION VALUES OUTSIDE 2.5 STANDARD DEVIATIONS FROM THE
-       !  MEAN. IF C IS THE CALIBRATION TERM, WITH A DEFAULT OF 1.0, THEN
-       !  LN(C) HAS A MEAN OF 0.  -2.5 < LN(C) < 2.5 IMPLIES
-       !  0.0821 < C < 12.1825
-
-       if (CORNEW.lt.0.0821.or. CORNEW.gt.12.1825) then
-          call ERRGRO(.true.,27)
-          write(JOSTND,9194)ISPC,JSP(ISPC),CORNEW
-          9194 format(T28,'SMALL TREE HTG: SPECIES = ',I2,' (',A3,&
-               &') CALCULATED CALIBRATION VALUE = ',F8.2)
-          CORNEW = 1.0
-          HCOR(ISPC) = 0.0
-       end if
+       call REGHCAL(ISPC,SNP,SNX,SNY,CORNEW)
        80 continue
        CORTEM(IREFI) = CORNEW
        NUMCAL(IREFI) = N
@@ -9305,34 +8919,7 @@ contains
 
     ! OUTPUT CALIBRATION TO DATABASE.
 
-    call DBSCALIB(2,CORTEM,NUMCAL,CORTEM) ! LAST ARG IGNORED
-
-    ! OUTPUT CALIBRATION TERMS IF CALBSTAT KEYWORD WAS PRESENT.
-
-    if (JOCALB .gt.0) then
-       KOUT = 0
-       do K = 1,MAXSP
-          if (CORTEM(K).ne.1.0.or. NUMCAL(K).ge.NCALHT) then
-             SPEC = NSP(MAXSP,1)(1:2)
-             ISPEC = MAXSP
-             do KK = 1,MAXSP
-                if (K .ne. IREF(KK)) go to 203
-                ISPEC = KK
-                SPEC = NSP(KK,1)(1:2)
-                go to 2031
-                203 continue
-             end do
-             2031 write(JOCALB,204)ISPEC,SPEC,NUMCAL(K),CORTEM(K)
-             204 format(' CAL: SH',1X,I2,1X,A2,1X,I4,1X,F6.3)
-             KOUT = KOUT + 1
-          end if
-          207 continue
-       end do
-       if (KOUT .eq.0)write(JOCALB,209)
-       209 format(' NO SH VALUES COMPUTED')
-       write(JOCALB,210)
-       210 format(' CALBSTAT END')
-    end if
+    call REGCALOUT(CORTEM,NUMCAL,KOUT,K,KK,ISPEC,SPEC)
     91 if (DEBUG)write(JOSTND,9995)ICYC
     9995 format('LEAVING SUBROUTINE REGENT  CYCLE =',I5)
     return
@@ -10701,30 +10288,7 @@ contains
        !  CALCULATE MEANS FOR THE FOR THE GROWTH SAMPLE ON THE
        !  NATURAL SCALE.
 
-       SNX = SNX/SNP
-       SNY = SNY/SNP
-
-       !  THE CORRECTION TERM IS THE MEAN OF OBSERVED INCREMENTS
-       !  DIVIDED BY THE MEAN OF PREDICTED INCREMENTS (NOT THE REGRESSION
-       !  ESTIMATE USED FOR DIAMETER INCREMENT CALIBRATION).
-
-       CORNEW = SNY/SNX
-       if (CORNEW.le.0.0) CORNEW = 1.0E-4
-       HCOR(ISPC) = ALOG(CORNEW)
-
-       !  TRAP CALIBRATION VALUES OUTSIDE 2.5 STANDARD DEVIATIONS FROM THE
-       !  MEAN. IF C IS THE CALIBRATION TERM, WITH A DEFAULT OF 1.0, THEN
-       !  LN(C) HAS A MEAN OF 0.  -2.5 < LN(C) < 2.5 IMPLIES
-       !  0.0821 < C < 12.1825
-
-       if (CORNEW.lt.0.0821.or. CORNEW.gt.12.1825) then
-          call ERRGRO(.true.,27)
-          write(JOSTND,9194)ISPC,JSP(ISPC),CORNEW
-          9194 format(T28,'SMALL TREE HTG: SPECIES = ',I2,' (',A3,&
-               &') CALCULATED CALIBRATION VALUE = ',F8.2)
-          CORNEW = 1.0
-          HCOR(ISPC) = 0.0
-       end if
+       call REGHCAL(ISPC,SNP,SNX,SNY,CORNEW)
        80 continue
        CORTEM(IREFI) = CORNEW
        NUMCAL(IREFI) = N
@@ -10745,34 +10309,7 @@ contains
 
     ! OUTPUT CALIBRATION TO DATABASE.
 
-    call DBSCALIB(2,CORTEM,NUMCAL,CORTEM) ! LAST ARG IGNORED
-
-    ! OUTPUT CALIBRATION TERMS IF CALBSTAT KEYWORD WAS PRESENT.
-
-    if (JOCALB .gt.0) then
-       KOUT = 0
-       do K = 1,MAXSP
-          if (CORTEM(K).ne.1.0.or. NUMCAL(K).ge.NCALHT) then
-             SPEC = NSP(MAXSP,1)(1:2)
-             ISPEC = MAXSP
-             do KK = 1,MAXSP
-                if (K .ne. IREF(KK)) go to 203
-                ISPEC = KK
-                SPEC = NSP(KK,1)(1:2)
-                go to 2031
-                203 continue
-             end do
-             2031 write(JOCALB,204)ISPEC,SPEC,NUMCAL(K),CORTEM(K)
-             204 format(' CAL: SH',1X,I2,1X,A2,1X,I4,1X,F6.3)
-             KOUT = KOUT + 1
-          end if
-          207 continue
-       end do
-       if (KOUT .eq.0)write(JOCALB,209)
-       209 format(' NO SH VALUES COMPUTED')
-       write(JOCALB,210)
-       210 format(' CALBSTAT END')
-    end if
+    call REGCALOUT(CORTEM,NUMCAL,KOUT,K,KK,ISPEC,SPEC)
     return
     9998 continue
 
@@ -12144,30 +11681,7 @@ contains
        !  CALCULATE MEANS FOR THE FOR THE GROWTH SAMPLE ON THE
        !  NATURAL SCALE.
 
-       SNX = SNX/SNP
-       SNY = SNY/SNP
-
-       !  THE CORRECTION TERM IS THE MEAN OF OBSERVED INCREMENTS
-       !  DIVIDED BY THE MEAN OF PREDICTED INCREMENTS (NOT THE REGRESSION
-       !  ESTIMATE USED FOR DIAMETER INCREMENT CALIBRATION).
-
-       CORNEW = SNY/SNX
-       if (CORNEW.le.0.0) CORNEW = 1.0E-4
-       HCOR(ISPC) = ALOG(CORNEW)
-
-       !  TRAP CALIBRATION VALUES OUTSIDE 2.5 STANDARD DEVIATIONS FROM THE
-       !  MEAN. IF C IS THE CALIBRATION TERM, WITH A DEFAULT OF 1.0, THEN
-       !  LN(C) HAS A MEAN OF 0.  -2.5 < LN(C) < 2.5 IMPLIES
-       !  0.0821 < C < 12.1825
-
-       if (CORNEW.lt.0.0821.or. CORNEW.gt.12.1825) then
-          call ERRGRO(.true.,27)
-          write(JOSTND,9194)ISPC,JSP(ISPC),CORNEW
-          9194 format(T28,'SMALL TREE HTG: SPECIES = ',I2,' (',A3,&
-               &') CALCULATED CALIBRATION VALUE = ',F8.2)
-          CORNEW = 1.0
-          HCOR(ISPC) = 0.0
-       end if
+       call REGHCAL(ISPC,SNP,SNX,SNY,CORNEW)
        80 continue
        CORTEM(IREFI) = CORNEW
        NUMCAL(IREFI) = N
@@ -12188,34 +11702,7 @@ contains
 
     ! OUTPUT CALIBRATION TO DATABASE.
 
-    call DBSCALIB(2,CORTEM,NUMCAL,CORTEM) ! LAST ARG IGNORED
-
-    ! OUTPUT CALIBRATION TERMS IF CALBSTAT KEYWORD WAS PRESENT.
-
-    if (JOCALB .gt.0) then
-       KOUT = 0
-       do K = 1,MAXSP
-          if (CORTEM(K).ne.1.0.or. NUMCAL(K).ge.NCALHT) then
-             SPEC = NSP(MAXSP,1)(1:2)
-             ISPEC = MAXSP
-             do KK = 1,MAXSP
-                if (K .ne. IREF(KK)) go to 203
-                ISPEC = KK
-                SPEC = NSP(KK,1)(1:2)
-                go to 2031
-                203 continue
-             end do
-             2031 write(JOCALB,204)ISPEC,SPEC,NUMCAL(K),CORTEM(K)
-             204 format(' CAL: SH',1X,I2,1X,A2,1X,I4,1X,F6.3)
-             KOUT = KOUT + 1
-          end if
-          207 continue
-       end do
-       if (KOUT .eq.0)write(JOCALB,209)
-       209 format(' NO SH VALUES COMPUTED')
-       write(JOCALB,210)
-       210 format(' CALBSTAT END')
-    end if
+    call REGCALOUT(CORTEM,NUMCAL,KOUT,K,KK,ISPEC,SPEC)
     return
     9998 continue
 
@@ -13152,30 +12639,7 @@ contains
        !  CALCULATE MEANS FOR THE FOR THE GROWTH SAMPLE ON THE
        !  NATURAL SCALE.
 
-       SNX = SNX/SNP
-       SNY = SNY/SNP
-
-       !  THE CORRECTION TERM IS THE MEAN OF OBSERVED INCREMENTS
-       !  DIVIDED BY THE MEAN OF PREDICTED INCREMENTS (NOT THE REGRESSION
-       !  ESTIMATE USED FOR DIAMETER INCREMENT CALIBRATION).
-
-       CORNEW = SNY/SNX
-       if (CORNEW.le.0.0) CORNEW = 1.0E-4
-       HCOR(ISPC) = ALOG(CORNEW)
-
-       !  TRAP CALIBRATION VALUES OUTSIDE 2.5 STANDARD DEVIATIONS FROM THE
-       !  MEAN. IF C IS THE CALIBRATION TERM, WITH A DEFAULT OF 1.0, THEN
-       !  LN(C) HAS A MEAN OF 0.  -2.5 < LN(C) < 2.5 IMPLIES
-       !  0.0821 < C < 12.1825
-
-       if (CORNEW.lt.0.0821.or. CORNEW.gt.12.1825) then
-          call ERRGRO(.true.,27)
-          write(JOSTND,9194)ISPC,JSP(ISPC),CORNEW
-          9194 format(T28,'SMALL TREE HTG: SPECIES = ',I2,' (',A3,&
-               &') CALCULATED CALIBRATION VALUE = ',F8.2)
-          CORNEW = 1.0
-          HCOR(ISPC) = 0.0
-       end if
+       call REGHCAL(ISPC,SNP,SNX,SNY,CORNEW)
        80 continue
        CORTEM(IREFI) = CORNEW
        NUMCAL(IREFI) = N
@@ -13196,34 +12660,7 @@ contains
 
     ! OUTPUT CALIBRATION TO DATABASE.
 
-    call DBSCALIB(2,CORTEM,NUMCAL,CORTEM) ! LAST ARG IGNORED
-
-    ! OUTPUT CALIBRATION TERMS IF CALBSTAT KEYWORD WAS PRESENT.
-
-    if (JOCALB .gt.0) then
-       KOUT = 0
-       do K = 1,MAXSP
-          if (CORTEM(K).ne.1.0.or. NUMCAL(K).ge.NCALHT) then
-             SPEC = NSP(MAXSP,1)(1:2)
-             ISPEC = MAXSP
-             do KK = 1,MAXSP
-                if (K .ne. IREF(KK)) go to 203
-                ISPEC = KK
-                SPEC = NSP(KK,1)(1:2)
-                go to 2031
-                203 continue
-             end do
-             2031 write(JOCALB,204)ISPEC,SPEC,NUMCAL(K),CORTEM(K)
-             204 format(' CAL: SH',1X,I2,1X,A2,1X,I4,1X,F6.3)
-             KOUT = KOUT + 1
-          end if
-          207 continue
-       end do
-       if (KOUT .eq.0)write(JOCALB,209)
-       209 format(' NO SH VALUES COMPUTED')
-       write(JOCALB,210)
-       210 format(' CALBSTAT END')
-    end if
+    call REGCALOUT(CORTEM,NUMCAL,KOUT,K,KK,ISPEC,SPEC)
     return
     9998 continue
 
@@ -13771,30 +13208,7 @@ contains
        !  CALCULATE MEANS FOR THE FOR THE GROWTH SAMPLE ON THE
        !  NATURAL SCALE.
 
-       SNX = SNX/SNP
-       SNY = SNY/SNP
-
-       !  THE CORRECTION TERM IS THE MEAN OF OBSERVED INCREMENTS
-       !  DIVIDED BY THE MEAN OF PREDICTED INCREMENTS (NOT THE REGRESSION
-       !  ESTIMATE USED FOR DIAMETER INCREMENT CALIBRATION).
-
-       CORNEW = SNY/SNX
-       if (CORNEW.le.0.0) CORNEW = 1.0E-4
-       HCOR(ISPC) = ALOG(CORNEW)
-
-       !  TRAP CALIBRATION VALUES OUTSIDE 2.5 STANDARD DEVIATIONS FROM THE
-       !  MEAN. IF C IS THE CALIBRATION TERM, WITH A DEFAULT OF 1.0, THEN
-       !  LN(C) HAS A MEAN OF 0.  -2.5 < LN(C) < 2.5 IMPLIES
-       !  0.0821 < C < 12.1825
-
-       if (CORNEW.lt.0.0821.or. CORNEW.gt.12.1825) then
-          call ERRGRO(.true.,27)
-          write(JOSTND,9194)ISPC,JSP(ISPC),CORNEW
-          9194 format(T28,'SMALL TREE HTG: SPECIES = ',I2,' (',A3,&
-               &') CALCULATED CALIBRATION VALUE = ',F8.2)
-          CORNEW = 1.0
-          HCOR(ISPC) = 0.0
-       end if
+       call REGHCAL(ISPC,SNP,SNX,SNY,CORNEW)
        80 continue
        CORTEM(IREFI) = CORNEW
        NUMCAL(IREFI) = N
@@ -13815,34 +13229,7 @@ contains
 
     ! OUTPUT CALIBRATION TO DATABASE.
 
-    call DBSCALIB(2,CORTEM,NUMCAL,CORTEM) ! LAST ARG IGNORED
-
-    ! OUTPUT CALIBRATION TERMS IF CALBSTAT KEYWORD WAS PRESENT.
-
-    if (JOCALB .gt.0) then
-       KOUT = 0
-       do K = 1,MAXSP
-          if (CORTEM(K).ne.1.0.or. NUMCAL(K).ge.NCALHT) then
-             SPEC = NSP(MAXSP,1)(1:2)
-             ISPEC = MAXSP
-             do KK = 1,MAXSP
-                if (K .ne. IREF(KK)) go to 203
-                ISPEC = KK
-                SPEC = NSP(KK,1)(1:2)
-                go to 2031
-                203 continue
-             end do
-             2031 write(JOCALB,204)ISPEC,SPEC,NUMCAL(K),CORTEM(K)
-             204 format(' CAL: SH',1X,I2,1X,A2,1X,I4,1X,F6.3)
-             KOUT = KOUT + 1
-          end if
-          207 continue
-       end do
-       if (KOUT .eq.0)write(JOCALB,209)
-       209 format(' NO SH VALUES COMPUTED')
-       write(JOCALB,210)
-       210 format(' CALBSTAT END')
-    end if
+    call REGCALOUT(CORTEM,NUMCAL,KOUT,K,KK,ISPEC,SPEC)
     return
 
     9998 continue
@@ -14338,28 +13725,7 @@ contains
        !  CALCULATE MEANS FOR THE POPULATION AND FOR THE SAMPLE ON THE
        !  NATURAL SCALE.
 
-       SNX = SNX/SNP
-       SNY = SNY/SNP
-
-       !  CALCULATE RATIO ESTIMATOR.
-
-       CORNEW = SNY/SNX
-       if (CORNEW.le.0.0) CORNEW = 1.0E-4
-       HCOR(ISPC) = ALOG(CORNEW)
-
-       !  TRAP CALIBRATION VALUES OUTSIDE 2.5 STANDARD DEVIATIONS FROM THE
-       !  MEAN. IF C IS THE CALIBRATION TERM, WITH A DEFAULT OF 1.0, THEN
-       !  LN(C) HAS A MEAN OF 0.  -2.5 < LN(C) < 2.5 IMPLIES
-       !  0.0821 < C < 12.1825
-
-       if (CORNEW.lt.0.0821.or. CORNEW.gt.12.1825) then
-          call ERRGRO(.true.,27)
-          write(JOSTND,9194)ISPC,JSP(ISPC),CORNEW
-          9194 format(T28,'SMALL TREE HTG: SPECIES = ',I2,' (',A3,&
-               &') CALCULATED CALIBRATION VALUE = ',F8.2)
-          CORNEW = 1.0
-          HCOR(ISPC) = 0.0
-       end if
+       call REGHCAL(ISPC,SNP,SNX,SNY,CORNEW)
        80 continue
        CORTEM(IREFI) = CORNEW
        NUMCAL(IREFI) = N
@@ -14379,34 +13745,7 @@ contains
 
     ! OUTPUT CALIBRATION TO DATABASE.
 
-    call DBSCALIB(2,CORTEM,NUMCAL,CORTEM) ! LAST ARG IGNORED
-
-    ! OUTPUT CALIBRATION TERMS IF CALBSTAT KEYWORD WAS PRESENT.
-
-    if (JOCALB .gt.0) then
-       KOUT = 0
-       do K = 1,MAXSP
-          if (CORTEM(K).ne.1.0.or. NUMCAL(K).ge.NCALHT) then
-             SPEC = NSP(MAXSP,1)(1:2)
-             ISPEC = MAXSP
-             do KK = 1,MAXSP
-                if (K .ne. IREF(KK)) go to 203
-                ISPEC = KK
-                SPEC = NSP(KK,1)(1:2)
-                go to 2031
-                203 continue
-             end do
-             2031 write(JOCALB,204)ISPEC,SPEC,NUMCAL(K),CORTEM(K)
-             204 format(' CAL: SH',1X,I2,1X,A2,1X,I4,1X,F6.3)
-             KOUT = KOUT + 1
-          end if
-          207 continue
-       end do
-       if (KOUT .eq.0)write(JOCALB,209)
-       209 format(' NO SH VALUES COMPUTED')
-       write(JOCALB,210)
-       210 format(' CALBSTAT END')
-    end if
+    call REGCALOUT(CORTEM,NUMCAL,KOUT,K,KK,ISPEC,SPEC)
     91 if (DEBUG)write(JOSTND,9995)ICYC
     9995 format('LEAVING SUBROUTINE REGENT  CYCLE =',I5)
     return
@@ -15302,28 +14641,7 @@ contains
        !  CALCULATE MEANS FOR THE POPULATION AND FOR THE SAMPLE ON THE
        !  NATURAL SCALE.
 
-       SNX = SNX/SNP
-       SNY = SNY/SNP
-
-       !  CALCULATE RATIO ESTIMATOR.
-
-       CORNEW = SNY/SNX
-       if (CORNEW.le.0.0) CORNEW = 1.0E-4
-       HCOR(ISPC) = ALOG(CORNEW)
-
-       !  TRAP CALIBRATION VALUES OUTSIDE 2.5 STANDARD DEVIATIONS FROM THE
-       !  MEAN. IF C IS THE CALIBRATION TERM, WITH A DEFAULT OF 1.0, THEN
-       !  LN(C) HAS A MEAN OF 0.  -2.5 < LN(C) < 2.5 IMPLIES
-       !  0.0821 < C < 12.1825
-
-       if (CORNEW.lt.0.0821.or. CORNEW.gt.12.1825) then
-          call ERRGRO(.true.,27)
-          write(JOSTND,9194)ISPC,JSP(ISPC),CORNEW
-          9194 format(T28,'SMALL TREE HTG: SPECIES = ',I2,' (',A3,&
-               &') CALCULATED CALIBRATION VALUE = ',F8.2)
-          CORNEW = 1.0
-          HCOR(ISPC) = 0.0
-       end if
+       call REGHCAL(ISPC,SNP,SNX,SNY,CORNEW)
        80 continue
        CORTEM(IREFI) = CORNEW
        NUMCAL(IREFI) = N
@@ -15344,34 +14662,7 @@ contains
 
     ! OUTPUT CALIBRATION TO DATABASE.
 
-    call DBSCALIB(2,CORTEM,NUMCAL,CORTEM) ! LAST ARG IGNORED
-
-    ! OUTPUT CALIBRATION TERMS IF CALBSTAT KEYWORD WAS PRESENT.
-
-    if (JOCALB .gt.0) then
-       KOUT = 0
-       do K = 1,MAXSP
-          if (CORTEM(K).ne.1.0.or. NUMCAL(K).ge.NCALHT) then
-             SPEC = NSP(MAXSP,1)(1:2)
-             ISPEC = MAXSP
-             do KK = 1,MAXSP
-                if (K .ne. IREF(KK)) go to 203
-                ISPEC = KK
-                SPEC = NSP(KK,1)(1:2)
-                go to 2031
-                203 continue
-             end do
-             2031 write(JOCALB,204)ISPEC,SPEC,NUMCAL(K),CORTEM(K)
-             204 format(' CAL: SH',1X,I2,1X,A2,1X,I4,1X,F6.3)
-             KOUT = KOUT + 1
-          end if
-          207 continue
-       end do
-       if (KOUT .eq.0)write(JOCALB,209)
-       209 format(' NO SH VALUES COMPUTED')
-       write(JOCALB,210)
-       210 format(' CALBSTAT END')
-    end if
+    call REGCALOUT(CORTEM,NUMCAL,KOUT,K,KK,ISPEC,SPEC)
     91 if (DEBUG)write(JOSTND,9995)ICYC
     9995 format('LEAVING SUBROUTINE REGENT  CYCLE =',I5)
     return
@@ -16719,30 +16010,7 @@ contains
        !  CALCULATE MEANS FOR THE FOR THE GROWTH SAMPLE ON THE
        !  NATURAL SCALE.
 
-       SNX = SNX/SNP
-       SNY = SNY/SNP
-
-       !  THE CORRECTION TERM IS THE MEAN OF OBSERVED INCREMENTS
-       !  DIVIDED BY THE MEAN OF PREDICTED INCREMENTS (NOT THE REGRESSION
-       !  ESTIMATE USED FOR DIAMETER INCREMENT CALIBRATION).
-
-       CORNEW = SNY/SNX
-       if (CORNEW.le.0.0) CORNEW = 1.0E-4
-       HCOR(ISPC) = ALOG(CORNEW)
-
-       !  TRAP CALIBRATION VALUES OUTSIDE 2.5 STANDARD DEVIATIONS FROM THE
-       !  MEAN. IF C IS THE CALIBRATION TERM, WITH A DEFAULT OF 1.0, THEN
-       !  LN(C) HAS A MEAN OF 0.  -2.5 < LN(C) < 2.5 IMPLIES
-       !  0.0821 < C < 12.1825
-
-       if (CORNEW.lt.0.0821.or. CORNEW.gt.12.1825) then
-          call ERRGRO(.true.,27)
-          write(JOSTND,9194)ISPC,JSP(ISPC),CORNEW
-          9194 format(T28,'SMALL TREE HTG: SPECIES = ',I2,' (',A3,&
-               &') CALCULATED CALIBRATION VALUE = ',F8.2)
-          CORNEW = 1.0
-          HCOR(ISPC) = 0.0
-       end if
+       call REGHCAL(ISPC,SNP,SNX,SNY,CORNEW)
        80 continue
        CORTEM(IREFI) = CORNEW
        NUMCAL(IREFI) = N
@@ -16763,34 +16031,7 @@ contains
 
     ! OUTPUT CALIBRATION TO DATABASE.
 
-    call DBSCALIB(2,CORTEM,NUMCAL,CORTEM) ! LAST ARG IGNORED
-
-    ! OUTPUT CALIBRATION TERMS IF CALBSTAT KEYWORD WAS PRESENT.
-
-    if (JOCALB .gt.0) then
-       KOUT = 0
-       do K = 1,MAXSP
-          if (CORTEM(K).ne.1.0.or. NUMCAL(K).ge.NCALHT) then
-             SPEC = NSP(MAXSP,1)(1:2)
-             ISPEC = MAXSP
-             do KK = 1,MAXSP
-                if (K .ne. IREF(KK)) go to 203
-                ISPEC = KK
-                SPEC = NSP(KK,1)(1:2)
-                go to 2031
-                203 continue
-             end do
-             2031 write(JOCALB,204)ISPEC,SPEC,NUMCAL(K),CORTEM(K)
-             204 format(' CAL: SH',1X,I2,1X,A2,1X,I4,1X,F6.3)
-             KOUT = KOUT + 1
-          end if
-          207 continue
-       end do
-       if (KOUT .eq.0)write(JOCALB,209)
-       209 format(' NO SH VALUES COMPUTED')
-       write(JOCALB,210)
-       210 format(' CALBSTAT END')
-    end if
+    call REGCALOUT(CORTEM,NUMCAL,KOUT,K,KK,ISPEC,SPEC)
     return
 
     9998 continue
@@ -17518,28 +16759,7 @@ contains
        !  CALCULATE MEANS FOR THE POPULATION AND FOR THE SAMPLE ON THE
        !  NATURAL SCALE.
 
-       SNX = SNX/SNP
-       SNY = SNY/SNP
-
-       !  CALCULATE RATIO ESTIMATOR.
-
-       CORNEW = SNY/SNX
-       if (CORNEW.le.0.0) CORNEW = 1.0E-4
-       HCOR(ISPC) = ALOG(CORNEW)
-
-       !  TRAP CALIBRATION VALUES OUTSIDE 2.5 STANDARD DEVIATIONS FROM THE
-       !  MEAN. IF C IS THE CALIBRATION TERM, WITH A DEFAULT OF 1.0, THEN
-       !  LN(C) HAS A MEAN OF 0.  -2.5 < LN(C) < 2.5 IMPLIES
-       !  0.0821 < C < 12.1825
-
-       if (CORNEW.lt.0.0821.or. CORNEW.gt.12.1825) then
-          call ERRGRO(.true.,27)
-          write(JOSTND,9194)ISPC,JSP(ISPC),CORNEW
-          9194 format(T28,'SMALL TREE HTG: SPECIES = ',I2,' (',A3,&
-               &') CALCULATED CALIBRATION VALUE = ',F8.2)
-          CORNEW = 1.0
-          HCOR(ISPC) = 0.0
-       end if
+       call REGHCAL(ISPC,SNP,SNX,SNY,CORNEW)
        80 continue
        CORTEM(IREFI) = CORNEW
        NUMCAL(IREFI) = N
@@ -17560,34 +16780,7 @@ contains
 
     ! OUTPUT CALIBRATION TO DATABASE.
 
-    call DBSCALIB(2,CORTEM,NUMCAL,CORTEM) ! LAST ARG IGNORED
-
-    ! OUTPUT CALIBRATION TERMS IF CALBSTAT KEYWORD WAS PRESENT.
-
-    if (JOCALB .gt.0) then
-       KOUT = 0
-       do K = 1,MAXSP
-          if (CORTEM(K).ne.1.0.or. NUMCAL(K).ge.NCALHT) then
-             SPEC = NSP(MAXSP,1)(1:2)
-             ISPEC = MAXSP
-             do KK = 1,MAXSP
-                if (K .ne. IREF(KK)) go to 203
-                ISPEC = KK
-                SPEC = NSP(KK,1)(1:2)
-                go to 2031
-                203 continue
-             end do
-             2031 write(JOCALB,204)ISPEC,SPEC,NUMCAL(K),CORTEM(K)
-             204 format(' CAL: SH',1X,I2,1X,A2,1X,I4,1X,F6.3)
-             KOUT = KOUT + 1
-          end if
-          207 continue
-       end do
-       if (KOUT .eq.0)write(JOCALB,209)
-       209 format(' NO SH VALUES COMPUTED')
-       write(JOCALB,210)
-       210 format(' CALBSTAT END')
-    end if
+    call REGCALOUT(CORTEM,NUMCAL,KOUT,K,KK,ISPEC,SPEC)
     91 if (DEBUG)write(JOSTND,9995)ICYC
     9995 format('LEAVING SUBROUTINE REGENT  CYCLE =',I5)
     return
@@ -18415,28 +17608,7 @@ contains
        !  CALCULATE MEANS FOR THE POPULATION AND FOR THE SAMPLE ON THE
        !  NATURAL SCALE.
 
-       SNX = SNX/SNP
-       SNY = SNY/SNP
-
-       !  CALCULATE RATIO ESTIMATOR.
-
-       CORNEW = SNY/SNX
-       if (CORNEW.le.0.0) CORNEW = 1.0E-4
-       HCOR(ISPC) = ALOG(CORNEW)
-
-       !  TRAP CALIBRATION VALUES OUTSIDE 2.5 STANDARD DEVIATIONS FROM THE
-       !  MEAN. IF C IS THE CALIBRATION TERM, WITH A DEFAULT OF 1.0, THEN
-       !  LN(C) HAS A MEAN OF 0.  -2.5 < LN(C) < 2.5 IMPLIES
-       !  0.0821 < C < 12.1825
-
-       if (CORNEW.lt.0.0821.or. CORNEW.gt.12.1825) then
-          call ERRGRO(.true.,27)
-          write(JOSTND,9194)ISPC,JSP(ISPC),CORNEW
-          9194 format(T28,'SMALL TREE HTG: SPECIES = ',I2,' (',A3,&
-               &') CALCULATED CALIBRATION VALUE = ',F8.2)
-          CORNEW = 1.0
-          HCOR(ISPC) = 0.0
-       end if
+       call REGHCAL(ISPC,SNP,SNX,SNY,CORNEW)
        80 continue
        CORTEM(IREFI) = CORNEW
        NUMCAL(IREFI) = N
@@ -18457,34 +17629,7 @@ contains
 
     ! OUTPUT CALIBRATION TO DATABASE.
 
-    call DBSCALIB(2,CORTEM,NUMCAL,CORTEM) ! LAST ARG IGNORED
-
-    ! OUTPUT CALIBRATION TERMS IF CALBSTAT KEYWORD WAS PRESENT.
-
-    if (JOCALB .gt.0) then
-       KOUT = 0
-       do K = 1,MAXSP
-          if (CORTEM(K).ne.1.0.or. NUMCAL(K).ge.NCALHT) then
-             SPEC = NSP(MAXSP,1)(1:2)
-             ISPEC = MAXSP
-             do KK = 1,MAXSP
-                if (K .ne. IREF(KK)) go to 203
-                ISPEC = KK
-                SPEC = NSP(KK,1)(1:2)
-                go to 2031
-                203 continue
-             end do
-             2031 write(JOCALB,204)ISPEC,SPEC,NUMCAL(K),CORTEM(K)
-             204 format(' CAL: SH',1X,I2,1X,A2,1X,I4,1X,F6.3)
-             KOUT = KOUT + 1
-          end if
-          207 continue
-       end do
-       if (KOUT .eq.0)write(JOCALB,209)
-       209 format(' NO SH VALUES COMPUTED')
-       write(JOCALB,210)
-       210 format(' CALBSTAT END')
-    end if
+    call REGCALOUT(CORTEM,NUMCAL,KOUT,K,KK,ISPEC,SPEC)
     91 if (DEBUG)write(JOSTND,9995)ICYC
     9995 format('LEAVING SUBROUTINE REGENT  CYCLE =',I5)
     return
@@ -18523,5 +17668,88 @@ contains
 
     call BALMOD(ISPC,D,GMOD)
   end subroutine NEBALM
+
+
+  subroutine REGHCAL(ISPC,SNP,SNX,SNY,CORNEW)
+    implicit none
+
+    ! SMALL-TREE HEIGHT CALIBRATION: RATIO ESTIMATOR AND OUT-OF-RANGE TRAP FOR
+    ! ONE SPECIES, SHARED BY EVERY FAMILY EXCEPT BC AND ON.
+
+    integer :: ISPC
+    real :: SNP
+    real :: SNX
+    real :: SNY
+    real :: CORNEW
+
+    SNX = SNX/SNP
+    SNY = SNY/SNP
+
+    !  CALCULATE RATIO ESTIMATOR.
+
+    CORNEW = SNY/SNX
+    if (CORNEW.le.0.0) CORNEW = 1.0E-4
+    HCOR(ISPC) = ALOG(CORNEW)
+
+    !  TRAP CALIBRATION VALUES OUTSIDE 2.5 STANDARD DEVIATIONS FROM THE
+    !  MEAN. IF C IS THE CALIBRATION TERM, WITH A DEFAULT OF 1.0, THEN
+    !  LN(C) HAS A MEAN OF 0.  -2.5 < LN(C) < 2.5 IMPLIES
+    !  0.0821 < C < 12.1825
+
+    if (CORNEW.lt.0.0821.or. CORNEW.gt.12.1825) then
+       call ERRGRO(.true.,27)
+       write(JOSTND,9194)ISPC,JSP(ISPC),CORNEW
+       9194 format(T28,'SMALL TREE HTG: SPECIES = ',I2,' (',A3,&
+            &') CALCULATED CALIBRATION VALUE = ',F8.2)
+       CORNEW = 1.0
+       HCOR(ISPC) = 0.0
+    end if
+  end subroutine REGHCAL
+
+
+  subroutine REGCALOUT(CORTEM,NUMCAL,KOUT,K,KK,ISPEC,SPEC)
+    implicit none
+
+    ! SMALL-TREE HEIGHT CALIBRATION OUTPUT: DATABASE TABLE AND, WITH THE
+    ! CALBSTAT KEYWORD, THE CALIBRATION-STATISTICS FILE. SHARED BY EVERY
+    ! FAMILY EXCEPT ON. THE SCALE-FACTOR ARRAYS KEEP EACH FAMILY'S EXTENT.
+
+    real :: CORTEM(*)
+    integer :: NUMCAL(*)
+    integer :: KOUT
+    integer :: K
+    integer :: KK
+    integer :: ISPEC
+    character(len=2) :: SPEC
+
+    call DBSCALIB(2,CORTEM,NUMCAL,CORTEM) ! LAST ARG IGNORED
+
+    ! OUTPUT CALIBRATION TERMS IF CALBSTAT KEYWORD WAS PRESENT.
+
+    if (JOCALB .gt.0) then
+       KOUT = 0
+       do K = 1,MAXSP
+          if (CORTEM(K).ne.1.0.or. NUMCAL(K).ge.NCALHT) then
+             SPEC = NSP(MAXSP,1)(1:2)
+             ISPEC = MAXSP
+             do KK = 1,MAXSP
+                if (K .ne. IREF(KK)) go to 203
+                ISPEC = KK
+                SPEC = NSP(KK,1)(1:2)
+                go to 2031
+                203 continue
+             end do
+             2031 write(JOCALB,204)ISPEC,SPEC,NUMCAL(K),CORTEM(K)
+             204 format(' CAL: SH',1X,I2,1X,A2,1X,I4,1X,F6.3)
+             KOUT = KOUT + 1
+          end if
+          207 continue
+       end do
+       if (KOUT .eq.0)write(JOCALB,209)
+       209 format(' NO SH VALUES COMPUTED')
+       write(JOCALB,210)
+       210 format(' CALBSTAT END')
+    end if
+  end subroutine REGCALOUT
 
 end subroutine REGENT

@@ -7,6 +7,7 @@
 ../common/CALCOM.f90
 ../common/CALDEN.f90
 ../common/CICOM.f90
+../common/EMCOM.f90
 ../common/CLIMATE.f90
 ../common/COEFFS.f90
 ../common/CONTRL.f90
@@ -110,6 +111,8 @@
 ../vbase/fvsstd.f90
 ../vbase/fvsstdrec_mod.f90
 ../vbase/gheads.f90
+../vbase/initrekeys_mod.f90
+../vbase/initrevol_mod.f90
 ../vbase/initre.f90
 ../vbase/initdesign_mod.f90
 ../vbase/prtexm.f90
@@ -399,10 +402,8 @@
 ../organon/statsorg.f90
 ../organon/submax.f90
 ../organon/tripleorg.f90
-../organon/varget.f90
-../pg/varchget.f90
-../organon/varput.f90
-../pg/varchput.f90
+../vbase/varget.f90
+../vbase/varput.f90
 ../organon/voleqns.f90
 ../organon/vols.f90
 ../organon/whphg.f90
@@ -695,6 +696,7 @@
 ../fire/base/fmhide.f90
 ../fire/base/fmdwdreq_mod.f90
 ../fire/base/fmdwcvreq_mod.f90
+../fire/base/fminkeys_mod.f90
 ../fire/base/fmfuelreq_mod.f90
 ../fire/base/fmin.f90
 ../fire/base/fminit.f90
