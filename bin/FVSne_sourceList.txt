@@ -591,7 +591,7 @@
 ../fire/ne/fmcba.f90
 ../fire/ne/fmcblk.f90
 ../fire/ak/fmcfmd.f90
-../fire/ne/fmcrow.f90
+../fire/vbase/fmcrow.f90
 ../fire/base/fmmois.f90
 ../fire/ne/fmneft.f90
 ../fire/ne/fmsfall.f90

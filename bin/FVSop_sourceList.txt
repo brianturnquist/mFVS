@@ -645,7 +645,7 @@
 ../fire/pn/fmcba.f90
 ../fire/op/fmcblk.f90
 ../fire/op/fmcrow.f90
-../fire/op/fmvinit.f90
+../fire/base/fmvinit.f90
 ../fire/ie/fmcons.f90
 ../fire/base/fmmois.f90
 ../fire/pn/fmsfall.f90

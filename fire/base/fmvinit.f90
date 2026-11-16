@@ -178,9 +178,12 @@ subroutine FMVINIT
 
   !     DECAYX() MULTIPLIER = 999.0; INITIALLY HARD SNAGS NEVER BECOME SOFT
 
+  !  OP SPECIES 24 USES THE SPECIES-25 DEFAULTS AND DECAY CLASS.
+  !  MAP ONLY THE SELECTION; STORE RESULTS AT EACH NATIVE SPECIES INDEX.
+
   do I = 1,MAXSP
 
-     select case (I)
+     select case (FMVSPECIES(I))
 
         !         Pacific silver fir - EC
      case (1)
@@ -802,7 +805,7 @@ subroutine FMVINIT
 
      !       SET THE DECAY RATE CLASS (DKRCLS)
 
-     select case (I)
+     select case (FMVSPECIES(I))
 
         !         some pines, doug-fir, cedars
      case (8,9,13,14,16:18,29:31,33)
@@ -851,4 +854,14 @@ subroutine FMVINIT
   CCCRIT = 10.0
 
   return
+
+contains
+
+  pure integer function FMVSPECIES(ISPC)
+    implicit none
+    integer, intent(in) :: ISPC
+
+    FMVSPECIES = ISPC
+    if (VARIANTCD.eq.'OP'.and.ISPC.eq.24) FMVSPECIES = 25
+  end function FMVSPECIES
 end

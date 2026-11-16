@@ -1091,8 +1091,9 @@ existing SMHGDG calls, arithmetic, random draws and period conversion.
 
 **Variants:** CS, SN
 
-**Location:** `fire/cs/fmcfmd.f90:119-136` and
-`fire/sn/fmcfmd.f90:119-136`.
+**Location:** `fire/vbase/fmcfmd_cs.f90:119-136`, shared by CS/SN under
+F13. Former locations: `fire/cs/fmcfmd.f90:119-136` and
+`fire/sn/fmcfmd.f90:119-136` at `6943c310`.
 
 **Status:** reproduced during a fresh source audit on 15 November 2026 at
 `1cf093f3`. Present in original F77 `c2105365`; deliberately unfixed.
@@ -1121,8 +1122,9 @@ weights and resulting fire behavior separately from structural cleanup.
 
 **Variants:** CS, SN
 
-**Location:** `fire/cs/fmcfmd.f90:154-175` and
-`fire/sn/fmcfmd.f90:154-175`.
+**Location:** `fire/vbase/fmcfmd_cs.f90:154-184`, shared by CS/SN under
+F13. Former locations: `fire/cs/fmcfmd.f90:154-175` and
+`fire/sn/fmcfmd.f90:154-175` at `6943c310`.
 
 **Status:** reproduced during the fresh audit on 15 November 2026 at
 `1cf093f3`. Present in original F77 `c2105365`; deliberately unfixed.
@@ -1180,3 +1182,35 @@ an explicit interface, after checking BC's intended total, merchantable and
 sawtimber-volume handling. Validate broken-top snag calculations as a
 separate bug fix rather than silently correcting the call in a shared
 volume-routine extraction.
+
+## 43. ON planted white pine is omitted from pine crown cover in fuel selection
+
+**Variants:** ON
+
+**Location:** `fire/vbase/fmcfmd_ls.f90:345-379`. Former location:
+`canada/fire/on/fmcfmd.f90:345-379` at `6943c310`.
+
+**Status:** reproduced during F12 consolidation on 15 November 2026.
+Present in original F77 `c2105365`; deliberately unfixed.
+
+The red/white-pine cover group includes planted white pine (species 70)
+in its basal area, but its `PINECRA` calculation counts only species 3–5.
+Consequently, planted white pine contributes no pine crown cover. In a
+mixed stand, the `PINECOV/PERCOV < 0.5` test can select candidate fuel model
+8 where the equivalent native white-pine record (species 5) selects
+candidate model 9.
+ON's species table identifies 70 as planted white pine and 5 as white pine.
+
+**Confirmation:** temporary drivers compared actual original F77,
+baseline `6943c310` and shared FMCFMD. Only DBCHK and the downstream FMDYN
+were stubbed; FMDYN captured its incoming candidate weights. Two 12-inch
+records represented 100 white-pine trees/acre and 25 red-maple trees/acre,
+both with 20-foot crown widths. With stand cover 59.4045%, average height
+40 feet, wind 6, habitat type 1, no dead surface fuel and no activity fuel,
+species 5 produced `(EQWT(8),EQWT(9))=(0,1)` while species 70 produced
+`(1,0)`. All three implementations agreed. This confirms a difference in
+fuel-candidate weights; integrated fire-output impact was not measured.
+
+**Suggested fix:** review the plantation-species treatment in the crown
+cover and understory tests, then include the appropriate native aliases
+consistently. Validate resulting fuel selection as a separate model change.

@@ -627,7 +627,7 @@
 ../fire/base/common/FMSVCM.f90
 
 ../fire/base/fmbrkt.f90
-../fire/ie/fmcba.f90
+../fire/base/fmcba.f90
 ../fire/base/fmcblk.f90
 ../fire/ie/FMBIOGRP.f90
 ../fire/ie/fmcfmd.f90

@@ -433,9 +433,9 @@
 
 ../fire/base/fmbrkt.f90
 ../canada/fire/on/fmcblk.f90
-../canada/fire/on/fmcfmd.f90
+../fire/vbase/fmcfmd_ls.f90
 ../fire/base/findmod.f90
-../canada/fire/on/fmcrow.f90
+../fire/vbase/fmcrow.f90
 
 ../fire/ls/fmcba.f90
 ../fire/ls/fmlsft.f90

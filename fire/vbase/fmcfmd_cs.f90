@@ -1,7 +1,7 @@
 !======================!
-!   fire/sn : fmcfmd   !
+!  fire/vbase:fmcfmd_cs !
 !======================!
-! FIRE-SN $Id$
+! FIRE-CS,SN $Id$
 subroutine FMCFMD (IYR, FMD)
   implicit none
 
@@ -72,7 +72,7 @@ subroutine FMCFMD (IYR, FMD)
        &5., 15.,& ! FMD   7
        &5., 15.,& ! FMD   8
        &5., 15.,& ! FMD   9
-       &10., 30.,& ! FMD  10 ! moved line based on workshop input
+       &10., 30.,& ! FMD  10 ! moved line based on SN workshop input
        &15., 30.,& ! FMD  11
        &30., 60.,& ! FMD  12
        &45.,100.,& ! FMD  13
@@ -157,14 +157,21 @@ subroutine FMCFMD (IYR, FMD)
      do I = 1,ITRN
         X = HT(I)
         Y = FMPROB(I)
-        select case (ISP(I))
-        case (2) ! redcedar
+        !  CS COUNTS BOTH CEDARS; SN COUNTS EASTERN REDCEDAR ONLY.
+        if (ISP(I).eq.2.or.(VARIANTCD.eq.'CS'.and.ISP(I).eq.1)) then
            RCHT = RCHT + X
            RCTPA = RCTPA + Y
-        end select
+        end if
      end do
 
-     RCHT = RCHT/RCTPA
+     !  RETAIN CS'S ZERO-DENSITY GUARD AND SN'S UNCONDITIONAL DIVIDE.
+     !  THE HEIGHT AVERAGING AND MOISTURE-WEIGHT DEFECTS ARE TRACKED
+     !  SEPARATELY AS BUGS 40-41; THIS SHARED ROUTINE PRESERVES THEM.
+     if (VARIANTCD.eq.'CS') then
+        if (RCTPA .gt.0) RCHT = RCHT/RCTPA
+     else
+        RCHT = RCHT/RCTPA
+     end if
 
      if (RCHT .gt.7.5) then
         EQWT(4) = 1.0
@@ -192,7 +199,7 @@ subroutine FMCFMD (IYR, FMD)
   EQWT(14) = 0.0
 
   !  CALL FMDYN TO RESOLVE WEIGHTS, SORT THE WEIGHTED FUEL MODELS
-  !  FROM THE HIGHEST TO LOWEST, SET FMD (UGING THE HIGHEST WEIGHT)
+  !  FROM THE HIGHEST TO LOWEST, SET FMD (USING THE HIGHEST WEIGHT)
 
   call FMDYN(SMALL,LARGE,ITYP,XPTS,EQWT,IPTR,ICLSS,LDYNFM,FMD)
 

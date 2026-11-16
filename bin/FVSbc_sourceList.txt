@@ -417,7 +417,7 @@
 ../fire/base/fmbrkt.f90
 ../fire/vbase/fmburn.f90
 ../canada/fire/bc/fmcanc.f90
-../canada/fire/bc/fmcba.f90
+../fire/base/fmcba.f90
 ../fire/base/fmcblk.f90
 ../canada/fire/bc/FMBIOGRP.f90
 ../canada/fire/bc/fmcfim.f90

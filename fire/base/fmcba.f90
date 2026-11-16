@@ -1,7 +1,7 @@
-!=====================!
-!   fire/ie : fmcba   !
-!=====================!
-! FIRE-IE $Id$
+!=======================!
+!   fire/base : fmcba   !
+!=======================!
+! FIRE-IE, KT, BC $Id$
 subroutine FMCBA (IYR,ISWTCH)
   implicit none
 
@@ -44,8 +44,8 @@ subroutine FMCBA (IYR,ISWTCH)
   ! Variables
   real    :: TBA(MAXSP)
   real    :: BAMOST,BA1,TOTCRA,CWIDTH
-  real    :: FULIVE(2,MAXSP),FULIVI(2,MAXSP)
-  real    :: FUINIE(MXFLCL,MAXSP),FUINII(MXFLCL,MAXSP)
+  real    :: FULIVE(2,49),FULIVI(2,49)
+  real    :: FUINIE(MXFLCL,49),FUINII(MXFLCL,49)
   real    :: STFUEL(MXFLCL,2),XCOV(2),YLOAD(2),FOTOVAL(MXFLCL)
   real    :: PRMS(12),FOTOVALS(9)
   logical :: DEBUG
@@ -56,6 +56,14 @@ subroutine FMCBA (IYR,ISWTCH)
   integer :: MYACT(3)
   integer :: IYR,KSP,I,ISZ,J,NPRM,IACTK,ISWTCH,JYR,IDC
   real    :: BIGDBH,TOTBA,CAREA,ALGSLP,PRCL,ADD
+
+  !  THE BANKS CONCATENATE IE'S 23, KT'S 11 AND BC'S 15 NATIVE ROWS.
+  !  NO SPECIES ROW IS PADDED OR RESAMPLED. THE CONSTANT OFFSET SELECTS
+  !  THE ORIGINAL NATIVE COLUMN WITHOUT COPYING OR CHANGING ITS VALUES.
+
+  integer :: IBSP,IBSZ
+  integer, parameter :: IBANK = merge(0, merge(23,34,VARIANTCD.eq.'KT'), &
+       &VARIANTCD.eq.'IE')
 
   !     CLASSIFICATION OF HABITATS TO BE DRY GRASSY (IDRYB=1),
   !     DRY SHRUBBY (IDRYB=2), OR OTHER (IDRYB=0)
@@ -84,7 +92,9 @@ subroutine FMCBA (IYR,ISWTCH)
        &313,2/ ! PSME/SYAL-SYAL
 
   !                  herbs, shrubs
-  data FULIVE /0.15,  0.1,&
+  !  IE FULIVE BANK, ORIGINAL NATIVE SPECIES ORDER.
+
+  data ((FULIVE(IBSZ,IBSP),IBSZ=1,2),IBSP=1,23) /0.15,  0.1,&
        &0.2,   0.2,&
        &0.2,   0.2,&
        &0.15,  0.1,&
@@ -108,7 +118,41 @@ subroutine FMCBA (IYR,ISWTCH)
        &0.25,  0.25,& !QA - ottmar and others 2000b
        &0.15,  0.2/
 
-  data FULIVI /0.30, 2.0,&
+  !  KT FULIVE BANK, ORIGINAL NATIVE SPECIES ORDER.
+
+  data ((FULIVE(IBSZ,IBSP),IBSZ=1,2),IBSP=24,34) /0.15,  0.1,&
+       &0.2,   0.2,&
+       &0.2,   0.2,&
+       &0.15,  0.1,&
+       &0.2,   0.2,&
+       &0.2,   0.2,&
+       &0.2,   0.1,&
+       &0.15,  0.2,&
+       &0.15,  0.2,&
+       &0.2,   0.25,&
+       &0.15,  0.2/
+
+  !  BC FULIVE BANK, ORIGINAL NATIVE SPECIES ORDER.
+
+  data ((FULIVE(IBSZ,IBSP),IBSZ=1,2),IBSP=35,49) /0.15,  0.1,&
+       &0.2,   0.2,&
+       &0.2,   0.2,&
+       &0.15,  0.1,&
+       &0.2,   0.2,&
+       &0.2,   0.2,&
+       &0.2,   0.1,&
+       &0.15,  0.2,&
+       &0.15,  0.2,&
+       &0.2,   0.25,&
+       &0.25,  0.25,& ! birch 21 !QA - ottmar and others 2000b
+       &0.25,  0.25,& ! aspen 18
+       &0.25,  0.25,& ! cotton 19 !QA - ottmar and others 2000b
+       &0.2,   0.2,& ! FD 3
+       &0.25,  0.25/ ! birch 21
+
+  !  IE FULIVI BANK, ORIGINAL NATIVE SPECIES ORDER.
+
+  data ((FULIVI(IBSZ,IBSP),IBSZ=1,2),IBSP=1,23) /0.30, 2.0,&
        &0.4,  2.0,&
        &0.4,  2.0,&
        &0.30, 2.0,&
@@ -131,8 +175,42 @@ subroutine FMCBA (IYR,ISWTCH)
        &0.18, 1.32,& !QA - ottmar and others 2000b
        &0.18, 1.32,& !QA - ottmar and others 2000b
        &0.30, 2.0/
+
+  !  KT FULIVI BANK, ORIGINAL NATIVE SPECIES ORDER.
+
+  data ((FULIVI(IBSZ,IBSP),IBSZ=1,2),IBSP=24,34) /0.30, 2.0,&
+       &0.4,  2.0,&
+       &0.4,  2.0,&
+       &0.30, 2.0,&
+       &0.4,  2.0,&
+       &0.4,  2.0,&
+       &0.4,  1.0,&
+       &0.30, 2.0,&
+       &0.30, 2.0,&
+       &0.25, 0.10,&
+       &0.30, 2.0/
+
+  !  BC FULIVI BANK, ORIGINAL NATIVE SPECIES ORDER.
+
+  data ((FULIVI(IBSZ,IBSP),IBSZ=1,2),IBSP=35,49) /0.30, 2.0,&
+       &0.4,  2.0,&
+       &0.4,  2.0,&
+       &0.30, 2.0,&
+       &0.4,  2.0,&
+       &0.4,  2.0,&
+       &0.4,  1.0,&
+       &0.30, 2.0,&
+       &0.30, 2.0,&
+       &0.25, 0.10,&
+       &0.18, 1.32,&
+       &0.18, 1.32,&
+       &0.18, 1.32,&
+       &0.4,  2.0,&
+       &0.18, 1.32/
   !                  <.25 to1  1-3   3-6 6-12  12-20 20-35 35-50 >50  Lit  Duf
-  data FUINIE /1.0, 1.0, 1.6, 10.0,10.0,10.0, 0.0,0.0,0.0,0.8,30.0,&
+  !  IE FUINIE BANK, ORIGINAL NATIVE SPECIES ORDER.
+
+  data ((FUINIE(IBSZ,IBSP),IBSZ=1,MXFLCL),IBSP=1,23) /1.0, 1.0, 1.6, 10.0,10.0,10.0, 0.0,0.0,0.0,0.8,30.0,&
        &0.9 ,0.9, 1.6,  3.5, 3.5, 0.0, 0.0,0.0,0.0,0.6,10.0,&
        &0.9 ,0.9, 1.6,  3.5, 3.5, 0.0, 0.0,0.0,0.0,0.6,10.0,&
        &0.7 ,0.7, 3.0,  7.0, 7.0, 0.0, 0.0,0.0,0.0,0.6,25.0,&
@@ -155,8 +233,42 @@ subroutine FMCBA (IYR,ISWTCH)
        &0.2, 0.6, 2.4,  3.6, 5.6, 0.0, 0.0,0.0,0.0,1.4,16.8,& !QA - ottmar and others 2000b
        &0.2, 0.6, 2.4,  3.6, 5.6, 0.0, 0.0,0.0,0.0,1.4,16.8,& !QA - ottmar and others 2000b
        &1.1 ,1.1, 2.2, 10.0,10.0, 0.0, 0.0,0.0,0.0,0.6,30.0/
+
+  !  KT FUINIE BANK, ORIGINAL NATIVE SPECIES ORDER.
+
+  data ((FUINIE(IBSZ,IBSP),IBSZ=1,MXFLCL),IBSP=24,34) /1.0, 1.0, 1.6, 10.0,10.0,10.0, 0.0,0.0,0.0, 0.8,30.0,&
+       &0.9 ,0.9, 1.6,  3.5, 3.5, 0.0, 0.0,0.0,0.0, 0.6,10.0,&
+       &0.9 ,0.9, 1.6,  3.5, 3.5, 0.0, 0.0,0.0,0.0, 0.6,10.0,&
+       &0.7 ,0.7, 3.0,  7.0, 7.0, 0.0, 0.0,0.0,0.0, 0.6,25.0,&
+       &2.2, 2.2, 5.2, 15.0,20.0,15.0, 0.0,0.0,0.0, 1.0,35.0,&
+       &2.2, 2.2, 5.2, 15.0,20.0,15.0, 0.0,0.0,0.0, 1.0,35.0,&
+       &0.9 ,0.9, 1.2,  7.0, 8.0, 0.0, 0.0,0.0,0.0, 0.6,15.0,&
+       &1.1 ,1.1, 2.2, 10.0,10.0, 0.0, 0.0,0.0,0.0, 0.6,30.0,&
+       &1.1 ,1.1, 2.2, 10.0,10.0, 0.0, 0.0,0.0,0.0, 0.6,30.0,&
+       &0.7 ,0.7, 1.6,  2.5, 2.5, 0.0, 0.0,0.0,0.0, 1.4, 5.0,&
+       &1.1 ,1.1, 2.2, 10.0,10.0, 0.0, 0.0,0.0,0.0, 0.6,30.0/
+
+  !  BC FUINIE BANK, ORIGINAL NATIVE SPECIES ORDER.
+
+  data ((FUINIE(IBSZ,IBSP),IBSZ=1,MXFLCL),IBSP=35,49) /1.0, 1.0, 1.6,10.0,10.0,10.0, 0.0,0.0,0.0, 0.8,30.0,&
+       &0.9, 0.9, 1.6, 3.5, 3.5, 0.0, 0.0,0.0,0.0, 0.6,10.0,&
+       &0.9, 0.9, 1.6, 3.5, 3.5, 0.0, 0.0,0.0,0.0, 0.6,10.0,&
+       &0.7, 0.7, 3.0, 7.0, 7.0, 0.0, 0.0,0.0,0.0, 0.6,25.0,&
+       &2.2, 2.2, 5.2,15.0,20.0,15.0, 0.0,0.0,0.0, 1.0,35.0,&
+       &2.2, 2.2, 5.2,15.0,20.0,15.0, 0.0,0.0,0.0, 1.0,35.0,&
+       &0.9, 0.9, 1.2, 7.0, 8.0, 0.0, 0.0,0.0,0.0, 0.6,15.0,&
+       &1.1, 1.1, 2.2,10.0,10.0, 0.0, 0.0,0.0,0.0, 0.6,30.0,&
+       &1.1, 1.1, 2.2,10.0,10.0, 0.0, 0.0,0.0,0.0, 0.6,30.0,&
+       &0.7, 0.7, 1.6, 2.5, 2.5, 0.0, 0.0,0.0,0.0, 1.4, 5.0,&
+       &0.2, 0.6, 2.4, 3.6, 5.6, 0.0, 0.0,0.0,0.0, 1.4,16.8,&
+       &0.2, 0.6, 2.4, 3.6, 5.6, 0.0, 0.0,0.0,0.0, 1.4,16.8,&
+       &0.2, 0.6, 2.4, 3.6, 5.6, 0.0, 0.0,0.0,0.0, 1.4,16.8,&
+       &0.9, 0.9, 1.6, 3.5, 3.5, 0.0, 0.0,0.0,0.0, 0.6,10.0,&
+       &0.2, 0.6, 2.4, 3.6, 5.6, 0.0, 0.0,0.0,0.0, 1.4,16.8/
   !                  <.25 to1  1-3   3-6 6-12  12-20 20-35 35-50 >50  Lit  Duf
-  data FUINII /0.6, 0.6, 0.8,  6.0, 6.0, 6.0, 0.0,0.0,0.0,0.4,12.0,&
+  !  IE FUINII BANK, ORIGINAL NATIVE SPECIES ORDER.
+
+  data ((FUINII(IBSZ,IBSP),IBSZ=1,MXFLCL),IBSP=1,23) /0.6, 0.6, 0.8,  6.0, 6.0, 6.0, 0.0,0.0,0.0,0.4,12.0,&
        &0.5, 0.5, 1.0,  1.4, 1.4, 0.0, 0.0,0.0,0.0,0.3, 5.0,&
        &0.5, 0.5, 1.0,  1.4, 1.4, 0.0, 0.0,0.0,0.0,0.3, 5.0,&
        &0.5, 0.5, 2.0,  2.8, 2.8, 0.0, 0.0,0.0,0.0,0.3,12.0,&
@@ -179,6 +291,38 @@ subroutine FMCBA (IYR,ISWTCH)
        &0.1, 0.4, 5.0,  2.2, 2.3, 0.0, 0.0,0.0,0.0,0.8, 5.6,& !QA - ottmar and others 2000b
        &0.1, 0.4, 5.0,  2.2, 2.3, 0.0, 0.0,0.0,0.0,0.8, 5.6,& !QA - ottmar and others 2000b
        &0.7, 0.7, 1.6,  4.0, 4.0, 0.0, 0.0,0.0,0.0,0.3,12.0/
+
+  !  KT FUINII BANK, ORIGINAL NATIVE SPECIES ORDER.
+
+  data ((FUINII(IBSZ,IBSP),IBSZ=1,MXFLCL),IBSP=24,34) /0.6, 0.6, 0.8,  6.0, 6.0, 6.0, 0.0,0.0,0.0, 0.4,12.0,&
+       &0.5, 0.5, 1.0,  1.4, 1.4, 0.0, 0.0,0.0,0.0, 0.3, 5.0,&
+       &0.5, 0.5, 1.0,  1.4, 1.4, 0.0, 0.0,0.0,0.0, 0.3, 5.0,&
+       &0.5, 0.5, 2.0,  2.8, 2.8, 0.0, 0.0,0.0,0.0, 0.3,12.0,&
+       &1.6, 1.6, 3.6,  6.0, 8.0, 6.0, 0.0,0.0,0.0, 0.5,12.0,&
+       &1.6, 1.6, 3.6,  6.0, 8.0, 6.0, 0.0,0.0,0.0, 0.5,12.0,&
+       &0.6, 0.7, 0.8,  2.8, 3.2, 0.0, 0.0,0.0,0.0, 0.3, 7.0,&
+       &0.7, 0.7, 1.6,  4.0, 4.0, 0.0, 0.0,0.0,0.0, 0.3,12.0,&
+       &0.7, 0.7, 1.6,  4.0, 4.0, 0.0, 0.0,0.0,0.0, 0.3,12.0,&
+       &0.1, 0.1, 0.2,  0.5, 0.5, 0.0, 0.0,0.0,0.0, 0.5, 0.8,&
+       &0.7, 0.7, 1.6,  4.0, 4.0, 0.0, 0.0,0.0,0.0, 0.3,12.0/
+
+  !  BC FUINII BANK, ORIGINAL NATIVE SPECIES ORDER.
+
+  data ((FUINII(IBSZ,IBSP),IBSZ=1,MXFLCL),IBSP=35,49) /0.6, 0.6, 0.8, 6.0, 6.0, 6.0, 0.0,0.0,0.0, 0.4,12.0,&
+       &0.5, 0.5, 1.0, 1.4, 1.4, 0.0, 0.0,0.0,0.0, 0.3, 5.0,&
+       &0.5, 0.5, 1.0, 1.4, 1.4, 0.0, 0.0,0.0,0.0, 0.3, 5.0,&
+       &0.5, 0.5, 2.0, 2.8, 2.8, 0.0, 0.0,0.0,0.0, 0.3,12.0,&
+       &1.6, 1.6, 3.6, 6.0, 8.0, 6.0, 0.0,0.0,0.0, 0.5,12.0,&
+       &1.6, 1.6, 3.6, 6.0, 8.0, 6.0, 0.0,0.0,0.0, 0.5,12.0,&
+       &0.6, 0.7, 0.8, 2.8, 3.2, 0.0, 0.0,0.0,0.0, 0.3, 7.0,&
+       &0.7, 0.7, 1.6, 4.0, 4.0, 0.0, 0.0,0.0,0.0, 0.3,12.0,&
+       &0.7, 0.7, 1.6, 4.0, 4.0, 0.0, 0.0,0.0,0.0, 0.3,12.0,&
+       &0.1, 0.1, 0.2, 0.5, 0.5, 0.0, 0.0,0.0,0.0, 0.5, 0.8,&
+       &0.1, 0.4, 5.0, 2.2, 2.3, 0.0, 0.0,0.0,0.0, 0.8, 5.6,&
+       &0.1, 0.4, 5.0, 2.2, 2.3, 0.0, 0.0,0.0,0.0, 0.8, 5.6,&
+       &0.1, 0.4, 5.0, 2.2, 2.3, 0.0, 0.0,0.0,0.0, 0.8, 5.6,&
+       &0.5, 0.5, 1.0, 1.4, 1.4, 0.0, 0.0,0.0,0.0, 0.3, 5.0,&
+       &0.1, 0.4, 5.0, 2.2, 2.3, 0.0, 0.0,0.0,0.0, 0.8, 5.6/
 
   data COVINI /10,10, 3, 3, 5, 4, 3, 3, 3, 8,&
        &8, 4, 4, 6, 6, 6, 5, 9, 9, 9,&
@@ -270,8 +414,8 @@ subroutine FMCBA (IYR,ISWTCH)
   XCOV(1) = 10.
   XCOV(2) = 60.
   do I = 1,2
-     YLOAD(1) = FULIVI(I,COVTYP)
-     YLOAD(2) = FULIVE(I,COVTYP)
+     YLOAD(1) = FULIVI(I,COVTYP+IBANK)
+     YLOAD(2) = FULIVE(I,COVTYP+IBANK)
      FLIVE(I) = ALGSLP(PERCOV,XCOV,YLOAD,2)
   end do
 
@@ -293,8 +437,8 @@ subroutine FMCBA (IYR,ISWTCH)
      XCOV(1) = 10.0
      XCOV(2) = 60.0
      do ISZ = 1,MXFLCL
-        YLOAD(1) = FUINII(ISZ,COVTYP)
-        YLOAD(2) = FUINIE(ISZ,COVTYP)
+        YLOAD(1) = FUINII(ISZ,COVTYP+IBANK)
+        YLOAD(2) = FUINIE(ISZ,COVTYP+IBANK)
         STFUEL(ISZ,2) = ALGSLP(PERCOV,XCOV,YLOAD,2)
         STFUEL(ISZ,1) = 0
      end do

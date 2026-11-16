@@ -5,7 +5,7 @@ Fresh source audit: 15 November 2026, checkout `1cf093f3`.
 The goal is one definition of each calculation, with variant differences
 expressed explicitly in coefficient banks, species mappings or bounded
 branches. The findings below come from current source and the 24 build
-manifests. F01–F09 were authorized and completed on
+manifests. F01–F14 were authorized and completed on
 15 November 2026. The remaining unchecked findings are proposed work.
 
 At the audit baseline, excluding include files and NVEL, the manifests
@@ -142,44 +142,74 @@ changes; unchecked findings remain proposals.
   IE/KT complete regression sets matched original F77. BC's complete
   generated outputs matched the immediate baseline separately.
 
-- [ ] **F10 — FMCBA: IE, KT and BC.**
+- [x] **F10 — FMCBA: IE, KT and BC.**
 
-  [fire/ie/fmcba.f90](fire/ie/fmcba.f90),
-  [fire/kt/fmcba.f90](fire/kt/fmcba.f90) and
-  [canada/fire/bc/fmcba.f90](canada/fire/bc/fmcba.f90) share the execution
-  body after the variant fuel tables. Retain each variant's live-fuel and
-  initial-fuel banks around one body.
+  Completed 15 November 2026 in [fire/base/fmcba.f90](fire/base/fmcba.f90).
+  One calculation retains IE/KT/BC's live and initial-fuel banks at their
+  native 23/11/15-column extents, selected by a constant offset. The three
+  duplicate definitions were removed; both ENTRY contracts are unchanged.
+  All native fuel banks, common DATA and the calculation body were checked
+  against baseline `6943c310`. In 5,200 direct cases, all native species,
+  bare stands, cover levels, first/later years, SVSTART, fuel/photo overrides,
+  ENTRY state and diagnostics matched original F77 and the baseline exactly.
+  A changed selected coefficient was detected for each variant. IE/KT's
+  complete regressions matched original F77; BC's complete outputs matched
+  the immediate baseline separately.
 
-- [ ] **F11 — FMCROW: eastern variants first.**
+- [x] **F11 — FMCROW: eastern variants first.**
 
-  [fire/ls/fmcrow.f90](fire/ls/fmcrow.f90) and
-  [canada/fire/on/fmcrow.f90](canada/fire/on/fmcrow.f90) differ only in
-  species mapping. [fire/cs/fmcrow.f90](fire/cs/fmcrow.f90) and
-  [fire/ne/fmcrow.f90](fire/ne/fmcrow.f90) are also close. Share the tree
-  loop and output assignment in separate verified steps. Western copies,
-  such as [fire/ie/fmcrow.f90](fire/ie/fmcrow.f90), offer a later extraction
-  with explicit eastern/western equation routing.
+  Completed 15 November 2026 in [fire/vbase/fmcrow.f90](fire/vbase/fmcrow.f90).
+  LS/ON and then CS/NE were migrated in separately verified steps. One tree
+  loop retains all four native species maps and CS/NE's additional original
+  diagnostics; four duplicate files were removed. In 6,264 direct cases,
+  all mappings, empty lists, regrowth gates, helper arguments, crown outputs
+  and diagnostics matched original F77 and baseline `6943c310` exactly.
+  A mapping mutation was detected for each variant. LS/CS/NE's complete
+  regressions matched original F77; ON's complete outputs matched the
+  immediate baseline separately. Western extraction, such as
+  [fire/ie/fmcrow.f90](fire/ie/fmcrow.f90), remains future work with explicit
+  eastern/western equation routing.
 
-- [ ] **F12 — FMCFMD: LS and ON.**
+- [x] **F12 — FMCFMD: LS and ON.**
 
-  [fire/ls/fmcfmd.f90](fire/ls/fmcfmd.f90) and
-  [canada/fire/on/fmcfmd.f90](canada/fire/on/fmcfmd.f90) differ in five
-  species-selection cases accommodating ON species 69–72. Retain those
-  mappings explicitly in one calculation.
+  Completed 15 November 2026 in
+  [fire/vbase/fmcfmd_ls.f90](fire/vbase/fmcfmd_ls.f90), replacing both copies.
+  A local species selector preserves the five ON cases for species 69–72
+  while leaving every other native species test unchanged. In 47,712 direct
+  cases, all species, bare/mixed stands, fuel/cover thresholds, seasons,
+  drought, slash, user/static/dynamic settings, candidate weights and
+  diagnostics matched original F77 and baseline `6943c310` exactly. Both
+  variants detected a selected mapping/table mutation. LS's complete
+  regression matched original F77; ON's complete outputs matched the
+  immediate baseline separately. The existing planted-white-pine crown-cover
+  exclusion was reproduced and recorded as bug 43, without changing it.
 
-- [ ] **F13 — FMCFMD: CS and SN.**
+- [x] **F13 — FMCFMD: CS and SN.**
 
-  [fire/cs/fmcfmd.f90](fire/cs/fmcfmd.f90) and
-  [fire/sn/fmcfmd.f90](fire/sn/fmcfmd.f90) differ only in cedar-species
-  selection and a zero-density guard. Preserve both differences and the
-  defects recorded as bugs 40–41 until fixes are separately authorized.
+  Completed 15 November 2026 in
+  [fire/vbase/fmcfmd_cs.f90](fire/vbase/fmcfmd_cs.f90), replacing both copies.
+  The shared calculation preserves CS's two cedar species, SN's single
+  cedar species, and their different zero-density division behavior.
+  In 52,640 direct cases with actual forest-type classifiers, all species,
+  cover groups, moisture/fuel thresholds, cedar densities/record splitting
+  and diagnostics matched original F77 and baseline `6943c310` exactly.
+  These checks used NaN initialization to expose the undefined moisture
+  weights, reproduced bugs 40–41, and detected a variant-specific branch
+  mutation for both variants. Both complete regressions matched original
+  F77. Bugs 40–41 remain unfixed.
 
-- [ ] **F14 — FMVINIT: OP and the existing PN/WC shared version.**
+- [x] **F14 — FMVINIT: OP and the existing PN/WC shared version.**
 
-  [fire/op/fmvinit.f90](fire/op/fmvinit.f90) mostly matches
-  [fire/base/fmvinit.f90](fire/base/fmvinit.f90). Preserve species-24
-  assignments, WC's density value and softwood classifications when sharing
-  initialization.
+  Completed 15 November 2026 in [fire/base/fmvinit.f90](fire/base/fmvinit.f90).
+  OP now selects the shared initialization; its duplicate was removed.
+  Species 24 selects OP's original defaults and decay class while all arrays
+  retain native indexing. WC's density value and softwood classifications
+  are unchanged. In 48 direct initialization cases, all 39 species and 37
+  initialized fields, plus eight complete surrounding COMMON blocks,
+  matched original F77 and baseline `6943c310` byte for byte. Checks covered
+  sentinel states, initialization before/after variant setup and repeated
+  calls; OP mapping, WC density and PN default mutations were detected.
+  All three complete regressions matched original F77.
 
 ## Larger consolidation opportunities
 
@@ -271,7 +301,7 @@ changes; unchecked findings remain proposals.
 
 ## Bugs recorded during this audit
 
-All three defects below are present in pinned original F77 `c2105365` and
+All four defects below are present in pinned original F77 `c2105365` and
 remain unfixed. Their full descriptions and suggested fixes are in the bug
 tracker; they are separate from the consolidation tasks.
 
@@ -280,6 +310,7 @@ tracker; they are separate from the consolidation tasks.
 | [40](FOUND_BUGS.md#40-cssn-fuel-model-selection-reads-unassigned-moisture-weights) | CS/SN fuel selection reads an unassigned moisture weight on dry and wet branches. | Actual original/current routines and classifiers reproduced non-finite incoming fuel weights with NaN initialization. Whole-model fire impact was not measured. |
 | [41](FOUND_BUGS.md#41-cssn-redcedar-fuel-selection-divides-unweighted-heights-by-tree-density) | CS/SN cedar-height calculation divides unweighted heights by density; splitting the same stand into two records changes fuel-candidate weights. | Actual original/current routines and classifiers reproduced the changed weights. Integrated fire-output impact was not measured. |
 | [42](FOUND_BUGS.md#42-bc-snag-volume-calls-the-ten-argument-cftopk-with-nine-arguments) | BC passes nine arguments to the ten-argument CFTOPK, shifting argument types and omitting the final argument. | Compiling actual caller/callee sources together produced argument-type diagnostics in original/current code. Runtime volume effects and crash frequency were not measured. |
+| [43](FOUND_BUGS.md#43-on-planted-white-pine-is-omitted-from-pine-crown-cover-in-fuel-selection) | ON planted white pine contributes basal area but no pine crown cover, changing candidate fuel weights in mixed stands. | Actual original, immediate-baseline and shared routines reproduced weights 8/9 of `(1,0)` for species 70 versus `(0,1)` for species 5. Integrated fire-output impact was not measured. |
 
 ## Original starting sequence
 
@@ -288,7 +319,7 @@ tracker; they are separate from the consolidation tasks.
 3. F03 — CI/EC/KT/WS BFVOL.
 4. F07 — CA/NC DUNN.
 
-All four steps above are complete. Further findings require separate
+All four steps above are complete. Unchecked findings require separate
 implementation authorization.
 
 The initial read-only audit's source-list check and `git diff --check`
@@ -322,3 +353,26 @@ the documented pristine-original comparison failures; this batch does not
 claim Canadian pristine-original simulation parity. Source-list, formatting,
 native-table and tracker-link checks passed. No model bug fixes were made.
 Temporary drivers, outputs and build copies were discarded.
+
+The third batch (F10–F14), completed 15 November 2026 against baseline
+`6943c310`, consolidates 13 source files into five shared definitions.
+This source set shrank from 5,008 to 2,460 lines: eight fewer files and
+2,548 fewer lines. Native coefficient values and species order, public
+interfaces, COMMON layouts, initialization timing and diagnostics were
+preserved. F11 covers the four eastern variants; western extraction remains
+future work.
+
+Each bounded migration passed its focused checks. Across 111,864 direct
+cases, the shared components matched original F77 and the immediate baseline;
+the checks also detected selected table, mapping or branch mutations for
+every affected variant. F13's NaN initialization exposes the retained
+undefined reads rather than claiming defined behavior for those paths.
+The final full run built all 24 variants. All 22 U.S. regression sets matched
+original F77, including generated databases and restart files. BC and ON's
+complete generated outputs matched the immediate baseline separately; their
+documented pristine-original keyword-reader comparison failures remain.
+
+Source-list, formatting, native-bank and tracker-link checks passed. Bug 43
+was reproduced and recorded; bugs 40–41 were reproduced and retained. No
+model bug fixes were made. Temporary drivers, outputs and build copies were
+discarded; no verification archives or new test infrastructure were retained.

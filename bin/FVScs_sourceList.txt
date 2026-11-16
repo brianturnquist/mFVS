@@ -589,8 +589,8 @@
 ../fire/base/fmbrkt.f90
 ../fire/cs/fmcba.f90
 ../fire/cs/fmcblk.f90
-../fire/cs/fmcfmd.f90
-../fire/cs/fmcrow.f90
+../fire/vbase/fmcfmd_cs.f90
+../fire/vbase/fmcrow.f90
 ../fire/base/fmsnft.f90
 ../fire/base/fmsfall.f90
 ../fire/cs/fmvinit.f90

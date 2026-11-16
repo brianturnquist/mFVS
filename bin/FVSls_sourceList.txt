@@ -590,9 +590,9 @@
 ../fire/base/fmbrkt.f90
 ../fire/ls/fmcba.f90
 ../fire/ls/fmcblk.f90
-../fire/ls/fmcfmd.f90
+../fire/vbase/fmcfmd_ls.f90
 ../fire/base/findmod.f90
-../fire/ls/fmcrow.f90
+../fire/vbase/fmcrow.f90
 ../fire/ls/fmlsft.f90
 ../fire/base/fmmois.f90
 ../fire/ls/fmsfall.f90

@@ -1,7 +1,7 @@
 !======================!
-!   fire/ls : fmcfmd   !
+!  fire/vbase:fmcfmd_ls !
 !======================!
-! FIRE-LS $Id$
+! FIRE-LS,ON $Id$
 subroutine FMCFMD (IYR, FMD)
   implicit none
 
@@ -204,7 +204,7 @@ subroutine FMCFMD (IYR, FMD)
 
   do I = 1,ITRN
      X = FMPROB(I) * DBH(I) * DBH(I) * 0.0054542
-     select case (ISP(I))
+     select case (LSSPECIES(ISP(I),.false.))
      case (1) ! JACK PINE
         CTBA(JPCT) = CTBA(JPCT) + X
         STNDBA = STNDBA + X
@@ -352,12 +352,13 @@ subroutine FMCFMD (IYR, FMD)
      do I = 1,ITRN
         X = FMPROB(I) * DBH(I) * DBH(I) * 0.0054542
         STNDBA = STNDBA + X
+        !  RETAIN THE NATIVE TEST: ON'S PLANTED-PINE EXCLUSION IS BUG 43.
         if ((ISP(I) .ge.3) .and. (ISP(I) .le.5)) then
            CWIDTH = CRWDTH(I)
            CAREA = 3.1415927*CWIDTH*CWIDTH/4.0
            PINECRA = PINECRA + CAREA*FMPROB(I)
         end if
-        select case (ISP(I))
+        select case (LSSPECIES(ISP(I),.true.))
         case (3,4) ! red pine
            RPBA = RPBA + X
         case (5) ! white pine
@@ -407,7 +408,7 @@ subroutine FMCFMD (IYR, FMD)
            CAREA = 3.1415927*CWIDTH*CWIDTH/4.0
            OVERCRA = OVERCRA + CAREA*FMPROB(I)
         end if
-        select case (ISP(I))
+        select case (LSSPECIES(ISP(I),.false.))
         case (24,43) ! birch
            BIRBA = BIRBA + X
            STNDBA = STNDBA + X
@@ -612,4 +613,31 @@ subroutine FMCFMD (IYR, FMD)
        &,I4,' FWIND=',F4.1)
 
   return
+
+contains
+
+  !  ON'S FOUR ADDITIONAL CONIFERS SHARE THE LS COVER-GROUP CASES.
+  !  ONLY WHITE PINE IS ALIASED IN THE RED/WHITE PINE BASAL-AREA
+  !  SELECTION. OTHER SPECIES TESTS RETAIN THEIR NATIVE INDICES.
+
+  pure integer function LSSPECIES(ISPC,LWPONLY)
+    implicit none
+    integer, intent(in) :: ISPC
+    logical, intent(in) :: LWPONLY
+
+    LSSPECIES = ISPC
+    if (VARIANTCD.ne.'ON') return
+    if (LWPONLY.and.ISPC.ne.70) return
+
+    select case (ISPC)
+    case (69) ! JACK PINE
+       LSSPECIES = 1
+    case (70) ! WHITE PINE
+       LSSPECIES = 5
+    case (71) ! WHITE SPRUCE
+       LSSPECIES = 6
+    case (72) ! BLACK SPRUCE
+       LSSPECIES = 9
+    end select
+  end function LSSPECIES
 end
