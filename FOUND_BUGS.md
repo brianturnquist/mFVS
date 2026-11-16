@@ -205,17 +205,17 @@ and remain unfixed.
 
 ---
 
-## 6. Reproduced R9 Clark power trap; historical guard still under investigation
+## 6. R9 Clark inverse-height power underflow
 
-**Status:** a reachable SN run failure was reproduced on 16 November 2026
-during O02, in both current code and pinned original F77. The precise
-floating-point exception and suitability of the historical guard remain
-unresolved; no fix is authorized.
+**Status:** R9HT repaired on 16 November 2026 in a separate correctness step
+before O04. O02 reproduced the inherited SN stop; the follow-up identified
+underflow in the inverse-height power. The historical fixed threshold was
+not reinstated, and R9DIB is unchanged.
 **Demonstrated scope:** SN using the bundled native inventory record below.
 **Potential wider scope:** variants selecting NVEL `r9clark.f90` (all current
 variants except BC), when the relevant R9 equation path is used.
 
-D11 found that the formerly selected `volume/r9clark_fvsMod.f90` guards the power term in `r9dib` and `r9ht`: when `(1.0-17.3/totht) < 0.005748` and `p > 14`, it sets `Y=0` instead of evaluating `(1.0-17.3/totht)**p`. The selected NVEL implementation evaluates that power directly at these two sites. Related guards exist elsewhere in NVEL; this is not evidence that the whole library lacks underflow handling. The pinned original NVEL `38548071` also evaluates these two powers directly.
+D11 found that the formerly selected `volume/r9clark_fvsMod.f90` guards the power term in `r9dib` and `r9ht`: when `(1.0-17.3/totht) < 0.005748` and `p > 14`, it sets `Y=0` instead of evaluating `(1.0-17.3/totht)**p`. Before this repair, selected NVEL evaluated that power directly at these two sites. Related guards exist elsewhere in NVEL; this is not evidence that the whole library lacks underflow handling. The pinned original NVEL `38548071` also evaluates these two powers directly.
 
 The local workaround entered build selection in `a19c41b4` (4 March 2024); ON selected it in `d495d604` (26 June 2024). The lists returned to canonical NVEL in `08e833b2` (28 August 2025), before the pinned original F77 reference. The available history establishes that selection change, but does not explain whether these two guards were deliberately dropped, made unnecessary, or overlooked.
 
@@ -225,7 +225,7 @@ O02's larger inventory sweep reached a trap on `Stand_CN=3009010602`
 deck reproduces it: read this Stand_CN from both FVS_StandInit and FVS_TreeInit,
 request ten cycles and `FMIN/POTFIRE/FUELOUT/SNAGSUM/END`, then PROCESS/STOP.
 The database records were not changed. With O01's Mac toolchain and default
-trap flags, both main `b344e862` / NVEL `a73e697e` and original main
+trap flags, both pre-repair main `b344e862` / NVEL `a73e697e` and original main
 `c2105365` / NVEL `38548071` terminate with `SIGILL` (process return code -4).
 Symbolized backtraces locate `Y=(1.0-17.3/totHt)**p` in R9HT at current
 `volume/NVEL/r9clark.f90:1285` and original `r9clark.f:1286`, through
@@ -233,15 +233,29 @@ R9CLARK, VOLINIT/VOLINITNVB, NATCRS and VOLS. All four partial output files
 from the larger SN sweep match between original and current code after the
 existing comparator's run-header and CaseID masks.
 
-This establishes a reachable inherited stop and lost projection output,
-without establishing whether the power faults from underflow, an invalid
-base/exponent combination or another operand issue. Before proposing a fix,
-inspect the operands and upstream equation selection, identify the exception,
-and establish why the library selection changed. Neither a safe replacement
-threshold nor the correctness of reinstating the old guard has been shown.
-Keep any eventual correction separate from original-F77 parity work.
+The follow-up captured `totHt=17.3999996`, `p=17.8098202`, and the original
+single-precision base `0.00574713945`. A probe with underflow halting disabled
+confirmed the IEEE underflow flag: the power is about `1.248068e-40`, below
+`TINY(real)=1.17549435e-38`. Its subtraction does not change the bits of
+`X=0.00484667020` in this case. The R8 outside-bark coefficients select this
+exponent; the table and input records were left unchanged.
 
-The workaround remains available with `git show 9bc35a16:volume/r9clark_fvsMod.f90`. No guard was added to NVEL and no active model code changed.
+The repair checks the logarithm of the original real-valued base in double
+precision, before evaluating the power. Positive powers below normal real
+range use zero for the vanishing term; every normal-range result keeps the
+original single-precision expression. This avoids both the demonstrated
+trap and the old threshold's suppression of some representable values.
+No floating-point trap flags were changed. The historical workaround remains
+available with `git show 9bc35a16:volume/r9clark_fvsMod.f90`.
+
+`tests/parity/check_nvel_repairs.py --component r9ht` checks 378 exact result
+comparisons across three taper segments and both sides of the normal-range
+boundary, including 117 cases where original F77 raises underflow. Only the
+fixture's original oracle permits underflow; repaired calls halt on it.
+The formerly failing stand and all nine populated SN inventory stands now
+finish with exit code zero. All 24 standard-suite variants match the immediate
+pre-repair baseline; the 22 U.S. variants still match pristine original F77,
+with the existing BC/ON comparison limits retained. No masks were changed.
 
 ---
 
@@ -1368,3 +1382,82 @@ a diagnostic inconsistency; no changed calculation was demonstrated.
 
 **Suggested fix:** give ON's species-group echo the same gross-total-volume
 wording as its other MCDEFECT forms in a separate diagnostic change.
+
+## 49. R8PREPCOEF skips a fresh coefficient record using undefined previous keys
+
+**Status:** confirmed and repaired on 16 November 2026 during the separate
+correctness work preceding O04. Present in NVEL `a73e697e` and pinned original
+`38548071`; not introduced by modernization.
+
+**Location:** `volume/NVEL/r8clkdib.f90:R8PREPCOEF`. It is selected by all
+23 variants that use NVEL; BC uses its separate volume implementation.
+Callers are R8CLKDIB, HT2TOPD, R8VOL2 and R8CLKHT, including calls that switch
+between COEFFS and COEFFST or reset the record before coefficient preparation.
+
+The routine compared SPEC/EQN/GEOA with uninitialized local SPECPR/EQNPR/GEOAPR
+and filled COEFFS only when a key differed. Those locals have no SAVE or
+initialization. Matching bytes left on the stack can therefore skip the
+entire fill, even when the caller supplies a different record. Saving just
+the keys would retain that destination-identity defect: a matching equation
+does not establish that the current caller's record contains its coefficients.
+
+Two consecutive calls for `810CLK0100` with separate zeroed records reproduce
+the failure under default GNU Fortran 15.2 settings. The first receives
+R=24.20656, A4=-0.41002, P=7.15667 and FIXDI=3.5; the second retains zeros,
+with both error flags zero. Pinned original F77 fails the same regression.
+A static-local diagnostic build also fails; an optimized component build
+behaves differently. This demonstrates compiler-sensitive coefficient loss,
+without claiming that every integrated simulation previously encountered it.
+
+The repair removes the previous-key condition and fills the caller's record
+on every valid call. Lookup tables, searches, normalization, error paths,
+success error-flag behavior and branch-specific assignments are unchanged.
+Geometry and other fields outside those assignments remain caller-owned;
+the repair neither clears the whole record nor adds saved/shared state.
+
+`tests/parity/check_nvel_repairs.py --component r8prep` verifies independent
+records, total/four-inch equation alternation, species aliases, untouched
+geometry and invalid-equation errors under default and static-local builds.
+All 24 standard-suite variants match the immediate R9HT-repaired baseline,
+and all completed nine-stand SN inventory outputs also match exactly. The
+22 U.S. variants still match pristine original F77 on the standard suite;
+the documented Canadian comparison limits remain. No masks were changed.
+
+## 50. STKVAL reads coefficient row zero before falling back
+
+**Status:** confirmed and repaired on 16 November 2026 as a separate
+correctness step before accepting O04.
+
+**Location:** the four stocking-stage coefficient reads in `vbase/stkval.f90`.
+All 24 variants select this routine. In CS/LS/NE/SN/ON, FIA 299 has
+`TAB3(299,2)=0`; western variants explicitly replace that row selector with 8.
+The same lookup/fallback ordering is present in original F77 `c2105365`.
+
+Each stage read `TAB2(TAB3(IFIA,2),1:2)` before checking for zero coefficients
+and falling back to the unknown-species row. A zero row therefore accesses
+TAB2 outside its declared `1:36` bounds before that check can protect it.
+This is reachable with SN's native `OS` species, mapped to FIA 299 in
+`sn/blkdat.f90`, rather than requiring an invalid species code.
+
+A derived first-stand `snt01` deck, limited to one cycle with its tree species
+fields changed to native `OS`, reproduces the invalid access when only
+STKVAL is compiled with bounds checking. Before repair it stops with
+`Index '0' ... of array 'tab2' below lower bound of 1` (exit 2); after repair
+it completes (exit 0). Normal builds before/after produce exactly matching
+listing, summary, tree-list and database outputs on this Mac. That agreement
+does not make the former out-of-bounds read defined or portable.
+
+The repair resolves a zero coefficient selector to the existing FIA-999
+fallback before indexing TAB2, at each of the four sites. Nonzero selectors,
+the existing zero-coefficient fallback, species/forest-type mappings,
+accumulation order and all coefficient values are unchanged. This introduces
+no new stocking equation or species mapping.
+
+`tests/parity/check_stkval.py` uses bounds checking and a frozen reference
+with only this correctness repair applied. It checks 60 cases per variant
+(1,440 total), exact result bits, size/stocking classes and debug output,
+including empty input, excluded trees, blank/padded codes and both stocking
+branches. Separate eastern cases require FIA 299's stocking totals/classes
+to match the established FIA-999 fallback while retaining its own forest-type
+mapping. All 24 full-suite variants match the preceding NVEL-repaired
+baseline; the pristine-F77 suite remains 22/24 with the known BC/ON limits.

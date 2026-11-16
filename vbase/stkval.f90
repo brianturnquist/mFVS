@@ -52,7 +52,8 @@ subroutine STKVAL(S)
   !  DECLARATIONS
 
   ! Variables
-  integer :: IS,IFIA,I3,I2,I1,ISPC
+  integer :: IS,IFIA,I3,I2,I1,ISPC,ICOEF
+  integer :: IFIAC(MAXSP)
   real    :: PRE,PRA,PRG,UE,UA,EI,AI,GI,UG,STKTR2,CF,Q,D,B1,B0
   real    :: DMXSS,DMXSTD,TOTST1,TOTST3,TOTST5,TTST52,TTST51,TOTSTK,DMAX
   real    :: STKTR1
@@ -391,8 +392,12 @@ subroutine STKVAL(S)
            read (FIAJSP(ISPC),'(I4)') IFIA !FIA SPECIES CODE
         end if
         if (IFIA.eq.0) IFIA = 999
-        B0 = TAB2(TAB3(IFIA,2),1) !STOCKING EQ. b0 COEFFICIENT
-        B1 = TAB2(TAB3(IFIA,2),2) !STOCKING EQ. b1 COEFFICIENT
+        ! A zero row has no coefficients; use the existing unknown-species
+        ! fallback before indexing TAB2, rather than reading element zero.
+        ICOEF = TAB3(IFIA,2)
+        if (ICOEF.eq.0) ICOEF = TAB3(999,2)
+        B0 = TAB2(ICOEF,1) !STOCKING EQ. b0 COEFFICIENT
+        B1 = TAB2(ICOEF,2) !STOCKING EQ. b1 COEFFICIENT
         if (B0.eq.0.or.B1.eq.0) then
            B0 = TAB2(TAB3(999,2),1)
            B1 = TAB2(TAB3(999,2),2)
@@ -425,8 +430,10 @@ subroutine STKVAL(S)
            read(FIAJSP(ISPC),'(I4)')IFIA
         end if
         if (IFIA.eq.0) IFIA = 999
-        B0 = TAB2(TAB3(IFIA,2),1)
-        B1 = TAB2(TAB3(IFIA,2),2)
+        ICOEF = TAB3(IFIA,2)
+        if (ICOEF.eq.0) ICOEF = TAB3(999,2)
+        B0 = TAB2(ICOEF,1)
+        B1 = TAB2(ICOEF,2)
         if (B0.eq.0.or.B1.eq.0) then
            B0 = TAB2(TAB3(999,2),1)
            B1 = TAB2(TAB3(999,2),2)
@@ -483,8 +490,10 @@ subroutine STKVAL(S)
               read(FIAJSP(ISPC),'(I4)')IFIA
            end if
            if (IFIA.eq.0) IFIA = 999
-           B0 = TAB2(TAB3(IFIA,2),1)
-           B1 = TAB2(TAB3(IFIA,2),2)
+           ICOEF = TAB3(IFIA,2)
+           if (ICOEF.eq.0) ICOEF = TAB3(999,2)
+           B0 = TAB2(ICOEF,1)
+           B1 = TAB2(ICOEF,2)
            if (B0.eq.0.or.B1.eq.0) then
               B0 = TAB2(TAB3(999,2),1)
               B1 = TAB2(TAB3(999,2),2)
@@ -553,8 +562,10 @@ subroutine STKVAL(S)
            read(FIAJSP(ISPC),'(I4)')IFIA
         end if
         if (IFIA.eq.0) IFIA = 999
-        B0 = TAB2(TAB3(IFIA,2),1)
-        B1 = TAB2(TAB3(IFIA,2),2)
+        ICOEF = TAB3(IFIA,2)
+        if (ICOEF.eq.0) ICOEF = TAB3(999,2)
+        B0 = TAB2(ICOEF,1)
+        B1 = TAB2(ICOEF,2)
         if (B0.eq.0.or.B1.eq.0) then
            B0 = TAB2(TAB3(999,2),1)
            B1 = TAB2(TAB3(999,2),2)
@@ -633,10 +644,17 @@ subroutine STKVAL(S)
   !     THEN LOOP THROUGH THE SPECIES LIST
   !     READ THE FIA NUMBER TO LOCATE SPECIES IN TAB3 ARRAY
   !     IF SPECIES IS IN ITG GROUP THEN ADD INTO STOCKING FOR THE ITG GROUP
+  ! Parse each nonblank code once for this call. The final loop retains its
+  ! own blank/zero rules; the earlier stocking stages use different defaults.
+  do ISPC = 1,MAXSP
+     if (FIAJSP(ISPC).ne.'   ') then
+        read (FIAJSP(ISPC),'(I4)') IFIAC(ISPC)
+     end if
+  end do
   do IS = 1,210
      do ISPC = 1,MAXSP
         if (FIAJSP(ISPC) .eq. '   ')go to 99
-        read (FIAJSP(ISPC),'(I4)') IFIA
+        IFIA = IFIAC(ISPC)
         if (TAB3(IFIA,1).eq.IS) then
            S(IS) = S(IS)+SS(ISPC)
            if (DEBUG) then

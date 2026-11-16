@@ -2,7 +2,7 @@
 
 Created 16 November 2026 from the material in [task_documents](task_documents/).
 This is a new checklist; the deleted working task list is not a source for it.
-O01 and O02 were completed on 16 November 2026; the remaining tasks are pending.
+O01–O05 were completed on 16 November 2026; the remaining tasks are pending.
 Creating this document does not start implementation.
 
 The objective is to reduce execution time, build time, memory use or storage
@@ -179,7 +179,7 @@ new flags were used; use a fresh temporary build/cache when necessary.
   its 3.99-second median wall time is an incomplete run, excluded above.
   Original F77 reproduced the trap and matched all four partial output files.
   The isolated offending stand also traps in both versions; see
-  [bug 6](FOUND_BUGS.md#6-reproduced-r9-clark-power-trap-historical-guard-still-under-investigation).
+  [bug 6](FOUND_BUGS.md#6-r9-clark-inverse-height-power-underflow).
   There is no production deck on this Mac, so these results do not establish
   production performance. Windows/Linux timings and speedup estimates remain
   unverified.
@@ -228,7 +228,7 @@ new flags were used; use a fresh temporary build/cache when necessary.
   timings, profiles and generated outputs were discarded; only this summary
   and the updated bug record are retained.
 
-- [ ] **O03 — Investigate the R8PREPCOEF state hazard.**
+- [x] **O03 — Investigate the R8PREPCOEF state hazard.**
   Inspect `volume/NVEL/r8clkdib.f90`, its callers and the pinned original.
   Trace `SPECPR`, `EQNPR`, `GEOAPR` and the caller-owned `COEFFS` across repeated
   and alternating equation calls. Confirm and record any inherited defect
@@ -236,12 +236,38 @@ new flags were used; use a fresh temporary build/cache when necessary.
   compiler/cache implications are understood. Adding SAVE, initializing state
   or changing cache behavior is separate model-bug work, not this task.
 
+  Result, 16 November 2026: the same-equation/fresh-record failure was
+  reproduced under default flags in both current NVEL and pinned original
+  F77. Its uninitialized previous-key locals cannot identify the caller-owned
+  COEFFS record; adding SAVE alone is insufficient. A separate correctness
+  repair now prepares that record on every valid call, retaining tables,
+  error behavior and unrelated geometry fields; see
+  [bug 49](FOUND_BUGS.md#49-r8prepcoef-skips-a-fresh-coefficient-record-using-undefined-previous-keys).
+  This followed the separately verified [R9HT repair](FOUND_BUGS.md#6-r9-clark-inverse-height-power-underflow).
+  Each repair passed its own 24/24 immediate-baseline suite comparison; the
+  pristine-original command still reports only the known BC/ON differences:
+
+  ```text
+  FAIL 22/24 variants; working tree d4341283+changes vs original c2105365; failed: bc on
+  ```
+
+  Focused NVEL repair checks pass, and the formerly failing SN stand and full
+  nine-stand sweep complete. No compiler flags or comparison masks changed.
+  Pre-repair O01/O02 measurements above remain historical.
+
+  Subsequent bounds-checked STKVAL fixtures exposed the native FIA-299
+  coefficient-row defect. Its separate
+  [fallback repair](FOUND_BUGS.md#50-stkval-reads-coefficient-row-zero-before-falling-back)
+  was verified before O04: all 24 standard-suite outputs match the preceding
+  NVEL-repaired baseline, and a native SN `OS` stand now passes bounds checking.
+  O04 uses the code after all three correctness repairs as its baseline.
+
 ## 2. Reduce repeated species and equation conversions
 
 Start with O04 after O01–O02. O03 informs the NVEL and compiler experiments;
 an unresolved defect must not be silently corrected by those changes.
 
-- [ ] **O04 — Hoist STKVAL's final-loop species reads.**
+- [x] **O04 — Hoist STKVAL's final-loop species reads.**
   In `vbase/stkval.f90`, parse the needed nonblank FIA codes once per call
   before the final `IS=1,210` × `ISPC=1,MAXSP` loop. Keep the existing loop and
   addition order. Preserve the final loop's own blank/zero behavior; do not
@@ -249,12 +275,90 @@ an unresolved defect must not be silently corrected by those changes.
   Acceptance: identical stocking/type results and diagnostics, with fewer
   formatted reads and measured PN/CA/SN timing.
 
-- [ ] **O05 — Assess reuse in STKVAL's other stocking stages.**
+  Result, 16 November 2026: a per-call integer array now holds each nonblank
+  code for the final loop. The `IS`/`ISPC` loops, addition order, blank skip and
+  raw zero value are unchanged; earlier 998/999 defaults were not imported.
+  The array is filled on each call and adds no persistent or restart state.
+  For N nonblank codes, the final-loop formatted READ count falls from 210N
+  to N. The separate coefficient-row repair in bug 50 precedes this change.
+
+  The full suite matches the repaired immediate baseline for all 24 variants,
+  including database contents and restart files. The pristine-original command
+  still ends with the 22/24 BC/ON result quoted under O03. Direct checks pass
+  1,440 exact stocking-array/class/debug-output cases with each variant's
+  selected includes, plus the native missing-row fallback checks. All 14
+  independently run timing workload output trees also match, using the existing
+  comparison rules. Compiler flags, masks and tolerances were not changed.
+
+  The table below refreshes the affected performance baseline after bugs 6,
+  49 and 50. It compares that repaired code with O04 on the same Mac/toolchain
+  as O01, with identical inputs and flags: one warm-up per workload/version,
+  then five unprofiled runs, interleaved with shuffle seed 1602. Directory
+  preparation was outside the timer, and builds/profiles ran separately.
+  Values are median wall / user-plus-system CPU seconds. The workloads and
+  restart/inventory derivations are the O02 definitions above; the SN sweep
+  now completes all nine populated stands and returns zero.
+
+  | Workload | Repaired baseline wall / CPU s | O04 wall / CPU s | Wall reduction |
+  |---|---:|---:|---:|
+  | IE `ie` | 1.23 / 1.22 | 1.24 / 1.23 | -0.8% |
+  | IE `iet01` | 0.58 / 0.57 | 0.51 / 0.50 | 12.1% |
+  | IE `DBReportTest` | 14.79 / 14.78 | 14.63 / 14.61 | 1.1% |
+  | PN `pnt01` | 0.55 / 0.55 | 0.47 / 0.46 | 14.5% |
+  | CA `cat01` | 0.57 / 0.56 | 0.45 / 0.44 | 21.1% |
+  | SN `snt01` | 0.62 / 0.62 | 0.39 / 0.39 | 37.1% |
+  | SN `sn` | 0.61 / 0.61 | 0.43 / 0.43 | 29.5% |
+  | IE `iet02` stop/restart | 0.60 / 0.59 | 0.52 / 0.51 | 13.3% |
+  | PN `pnt02` stop/restart | 0.57 / 0.55 | 0.45 / 0.44 | 21.1% |
+  | CA `cat02` stop/restart | 0.57 / 0.56 | 0.46 / 0.44 | 19.3% |
+  | SN `snt02` stop/restart | 0.64 / 0.62 | 0.41 / 0.39 | 35.9% |
+  | Native inventory, IE | 10.85 / 10.84 | 10.99 / 10.98 | -1.3% |
+  | Native inventory, CA | 6.86 / 6.85 | 6.71 / 6.71 | 2.2% |
+  | Native inventory, SN | 4.60 / 4.59 | 4.10 / 4.09 | 10.9% |
+
+  Wall ranges for the primary decks were PN 0.54–0.58 -> 0.45–0.48 seconds,
+  CA 0.53–0.58 -> 0.43–0.46, and SN 0.58–0.64 -> 0.37–0.42. The completed
+  SN inventory ranges were 4.37–4.71 -> 3.95–4.20. Smaller IE/CA inventory and
+  DBReportTest changes overlap their run ranges; no meaningful gain is claimed
+  there. Median peak RSS across workloads spans 13.33–36.44 MiB before and
+  13.34–36.59 MiB after. These are local workload measurements, not production
+  or Windows/Linux speedup claims.
+
+  Separate three-run, 1-ms whole-process profiles give the following inclusive
+  main-thread sample shares. Short-deck counts are small after O04, so these
+  indicate the remaining priority rather than precise timing limits. Profiled
+  wall/CPU medians were PN 0.560/0.533 -> 0.481/0.458 seconds, CA 0.639/0.607
+  -> 0.461/0.440, and SN 0.709/0.674 -> 0.440/0.405; they are excluded from
+  the unprofiled timing table.
+
+  | Deck | STKVAL samples before / total | STKVAL samples after / total | Share before -> after |
+  |---|---:|---:|---:|
+  | PN `pnt01` | 154 / 1,015 | 1 / 863 | 15.2% -> 0.1% |
+  | CA `cat01` | 258 / 1,185 | 5 / 839 | 21.8% -> 0.6% |
+  | SN `snt01` | 472 / 1,379 | 10 / 792 | 34.2% -> 1.3% |
+
+- [x] **O05 — Assess reuse in STKVAL's other stocking stages.**
   After O04, consider the other four FIA-code read sites separately. Preserve
   their present-species guards, blank handling and zero-to-999 substitution;
   avoid parsing previously unused entries on earlier paths. Acceptance:
   focused coverage of stocking-stage branches and unchanged accumulation
   order, or a documented decision that O04 captures enough benefit.
+
+  Result, 16 November 2026: retain the four earlier READ sites. They remain
+  guarded by present-species checks, with one pass conditional on low stocking,
+  and preserve their own blank-to-998 / zero-to-999 behavior. With P present
+  nonblank species and N nonblank codes, those stages perform at most 4P reads;
+  O04 changes the total bound from 210N+4P to N+4P. Since P <= N, at least
+  209/214 (about 97.7%) of the original reads are removed when N > 0.
+  Remaining STKVAL sample shares are already small and include arithmetic/loop
+  work as well as reads.
+  Further reuse offers insufficient demonstrated benefit to justify extending
+  the cache across these different guards/defaults. No additional optimization
+  was made for O05. The branch, missing-row and exact-output checks above pass.
+
+  Final source-list and whitespace checks passed. Staged builds, raw runs,
+  timings, profiles and disposable diagnostic scripts were removed; retained
+  additions are the focused regression sources, task summary and bug records.
 
 - [ ] **O06 — Define and verify a narrow integer-read fast path.**
   Establish the actual field widths and formats required by O07–O12. Convert

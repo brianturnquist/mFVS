@@ -75,6 +75,34 @@ file and 3 in the other (bug 12). Remove each exception when its bug is fixed.
 `check_comparator.py` checks the comparator itself against deliberately
 changed IE outputs.
 
+## Focused NVEL correctness repairs
+
+```sh
+python3 -B tests/parity/check_nvel_repairs.py
+```
+
+This uses temporary builds to check the R9HT underflow repair and independent
+R8PREPCOEF records. R9HT heights must match pinned original F77 exactly, with
+underflow allowed only in the fixture's original oracle and enabled for the
+repaired calls. R8 checks cover repeated and alternating records, preserved
+geometry, aliases and errors, under default settings and static-local storage.
+These checks do not relax the full-suite comparator or establish Canadian
+simulation parity. `--component r9ht` or `--component r8prep` selects one repair.
+
+## Focused stocking checks
+
+```sh
+python3 -B tests/parity/check_stkval.py
+```
+
+This runs 60 direct cases with each variant's selected includes and COMMON
+dimensions, with bounds checking. Result bits, stocking/size classes and debug
+output must match the frozen pre-optimization routine at `d4341283`, with only
+the documented zero-coefficient-row repair applied to that reference. Separate
+cases check the existing unknown-species fallback. This is a controlled
+corrected-baseline comparison, not pristine-original simulation parity.
+Use `--variants pn ca sn` for a focused run; the default covers all 24 variants.
+
 ## Single decks
 
 For a focused case that the suite does not reach, the older tools run one
