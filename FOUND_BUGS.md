@@ -1086,3 +1086,97 @@ initialize this diagnostic local consistently too.
 **Suggested fix:** print the calibration loop's I, or explicitly assign the
 intended index on this path, in a separate diagnostic change. Preserve the
 existing SMHGDG calls, arithmetic, random draws and period conversion.
+
+## 40. CS/SN fuel-model selection reads unassigned moisture weights
+
+**Variants:** CS, SN
+
+**Location:** `fire/cs/fmcfmd.f90:119-136` and
+`fire/sn/fmcfmd.f90:119-136`.
+
+**Status:** reproduced during a fresh source audit on 15 November 2026 at
+`1cf093f3`. Present in original F77 `c2105365`; deliberately unfixed.
+
+For hardwood and mixed forest types (`IFFEFT=1:3`) with `SMALL<=6`, the dry
+branch assigns only `MOISWT(9)` and the wet branch assigns only `MOISWT(8)`.
+Both elements are then read to fill `EQWT(8:9)`. The local `MOISWT` array has
+no initialization, so the other weight is undefined or left over from an
+earlier call. `EQWT`'s initialization does not initialize `MOISWT`.
+
+**Confirmation:** temporary drivers called the actual CS/SN FMCFMD routines
+and their actual forest-type classifiers in both original F77 and current
+code. Only DBCHK and the downstream FMDYN were stubbed; the latter captured
+its incoming weights. With `IFORTP=504`, `SMALL=2`, and gfortran
+`-O0 -finit-real=snan -fcheck=all`, moisture 0.10 produced a non-finite
+weight 8, and moisture 0.30 produced a non-finite weight 9, in all four
+original/current variant runs. NaN initialization exposes the undefined
+read; ordinary builds can instead supply arbitrary or stale values. This
+checks the weights passed to FMDYN, not whole-model fire-output impact.
+
+**Suggested fix:** initialize both moisture weights on every applicable
+call before selecting the dry, wet or interpolated case. Verify the fuel
+weights and resulting fire behavior separately from structural cleanup.
+
+## 41. CS/SN redcedar fuel selection divides unweighted heights by tree density
+
+**Variants:** CS, SN
+
+**Location:** `fire/cs/fmcfmd.f90:154-175` and
+`fire/sn/fmcfmd.f90:154-175`.
+
+**Status:** reproduced during the fresh audit on 15 November 2026 at
+`1cf093f3`. Present in original F77 `c2105365`; deliberately unfixed.
+
+The eastern-redcedar branch adds each record's height to `RCHT`, adds its
+trees per acre (`FMPROB`) to `RCTPA`, and divides the first sum by the
+second. The numerator omits the density weight. Consequently, the height
+used at the 4.5/7.5-foot fuel thresholds depends on density and on how an
+otherwise identical stand is divided into tree records.
+
+**Confirmation:** the actual original/current CS/SN routines and forest-type
+classifiers were exercised with `IFORTP=181`, species 2, and 10-foot trees;
+a capturing FMDYN stub reported the input weights. One record representing
+1 tree/acre selected weight 4=1 and weight 6=0; at 10 trees/acre it selected
+4=0 and 6=1. More directly, one record representing 2 trees/acre gave
+weights `(0.16667,0.83333)`, while two identical records representing
+1 tree/acre each gave `(1,0)`. All four original/current variant runs
+agreed. These are direct fuel-candidate checks, not an integrated measure
+of fire-output impact.
+
+**Suggested fix:** confirm the intended average-height definition, then
+accumulate `HT(I)*FMPROB(I)` before dividing by total density. Review the
+zero-density case at the same time: CS guards the division, whereas SN
+divides unconditionally. Keep this model change separate from merging the
+two routine definitions.
+
+## 42. BC snag volume calls the ten-argument CFTOPK with nine arguments
+
+**Variants:** BC
+
+**Location:** `canada/fire/bc/fmsvol.f90:124-126`, calling
+`ie/cftopk.f90:5` selected by `bin/FVSbc_sourceList.txt`.
+
+**Status:** confirmed by source inspection and compiler diagnostics during
+the fresh audit on 15 November 2026 at `1cf093f3`. Present in original F77
+`c2105365:canada/fire/bc/fmsvol.f:118`; deliberately unfixed. Runtime
+volume effects and crash frequency have not been measured.
+
+BC calls `CFTOPK(ISPC,D,H,VN,VM,VMAX,LCONE,BARK,IHT)`, but the selected
+routine expects `(ISPC,D,H,TCF,MCF,SCF,VMAX,LCONE,BARK,ITHT)`. The missing
+sawtimber-cubic argument shifts every subsequent actual argument: VMAX is
+used as SCF, a logical is passed as VMAX, a real as LCONE, an integer as
+BARK, and ITHT has no actual argument. The call is therefore undefined.
+It is reached when `CTKFLG` and `LTKIL` are true; BC CFVOL does not change
+CTKFLG after FMSVOL initializes it from LTKIL.
+
+**Confirmation:** temporary compilations put the actual caller and callee
+in one translation unit with their selected BC includes. For both pinned
+original F77 and current sources, gfortran diagnosed the LOGICAL-to-REAL,
+REAL-to-LOGICAL and INTEGER-to-REAL argument mismatches. No repository
+source or compiler flags were changed.
+
+**Suggested fix:** supply the complete, correctly typed argument list and
+an explicit interface, after checking BC's intended total, merchantable and
+sawtimber-volume handling. Validate broken-top snag calculations as a
+separate bug fix rather than silently correcting the call in a shared
+volume-routine extraction.
