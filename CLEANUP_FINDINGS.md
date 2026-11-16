@@ -6,8 +6,8 @@ The goal is one definition of each calculation, with variant differences
 expressed explicitly in coefficient banks, species mappings or bounded
 branches. The findings below come from current source and the 24 build
 manifests. F01–F14 were authorized and completed on
-15 November 2026, and F15–F25 on 16 November 2026. F21–F23 record what
-was extracted and what remains.
+15 November 2026, and F15–F25 on 16 November 2026. F21a–F21f, F22a–F22h
+and F26a–F26g are proposed follow-up tasks.
 
 At the audit baseline, excluding include files and NVEL, the manifests
 selected 1,286 Fortran source files. There were 92 repeated filename
@@ -302,9 +302,54 @@ changes; unchecked findings remain proposals.
   immediate baseline. Coverage decks ran every extracted handler in several
   forms, including blank, invalid, PARMS and echo-off, in all 24 variants;
   outputs matched baseline `94c172ea` except the undefined bytes of bugs
-  45 and 47. VOLUME, BFVOLUME, DEFECT, MCDEFECT, BFDEFECT, MCFDLN and BFFDLN
-  remain: they differ by unit conversions (up to about 110 statements) and
-  need `LMETRICVAR` branches.
+  45 and 47. The remaining volume handlers are F21a–F21e.
+
+  The follow-up tasks below are ordered by complexity. A shared handler
+  keeps each differing statement behind `if (LMETRICVAR)`, so every variant
+  runs its original statements. Verify each task as for F21: the regression
+  suite, BC/ON against the immediate baseline, and coverage decks that run
+  the handler in all 24 variants with values whose imperial and metric
+  results differ. Statement counts are US/ON/BC.
+
+- [ ] **F21a — MCFDLN and BFFDLN (low).**
+
+  The copies differ only in region lists (`case` entries and the FIA-VBC
+  guard, as in VOLEQNUM) and one echo FORMAT. Confirm that each region
+  entry is unreachable where it is absent, then select the FORMAT with
+  `LMETRICVAR`.
+
+- [ ] **F21b — MCDEFECT and BFDEFECT (low–medium).**
+
+  Three or four region hunks and two to four FORMAT hunks; BC differs from
+  ON in up to four places. Same method as F21a.
+
+- [ ] **F21c — DEFECT (medium–high).**
+
+  220/184/162 statements. ON and BC differ only in region lists and
+  FORMATs, so share the metric pair first. The US copy then differs in
+  8–12 logic hunks that need `LMETRICVAR` branches.
+
+- [ ] **F21d — BFVOLUME (high).**
+
+  132/153/151 statements. The US copy differs from the metric copies in
+  11–13 conversions and 8 logic hunks, and ON and BC also differ from each
+  other (7 conversions, 6 logic hunks): a three-way merge.
+
+- [ ] **F21e — VOLUME (high).**
+
+  188/158/158 statements: 12–13 conversions and 9 logic, 7 region and
+  2 FORMAT hunks against the US copy; ON and BC also differ. The metric
+  copies add an `ITOPD8` rule, do not set `LCVOLS` as the US copy does, and
+  reuse FORMAT labels for different messages. First establish whether the
+  missing `LCVOLS` is a defect (record it in FOUND_BUGS if so), then merge
+  with renumbered FORMATs.
+
+- [ ] **F21f — Survey the other INITRE differences.**
+
+  Dozens of further handlers differ between the copies (for example
+  PROCESS, STDINFO, THINDBH, HTGSTOP and SDIMAX), and several identical ones
+  were skipped because they use INITRE's end-of-file exit or shared labels.
+  Classify them as above and add tasks.
 
 - [x] **F22 — FMIN: extract remaining shared keyword handlers.**
 
@@ -313,9 +358,49 @@ changes; unchecked findings remain proposals.
   handlers identical in the imperial and metric FMIN (SALVSP, MOISTURE,
   POTFIRE, SNAGFALL, SNAGBRK, SNAGDCAY, SNAGOUT, FUELPOOL, PILEBURN,
   FUELMULT, DROUGHT, SNAGPSFT, FUELMODL, FUELFOTO, FMODLIST), using the
-  F21 method. Net change: −344 lines. Verification as for F21. The 27
-  handlers that differ by metric conversion can follow the existing
-  `FM*REQ` pattern with `LMETRICVAR`.
+  F21 method. Net change: −344 lines. Verification as for F21. The other
+  27 handlers differ between the imperial and metric FMIN in one to nine
+  places; F22a–F22h group them by complexity. Each can follow the existing
+  `FM*REQ_MOD` pattern with `LMETRICVAR`, verified as described under F21.
+
+- [ ] **F22a — FUELTRET (trivial).**
+
+  Identical apart from a space; skipped only because FORMAT 2504 was shared
+  with SALVSP. Extract it with the F21 method.
+
+- [ ] **F22b — Report-window flags (low).**
+
+  FUELREPT, MORTREPT, CARBREPT, CARBCUT, SOILHEAT and CANFPROF each differ
+  in one place: the imperial year window versus the metric −1 sentinel (the
+  bug 24 rule). Follow `FMFUELREQ_MOD` and `FMDWCVREQ_MOD`.
+
+- [ ] **F22c — One unit conversion (low).**
+
+  FUELINIT, SNAGINIT, POTFWIND, POTFTEMP, CARBCALC, FIRECALC and FUELSOFT.
+
+- [ ] **F22d — FORMAT text only (low).**
+
+  FUELDCAY and POTFMOIS (one FORMAT each) and DUFFPROD (two).
+
+- [ ] **F22e — Two or three places (medium).**
+
+  SNAGCLAS, SALVAGE, SNAGPBN, MORTCLAS and CANCALC (two conversions each),
+  SIMFIRE (three) and LANDOUT (a conversion and a FORMAT).
+
+- [ ] **F22f — FLAMEADJ and FUELMOVE (medium–high).**
+
+  FLAMEADJ differs in four conversions; FUELMOVE in five conversions and a
+  FORMAT.
+
+- [ ] **F22g — DEFULMOD (high).**
+
+  Nine conversions; the metric copy has 124 statements against 114.
+
+- [ ] **F22h — FMORTMLT (special).**
+
+  The imperial section runs on into `ENTRY FMKEY` and the end of FMIN, and
+  the metric copy converts its parameters into `PRMS` before `OPNEW`.
+  Separate the section boundary first, then merge (two conversions).
 
 - [x] **F23 — REGENT: consolidate calculations within the shared file.**
 
@@ -354,6 +439,63 @@ changes; unchecked findings remain proposals.
   `a8f62643` (June 2018) renamed TWIGCOM's `BAU` to `EBAU`; three of its 26
   files still use `BAU`. No test covers it, and FVS-ACD development
   appears to continue separately at the University of Maine.
+
+  Revised 16 November 2026: the preferred direction is now to support ACD
+  by following the University of Maine fork and using its build as the
+  reference (option A in [acd/README.md](acd/README.md), tracked as F26).
+  Nothing is to be retired meanwhile.
+
+- [ ] **F26 — Acadian variant support (option A).**
+
+  Bring ACD into the build by following fvs-modern, the University of
+  Maine fork that already builds it, and verify against that fork's ACD
+  build. [acd/README.md](acd/README.md) records the evidence and the other
+  options. Licensing (the fork is MIT; mFVS is CC0) must be settled before
+  any of the fork's source is copied.
+
+- [ ] **F26a — Coordinate with the fvs-modern authors.**
+
+  Confirm which ACD code is current, whether newer equations exist outside
+  the repository, what test data exist, and whether their ACD changes can
+  be released under CC0.
+
+- [ ] **F26b — Build the reference.**
+
+  Build FVSacd and FVSne (the control) from a pinned fvs-modern commit,
+  outside the repository, and record the commit and compiler in the
+  parity tools as for original F77.
+
+- [ ] **F26c — Create `tests/FVSacd`.**
+
+  Write decks with alpha species codes (ACD shares 106 of NE's 108 codes in
+  a different order), starting from NE's `net01`, plus any University of
+  Maine data.
+
+- [ ] **F26d — Control comparison.**
+
+  Run the NE decks in fvs-modern's NE and in mFVS's NE. The fork tracks
+  upstream `b183c10f` (November 2025), not `c2105365`, so this measures
+  base-code differences before any ACD result is judged.
+
+- [ ] **F26e — Port the ACD routines.**
+
+  Compare fvs-modern's `acd/` with mFVS's statement by statement, bring
+  mFVS's copy to the same behaviour (at least `BAU` to `EBAU`), and add
+  `VARIANTCD = 'AC'` and `LMETRICVAR = .false.` to its PRGPRM.
+
+- [ ] **F26f — Integrate into the consolidated code.**
+
+  Write `bin/FVSacd_sourceList.txt` against mFVS's shared files (the
+  fork's list names pre-consolidation LS, IE, NE-fire and STRP files). In
+  each of the 31 shared routines that select on `VARIANTCD`, give `'AC'`
+  the branch of the variant whose file the fork uses. Extend the parity
+  tools to the three-letter variant name.
+
+- [ ] **F26g — Verify against the reference.**
+
+  Compare every generated file, restart files included, with the fork's
+  ACD build. Explain any differences by the F26d control comparison or
+  record them.
 
 ## Bugs recorded during this audit
 

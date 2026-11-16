@@ -105,7 +105,7 @@ Each test runs a variant on the keyword files in its `tests/FVSxx` folder. It th
 | `volume/`, `fiavbc/` | Volume, biomass and carbon equations; `volume/NVEL` is a git submodule holding the mFVS fork of the National Volume Estimator Library (see its README) |
 | `pg/` | Stop and restart support |
 | `tests/` | Regression tests |
-| `acd/` | Unsupported Acadian model code, not built; to be retired (see F25 in [CLEANUP_FINDINGS.md](CLEANUP_FINDINGS.md)) |
+| `acd/` | Acadian variant code, not yet built; see [acd/README.md](acd/README.md) |
 | `changeNotes/` | Historical upstream change notes |
 
 ## Known issues
