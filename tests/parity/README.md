@@ -73,6 +73,17 @@ the output changes caused by the authorized rounding change.
 
 ## What is compared
 
+Build-support changes also have compiled behavioral checks:
+
+```sh
+python3 -B tests/parity/check_build_support.py
+```
+
+These cover cache identity, concurrent publication, immutable object reuse,
+separate library state and Fortran interface restoration/invalidation. Use
+temporary native builds for dependency/touch, source-list, clean/parallel and
+packaging checks. Build helpers participate in the full-suite cache identity.
+
 The comparator checks which files were produced, program stop codes, all text,
 and every SQLite schema and typed row. It masks only the version, date and
 time fields of recognized header lines and the CaseID identifiers; REAL values

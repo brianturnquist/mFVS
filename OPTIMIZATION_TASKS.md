@@ -8,7 +8,10 @@ SQLite optimization is retained and the FOFEM trial is rejected. On 17
 November 2026, R03 repaired nine undefined-value hazards. The O21 Fortran
 `-O2` trial was then rejected because it changes results on this platform.
 R04's authorized rounding-level power rewrites and O21a's adoption of
-`-O2 -ffp-contract=off` are complete. Other tasks remain pending.
+`-O2 -ffp-contract=off` are complete. O22–O28 are also complete: common
+compilation reuse, precise dependencies, native source paths and optional
+stripped release copies are retained with the measured tradeoffs below.
+O29–O34 remain pending.
 Creating this document does not start implementation.
 
 The objective is to reduce execution time, build time, memory use or storage
@@ -1571,7 +1574,7 @@ repairs bugs 51 and 11, as separate steps, before O10.
 These tasks can follow O02 independently of runtime work. Keep accepted
 compiler settings fixed while measuring build changes.
 
-- [ ] **O22 — Identify genuinely reusable compilation units.**
+- [x] **O22 — Identify genuinely reusable compilation units.**
   Inventory current source lists, transitive includes, preprocessor definitions,
   module dependencies, PIC/ABI requirements and initialized COMMON/BLOCK DATA
   for SQLite, FOFEM, NVEL and Fortran database wrappers. Compare Make and CMake:
@@ -1579,20 +1582,72 @@ compiler settings fixed while measuring build changes.
   Acceptance: a current eligible-unit list and compile/storage baseline;
   variant-dependent wrappers remain separate unless equivalence is proven.
 
-- [ ] **O23 — Compile eligible SQLite C units once per configuration.**
+  Result, 17 November 2026, main `4145eea9`, NVEL `2503c0d`: the 24 manifests
+  select 15,827 object instances: 15,283 Fortran and 544 C/C++. The immediate
+  baseline's full suite was rebuilt in a private snapshot. Its 24 flat build
+  directories hold 851,193,657 file bytes: 440,206,782 copied source/include
+  bytes and 410,435,248 object bytes, plus small module files. These are file
+  byte counts on this Mac, not physical APFS extent measurements.
+
+  Eligible groups, with actual transitive lookup and compiler settings bound
+  to each reuse identity:
+  - SQLite: `sqlite3.c` and `fvsqlite3.c`, 48 selected instances; preserve
+    THREADSAFE/load-extension/platform macros and the existing scoped `-O2`.
+  - FOFEM: the 19 selected `fire/fofem/*.c` units, 456 instances; all variants
+    select the same files/headers. Retain their unoptimized C flags. API glue
+    and the 16 Canadian CFIM C++ instances remain separate.
+  - NVEL: all 121 selected `volume/NVEL/*.f90` units and their 24 transitive
+    includes, 2,784 instances. Twenty-three variants select the complete set;
+    BC selects only `debug_mod.f90`. The seven module producers include
+    CHARMOD and R8VLIST, whose filenames do not end in `_mod`. All selected
+    NVEL inputs are variant-independent; DATA, SAVE, initialized module values
+    and COMMON remain in their whole objects, linked in original order.
+  - Fortran database wrappers: retained per variant. PRGPRM/PLOT/DBSCOM and
+    their transitive declarations bind them to native dimensions/layouts.
+
+  Make has no PIC flag on this Mac, uses `-fPIC` on Linux and its established
+  Windows static-link convention. CMake's shared targets use PIC and distinct
+  compiler definitions, so they form separate configurations. Compiler binary
+  identity/version/target, all code-generation flags, actual preprocessed text,
+  resolved header bytes and input module bytes gate reuse. CMake retains its
+  per-variant SQL/FOFEM shared libraries; compiler-launcher reuse does not merge
+  their runtime state or add a runtime library dependency.
+
+- [x] **O23 — Compile eligible SQLite C units once per configuration.**
   After O22, reuse objects or a static archive with equivalent settings, while
   keeping each variant's runtime state separate. Avoid introducing a shared
   runtime library requirement solely to save compile time. Acceptance: clean
   and parallel builds of executable/shared targets, unchanged exports/API and
   database behavior, and measured reductions in compile jobs and build time.
 
-- [ ] **O24 — Compile eligible FOFEM C units once per configuration.**
+  Verified: SQLite's 48 selected object instances require two compilations in
+  a fresh common configuration. Make and GNU CMake use `shared_compile.py`;
+  CMake retains its existing per-variant libraries. The launcher preserves the
+  actual compiler arguments and keys actual preprocessed/header inputs, so
+  macro, target, compiler and PIC differences cannot reuse incompatible code.
+  Cache entries publish atomically under process locks. Make uses read-only
+  hard-linked objects on supporting filesystems, with private local completion
+  receipts; CMake/Windows and link failures fall back to copies. Forced or
+  disabled-cache compiles unlink their output before writing. The standalone
+  compiled checks exercise flags/macros, active headers, eight concurrent
+  consumers and separately linked static state. Native suites match **24/24**;
+  IE file/memory API modes match exactly. Final combined timings are below O28.
+
+- [x] **O24 — Compile eligible FOFEM C units once per configuration.**
   Apply the same bounded approach after O22, separately from O23. Preserve
   macros, selected platform code, symbol resolution and runtime state.
   Acceptance: fire-path parity, executable/shared-library loading, clean and
   incremental build checks, and a measured benefit.
 
-- [ ] **O25 — Reuse eligible NVEL compilation across variants.**
+  Verified: the 456 selected FOFEM C instances require **19** compilations,
+  with their existing C flags retained. API glue and Canadian CFIM C++ remain
+  local. The same compiler/header/macro/PIC boundary and lock protocol apply
+  in Make and GNU CMake. The separate O24 full-suite comparison matches its
+  O23 baseline **24/24**, including fire/fuel/carbon outputs and restart data.
+  Final exports and packaged-library tests are recorded below; no C arithmetic
+  optimization or new runtime library is included.
+
+- [x] **O25 — Reuse eligible NVEL compilation across variants.**
   After O22, build only a proven common subset once per equivalent compiler,
   flags and source revision. Preserve variant-specific selections, include
   lookup, module ordering and required archive/BLOCK DATA members. Acceptance:
@@ -1600,26 +1655,141 @@ compiler settings fixed while measuring build changes.
   still work, NVEL edits invalidate reuse, and parallel builds cannot race.
   Keep this separate from any Fortran database-wrapper sharing proposal.
 
-- [ ] **O26 — Replace blanket include dependencies with accurate ones.**
+  Verified: **2,784** selected NVEL instances require **121** compilations,
+  including BC's shared debug module. The identity also binds Fortran INCLUDE
+  content and the bytes of each input module interface. Output `.mod` files
+  are restored before consumers compile. Only CPP directory-marker records are
+  normalized; actual `__FILE__` expansions remain part of the identity. The
+  compiled regression includes `-g`, which emits those working-directory
+  records, and checks changed parameter interfaces and missing module files.
+  Ambiguous/unsupported dependency contexts compile normally. Whole objects
+  retain DATA/SAVE/COMMON and initialization; links retain manifest order.
+  No model source, database wrapper or scientific option changes. Separate
+  native comparisons match **24/24**. GNU CMake IE/PN builds reuse the same
+  142 C/NVEL units in their own PIC configuration and both suites match the
+  immediate Make baseline. Windows/Linux measurements remain unverified.
+
+- [x] **O26 — Replace blanket include dependencies with accurate ones.**
   Review `bin/makefile` dependencies on every include/module. Track actual
   direct/transitive and preprocessed dependencies, including converted `.f90`
   includes and FVSVERSION ordering. Acceptance: clean parallel builds and
   disposable touch/change checks show that every affected object rebuilds,
   unrelated objects are reused, and incremental outputs match a clean build.
 
-- [ ] **O27 — Reduce copied-source overhead in variant build directories.**
+  Verified: GNU `-MMD -MP` records active direct/transitive dependencies.
+  `build_dependencies.py` bootstraps module producers/USEs, including nested
+  Fortran INCLUDEs and active CPP, then caches scans by all input bytes and
+  compiler settings. Each source compiles through one local `.o.stamp` target;
+  `.mod` files are side effects, with a restoration rule for missing files.
+  Removed producers cannot leave owned stale interfaces. The parent converges
+  executable/shared requests on one setup; child link targets remain separate.
+  Compiler/link settings and manifest membership are tracked explicitly.
+
+  Clean native suites match **24/24**. Disposable staged and native checks
+  append a comment to WDBKWT: exactly its eight IE readers rebuild, while
+  unrelated objects retain their timestamps. Restoring the header reuses
+  matching cache entries. Missing DIGITREAD interfaces and SQLite/NVEL objects
+  restore correctly; ordinary no-op builds invoke no compiler. Restore tests
+  also check recursive Make's target-specific settings, so SQLite retains its
+  scoped `-O2` without invalidating unrelated C units. Existing module sources
+  no longer compile twice merely to produce `.mod` and `.o` targets.
+  A final bookkeeping refinement batches ordinary receipt synchronization in
+  prepare, rather than spawning a touch/test shell for every object. Shared
+  compiles still publish receipts immediately. Missing objects invalidate their
+  receipt in prepare. This version again matches the baseline **24/24** and
+  passes the native incremental checks. IE also switches `-O0` and back to
+  the default without cleaning; both complete IE suites match the baseline.
+
+- [x] **O27 — Reduce copied-source overhead in variant build directories.**
   After O26, measure copying cost and disk use before choosing source-path
   compilation, links or another small change. Preserve include precedence,
   basename-collision checks and platform support. Acceptance: clean and
   incremental builds use the intended current sources and cannot modify the
   originals through a linked copy. Skip this if savings are insignificant.
 
-- [ ] **O28 — Add optional release packaging without debug symbols.**
+  Verified and retained: Make compiles original source paths, with an explicit
+  selected-include view (`-I.`) and regular copies of includes/headers. It
+  rejects conflicting adjacent/selected includes and duplicate basenames.
+  There are no writable source links. `FVS_NATIVE_SOURCES=0` retains full
+  staging for diagnosis; changing modes discards obsolete `.d` paths.
+  Copied bytes fall **88.6%**, from 440,206,782 in 18,623 files to 50,053,963
+  in 2,796 files. This removes 15,827 source copies across the 24 variants.
+  Source-path native suites again match **24/24**, and both API modes match.
+  Native incremental checks cover the same include/interface/object cases.
+
+- [x] **O28 — Add optional release packaging without debug symbols.**
   Measure current executable/shared-library sections, then assess split debug
   symbols or stripping of packaged copies while retaining debug builds.
   Acceptance: measured disk savings, preserved exported/API symbols and
   loading, and identical simulation outputs. Do not delete developer binaries
   or make the transcript's Windows size estimate a cross-platform promise.
+
+  Verified: `make package FVS_PACKAGE_VARIANTS=FVSie` (or another selected
+  list) invokes `package_release.py` on private copies. Original binaries are
+  never stripped. The output directory is configurable; optional separate
+  dSYM bundles (Mach-O) or GNU debug files (ELF/PE) retain symbol information.
+  Mach-O uses `strip -S -x`; GNU formats use `--strip-debug`. Existing dSYM
+  bundles are not overwritten. GNU formats are implemented but unmeasured here.
+
+  All **48** Mac executable/library copies retain their original exported
+  names/types and load/run; developer binary hashes remain unchanged by
+  packaging. All **24** stripped suites match their unstripped candidates,
+  including exact SQLite rows and restart bytes. Combined binary bytes fall
+  from **317,225,984 to 301,663,472 (4.9%)**, with individual savings 4.2–5.2%.
+  The IE separate-symbol trial produces 44 MiB of dSYM data for its pair;
+  those optional symbols are not included in the release-size saving. This
+  Mac's programs mostly refer to object-file DWARF, so no Windows-sized debug
+  section reduction is claimed. Numerical data and exported/API symbols stay.
+
+  **Combined O22–O28 measurements and final verification, 17 November 2026.**
+  All measurements use the O02 Mac, unchanged numerical flags and current
+  inputs. Cache/scan metadata are disposable implementation state. The final
+  24-variant build uses **12,681 code-generation invocations**, versus 16,034
+  before (**20.9% fewer**): 12,539 ordinary units and 142 shared misses, plus
+  3,146 cache hits. This includes eliminating duplicate module compilation.
+  The 142 pooled units replace 3,288 selected SQLite/FOFEM/NVEL instances.
+
+  Build directories plus the default cache fall from **906,564 to 455,768 KiB
+  by `du -sk` (49.7%)**. Distinct-inode file bytes fall from 851,193,657 to
+  **369,556,016 (56.6%)**. These figures exclude executables/libraries and the
+  source checkout. They do not claim unique physical APFS extent accounting.
+
+  Fresh sequential `make FVSxx.setup -j4` builds, one per setting and variant,
+  with no concurrent verification builds, give wall / CPU seconds:
+
+  | Variant | Before O22 | Final build |
+  |---|---:|---:|
+  | IE, initially empty cache | 27.56 / 93.51 | 32.56 / 105.93 |
+  | PN, common cache populated | 27.45 / 93.89 | 27.34 / 84.84 |
+  | CA, common cache populated | 24.84 / 85.63 | 24.39 / 75.43 |
+  | SN, common cache populated | 22.74 / 78.44 | 22.37 / 68.74 |
+
+  **The cold-cache build costs 18% more wall time.** Subsequent variants save
+  9.6–12.4% CPU, with only 0.4–1.8% wall reductions in these single runs.
+  Across this four-variant sequence wall time is 4.0% higher and CPU 4.7%
+  lower. No general wall-time speedup is claimed. The changes are retained
+  for measured compiler-work/CPU and storage savings, plus selective rebuilds;
+  the cache controls remain documented for ordinary uncached compilation.
+  An earlier two-shell-per-object receipt trial was rejected and replaced
+  before this final measurement. Windows/Linux timings remain unmeasured.
+
+  Each staged reuse/dependency/source change matches its immediate baseline
+  **24/24**. The final bookkeeping version also matches the pre-O22 baseline
+  **24/24**. File/memory API comparisons, GNU CMake IE/PN suites, all 48 export
+  sets, split-symbol trial, actual `make package`, all 24 stripped suites and
+  compiled cache/invalidation/concurrency checks pass. The original command
+  (and a replay of its exact reference outputs against the final candidate)
+  retains only the documented Canadian differences:
+
+  ```text
+  FAIL 22/24 variants; working tree 4145eea9+changes vs original c2105365 with R04 squares; failed: bc on
+  ```
+
+  No comparator mask/tolerance, model source, coefficient, variant manifest,
+  NVEL revision or numerical option changes. Source-list and whitespace checks
+  pass. Temporary verification builds, caches, symbols, packages and raw
+  measurements were discarded; only implementation, regression checks and
+  these concise results remain.
 
 ## 6. Reduce database transaction overhead
 

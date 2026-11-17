@@ -55,12 +55,30 @@ Run comparisons in temporary directories and discard generated outputs and build
 
 ## How the build works
 
-Each variant is built from the files listed in `bin/FVSxx_sourceList.txt`. The makefile copies all of them into one flat directory, `bin/FVSxx_buildDir`, before compiling. This has a few consequences:
+Each variant is built from the files listed in `bin/FVSxx_sourceList.txt`. Make
+compiles original source paths and stages selected includes/headers as regular
+files in `bin/FVSxx_buildDir`. This has a few consequences:
 
 - **Unique file names.** Every source file's name must be unique across the whole repository, or one file will silently replace another in the build directory.
 - **New files.** A new source file must be added to the source list of every variant that uses it. A new include file must also be listed in `bin/fortran_includes.txt`.
-- **Include changes.** Every object file depends on every include file, so changing an include file recompiles the whole variant.
-- **Modules.** The makefile compiles files whose names end in `_mod.f90` first, so name new module files that way.
+- **Include changes.** GNU compiler `.d` files record active direct/transitive
+  dependencies. `build_dependencies.py` bootstraps USE ordering, including USEs
+  in Fortran INCLUDEs, and rejects changed native include lookup. Local `.o.stamp`
+  receipts track compilation completion even when object bytes are shared.
+- **Modules.** Module declarations identify producers regardless of filename.
+  Prefer `_mod.f90` for new modules. A missing `.mod` is restored/recompiled
+  before consumers run; removed producers cannot leave an owned stale interface.
+- **Reusable objects.** Only audited SQLite/FOFEM C and NVEL units use
+  `shared_compile.py`. Database wrappers stay per variant. Keep compiler/ABI,
+  preprocessed/header and module identities complete when changing the helper;
+  never pool runtime state or drop initialization-only objects from a link.
+
+Run `python3 -B tests/parity/check_build_support.py` after changing build reuse.
+It checks concurrent publication, macro/header/flag and module invalidation,
+disabled reuse, immutable entries and separately linked runtime state. Test
+actual clean/incremental variant builds and API outputs as well; these small
+compiled fixtures do not replace the full suite. Generated caches, receipts
+and scan files are disposable build state, not retained verification evidence.
 
 ## Coding conventions
 

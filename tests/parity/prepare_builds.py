@@ -150,6 +150,9 @@ def selected_inputs(snapshot: Path, variant: str) -> dict[str, str]:
     """Hash manifests, include classification, and every selected input file."""
     manifest = snapshot / "bin" / f"FVS{variant}_sourceList.txt"
     paths = [manifest, snapshot / "bin/makefile"]
+    # Build helpers can change selected objects and must invalidate run caches.
+    paths.extend(path for path in (snapshot / "bin/shared_compile.py",
+                                   snapshot / "bin/build_dependencies.py") if path.exists())
     includes = snapshot / "bin/fortran_includes.txt"
     if includes.exists():
         paths.append(includes)

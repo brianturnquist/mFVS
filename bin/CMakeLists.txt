@@ -21,6 +21,7 @@ endif()
 # Keep the existing BC default when no selection is supplied.
 set(FVS_VARIANTS "FVSbc" CACHE STRING "Variants to build, e.g. FVSie;FVSpn, or all")
 option(FVS_OPTIMIZE_FORTRAN "Use conservative GNU Fortran optimization by default" ON)
+set(FVS_SHARED_GROUPS "sqlite,fofem,nvel" CACHE STRING "Reusable GNU compilation groups; empty disables reuse")
 if (FVS_VARIANTS STREQUAL "all")
     file(GLOB tobuild FVS*_sourceList.txt)
 else()
@@ -66,7 +67,7 @@ endforeach()
 foreach(toProcess ${dirsToProcess})
     # Pass the default-optimization choice to each generated variant project.
     set(fvsChildOptions "-DFVS_OPTIMIZE_FORTRAN=${FVS_OPTIMIZE_FORTRAN}")
-    foreach(setting CMAKE_BUILD_TYPE CMAKE_Fortran_FLAGS CMAKE_Fortran_FLAGS_DEBUG)
+    foreach(setting CMAKE_BUILD_TYPE CMAKE_Fortran_FLAGS CMAKE_Fortran_FLAGS_DEBUG FVS_SHARED_GROUPS FVS_SHARED_CACHE)
         if(DEFINED ${setting})
             list(APPEND fvsChildOptions "-D${setting}=${${setting}}")
         endif()
@@ -293,6 +294,17 @@ endif()
 include_directories(BEFORE ${includeDirs} "${CMAKE_CURRENT_BINARY_DIR}")
 
 add_library(FVSsql SHARED ${CsourceSQL})
+# Compiler-launcher reuse preserves these per-variant libraries and their state.
+# Respect an explicitly supplied launcher (for example a caller's own cache).
+if(CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_Fortran_COMPILER_ID STREQUAL "GNU")
+    find_package(Python3 3.12 COMPONENTS Interpreter REQUIRED)
+endif()
+set(FVS_SHARED_GROUPS "sqlite,fofem,nvel" CACHE STRING "Reusable GNU compilation groups; empty disables reuse")
+set(FVS_SHARED_CACHE "${FVS_ROOT}/bin/.shared_build" CACHE PATH "Disposable shared object cache")
+if(CMAKE_C_COMPILER_ID STREQUAL "GNU" AND NOT CMAKE_C_COMPILER_LAUNCHER)
+    set_property(TARGET FVSsql PROPERTY C_COMPILER_LAUNCHER
+        "${Python3_EXECUTABLE};${FVS_ROOT}/bin/shared_compile.py;--cache-dir;${FVS_SHARED_CACHE};--groups;${FVS_SHARED_GROUPS};--")
+endif()
 # Match the scoped GNU Make SQLite optimization in unoptimized configurations.
 # Release/size configurations keep their existing caller-selected flags.
 foreach(sqliteSource ${CsourceSQL})
@@ -304,7 +316,15 @@ foreach(sqliteSource ${CsourceSQL})
 endforeach()
 
 add_library(FVSfofem SHARED ${CsourceFFE})
+if(CMAKE_C_COMPILER_ID STREQUAL "GNU" AND NOT CMAKE_C_COMPILER_LAUNCHER)
+    set_property(TARGET FVSfofem PROPERTY C_COMPILER_LAUNCHER
+        "${Python3_EXECUTABLE};${FVS_ROOT}/bin/shared_compile.py;--cache-dir;${FVS_SHARED_CACHE};--groups;${FVS_SHARED_GROUPS};--")
+endif()
 add_library(FVS_${varName} SHARED ${FsourceFVS} ${FortranHeaders})
+if(CMAKE_Fortran_COMPILER_ID STREQUAL "GNU" AND NOT CMAKE_Fortran_COMPILER_LAUNCHER)
+    set_property(TARGET FVS_${varName} PROPERTY Fortran_COMPILER_LAUNCHER
+        "${Python3_EXECUTABLE};${FVS_ROOT}/bin/shared_compile.py;--cache-dir;${FVS_SHARED_CACHE};--groups;${FVS_SHARED_GROUPS};--")
+endif()
 add_executable(${prgName} ${FsourceMAIN} ${FortranHeaders})
 
 # Match Make in configurations without an optimization choice of their own.

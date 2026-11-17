@@ -59,12 +59,18 @@ $(info mingw64: $(mingw64); FCprf: $(FCprf); CCprf: $(CCprf))
 export CC = gcc
 export FC = gfortran 
 # Keep power rounding fixed by R04; disable optimization with FVS_FOPT=-O0.
-# Clean before switching this option, since command-line flags are not files.
+# Per-variant settings track this override and invalidate affected receipts.
 export FVS_FOPT ?= -O2 -ffp-contract=off
-export FFLAGS = $(PIC) $(FVS_FOPT) -g -cpp -DCMP${CC} -Wall -Wno-integer-division -ffpe-trap=invalid,zero,underflow,overflow,denormal -fbacktrace
+export FFLAGS = $(PIC) $(FVS_FOPT) -g -cpp -DCMP${CC} -Wall -Wno-integer-division -ffpe-trap=invalid,zero,underflow,overflow,denormal -fbacktrace $(if $(filter 1,$(FVS_NATIVE_SOURCES)),-I.)
 # C optimization is scoped at the individual object rules below.
-export CFLAGS = $(PIC) -DANSI -DCMP${CC} -DSQLITE_THREADSAFE=0 -DSQLITE_OMIT_LOAD_EXTENSION $(WIN) 
+export CFLAGS = $(PIC) -DANSI -DCMP${CC} -DSQLITE_THREADSAFE=0 -DSQLITE_OMIT_LOAD_EXTENSION $(WIN) $(if $(filter 1,$(FVS_NATIVE_SOURCES)),-I.)
 export LD = gfortran
+
+# Reuse code only; each executable/shared library keeps its own linked state.
+export PYTHON ?= python3
+export FVS_SHARED_GROUPS ?= sqlite,fofem,nvel
+export FVS_NATIVE_SOURCES ?= 1
+.DEFAULT_GOAL := all
 
 # --------------------------------------------------------------------------
 # Version and build metadata
@@ -80,6 +86,8 @@ export LD = gfortran
 GIT_REMOTE_NAME := origin
 
 FVS_ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/..)
+export FVS_SHARED_CACHE ?= $(FVS_ROOT)/bin/.shared_build
+FVS_SHARED_COMPILE = $(PYTHON) "$(FVS_ROOT)/bin/shared_compile.py" --cache-dir "$(FVS_SHARED_CACHE)" --groups "$(FVS_SHARED_GROUPS)" --kind $(FVS_SHARED_KIND) --hardlink --
 
 GIT_REMOTE  := $(shell git -C $(FVS_ROOT) remote get-url $(GIT_REMOTE_NAME) 2>/dev/null || echo unknown)
 GIT_ORG     := $(shell u="$(GIT_REMOTE)"; \
@@ -151,21 +159,32 @@ Canada : $(addsuffix $(SLIBSUFX),$(CANprgs)) $(addsuffix $(PRGSUFX),$(CANprgs))
 US : $(addsuffix $(SLIBSUFX),$(USprgs)) $(addsuffix $(PRGSUFX),$(USprgs))
 
 clean :
-	rm -frv *_buildDir $(addsuffix $(SLIBSUFX),$(FVSprgs)) $(addsuffix $(PRGSUFX),$(FVSprgs))
+	rm -frv *_buildDir .shared_build $(addsuffix $(SLIBSUFX),$(FVSprgs)) $(addsuffix $(PRGSUFX),$(FVSprgs))
+
+# Packaging is opt-in and writes stripped copies; it never strips build outputs.
+FVS_PACKAGE_VARIANTS ?= $(FVSprgs)
+FVS_PACKAGE_DIR ?= $(FVS_ROOT)/bin/release
+FVS_PACKAGE_SYMBOLS ?=
+FVS_STRIP ?= $(FCprf)strip
+FVS_OBJCOPY ?= $(FCprf)objcopy
+.PHONY: package
+package: $(addsuffix $(PRGSUFX),$(FVS_PACKAGE_VARIANTS)) $(addsuffix $(SLIBSUFX),$(FVS_PACKAGE_VARIANTS))
+	$(PYTHON) "$(FVS_ROOT)/bin/package_release.py" --output "$(FVS_PACKAGE_DIR)" $(if $(FVS_PACKAGE_SYMBOLS),--symbols-dir "$(FVS_PACKAGE_SYMBOLS)") --strip "$(FVS_STRIP)" --objcopy "$(FVS_OBJCOPY)" $(addsuffix $(PRGSUFX),$(FVS_PACKAGE_VARIANTS)) $(addsuffix $(SLIBSUFX),$(FVS_PACKAGE_VARIANTS))
 
 ifndef sourceFileList
 
-# Generate the same executable and shared-library rule for every source list.
-# Keep each variant's complete dependency list so source edits trigger setup.
+# Both artifacts share one setup; the child tracks selected inputs/settings.
 define variantRules
-$(1)$$(SLIBSUFX) $(1)$$(PRGSUFX) : makefile $(1)_sourceList.txt $$(shell cat $(1)_sourceList.txt)
-	$$(MAKE) --file=makefile $(1).setup
+$(1).setup: FORCE
+$(1)$$(SLIBSUFX) $(1)$$(PRGSUFX) : $(1).setup
 endef
 $(foreach prg,$(FVSprgs),$(eval $(call variantRules,$(prg))))
 
+.PHONY: FORCE
+FORCE:
+
 %.setup : 
 	mkdir -pv $(basename $@)_buildDir
-	cp -p `cat $(basename $@)_sourceList.txt` $(basename $@)_buildDir
 	$(MAKE) --file=../makefile --directory=$(basename $@)_buildDir \
 	               buildDir=$(basename $@)_buildDir \
                  sourceFileList=../$(basename $@)_sourceList.txt $(basename $@).prg
@@ -173,54 +192,76 @@ endif
 
 .SUFFIXES :
 
-.PRECIOUS : $(object) $(mods_mods) 
+# Object receipts own compilation; .mod files are compiler side effects.
+.PRECIOUS : $(object)
 
-# FVSVERSION module (base/version.f90) — consumers must compile after version.o
-fvsversion.mod : version.o
+ifdef sourceFileList
+variant_name := $(patsubst %_sourceList.txt,%,$(notdir $(sourceFileList)))
+fortran_objects := $(addsuffix .o,$(basename $(filter %.f %.f90 %.F90 %.F %.for,$(source))))
+c_objects := $(addsuffix .o,$(basename $(filter %.c %.cpp,$(source))))
+$(object) $(addsuffix .stamp,$(object)): FVS_SHARED_KIND =
+$(object) $(addsuffix .stamp,$(object)): FVS_COMPILE_PREFIX =
+FVS_DEPFLAGS = -MMD -MP -MF $(basename $(1)).d -MT $(1).stamp
 
-grohed.o main.o revise.o dbscase.o : fvsversion.mod
- 
-ifeq (${OSARCH},w64) 
-%.prg : $(object) 
-	$(FCprf)$(LD) -static -shared -Wl,--export-all-symbols -o $(basename ../$@)$(SLIBSUFX)  $(filter-out  main.o,$(object))
-	$(FCprf)$(LD) -static -o $(basename ../$@)$(PRGSUFX) $(object)
-else
-%.prg : $(object) 
-	$(LD) -shared -o $(basename ../$@)$(SLIBSUFX) $(filter-out main.o,$(object)) $(DBLINK) 
-	$(LD)         -o $(basename ../$@)$(PRGSUFX)  $(object) $(DBLINK)    
+# Stage and inspect only this variant. The compiler's .d files then track active
+# direct/transitive includes, and the bootstrap graph orders every USE producer.
+# $(shell) can inherit a parent's target-specific environment on older Make.
+# Quote and pass this parse's settings explicitly, including recursive restores.
+fvs_quote = '$(subst ','"'"',$(1))'
+FVS_PREPARED := $(shell FFLAGS=$(call fvs_quote,$(FFLAGS)) CFLAGS=$(call fvs_quote,$(CFLAGS)) FC=$(call fvs_quote,$(FC)) CC=$(call fvs_quote,$(CC)) FCprf=$(call fvs_quote,$(FCprf)) CCprf=$(call fvs_quote,$(CCprf)) LD=$(call fvs_quote,$(LD)) DBLINK=$(call fvs_quote,$(DBLINK)) $(PYTHON) "$(FVS_ROOT)/bin/build_dependencies.py" --manifest "$(sourceFileList)" $(if $(filter 1,$(FVS_NATIVE_SOURCES)),--native-sources))
+ifneq ($(FVS_PREPARED),ready)
+$(error Cannot prepare selected source dependencies)
 endif
 
-%.mod : %.f $(includes)
-	$(FCprf)$(FC) $(FFLAGS) -c $<
+.PHONY: $(variant_name).prg
+$(variant_name).prg: ../$(variant_name)$(PRGSUFX) ../$(variant_name)$(SLIBSUFX)
 
-%.mod : %.f90 $(includes)
-	$(FCprf)$(FC) $(FFLAGS) -c $<
+# Independent link targets converge on the same objects in a parallel build.
+# Local receipts also detect immutable shared objects restored from an older cache.
+../$(variant_name)$(PRGSUFX): $(object) $(addsuffix .stamp,$(object)) .link-inputs .link.flags
+ifeq (${OSARCH},w64)
+	$(FCprf)$(LD) -static -o $@ $(object)
+else
+	$(LD) -o $@ $(object) $(DBLINK)
+endif
 
-%.o : %.f $(includes) $(mods_mods)
-	$(FCprf)$(FC) $(FFLAGS) -c -o $@ $<
+../$(variant_name)$(SLIBSUFX): $(filter-out main.o,$(object)) $(addsuffix .stamp,$(object)) .link-inputs .link.flags
+ifeq (${OSARCH},w64)
+	$(FCprf)$(LD) -static -shared -Wl,--export-all-symbols -o $@ $(filter-out main.o,$(object))
+else
+	$(LD) -shared -o $@ $(filter-out main.o,$(object)) $(DBLINK)
+endif
 
-%.o : %.f90 $(includes) $(mods_mods)
-	$(FCprf)$(FC) $(FFLAGS) -c -o $@ $<
+# Prepare repairs missing/older receipts in one pass. Objects are side effects
+# of receipt recipes; no per-object shell is needed to test their presence.
+$(object): %.o: | %.o.stamp
 
-%.o : %.for $(includes) $(mods_mods)
-	$(FCprf)$(FC) $(FFLAGS) -c -o $@ $<
+$(addsuffix .stamp,$(fortran_objects)): %.o.stamp:
+	$(FVS_COMPILE_PREFIX) $(FCprf)$(FC) $(FFLAGS) $(call FVS_DEPFLAGS,$(@:.stamp=)) -c -o $(@:.stamp=) "$<"
 
-%.o : %.F $(includes) $(mods_mods)
-	$(FCprf)$(FC) $(FFLAGS) -c -o $@ $<
+$(addsuffix .stamp,$(c_objects)): %.o.stamp:
+	$(FVS_COMPILE_PREFIX) $(CCprf)$(CC) $(CFLAGS) $(call FVS_DEPFLAGS,$(@:.stamp=)) -c -o $(@:.stamp=) "$<"
 
-# A changed default must recompile existing Fortran objects and modules too.
-ifdef sourceFileList
-fortran_objects := $(addsuffix .o,$(basename $(filter %.f %.f90 %.F90 %.F %.for,$(source))))
-$(fortran_objects) $(mods_mods): $(FVS_ROOT)/bin/makefile
+include dependencies.mk
+-include $(object:.o=.d)
 endif
 
 # SQLite optimization is isolated from Fortran, FOFEM and API glue.
 # Depend on the build rules so an existing build picks up changed C flags.
-sqlite3.o fvsqlite3.o: CFLAGS += -O2
-sqlite3.o fvsqlite3.o: $(FVS_ROOT)/bin/makefile
+sqlite3.o fvsqlite3.o sqlite3.o.stamp fvsqlite3.o.stamp: CFLAGS := $(CFLAGS) -O2
+sqlite3.o fvsqlite3.o sqlite3.o.stamp fvsqlite3.o.stamp: FVS_SHARED_KIND = sqlite
+sqlite3.o fvsqlite3.o sqlite3.o.stamp fvsqlite3.o.stamp: FVS_COMPILE_PREFIX = $(FVS_SHARED_COMPILE)
 
-%.o : %.c 
-	$(CCprf)$(CC) $(CFLAGS) -c -o $@ $<
-	
-%.o : %.cpp 
-	$(CCprf)$(CC) $(CFLAGS) -c -o $@ $<
+# Only the audited C implementation is shared; Canadian CFIM C++ stays local.
+ifdef sourceFileList
+fofem_objects := $(addsuffix .o,$(basename $(notdir $(filter ../fire/fofem/%.c,$(sourceList)))))
+$(fofem_objects) $(addsuffix .stamp,$(fofem_objects)): FVS_SHARED_KIND = fofem
+$(fofem_objects) $(addsuffix .stamp,$(fofem_objects)): FVS_COMPILE_PREFIX = $(FVS_SHARED_COMPILE)
+# Whole objects retain DATA/SAVE/COMMON initialization and original link order.
+# Fortran database wrappers are deliberately outside this source-path boundary.
+nvel_sources := $(notdir $(filter ../volume/NVEL/%.f90,$(sourceList)))
+nvel_objects := $(addsuffix .o,$(basename $(nvel_sources)))
+nvel_modules := $(addsuffix .mod,$(basename $(filter %_mod.f90,$(nvel_sources))))
+$(nvel_objects) $(nvel_modules) $(addsuffix .stamp,$(nvel_objects)): FVS_SHARED_KIND = nvel
+$(nvel_objects) $(nvel_modules) $(addsuffix .stamp,$(nvel_objects)): FVS_COMPILE_PREFIX = $(FVS_SHARED_COMPILE)
+endif

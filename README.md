@@ -57,7 +57,7 @@ Planned next steps:
 
 ## Building
 
-You need the GNU Fortran, C and C++ compilers (`gfortran`, `gcc`, `g++`) and GNU `make`. On Windows, a MinGW-w64 toolchain such as [Rtools](https://cran.r-project.org/bin/windows/Rtools/) or [MSYS2](https://www.msys2.org/) provides all of them.
+You need the GNU Fortran, C and C++ compilers (`gfortran`, `gcc`, `g++`), GNU `make` and Python 3.12+. On Windows, a MinGW-w64 toolchain such as [Rtools](https://cran.r-project.org/bin/windows/Rtools/) or [MSYS2](https://www.msys2.org/) provides the compilers and make.
 
 ```sh
 git clone --recurse-submodules https://github.com/brianturnquist/mFVS.git
@@ -71,13 +71,27 @@ make all         # all 24 variants
 make clean       # remove build directories and programs
 ```
 
-Programs are written to `bin/`. Each variant is compiled separately in `bin/FVSxx_buildDir`, from the files listed in `bin/FVSxx_sourceList.txt`. The version string is taken from git, and a build made from a working tree with uncommitted changes is marked `-dirty`.
+Programs are written to `bin/`. Each variant uses `bin/FVSxx_buildDir`, from the files listed in `bin/FVSxx_sourceList.txt`. Compilation reads the original source paths and stages regular copies of selected includes/headers, preserving the variant's lookup view. Objects, module files, dependency files and local completion receipts stay in the build directory. The version string is taken from git, and a build made from a working tree with uncommitted changes is marked `-dirty`.
 
 GNU Make uses Fortran `-O2 -ffp-contract=off`, keeping debug information and
-the existing floating-point traps. For unoptimized debugging, run `make clean`
-and then `make FVSie.setup FVS_FOPT=-O0` (substitute your variant). Clean again
-when returning to the defaults; changing a command-line flag alone does not
-invalidate existing objects.
+the existing floating-point traps. For unoptimized debugging, run
+`make FVSie FVS_FOPT=-O0` (substitute your variant). Compiler settings are
+tracked, so switching back to the default flags rebuilds the affected objects.
+
+Audited SQLite C, FOFEM C and NVEL Fortran compilations are reused through
+`bin/.shared_build/`. Each binary still links its own runtime storage, in the
+original source-list order. The cache binds the compiler, target, flags,
+preprocessed text, headers and module interfaces; it uses atomic publication
+and locks across parallel builds. Unsupported extra-output/profile/plugin or
+response-file configurations compile normally. Make uses immutable hard links
+where supported, with a copy fallback; CMake uses private object copies.
+
+Use `make clean` before measuring a fully uncached build, then build with
+`FVS_SHARED_GROUPS=`. `FVS_SHARED_CACHE=/path/to/cache` selects another cache;
+`make clean` removes only the project's default cache and variant build files.
+`FVS_NATIVE_SOURCES=0` restores full source staging when diagnosing a build.
+For CMake, the corresponding cache settings are `FVS_SHARED_GROUPS` and
+`FVS_SHARED_CACHE`; an explicitly supplied compiler launcher is retained.
 
 CMake uses the same GNU Fortran defaults in empty/Debug configurations, while
 preserving explicit optimization switches and Release/size settings. For an
@@ -87,6 +101,15 @@ then build `FVSie_CmakeDir`. The option is also available when configuring a
 generated variant project directly. Other Fortran compilers retain their flags.
 
 On Windows, the makefile relies on the `OS` environment variable. If `make` reports that there is no rule for `FVSie.exe`, add `OS=Windows_NT` to the command. If `gfortran` reports that it cannot create a temporary file, make sure `TMP` points to a writable directory.
+
+Optional release copies can be made with
+`make package FVS_PACKAGE_VARIANTS=FVSie`. This writes stripped copies of the
+program and shared library to `bin/release/`, leaving developer binaries and
+objects intact. `FVS_PACKAGE_DIR` selects another directory. Add
+`FVS_PACKAGE_SYMBOLS=release-symbols` for separate debug data (Mach-O dSYM
+bundles, or GNU debug files for ELF/PE). Packaging needs `strip`, plus `dsymutil`
+on macOS or `objcopy` for GNU split symbols. `FVS_STRIP`/`FVS_OBJCOPY` select
+cross-toolchain tools. Existing dSYM bundles are not overwritten.
 
 ## Running the tests
 
