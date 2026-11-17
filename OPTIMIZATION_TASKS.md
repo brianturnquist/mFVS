@@ -11,7 +11,7 @@ R04's authorized rounding-level power rewrites and O21a's adoption of
 `-O2 -ffp-contract=off` are complete. O22–O28 are also complete: common
 compilation reuse, precise dependencies, native source paths and optional
 stripped release copies are retained with the measured tradeoffs below.
-O29–O34 remain pending.
+O29–O35 remain pending.
 Creating this document does not start implementation.
 
 The objective is to reduce execution time, build time, memory use or storage
@@ -1837,6 +1837,20 @@ compiler settings fixed while measuring build changes.
   briefly in this checklist. Acceptance: no new unexplained output differences,
   no overstated platform guarantees and no generated result archives added to
   the repository. Reorder remaining tasks from the measured final profile.
+
+- [ ] **O35 — Remove Python from the build process and remove the Rtools option; deferred.**
+  Retain the current O22–O28 implementation's behavior and optimizations while
+  replacing its Python build helpers. Cover dependency preparation, shared
+  compilation reuse and optional release packaging in both Make and CMake;
+  disabling reuse must not leave a hidden Python requirement. Remove Rtools
+  from the offered Windows build options and instructions, retaining support
+  for independently supplied GNU/MinGW-w64 toolchains. Acceptance: builds,
+  incremental dependency updates, reuse enabled/disabled and optional packaging
+  work with Python and Rtools unavailable, while preserving model results,
+  compiler settings, runtime-state isolation and the existing build features.
+  Complete this before O34's final review and update the build documentation
+  with the actual prerequisites. **Planning only: deferred at the user's request;
+  adding this task does not authorize implementation now.**
 
 ## Boundaries retained from the review
 
