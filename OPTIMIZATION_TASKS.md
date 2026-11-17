@@ -3,8 +3,9 @@
 Created 16 November 2026 from the material in [task_documents](task_documents/).
 This is a new checklist; the deleted working task list is not a source for it.
 O01–O17 and prerequisite repairs R01/R02 were completed on 16 November 2026;
-O14's additional optimization trial was rejected. The remaining tasks are
-pending. R03 gates O21.
+O14's additional optimization trial was rejected. O18–O20 are also complete:
+SQLite optimization is retained, the FOFEM trial is rejected, and O20 leaves
+O21 deferred pending R03. The remaining tasks are pending.
 Creating this document does not start implementation.
 
 The objective is to reduce execution time, build time, memory use or storage
@@ -1068,20 +1069,97 @@ repairs bugs 51 and 11, as separate steps, before O10.
 
 ## 4. Evaluate compiler optimization in isolated steps
 
-- [ ] **O18 — Trial optimization of SQLite and its C wrapper.**
+- [x] **O18 — Trial optimization of SQLite and its C wrapper.**
   After O15, build only `dbsqlite/sqlite3.c` and `fvsqlite3.c` with `-O2`,
   leaving Fortran and FOFEM flags unchanged. Preserve SQLite feature macros,
   threading settings and interfaces. Acceptance: actual optimized commands,
   exact schemas/typed rows, repeated open/write/close behavior and full
   affected-output comparison. Treat this as a measured trial, not risk-free.
 
-- [ ] **O19 — Trial optimization of FOFEM C code separately.**
+  Result at main `cb490ea0`: retained GNU C `-O2` for exactly `sqlite3.c`
+  and `fvsqlite3.c`. Make's Fortran, FOFEM, API glue, SQLite macros and
+  platform/thread settings are unchanged. All 24 variants' actual commands
+  compile those two units with the flag; only those two objects differ.
+  Make rule edits invalidate existing SQLite objects and relink. CMake applies
+  the same source-specific flag for GNU C in empty/Debug configurations;
+  other compilers and release/size/custom configurations retain their settings.
+  Fresh IE CMake builds also verify that scope and exact DBReportTest outputs.
+  Both need the same temporary macOS `-Wl,-undefined,dynamic_lookup` shared-link
+  setting to get past the existing API-glue unresolved-symbol failure; no
+  linker or platform fix is included here.
+
+  The full native suite matches the immediate baseline **24/24**, including
+  schemas, typed rows, status codes and restart records under the existing
+  comparator. Separate IE shared-library runs cover 13 stands, repeated cycle
+  stops, file/memory tables, tiny-buffer retry/read/clear and output-file
+  isolation. Each mode matches its unoptimized counterpart with the suite's
+  actual-value comparator. The API test helper's weaker row check is recorded
+  separately as bug 57, without changing it or relying on it for acceptance.
+
+  One warmup and five shuffled timed repetitions per build/workload give
+  median wall / CPU seconds below. Inventory uses O02's eight IE stands,
+  469 trees and ten cycles with unchanged keys.
+
+  | Workload | Before | SQLite `-O2` |
+  |---|---:|---:|
+  | IE `ie` | 0.57 / 0.57 | 0.55 / 0.55 |
+  | IE `iet01` | 0.38 / 0.37 | 0.31 / 0.30 |
+  | IE `DBReportTest` | 6.39 / 6.38 | 6.29 / 6.15 |
+  | IE `iet02` stop/restart | 0.39 / 0.38 | 0.31 / 0.28 |
+  | IE inventory | 4.64 / 4.63 | 4.58 / 4.57 |
+  | SN `sn` | 0.25 / 0.24 | 0.22 / 0.22 |
+  | PN `pnt01` | 0.20 / 0.19 | 0.20 / 0.19 |
+  | SN `snt01` | 0.23 / 0.22 | 0.21 / 0.21 |
+
+  All eight timing output trees match exactly. IE `iet01` has one unexplained
+  330.92-second baseline wall outlier (CPU 0.40); the other four are 0.38,
+  so the median and CPU evidence remain usable. DBReportTest and inventory
+  wall ranges overlap; no separate larger-workload gain is established.
+  Median peak RSS spans 14.56–37.02 MiB before and 14.39–36.88 MiB after;
+  no memory-saving claim is made. These are local GNU compiler measurements.
+  The final pristine-original command reports:
+
+  ```text
+  FAIL 22/24 variants; working tree cb490ea0+changes vs original c2105365; failed: bc on
+  ```
+
+  BC/ON retain their documented original keyword-failure differences; both
+  match the immediate baseline. No comparison masks or tolerances changed.
+
+- [x] **O19 — Trial optimization of FOFEM C code separately.**
   After O18, evaluate `fire/fofem` with conservative `-O2`, preserving existing
   floating-point behavior and traps. Keep unrelated C sources separate.
   Acceptance: exact fire/fuel/carbon results on exercising decks and a timing
   benefit; no fast-math flags or acceptance based only on successful linking.
 
-- [ ] **O20 — Diagnose Fortran initialization and interface sensitivity.**
+  Result: **trial rejected for insufficient timing benefit**. A separate
+  private Make build applies `-O2 -ffp-contract=off` to exactly the 19 FOFEM C
+  units in every variant, retaining O18 for SQLite. Actual commands verify
+  those flags; only the 19 FOFEM objects differ from O18. Fortran, API glue,
+  CFIM C++, macros, trap settings and interfaces are unchanged. All 24 native
+  suites and all seven timing output trees match O18 exactly, including
+  fire/fuel/carbon tables and restart files under the existing comparator.
+
+  One warmup and five shuffled repetitions per side give median wall / CPU
+  seconds below, with the same local GNU compilers used for O18.
+
+  | Workload | O18 baseline | FOFEM trial |
+  |---|---:|---:|
+  | IE `iet03` | 0.10 / 0.10 | 0.10 / 0.09 |
+  | IE `fireTest` | 0.63 / 0.62 | 0.61 / 0.61 |
+  | IE `DBReportTest` | 6.26 / 6.24 | 6.26 / 6.25 |
+  | PN `pnt01` | 0.20 / 0.20 | 0.19 / 0.19 |
+  | CA `cat01` | 0.22 / 0.21 | 0.22 / 0.21 |
+  | SN `snt01` | 0.22 / 0.21 | 0.22 / 0.21 |
+  | SN `sn` | 0.22 / 0.22 | 0.22 / 0.22 |
+
+  Every wall-time range overlaps its counterpart. The apparent short-deck
+  changes are at the timer's 0.01-second resolution; DBReportTest has no
+  improvement. Median peak RSS spans 12.83–36.84 MiB before and 12.77–36.77
+  MiB in the trial, without an established memory benefit. No FOFEM flag
+  change is retained in Make or CMake; no fast-math option was used.
+
+- [x] **O20 — Diagnose Fortran initialization and interface sensitivity.**
   After O03 and O15, compare controlled plain `-O0` builds with diagnostic
   `-finit-integer=-99999 -finit-real=snan` builds where supported. Trace any
   difference or trap before attributing it to a cause; warning counts and
@@ -1089,6 +1167,47 @@ repairs bugs 51 and 11, as separate steps, before O10.
   relevant hazards are recorded and the next trial is either cleared for
   investigation or explicitly deferred. Do not ship diagnostic initialization.
   Model-affecting hazards found here are added to R03.
+
+  Result: **diagnosis complete; O21 explicitly deferred pending R03**.
+  Fresh GNU Fortran 15.2.0 builds compare explicit `-O0` with `-O0
+  -finit-integer=-99999 -finit-real=snan`, retaining the other numerical,
+  trap and C flags. The explicit plain build matches O18 **24/24**. Actual
+  commands and object identities verify the diagnostic flags and unchanged
+  C objects; these results do not come from cached ordinary builds.
+
+  GNU Fortran 15.2.0 and the separately installed 16.2.0 crash when real
+  initialization is applied to shared MORTS's host-associated BRATIO function
+  declaration (bug 58). A minimal reproducer confirms the compiler issue.
+  Both private controls explicitly declare that function EXTERNAL; their
+  plain control still matches unchanged plain sources **24/24**. This permits
+  full real/integer poisoning of every selected Fortran unit, including MORTS,
+  without a permanent declaration change or an unpoisoned-unit exemption.
+
+  The final diagnostic comparison matches **22/24** native suites. BC's
+  `YSM-SkyRanch` traps in DMNB on undefined `NB(0,1)` for the central ring
+  (bug 59); IE's `DBReportTest` traps in RDPR on unsaved previous-year LYAREA
+  at cycle 1 (bug 60). LLDB backtraces and separate value-only instrumentation
+  confirm both signaling-NaN reads and their callers. These are traced
+  inherited defects, not unexplained compiler differences. Bug 59 feeds the
+  mistletoe model; bug 60 controls report branches/area changes, with no
+  established growth-calculation effect.
+
+  Of 14 additional native workloads, including IE's eight-stand
+  inventory and IE/PN/CA/SN stop/restarts, 13 match exactly. Only DBReportTest
+  hits the same RDPR trap. IE shared-library file/memory runs complete, but
+  each has one changed consumption-table value: a zero-fuel percentage is
+  SQL NULL after poisoning instead of baseline 0. Source tracing and actual
+  call instrumentation establish the unassigned PGR3 read (bug 61); all
+  other compared API tables agree. These report hazards also block exact
+  O21 acceptance, even where no tree-growth effect is demonstrated.
+
+  Existing bugs 12/19/37/40 remain unresolved. A matching diagnostic workload
+  does not clear their unexercised branches: these flags do not poison
+  LOGICALs, COMMON storage, or every pointer/allocated value, and cannot prove
+  correct retained state. No model repair, blanket SAVE, diagnostic flag,
+  Fortran optimization or comparator relaxation is shipped. Newly found
+  defects are recorded as bugs 57–61. Temporary builds, raw runs and compiler/
+  debugger controls are discarded after verification.
 
 - [ ] **R03 — Repair undefined model-value reads before O21.**
   After O20 and before any optimized Fortran trial, repair the known
@@ -1102,8 +1221,16 @@ repairs bugs 51 and 11, as separate steps, before O10.
   [37](FOUND_BUGS.md#37-morts-reads-unset-fixmort-flags-and-diagnostic-work-values)
   (AK MORTS FIXMORT flags),
   [40](FOUND_BUGS.md#40-cssn-fuel-model-selection-reads-unassigned-moisture-weights)
-  (CS/SN moisture weights), and any further model-affecting hazard that O20
-  records. Each repair changes results. Settle its intended behavior first,
+  (CS/SN moisture weights), and
+  [59](FOUND_BUGS.md#59-bc-dmnb-reads-an-undefined-zero-count-probability-for-its-central-ring)
+  (BC central-ring probabilities). O20 also confirms report-output hazards
+  [60](FOUND_BUGS.md#60-rdpr-relies-on-an-unsaved-previous-year-diseased-area-array)
+  (RDPR retained area) and
+  [61](FOUND_BUGS.md#61-fmfout-leaves-the-large-fuel-consumption-percentage-undefined-at-zero-fuel)
+  (FMFOUT zero-fuel percentage), which must be resolved or explicitly scoped
+  out before O21's exact comparisons can clear a flag change. Include any
+  further model-affecting hazard found during repair. Each repair changes
+  results. Settle its intended behavior first,
   then verify it on its own with focused cases and an immediate-baseline
   comparison. After bug 12, remove the decay-code restart exception from
   `check_suite.py`. Acceptance: O20's diagnostic builds show no remaining

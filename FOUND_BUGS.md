@@ -1690,3 +1690,133 @@ FVSVOL debug output remains unsuitable for exact whole-file comparison.
 
 **Suggested fix:** remove the retired I1 field from the diagnostic text and
 argument list as a separate diagnostic repair.
+
+## 57. The memory-table test compares column names instead of row values
+
+**Scope:** the test helper `tests/APImemTables/memtables_ctypes.py`, not the
+model or memory-table API.
+
+**Location:** `_rows`, line 340.
+
+**Status:** reproduced during O18. Deliberately unfixed in this compiler trial.
+
+The SELECT list formats column names with Python `repr`, which puts ordinary
+names in single quotes. SQLite interprets these as string constants, so each
+returned row contains the column names instead of their values. The test
+still checks table names, declared types and row counts, but can accept
+arbitrary value changes when those agree. Calling the actual helper on two
+one-row REAL tables containing 10 and 99 returns the same counter.
+
+O18 separately compares the actual SQLite schemas and typed rows between
+baseline and optimized runs, in both file and memory modes, with the suite's
+existing exact comparator. Its acceptance does not rely on this helper.
+
+**Suggested fix:** quote SELECT identifiers with escaped double quotes and
+add a focused changed-value check. Retain the API test's intentional NULL
+normalization and ignored run-identity fields.
+
+## 58. GNU Fortran initialization crashes on a host-associated external function
+
+**Scope:** diagnostic compiler compatibility, not demonstrated model-value
+corruption in an ordinary build.
+
+**Location:** `vbase/morts.f90:49`, BRATIO's real type declaration and calls
+from contained procedures; 23 variants select this file (all except AK).
+
+**Status:** reproduced during O20 with GNU Fortran 15.2.0 and 16.2.0.
+`-O0 -finit-real=snan` produces an internal compiler error in
+`fold_convert_loc`. Integer initialization alone compiles.
+
+A small reproducer declares `real :: fn` in an outer subroutine and calls
+`fn(1.)` from a contained subroutine. It also crashes with real initialization;
+declaring `real, external :: fn` avoids the crash. The same explicit external
+attribute lets the actual shared MORTS compile with both diagnostic flags.
+It does not initialize or alter the external function's result.
+
+O20 applies that declaration only in both temporary controls, and separately
+checks the plain control against unchanged sources. No blanket SAVE or
+production diagnostic flags are introduced.
+
+**Suggested fix:** make the external attribute explicit in a separate compiler
+compatibility change, or verify a compiler that handles this case correctly.
+
+## 59. BC DMNB reads an undefined zero-count probability for its central ring
+
+**Variant:** BC; the only current manifest selecting
+`canada/newmist/dmnb.f90`.
+
+**Location:** DMNB's `j=0` branch at lines 141-144 and reweighting at line 167.
+
+**Status:** reproduced on native `YSM-SkyRanch.key` during O20. The same
+assignments and read occur in pinned original F77. Deliberately unfixed.
+
+For `RQ=1`, the inner disk is a point. The routine sets `NB(1,1)=1` and
+`EMark(1)=1`, but leaves `NB(0,1)` undefined. Reweighting then evaluates
+`1/(1-NB(0,1))` before setting that entry to zero. The undefined value feeds
+the central-ring weights used by the dwarf-mistletoe model.
+
+With signaling-NaN initialization, the native deck traps at line 167.
+LLDB traces DMNB through DMTREG, MISTOE, GRADD and TREGRO. Temporary value-only
+instrumentation confirms `RQ=1`, `i=1`, and `NB(0,1)` bits `7FA00000`
+immediately before the read. The ordinary baseline completes; the size of
+any ordinary-build numerical error has not been measured.
+
+**Suggested fix:** explicitly define the point distribution's zero-count
+probability before reweighting, retaining its unit mass at count one. Verify
+the resulting distributions and mistletoe/model outputs as an R03 repair.
+
+## 60. RDPR relies on an unsaved previous-year diseased-area array
+
+**Variants:** BC, BM, CI, CR, EC, EM, IE, KT, NC, PN, SO, TT, UT, WC and WS
+select `rd/rdpr.f90`; the native reproduction is IE `DBReportTest.key`.
+
+**Location:** LYAREA declaration at line 65, cycle-zero initialization at
+lines 71-76, tests at lines 158-161, and area change/update at lines 298/316.
+
+**Status:** reproduced during O20. Present in pinned original F77. Unfixed.
+
+LYAREA is initialized at cycle zero and updated to the current diseased area
+before returning. It has no SAVE or other persistent storage, yet later calls
+read it as last year's area. These reads control report branches and the
+reported change in diseased area. Growth-calculation impact is not established.
+
+The poisoned native build traps at line 158 in RDPR, called by FVS. Temporary
+value-only instrumentation shows cycle 0, root-disease type 3, LYAREA zero
+and PAREA 10.0267; at cycle 1 PAREA is 10.3467 but LYAREA has signaling-NaN
+bits `7FA00000`. The prior call's assignment has not survived the new call's
+initialization. Plain builds can instead read leftover storage. No ordinary
+numerical error size is claimed from a matching uninitialized baseline.
+
+**Suggested fix:** define LYAREA's lifetime, reset and restart behavior
+explicitly, with repeated-cycle, multi-stand and stop/restart report cases.
+This report-output hazard must also be resolved or scoped out before O21's
+exact comparisons can clear a Fortran flag change.
+
+## 61. FMFOUT leaves the large-fuel consumption percentage undefined at zero fuel
+
+**Variants:** all 24 select the imperial or metric FMFOUT. Runtime confirmation
+is on IE through the shared-library API.
+
+**Location:** `fire/vbase/fmfout.f90:112-158,166-170` and
+`metric/fire/vbase/fmfout.f90:111-152,169-173`.
+
+**Status:** reproduced during O20; the same conditional assignment and
+unconditional report use occur in both pinned original F77 copies.
+Deliberately unfixed; the demonstrated effect is on report/database values.
+
+PDUFF is zeroed before calculating consumption percentages, but PGR3 is
+assigned only when `SUMG3+TOTG3>0`. It is then passed to DBSFMFUEL and printed
+even when no large fuel exists. A later call can therefore read an undefined
+or stale percentage.
+
+The actual IE DBReportTest API runs, in both file and memory-table modes,
+differ in exactly one consumption value: stand `s16y2015c0302u01c79p085115`,
+year 2021, `Percent_Consumption_ge3` is 0 in the plain build and SQL NULL in
+the poisoned build. All other compared tables agree. Temporary value-only
+instrumentation confirms `SUMG3=TOTG3=0` and PGR3 still has the signaling-NaN
+bits `7FA00000` before the writer; SQLite binds that NaN as NULL. This is
+separate from RDPR's earlier trap in the native executable.
+
+**Suggested fix:** settle the reported percentage for a zero fuel denominator
+and define it on every applicable call. Test zero/positive fuel and repeated
+fires in both output-unit systems and API modes as a separate report repair.

@@ -284,6 +284,16 @@ endif()
 include_directories(BEFORE ${includeDirs} "${CMAKE_CURRENT_BINARY_DIR}")
 
 add_library(FVSsql SHARED ${CsourceSQL})
+# Match the scoped GNU Make SQLite optimization in unoptimized configurations.
+# Release/size configurations keep their existing caller-selected flags.
+foreach(sqliteSource ${CsourceSQL})
+    get_filename_component(sqliteName ${sqliteSource} NAME)
+    if(sqliteName STREQUAL "sqlite3.c" OR sqliteName STREQUAL "fvsqlite3.c")
+        set_property(SOURCE "${sqliteSource}" APPEND PROPERTY COMPILE_OPTIONS
+            "$<$<AND:$<COMPILE_LANG_AND_ID:C,GNU>,$<OR:$<CONFIG:Debug>,$<CONFIG:>>>:-O2>")
+    endif()
+endforeach()
+
 add_library(FVSfofem SHARED ${CsourceFFE})
 add_library(FVS_${varName} SHARED ${FsourceFVS} ${FortranHeaders})
 add_executable(${prgName} ${FsourceMAIN} ${FortranHeaders})
