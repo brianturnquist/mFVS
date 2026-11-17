@@ -2,8 +2,9 @@
 
 Created 16 November 2026 from the material in [task_documents](task_documents/).
 This is a new checklist; the deleted working task list is not a source for it.
-O01–O12 and prerequisite repair R01 were completed on 16 November 2026; the
-remaining tasks are pending. R02 and R03 gate O16 and O21 respectively.
+O01–O15 and prerequisite repair R01 were completed on 16 November 2026;
+O14's additional optimization trial was rejected. The remaining tasks are
+pending. R02 and R03 gate O16 and O21 respectively.
 Creating this document does not start implementation.
 
 The objective is to reduce execution time, build time, memory use or storage
@@ -743,7 +744,7 @@ repairs bugs 51 and 11, as separate steps, before O10.
   Compiler flags, masks and tolerances were not changed. Temporary builds,
   runs, profiles and probes were removed.
 
-- [ ] **O13 — Audit the lifetime of FIA species-code data.**
+- [x] **O13 — Audit the lifetime of FIA species-code data.**
   Re-inventory active `READ(FIAJSP...)` sites using current manifests; the
   transcript's 41-site count includes a different tree. Trace initialization,
   mutation, variant mappings, multi-stand/API reuse and restart behavior before
@@ -751,7 +752,32 @@ repairs bugs 51 and 11, as separate steps, before O10.
   consumers and a safe lifetime; do not add COMMON/restart state merely to
   avoid a few cold conversions.
 
-- [ ] **O14 — Optimize other measured FIA-code consumers.**
+  Result, 16 November 2026: the 24 current manifests select 39 direct
+  `READ(FIAJSP...)` sites in 32 files: 24 SITSET, two INTREE, four DISPLY
+  (imperial/metric), two VOLS (IE/ORGANON), one INITRE, five STKVAL and
+  NATCRS's existing fallback. EC SITSET and INITRE read I3; the other 37
+  sites read I4. This inventory excludes inactive sources and NVEL's local,
+  unrelated FIAJSP lookup arrays.
+
+  Each variant's BLOCK DATA initializes its own `character(len=4)` mapping
+  in PLTCHR, with MAXSP ranging from 11 to 108. Active sources contain no
+  subsequent assignments or calls passing these fields as writable inputs.
+  GRINIT and successive PROCESS/API calls retain that mapping; tree-species
+  changes affect ISP/JSPIN instead. The species-code API copies strings out
+  and has no mapping setter. CHPUT/CHGET omit FIAJSP, so restart uses the
+  receiving executable's block-data mapping. A conversion local to its
+  consumer therefore needs no initialization or invalidation across stands,
+  API calls or restart. No COMMON, startup table or restart field was added.
+
+  Three fresh profiles of each of O02's seven standard workloads found only
+  eight samples at the five remaining STKVAL READ lines among 26,895
+  main-thread samples. No sample landed on the other unoptimized direct
+  FIA READ lines. This is a sampling limit, not proof of zero cost. Inclusive
+  INTREE/DISPLY and VOLS time includes input, reporting and nested NVEL
+  work; it is not all FIA conversion overhead. O14 tests STKVAL as the
+  bounded remaining candidate and defers the cold consumers.
+
+- [x] **O14 — Optimize other measured FIA-code consumers.**
   After O13, use local hoisting or the verified fast path in worthwhile
   consumers such as INTREE, DISPLY and selected SITSET/volume routines.
   Preserve differences between I3/I4 reads and each caller's blank/default
@@ -759,11 +785,136 @@ repairs bugs 51 and 11, as separate steps, before O10.
   A shared startup table proceeds only if its initialization and invalidation
   contract is established; do not edit inactive copies to satisfy an old count.
 
-- [ ] **O15 — Re-profile after the parsing changes.**
+  Result, 16 November 2026: a disposable trial applied DIGITREAD to STKVAL's
+  five I4 reads, retaining each original READ as fallback and all existing
+  blank/zero/998/999 decisions. Its only new manifest dependency was the
+  existing helper module in BC. All 24 variants matched the immediate
+  baseline, including databases and restart files; 1,440 direct STKVAL cases
+  passed with bounds checking, and the existing digit/prefix/write checks
+  passed under default and `-fcheck=all` builds.
+
+  The trial is rejected. Every baseline/trial wall-time range overlaps in
+  O15's five-run comparison. For example, DBReportTest was 8.50–8.65 seconds
+  before and 8.53–8.67 after; IE inventory was 6.20–6.41 before and 6.23–6.37
+  after. The smaller CA inventory median also has overlapping ranges
+  (3.09–3.20 versus 2.95–3.20), while SN inventory became slightly slower.
+  There is no consistent benefit to justify another dependency and more
+  branches. INTREE, DISPLY, SITSET, INITRE and VOLS conversions are deferred
+  for the measured workloads; FIAVBC-only VOLS work was not timed separately.
+  The accepted code remains O12; all trial source, manifest and verification
+  copies were confined to temporary storage.
+
+- [x] **O15 — Re-profile after the parsing changes.**
   Repeat O02 on the accepted changes before taking on volume caching or broad
   flag changes. Acceptance: measured cumulative improvement and a refreshed
   hotspot ranking; do not add sampled percentages or assume the remaining
   workload has the same bottlenecks.
+
+  Result, 16 November 2026: main `af287672`, NVEL `34343748`. O13–O15 retain
+  the accepted O12 sources. A fresh controlled pre-parsing baseline starts
+  from main `f67c0eaf` / NVEL `9655442`, restores pre-O04 STKVAL with the
+  existing `check_stkval.py:corrected_reference` coefficient-row repair, and
+  restores `nsvb.f90` from NVEL `d0e634fa`. Thus bugs 6, 49, 50, 51 and 11
+  remain repaired on both sides; the comparison measures the parsing changes
+  without reintroducing the model defects present in O02's historical tree.
+
+  These are fresh local measurements on macOS 27.2.1, Apple M5 Pro, 18 cores,
+  64 GB, GNU Fortran 15.2.0, GNU C 16.2.0 and GNU Make 3.81, with the existing
+  compiler settings (no optimization flag). O02's older OS/timings are not
+  used as this table's baseline. Each workload/version had one warm-up and
+  five unprofiled runs in shuffled order with seed 1602: 210 timed runs over
+  three versions. Every run used a fresh test folder, `LC_ALL=C TZ=UTC`, and
+  `/usr/bin/time -l -p`; preparation, builds and sampling were separate.
+  Inventory decks were regenerated by O02's SQL/stand-selection protocol:
+  IE 8 stands/469 input trees, CA 5/373 and SN 9/660, ten cycles per stand.
+  Compare these regenerated inventory timings within this table only.
+
+  Values are median wall / user-plus-system CPU seconds. The rejected trial
+  is shown separately; the reduction column compares the accepted code with
+  the repaired pre-parsing baseline.
+
+  | Workload | Pre-parsing | Accepted through O12 | O14 trial, rejected | Cumulative wall reduction |
+  |---|---:|---:|---:|---:|
+  | IE `ie` | 1.25 / 1.24 | 0.70 / 0.69 | 0.70 / 0.70 | 44.0% |
+  | IE `iet01` | 0.57 / 0.56 | 0.38 / 0.37 | 0.38 / 0.37 | 33.3% |
+  | IE `DBReportTest` | 14.49 / 14.47 | 8.61 / 8.59 | 8.66 / 8.65 | 40.6% |
+  | PN `pnt01` | 0.56 / 0.55 | 0.21 / 0.20 | 0.21 / 0.20 | 62.5% |
+  | CA `cat01` | 0.56 / 0.55 | 0.24 / 0.23 | 0.24 / 0.23 | 57.1% |
+  | SN `snt01` | 0.61 / 0.61 | 0.24 / 0.24 | 0.24 / 0.24 | 60.7% |
+  | SN `sn` | 0.61 / 0.60 | 0.27 / 0.27 | 0.28 / 0.27 | 55.7% |
+  | IE `iet02` stop/restart | 0.58 / 0.57 | 0.39 / 0.37 | 0.39 / 0.38 | 32.8% |
+  | PN `pnt02` stop/restart | 0.57 / 0.55 | 0.22 / 0.20 | 0.21 / 0.20 | 61.4% |
+  | CA `cat02` stop/restart | 0.58 / 0.57 | 0.25 / 0.23 | 0.24 / 0.23 | 56.9% |
+  | SN `snt02` stop/restart | 0.65 / 0.63 | 0.25 / 0.23 | 0.24 / 0.23 | 61.5% |
+  | Native inventory, IE | 10.89 / 10.87 | 6.39 / 6.38 | 6.28 / 6.27 | 41.3% |
+  | Native inventory, CA | 6.83 / 6.82 | 3.18 / 3.17 | 3.04 / 3.02 | 53.4% |
+  | Native inventory, SN | 5.35 / 5.34 | 2.65 / 2.64 | 2.69 / 2.68 | 50.5% |
+
+  Every accepted-code wall range lies below its pre-parsing range. The timer
+  has 0.01-second resolution, so short-deck percentages are coarse. Median
+  peak RSS spans 13.66–36.89 MiB before and 13.69–37.03 MiB after; no memory
+  reduction is claimed. Exit codes remain IE `iet01=20`, `iet02=20,0`,
+  SN `sn=10`, CA inventory `10`, and zero otherwise. All 14 independently
+  compared workload output trees match across all three versions using the
+  unchanged text/SQLite/restart comparison rules.
+
+  Three separate fresh `sample PID 60 1 -mayDie` runs per standard workload
+  refresh the accepted-code ranking below. Values are inclusive percentages
+  of main-thread samples; nested columns must not be added. Formatted I/O is
+  the union of transfer, format parsing and read/write completion stacks.
+  Short decks have only hundreds of samples, so their small shares are
+  approximate. Sampling increased median wall time by 8.3–13.2%; those runs
+  are excluded from the timing table.
+
+  | Workload | Samples | Formatted I/O % | FMSNAG % | NVBC % | SQLite % |
+  |---|---:|---:|---:|---:|---:|
+  | IE `ie` | 1,522 | 0.7 | 40.7 | 28.2 | 4.7 |
+  | IE `iet01` | 837 | 14.1 | 0.0 | 11.5 | 34.2 |
+  | IE `DBReportTest` | 23,022 | 0.8 | 51.9 | 25.8 | 3.7 |
+  | PN `pnt01` | 284 | 1.4 | 42.6 | 49.3 | 1.8 |
+  | CA `cat01` | 310 | 1.9 | 23.5 | 38.4 | 1.9 |
+  | SN `snt01` | 380 | 17.6 | 22.9 | 46.1 | 2.9 |
+  | SN `sn` | 540 | 14.3 | 17.2 | 36.5 | 16.1 |
+
+  Volume calculations now dominate the volume-heavy decks: NVEL PROFILE
+  accounts for 51.9% of IE `ie` and 56.5% of DBReportTest samples, overlapping
+  their snag paths. SPEQCOEF's remaining 11.7–21.1% in DBReportTest/PN/CA/SN
+  is chiefly its coefficient-table scan at `nsvb.f90:1022`, rather than FIA
+  reads. SN still spends time in R8PREP, MRULES and R9CLARK; its remaining
+  formatted I/O must not be attributed to the cold FIA consumers. SQLite is
+  a workload-specific priority on `iet01`, with PRTRLS also accounting for
+  43.6% including database/report work. The next planned volume assessment
+  remains R02 followed by O16; no call equivalence or cache safety is inferred
+  from these profiles, and no volume cache or compiler-flag trial was started.
+
+  Build/storage checks were separate, with one fresh `make FVSxx.setup -j4`
+  per variant, run sequentially and producing both executable and library.
+  Actual commands retain O01's numerical/trap flags, SQLite feature macros
+  and effective `-O0`; snapshot version macros are `unknown`. Sizes are
+  logical MiB, with final binaries excluded from build-directory size.
+  These single-build observations are a refreshed baseline, not a claimed
+  build-time or storage improvement.
+
+  | Variant | Wall / CPU s | Compile commands | Build directory MiB | Executable / library MiB |
+  |---|---:|---:|---:|---:|
+  | IE | 19.78 / 55.87 | 705 | 35.28 | 8.22 / 8.22 |
+  | PN | 19.57 / 55.09 | 696 | 35.97 | 8.56 / 8.56 |
+  | CA | 17.91 / 50.69 | 640 | 33.68 | 8.09 / 8.08 |
+  | SN | 16.80 / 47.66 | 589 | 31.33 | 7.43 / 7.43 |
+
+  The full pristine-original command retains the established result:
+
+  ```text
+  FAIL 22/24 variants; working tree af287672+changes vs original c2105365; failed: bc on
+  ```
+
+  All 22 U.S. variants match, including restart files. The trial's separate
+  24/24 immediate-baseline comparison includes BC/ON but does not establish
+  pristine-original Canadian simulation parity. No masks or tolerances changed.
+  These measurements establish neither production nor Windows/Linux gains.
+  Source-list checks and `git diff --check` pass. Temporary builds, trial
+  sources, raw timings, profiles and generated outputs were discarded; only
+  this checklist changed.
 
 ## 3. Avoid repeated snag-volume work
 
