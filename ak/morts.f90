@@ -478,6 +478,13 @@ subroutine MORTS
            end if
         end if
      end do
+  else
+
+     !  NO FIXMORT IS SCHEDULED, SO THERE IS NOTHING TO APPLY OR REALLOCATE.
+     !  ONLY A PROCESSED ACTIVITY SETS THE FLAGS, SPECIES AND OPTION READ
+     !  BELOW (FOUND_BUGS 37).
+
+     goto 300
   end if
 
   ! END OF FIXMORT ACTIVITY PROCESS

@@ -119,6 +119,12 @@ subroutine FMCFMD (IYR, FMD)
      if (SMALL .gt.6) then
         EQWT(5) = 1.0
      else
+
+        !  THE MODEL NOT SELECTED BY MOISTURE HAS ZERO WEIGHT, AS IN THE
+        !  PINE BRANCH BELOW; BOTH WEIGHTS ARE READ (FOUND_BUGS 40).
+
+        MOISWT(8) = 0.0
+        MOISWT(9) = 0.0
         if (MOIS(1,4) .le.0.15) then
            MOISWT(9) = 1.0
         else if (MOIS(1,4) .gt.0.25) then

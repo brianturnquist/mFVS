@@ -44,7 +44,7 @@ subroutine CRATET
 
   !  CI/KT KEEP SCALAR AAHT/BBHT SEPARATE FROM THE VARCOM ARRAYS AA/BB.
   !  NATIVE DATA TABLE LENGTHS AND ORGANON LABEL WIDTHS ARE RETAINED.
-  !  KT KEEPS THE CONDITIONAL IERRCK/XN ASSIGNMENTS; SEE FOUND_BUGS 19.
+  !  KT KEEPS THE CONDITIONAL XN ASSIGNMENT; SEE FOUND_BUGS 19.
   logical :: DEBUG
   logical :: MISSCR
   logical :: TKILL
@@ -2156,6 +2156,9 @@ subroutine CRATET
               if (DEBUG)write(JOSTND,*)'I=',II,' AA=',AAHT,' BB=',BBHT,&
                    &'SMA(ISPC)=',SMA(ISPC)
               STEP1 = ((BBHT*BBHT)-4*SMA(ISPC)*(4.5-AAHT))
+              !  IERRCK FLAGS THAT THE EQUATIONS FOR THIS SPECIES HAVE NO COMMON
+              !  SOLUTION; DEFINE IT ON EVERY EVALUATION (FOUND_BUGS 19).
+              IERRCK = 0
               if (STEP1.le.0.0) then
                  IERRCK = 1
                  go to 115
@@ -2885,6 +2888,9 @@ subroutine CRATET
            else
               H = AAHT + BBHT*SQRT(D)
               STEP1 = ((BBHT*BBHT)-4*SMA(ISPC)*(4.5-AAHT))
+              !  IERRCK FLAGS THAT THE EQUATIONS FOR THIS SPECIES HAVE NO COMMON
+              !  SOLUTION; DEFINE IT ON EVERY EVALUATION (FOUND_BUGS 19).
+              IERRCK = 0
               if (STEP1.le.0.0) then
                  IERRCK = 1
                  go to 143

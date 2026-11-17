@@ -336,7 +336,7 @@ TT never reads `IGL`, so results were unaffected. Since consolidation, TT compil
 
 ## 12. Decay codes read from tree files are set from the previous record's history code
 
-**Status:** found 14 November 2026 while tracing restart files. Present in original F77 (`c2105365:base/intree.f`). Deliberately unfixed. Effect on results not measured.
+**Status:** found 14 November 2026 while tracing restart files. Present in original F77 (`c2105365:base/intree.f`). **Repaired by R03 (R03a) on 17 November 2026; see below.**
 **Variants:** all, for stands whose tree records come from a tree file rather than a database.
 
 `base/intree.f90` calls `DBSTREESIN` for each tree record and then corrects the decay code (lines 141–146): dead trees (`ITH` above 5) without a valid code get 3, live trees get 0. When trees come from a database, `DBSTREESIN` has just read `ITH`, so this works. When they come from a tree file, the record is not read until line 170, after the correction. The correction therefore uses `ITH` from the *previous* record, and for the first record `ITH` has no value at all.
@@ -349,7 +349,11 @@ The effects:
 
 The metric copy `metric/base/intree.f90` has no such correction at all (see bug 2).
 
-**Suggested fix:** move the correction to after the record has been read, for both input paths. Then remove the decay-code exception from `check_suite.py`.
+**Repair (R03a):** the correction now follows the read from either source, so it uses the record's own history code. A tree-file record starts from decay code 0, since that format has no decay-code field, instead of a code left at the same array position by an earlier record. Metric variants are unchanged.
+
+Temporary builds print every record's history and final decay code. Before the repair, IE `iet01` and KT `ktt01`, each reading its tree file in four stands, gave 8 live tree records code 3 and 8 dead ones code 0, and the first record's code followed integer initialization 0 or 7. After it, dead trees have 3, live trees 0, and both initializations agree. Database input (`ie.key`) is unchanged. In the full suite only the 22 U.S. restart files change: 1,215 single decay codes of live trees go from 3 to 0. Every other output matches the preceding stage.
+
+`check_suite.py` still compares with the unrepaired original, which stores those 3s, so its symmetric 0/3 allowance is now one-sided: the original may store 3 where the working tree stores 0, and nothing else is accepted.
 
 ---
 
@@ -448,7 +452,8 @@ that diagnostic field, with an ORGANON error-path test.
 **Variant:** KT
 **Location:** KT height-dubbing branches in `vbase/cratet.f90`
 **Status:** confirmed by source tracing in current code and original F77
-`c2105365:kt/cratet.f`; simulation impact has not been isolated. Unfixed.
+`c2105365:kt/cratet.f`. **IERRCK was repaired by R03 (R03b) on 17 November
+2026; the XN diagnostic read remains.**
 
 `IERRCK` is assigned only the value 1 when `STEP1 <= 0`, but is read in the
 small-tree fallback test when the discriminant is positive as well. There
@@ -464,9 +469,22 @@ undefined value; later species can print a preceding species' sample count.
 This second read affects diagnostics; no model-value impact is claimed for it.
 
 L06 preserves both conditional assignments and reads, along with the original
-pre-DBCHK initialization of `RAD` and `SOLN`. A separate repair should define
-`IERRCK`'s lifetime and provide a defined diagnostic count, with cases covering
-both discriminant signs, successive species and insufficient height samples.
+pre-DBCHK initialization of `RAD` and `SOLN`.
+
+**Repair (R03b):** `STEP1` depends only on the species' regression and SMA,
+so IERRCK means "this species' equations have no common solution". Both KT
+dubbing sites now set it to 0 before testing the discriminant. All 24 suites
+match the preceding stage; ktt01's two regression species both have a
+negative discriminant. A modified ktt01 tree file refits LP heights to a
+positive discriminant (SOLN 0.33, SMDBH 2.42) and adds a 1.5-inch LP tree
+without a height, after DF sets IERRCK. Before the repair that tree took DF's
+flag and the linear small-tree height, 15.735 ft; afterwards it gets the
+regression height, 19.882 ft. Within each build that deck's results do not
+depend on initializing integers to 0 or 1, because DF sets the flag first.
+With no common solution, SOLN still keeps the
+preceding species' value or its initial 0; that defined carry-over is unchanged.
+
+**Remaining suggested fix:** provide a defined count for the XN diagnostic.
 
 ---
 
@@ -1053,7 +1071,8 @@ for the pre-loop FIXMORT diagnostic; OP/PN/WC for the Pacific diagnostics.
 **Location:** `ak/morts.f90`, the FIXMORT block and following reallocation;
 `vbase/morts.f90`, FIXMRT and MORPAC.
 **Status:** reproduced during L01–L03 on 15 November 2026. The same reads
-are present in pinned original F77 (`c2105365`). Deliberately unfixed.
+are present in pinned original F77 (`c2105365`). **AK's control-flow defect
+was repaired by R03 (R03c) on 17 November 2026; the diagnostic reads remain.**
 
 AK assigns KBIG and KPOINT only inside the scheduled FIXMORT activity loop,
 then tests them outside that loop. With no scheduled activity they, and the
@@ -1079,11 +1098,23 @@ separate diagnostic comparison contract; repository code and the whole-suite
 comparator are unchanged. It does not legitimize masking AK's control-flow
 differences or changing any defined diagnostic value.
 
-**Suggested fix:** separately define AK's no-activity reallocation behavior
-and initialize its flags at the appropriate point. Print the activity count
-or a defined counter before FIXMORT, and restrict Pacific diagnostics to
-values assigned on the executed path. Test these changes separately from
-consolidation, including repeated cycles and scheduled/unscheduled activities.
+The unset values reach more than the reallocation. With KBIG=KPOINT=0, AK
+falls into its "normal FIXMORT" branch, using IP and the species and DBH
+range that a MORTMULT processed in the same call left in ISPCC and PRM.
+
+**Repair (R03c):** AK now skips all post-loop FIXMORT processing when no
+FIXMORT is scheduled; every scheduled activity assigns the flags, species
+and option it uses. All 24 suites match the preceding stage. GNU Fortran does
+not initialize MORTS's locals (bug 63), so focused AK decks preset KBIG,
+KPOINT and IP to 0 or 1 at entry in temporary builds. With a species-specific
+MORTMULT and no FIXMORT, 1 produced phantom FIXMORT mortality before the
+repair: first-period mortality rose from 12 to 59 cu ft/acre/year. After the
+repair both presets give the zero-preset result. Scheduled size, point and
+plain FIXMORT decks are unchanged.
+
+**Remaining suggested fix:** print the activity count or a defined counter
+before FIXMORT, and restrict Pacific diagnostics to values assigned on the
+executed path. These reads affect debug output only.
 
 ## 38. EM REGENT calls a different DUBSCR argument contract
 
@@ -1145,7 +1176,8 @@ F13. Former locations: `fire/cs/fmcfmd.f90:119-136` and
 `fire/sn/fmcfmd.f90:119-136` at `6943c310`.
 
 **Status:** reproduced during a fresh source audit on 15 November 2026 at
-`1cf093f3`. Present in original F77 `c2105365`; deliberately unfixed.
+`1cf093f3`. Present in original F77 `c2105365`. **Repaired by R03 (R03d) on
+17 November 2026; see below.**
 
 For hardwood and mixed forest types (`IFFEFT=1:3`) with `SMALL<=6`, the dry
 branch assigns only `MOISWT(9)` and the wet branch assigns only `MOISWT(8)`.
@@ -1163,9 +1195,14 @@ original/current variant runs. NaN initialization exposes the undefined
 read; ordinary builds can instead supply arbitrary or stale values. This
 checks the weights passed to FMDYN, not whole-model fire-output impact.
 
-**Suggested fix:** initialize both moisture weights on every applicable
-call before selecting the dry, wet or interpolated case. Verify the fuel
-weights and resulting fire behavior separately from structural cleanup.
+**Repair (R03d):** both weights are zeroed before the dry, wet or
+interpolated case is selected, as in the pine branch, so the unselected model
+has weight 0. All 24 suites match the preceding stage; their decks reach this
+branch only at the interpolated moistures 0.17 and 0.20. CS and SN decks with
+POTFMOIS 3+ moistures of 10% and 30% stop with a floating-point trap at
+`fmcfmd_cs.f90:135` in the ordinary pre-repair build. After the repair they
+complete with weights (w8, w9) of (0, 1) dry and (1, 0) wet, the interpolated
+weights are unchanged, and plain and signaling-NaN builds match.
 
 ## 41. CS/SN redcedar fuel selection divides unweighted heights by tree density
 
@@ -1748,7 +1785,8 @@ compatibility change, or verify a compiler that handles this case correctly.
 **Location:** DMNB's `j=0` branch at lines 141-144 and reweighting at line 167.
 
 **Status:** reproduced on native `YSM-SkyRanch.key` during O20. The same
-assignments and read occur in pinned original F77. Deliberately unfixed.
+assignments and read occur in pinned original F77. **Repaired by R03 (R03e)
+on 17 November 2026; see below.**
 
 For `RQ=1`, the inner disk is a point. The routine sets `NB(1,1)=1` and
 `EMark(1)=1`, but leaves `NB(0,1)` undefined. Reweighting then evaluates
@@ -1761,9 +1799,12 @@ instrumentation confirms `RQ=1`, `i=1`, and `NB(0,1)` bits `7FA00000`
 immediately before the read. The ordinary baseline completes; the size of
 any ordinary-build numerical error has not been measured.
 
-**Suggested fix:** explicitly define the point distribution's zero-count
-probability before reweighting, retaining its unit mass at count one. Verify
-the resulting distributions and mistletoe/model outputs as an R03 repair.
+**Repair (R03e):** the point now sets `NB(0,1)=0` with `NB(1,1)=1`, so the
+reweighting factor is exactly 1. All 24 suites match the preceding stage:
+the ordinary BC build already read zero there. With signaling-NaN locals,
+YSM-SkyRanch traps at line 167 before the repair; afterwards it runs past
+DMNB to the separate DMTREG field read (bug 62), and completes once that is
+repaired.
 
 ## 60. RDPR relies on an unsaved previous-year diseased-area array
 
@@ -1773,7 +1814,8 @@ select `rd/rdpr.f90`; the native reproduction is IE `DBReportTest.key`.
 **Location:** LYAREA declaration at line 65, cycle-zero initialization at
 lines 71-76, tests at lines 158-161, and area change/update at lines 298/316.
 
-**Status:** reproduced during O20. Present in pinned original F77. Unfixed.
+**Status:** reproduced during O20. Present in pinned original F77.
+**Repaired by R03 (R03f) on 17 November 2026; see below.**
 
 LYAREA is initialized at cycle zero and updated to the current diseased area
 before returning. It has no SAVE or other persistent storage, yet later calls
@@ -1787,10 +1829,20 @@ bits `7FA00000`. The prior call's assignment has not survived the new call's
 initialization. Plain builds can instead read leftover storage. No ordinary
 numerical error size is claimed from a matching uninitialized baseline.
 
-**Suggested fix:** define LYAREA's lifetime, reset and restart behavior
-explicitly, with repeated-cycle, multi-stand and stop/restart report cases.
-This report-output hazard must also be resolved or scoped out before O21's
-exact comparisons can clear a Fortran flag change.
+**Repair (R03f):** LYAREA is now saved, with an initial zero. It holds the
+previous call's area within a process and is reset at cycle 0 of each stand,
+as with the static local storage of older compilers. It is not added to the
+restart file, which would change the 15 variants' restart layout; the first
+report after restarting in a new process therefore uses zero.
+
+All 24 suites match the preceding stage; the plain builds' stack happened
+to hold the previous area. With signaling-NaN locals, multi-stand,
+multi-cycle DBReportTest traps at RDPR before the repair, in continuous and
+stop/restart runs. After it, both run past RDPR (to bug 61's trap until that
+repair) and match zero-initialized builds. That deck's restarted runs differ
+from continuous runs in six tables both before and after this repair, so the
+restart effect cannot be isolated with it; that difference was not
+investigated.
 
 ## 61. FMFOUT leaves the large-fuel consumption percentage undefined at zero fuel
 
@@ -1802,7 +1854,8 @@ is on IE through the shared-library API.
 
 **Status:** reproduced during O20; the same conditional assignment and
 unconditional report use occur in both pinned original F77 copies.
-Deliberately unfixed; the demonstrated effect is on report/database values.
+**Repaired by R03 (R03g) on 17 November 2026; see below.** The demonstrated
+effect is on report/database values.
 
 PDUFF is zeroed before calculating consumption percentages, but PGR3 is
 assigned only when `SUMG3+TOTG3>0`. It is then passed to DBSFMFUEL and printed
@@ -1817,6 +1870,84 @@ instrumentation confirms `SUMG3=TOTG3=0` and PGR3 still has the signaling-NaN
 bits `7FA00000` before the writer; SQLite binds that NaN as NULL. This is
 separate from RDPR's earlier trap in the native executable.
 
-**Suggested fix:** settle the reported percentage for a zero fuel denominator
-and define it on every applicable call. Test zero/positive fuel and repeated
-fires in both output-unit systems and API modes as a separate report repair.
+**Repair (R03g):** both FMFOUT copies now zero PGR3 with PDUFF, so a fire
+without large fuel reports 0% consumed, as for duff. All 24 suites match the
+preceding stage. Before the repair, signaling-NaN builds stop in the native
+DBSFMFUEL on IE DBReportTest (continuous and stop/restart) and on a BC fire in
+the inventory year, where the metric report has no 7.6+ cm fuel. After it, both
+complete and match zero-initialized builds; the BC report shows 0%. IE API
+file and memory-table runs match their plain counterparts.
+
+## 62. BC DMTREG adds dwarf-mistletoe field values to unassigned work arrays
+
+**Variant:** BC; the only manifest selecting `canada/newmist/dmtreg.f90`.
+
+**Location:** DMTREG's SprFld/IntFld work arrays and its two DMADLV calls;
+the additions are at `canada/newmist/dmadlv.f90:290` and `:294`.
+
+**Status:** found during R03 on 17 November 2026, after bug 59's repair let
+signaling-NaN builds of native `YSM-SkyRanch.key` run farther. Present in
+pinned original F77. **Repaired by R03 (R03h) on 17 November 2026.**
+
+DMADLV adds to both work fields at every call. DMTREG zeroes SprFld only for
+each source in its spread loop, and IntFld only before its final
+intensification pass. The spread loop therefore adds to IntFld before any
+assignment, and the intensification pass adds to SprFld, which is never
+assigned when a target has no sampled sources. Those sums are not read: IntFld
+is zeroed again before use, and SprFld is not read after intensification. The
+model values are unaffected, but a signaling-NaN leftover stops the run. LLDB
+places the traps at line 290 (IFld) and then line 294 (SFld).
+
+**Repair (R03h):** DMTREG zeroes both work fields once at entry; the existing
+zeroing before use is unchanged. All 24 suites match the preceding stage.
+Both BC decks give the same results with zero and signaling-NaN real
+initialization; before the repair YSM-SkyRanch traps with signaling NaNs.
+
+## 63. GNU Fortran does not initialize locals of procedures with ENTRY
+
+**Scope:** diagnostic coverage limit, not a model defect.
+
+**Status:** found during R03 on 17 November 2026 with GNU Fortran 15.2.0.
+
+`-finit-integer` and `-finit-real` do not initialize the locals of a
+procedure that contains an ENTRY statement. A minimal reproducer initializes
+an ordinary subroutine's locals but leaves the same declarations in a
+subroutine with an ENTRY untouched. `-ftrivial-auto-var-init` does not
+initialize gfortran locals at all. 146 of the 1,541 selected source files
+contain ENTRY statements. They include HTGF, CROWN, REGENT, CUTSTK, SDICAL,
+RANN, AK MORTS and the host part of shared MORTS. O20's and R03's poisoned
+builds therefore cannot detect undefined reads in those procedures.
+
+R03's AK MORTS check presets the affected locals in temporary builds instead.
+Other ENTRY procedures are covered only by their ordinary results and by
+O21's exact optimized-build comparisons.
+
+## 64. NE AUTSTK accumulates stocking into unassigned locals
+
+**Variant:** NE; the only manifest selecting `ne/cutstk.f90`.
+
+**Location:** ENTRY AUTSTK, SPTPA and SPATOT; called by CUTS for THINAUTO.
+
+**Status:** found on 17 November 2026 from GNU Fortran's `-O2` warning
+"'spatot' is used uninitialized" while preparing O21. Present in pinned
+original F77. **Repaired by R03 (R03i) on 17 November 2026.** CUTSTK has
+ENTRY statements, so the poisoned builds of O20 and R03 could not see this
+(bug 63).
+
+AUTSTK adds each tree's density to `SPTPA(group)` and sums SPTPA(1:7) into
+SPATOT, but never assigns either before adding. The full stocking it returns,
+which THINAUTO compares with current stocking, therefore depends on leftover
+stack values.
+
+**Repair (R03i):** AUTSTK zeroes SPTPA and SPATOT before accumulating. All 24
+suites match the preceding stage; no suite deck uses THINAUTO. Temporary NE
+THINAUTO builds preset both locals to 0 or 1 at entry. Before the repair, the
+full stocking returned in 1990 was 76,344 or 75,188 trees/acre; afterwards it
+is 76,344 for both.
+
+These values are implausibly large: RSD sums density ratios as a fraction,
+but `TPAPRD = (100.0/RSD)*OLDTPA` treats it as a percentage. In that deck
+THINAUTO therefore never thins, even at 10–20% limits. Two further
+deterministic defects remain unfixed. Group 4 is divided by group 3's
+predicted density, `SPTPA(4)/TPRED(3)`. Miscellaneous trees are also
+distributed twice: proportionally, and then again by one seventh each.

@@ -140,6 +140,10 @@ subroutine DMNB (RQ, D, CNB)
 
      if (j .eq.0) then
 
+        ! The point always holds the target tree, so P(0)= 0. The
+        ! reweighting below reads that entry (FOUND_BUGS 59).
+
+        NB(0,CUR) = 0.0
         NB(CUR,1) = 1.0
         EMark(CUR) = 1
 

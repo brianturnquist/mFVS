@@ -112,6 +112,9 @@ subroutine FMFOUT(IYR, FLAME, FMD, IFIRE, CFTMP)
      BLIVE = 0.0
      TOTG3 = 0.0
      PDUFF = 0.0
+     !       WITHOUT LARGE FUEL, REPORT ZERO PERCENT CONSUMED, AS FOR
+     !       DUFF (FOUND_BUGS 61).
+     PGR3 = 0.0
 
      !       First, sum up the CWD info:
      !       Zero the summation columns (index 1=3 and 4=5)

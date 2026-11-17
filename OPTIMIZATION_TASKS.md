@@ -4,8 +4,10 @@ Created 16 November 2026 from the material in [task_documents](task_documents/).
 This is a new checklist; the deleted working task list is not a source for it.
 O01–O17 and prerequisite repairs R01/R02 were completed on 16 November 2026;
 O14's additional optimization trial was rejected. O18–O20 are also complete:
-SQLite optimization is retained, the FOFEM trial is rejected, and O20 leaves
-O21 deferred pending R03. The remaining tasks are pending.
+SQLite optimization is retained and the FOFEM trial is rejected. On 17
+November 2026, R03 repaired nine undefined-value hazards. The O21 Fortran
+`-O2` trial was then rejected because it changes results on this platform.
+The remaining tasks are pending.
 Creating this document does not start implementation.
 
 The objective is to reduce execution time, build time, memory use or storage
@@ -1209,7 +1211,7 @@ repairs bugs 51 and 11, as separate steps, before O10.
   defects are recorded as bugs 57–61. Temporary builds, raw runs and compiler/
   debugger controls are discarded after verification.
 
-- [ ] **R03 — Repair undefined model-value reads before O21.**
+- [x] **R03 — Repair undefined model-value reads before O21.**
   After O20 and before any optimized Fortran trial, repair the known
   undefined reads that feed model calculations. An optimized build changes
   the leftover values these read. That would produce differences that block
@@ -1237,7 +1239,70 @@ repairs bugs 51 and 11, as separate steps, before O10.
   model-affecting undefined reads in the suite and timing workloads, or each
   remaining one is explicitly deferred and excluded from O21's scope.
 
-- [ ] **O21 — Trial conservative Fortran optimization.**
+  Result, 17 November 2026: nine separate source stages on `bde3449d`, each
+  recorded in its bug entry. Each stage's full 24-variant suite matches the
+  preceding stage, with restart files compared byte for byte. The one expected
+  change is R03a's: 1,215 live-tree decay codes in the 22 U.S. restart files
+  go from 3 to 0. Every stage keeps the pristine-original 22/24 result.
+
+  | Stage | Bug | Repair |
+  |---|---|---|
+  | R03a | 12 | Decay-code correction after the record is read; tree-file records start from 0 |
+  | R03b | 19 | KT IERRCK set on each discriminant test |
+  | R03c | 37 | AK skips post-loop FIXMORT processing when none is scheduled |
+  | R03d | 40 | CS/SN moisture weights zeroed before selection |
+  | R03e | 59 | BC DMNB point distribution defines P(0)=0 |
+  | R03f | 60 | RDPR LYAREA saved with an initial zero |
+  | R03g | 61 | FMFOUT (imperial and metric) zeroes PGR3 with PDUFF |
+  | R03h | 62 | BC DMTREG zeroes both DMADLV work fields at entry (found here) |
+  | R03i | 64 | NE AUTSTK zeroes its stocking sums (found from O21's `-O2` warnings) |
+
+  The suites reach none of the changed values except R03a's, so the repairs
+  were also checked with focused temporary cases:
+  - **Tree-file decay codes:** IE/KT tree files and the IE database deck.
+  - **KT dubbing:** a KT tree file with successive negative and positive
+    discriminants.
+  - **AK mortality:** decks with MORTMULT and with each FIXMORT option.
+  - **CS/SN fuel models:** dry and wet POTFMOIS decks.
+  - **BC mistletoe and fire:** BC with and without a fire in the inventory year.
+  - **IE root disease:** DBReportTest continuous and stop/restart, plus the API.
+  - **NE automatic thinning:** a THINAUTO deck.
+
+  Each case shows the pre-repair dependence on leftover values, or its trap,
+  and a defined result afterwards. Before their repairs, the CS/SN dry/wet
+  decks stopped with a trap in ordinary builds. AK's phantom FIXMORT raised
+  first-period mortality from 12 to 59 cu ft/acre/year.
+
+  `check_suite.py` still compares with the unrepaired original, so bug 12's
+  restart allowance is now one-sided rather than removed. The original may
+  store 3 where the working tree stores 0; any other difference fails.
+
+  O20's diagnostic was repeated on the tree through R03h. Its fresh plain `-O0`
+  control, with only the bug 58 EXTERNAL declaration, matches the unchanged
+  tree **24/24**. The `-finit-integer=-99999 -finit-real=snan` build matches that
+  control **24/24**, restart files included. The 14 native timing workloads and
+  IE API file/memory-table runs match **16/16** without traps. These workloads
+  are the three inventories, the seven O02 decks and the four stop/restarts.
+  R03i changes only NE; its NE suite was repeated with the same result.
+
+  Coverage limits, excluded from O21's acceptance unless its comparisons
+  expose them:
+  - **ENTRY procedures (bug 63):** GNU Fortran leaves their locals
+    uninitialized. These are 146 files, including HTGF, CROWN, REGENT and
+    MORTS's host. O20's limits on LOGICAL, COMMON and pointer storage remain.
+  - **Diagnostic-only reads:** debug output is outside O21's comparisons.
+    These include bug 19's XN, bug 37's diagnostics and bugs 36, 39, 45 and 56.
+  - **Restart and stale values:** DBReportTest's restarted runs differ from
+    continuous runs in six tables before and after R03; this was not
+    investigated. Bug 19's defined SOLN carry-over is unchanged.
+
+  `git diff --check` passes. The final pristine-original command is:
+
+  ```text
+  FAIL 22/24 variants; working tree bde3449d+changes vs original c2105365; failed: bc on
+  ```
+
+- [x] **O21 — Trial conservative Fortran optimization.**
   Prerequisite: R03. Only after O20 and R03, evaluate
   `-O2 -ffp-contract=off` in fresh controlled builds, retaining other
   numerical flags. Do not use `-Ofast`, fast-math, native-CPU tuning,
@@ -1245,6 +1310,84 @@ repairs bugs 51 and 11, as separate steps, before O10.
   affected/full-suite comparisons plus available larger and repeated/API
   workloads. Any unexplained difference blocks adopting the flag; no model
   bug fixes or blanket SAVE changes are bundled into this task.
+
+  Result, 17 November 2026: **trial rejected; `-O2 -ffp-contract=off` changes
+  results on this platform.** The fresh private Make builds used the tree
+  through R03h, with no other change. NE was repeated after R03i and gave
+  identical `-O2` outputs. All 15,568 Fortran compiles in the 24 builds carry
+  both flags. C objects, SQLite's `-O2`, macros and trap settings are
+  unchanged.
+
+  Only **5/24** suites match the unoptimized tree (AK, CA, CI, KT and OC). The
+  other 19 differ by last-bit REAL changes in restart files, tree/cut lists and
+  carbon tables, and in BM's and WC's report files. Of the 16 timing and API
+  workloads, 7 match; the three inventories are unchanged.
+
+  Two GNU Fortran transformations, active at `-O1` and above, account for every
+  suite difference. Both change how powers are evaluated:
+  - **Exponent `2.0` (any real literal equal to 2):** `-O0` calls `powf`/`pow`,
+    while `-O1`+ computes `x*x`. macOS `powf(x, 2.0)` differs from `x*x` for
+    0.64% of 1.9 million tested floats. The selected sources contain 113 such
+    exponents.
+  - **Constant integer exponents of 3 or more:** `-O0` calls libgcc's
+    `__powisf2`, while `-O2` expands a multiplication chain. Over 1.6 million
+    floats the results differ for exponents 5, 6, 9, 10, 12 and 15 (35–51%),
+    but not for 3, 4, 7 or 8. Exponents 5, 6 and 9 and above appear 52 times
+    in 14 files. In the suite they change results only in HTCALC
+    (BM/EC/OP/PN/SO/WC) and FMSADD's snag decay (carbon tables).
+
+  A temporary tree with every such `2.0` exponent rewritten as integer `2`
+  matches `-O2` in 15/24 suites. Compiling HTCALC and FMSADD at `-O0` within
+  that `-O2` build makes the remaining 9 match, restart files included. The
+  suite therefore shows no other optimization-sensitive difference, including
+  none from bug 63's unpoisoned ENTRY procedures. Unexercised paths remain
+  unverified.
+
+  No tested option preserves the `-O0` calls at `-O2`: `-fno-frontend-optimize`,
+  `-fmath-errno`, `-frounding-math`, `-fsignaling-nans`, `-fno-builtin` and
+  `-fdisable-tree-sincos` were tried; only `-Og` keeps `powf`. The same
+  temporary rewrite also changes the unoptimized results of 17 suites. Making
+  `-O2` exact would therefore need source changes to model arithmetic, or
+  per-file exclusions that cannot clear unexercised sites. Either is a
+  separate decision, outside this parity-preserving task.
+
+  The benefit forgone is large. One warm-up and five shuffled unprofiled runs
+  per workload and build (seed 1602, fresh folders, inputs copied outside
+  the timer) give these median wall / CPU seconds:
+
+  | Workload | `-O0` (R03 tree) | `-O2 -ffp-contract=off` | Wall reduction |
+  |---|---:|---:|---:|
+  | IE `ie` | 0.56 / 0.55 | 0.34 / 0.33 | 39% |
+  | IE `iet01` | 0.31 / 0.30 | 0.22 / 0.21 | 29% |
+  | IE `DBReportTest` | 6.30 / 6.28 | 3.78 / 3.77 | 40% |
+  | IE `iet02` stop/restart | 0.32 / 0.31 | 0.23 / 0.23 | 28% |
+  | IE inventory | 4.59 / 4.58 | 2.76 / 2.75 | 40% |
+  | PN `pnt01` | 0.20 / 0.19 | 0.12 / 0.11 | 40% |
+  | PN `pnt02` stop/restart | 0.21 / 0.21 | 0.12 / 0.12 | 43% |
+  | CA `cat01` | 0.22 / 0.21 | 0.13 / 0.12 | 41% |
+  | CA `cat02` stop/restart | 0.24 / 0.23 | 0.14 / 0.13 | 42% |
+  | CA inventory | 3.16 / 3.15 | 1.63 / 1.62 | 48% |
+  | SN `snt01` | 0.23 / 0.22 | 0.14 / 0.14 | 39% |
+  | SN `sn` | 0.23 / 0.22 | 0.14 / 0.14 | 39% |
+  | SN `snt02` stop/restart | 0.24 / 0.24 | 0.15 / 0.14 | 38% |
+  | SN inventory | 1.95 / 1.94 | 1.13 / 1.12 | 42% |
+
+  No wall-time ranges overlap; DBReportTest is 6.28–6.34 vs 3.77–3.82 s. Median
+  peak RSS falls by 0.5–1.0 MiB (12.6–35.8 MiB optimized). These are local
+  GNU Fortran 15.2.0 measurements on the O02 Mac.
+
+  Fresh sequential `make FVSxx.setup -j4` builds (one each, as in O02) would
+  cost more. Values are wall / CPU seconds and executable MiB:
+
+  | Variant | `-O0` | `-O2 -ffp-contract=off` |
+  |---|---:|---:|
+  | IE | 21.11 / 66.96, 8.08 | 27.21 / 92.52, 6.35 |
+  | PN | 21.61 / 68.22, 8.42 | 26.89 / 91.35, 6.70 |
+  | CA | 19.26 / 61.64, 7.94 | 24.61 / 83.82, 6.35 |
+  | SN | 17.79 / 57.49, 7.29 | 22.62 / 77.41, 5.76 |
+
+  Make and CMake are unchanged; no Fortran optimization flag is adopted.
+  Temporary trees, builds, rewrites and raw timings were removed.
 
 ## 5. Reduce repeated compilation and build storage
 

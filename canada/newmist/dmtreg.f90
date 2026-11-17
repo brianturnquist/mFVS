@@ -274,6 +274,16 @@ subroutine DMTREG
      end do
   end do
 
+  ! DMADLV adds to both work fields at every call, including the field
+  ! that the calling loop does not use (see the notes at the calls). Those
+  ! sums are discarded, but must not start from unassigned values
+  ! (FOUND_BUGS 62).
+
+  do r = 1,MXHT
+     SprFld(r) = 0.0
+     IntFld(r) = 0.0
+  end do
+
   ! Scan the treelist and generate a matrix of pointers for the first
   ! and last records of each DMR class of each species. The indexes
   ! themselves are stored in 'DMSInd()', the pointer matrix is

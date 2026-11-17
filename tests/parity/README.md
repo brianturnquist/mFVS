@@ -72,9 +72,11 @@ exceptions cover values that original F77 reads from uninitialized memory, so
 that no two runs need agree. The first is one integer in TT restart files
 (bug 11 in [FOUND_BUGS.md](../../FOUND_BUGS.md)). Bug 11 is repaired, so
 only the original side may differ there; the working tree must store 1. The
-second is a tree decay code that is 0 in one file and 3 in the other (bug 12).
-Remove that exception when bug 12 is fixed. The TT exception stays as long as
-comparisons are made with the unrepaired original.
+second is a tree-file decay code (bug 12). The original takes it from the
+previous record's history code, undefined for the first record, so a live tree
+can store 3; the repaired working tree must store 0. A working-tree 3 where the
+original stores 0 is not accepted. Both exceptions stay as long as comparisons
+are made with the unrepaired original.
 
 `check_comparator.py` checks the comparator itself against deliberately
 changed IE outputs.

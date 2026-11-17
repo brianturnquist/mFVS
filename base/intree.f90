@@ -158,14 +158,6 @@ subroutine INTREE (RECORD,IRDPLV,ISDSP,SDLO,SDHI,LKECHO)
        & IMC1,KUTKOD(I),IPVARS(1),IPVARS(2),IPVARS(3),IPVARS(4), &
        & IPVARS(5),DBSKODE,DEBUG,JOSTND,LKECHO,ABIRTH(I),LBIRTH(I), &
        & CULL(I),DECAYCD(I),WDLDSTEM(I))
-  !  MAKE CORRECTIONS TO DECAY CODE IF NECESSARY
-  if (.not.LMETRICVAR) then
-     if (ITH.gt.5.and.(DECAYCD(I).lt.1.or.DECAYCD(I).gt.5)) then
-        DECAYCD(I) = 3
-     else if (ITH .le. 5 .and. DECAYCD(I) .ne. 0) then
-        DECAYCD(I) = 0
-     end if
-  end if
   if (DBSKODE.eq.0) then
      if (.not.LCONN) inquire(UNIT = ISTDAT,exist = LCONN)
      if (LCONN) inquire(UNIT = ISTDAT,opened = LCONN)
@@ -194,6 +186,9 @@ subroutine INTREE (RECORD,IRDPLV,ISDSP,SDLO,SDHI,LKECHO)
           & IMC1,KUTKOD(I),IPVARS(1),IPVARS(2),IPVARS(3),IPVARS(4), &
           & IPVARS(5),ABIRTH(I)
      !     &        ,CULL(I),DECAYCD(I),WDLDSTEM(I)
+     !  A TREE FILE RECORD HAS NO DECAY CODE; DO NOT KEEP THE CODE OF AN
+     !  EARLIER RECORD STORED AT THIS POSITION (FOUND_BUGS 12).
+     if (.not.LMETRICVAR) DECAYCD(I) = 0
      if (ABIRTH(I).le.0) then
         ABIRTH(I) = 0
         LBIRTH(I) = .false.
@@ -202,6 +197,16 @@ subroutine INTREE (RECORD,IRDPLV,ISDSP,SDLO,SDHI,LKECHO)
      end if
   else if (DBSKODE.eq.-1) then
      goto 900
+  end if
+  !  MAKE CORRECTIONS TO DECAY CODE IF NECESSARY. THIS FOLLOWS THE READ
+  !  FROM EITHER SOURCE, SO THAT ITH IS THIS RECORD'S HISTORY CODE
+  !  (FOUND_BUGS 12).
+  if (.not.LMETRICVAR) then
+     if (ITH.gt.5.and.(DECAYCD(I).lt.1.or.DECAYCD(I).gt.5)) then
+        DECAYCD(I) = 3
+     else if (ITH .le. 5 .and. DECAYCD(I) .ne. 0) then
+        DECAYCD(I) = 0
+     end if
   end if
   if (NPNVRS.eq.1) then
      do IK = 1,5
