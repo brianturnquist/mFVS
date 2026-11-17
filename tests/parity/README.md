@@ -208,6 +208,34 @@ the full suite and exercising model decks separately. FVSVOL debug-only I1
 remains undefined (bug 56); extended comparisons control it in both temporary
 builds, while native uncontrolled FVSVOL debug text remains unverified.
 
+## Focused database transaction checks
+
+```sh
+python3 -B tests/parity/check_db_transactions.py
+```
+
+The decks only reach DBSREFERENCE with no transaction open and every
+statement succeeding. This check builds IE's selected includes with the
+repository's SQLite and wrapper under the Makefile's SQLite settings. It then
+runs the batched routine and the frozen pre-batching routine through five
+cases:
+
+- two stands written to one database;
+- inside a transaction opened by the caller, then rolled back;
+- after a failed DBSFMCANPR left its transaction open (bug 66);
+- a species code whose INSERT fails to prepare part-way through the loop;
+- a commit refused because another connection holds a read lock.
+
+For each case, the autocommit state, outstanding statements (bug 65), rows
+each connection sees, close codes and final typed rows must match exactly.
+Expected facts are also asserted, so each case is known to reach its path:
+the caller's rollback removes the stand's rows, rows written before the
+failure persist, and a refused commit leaves no transaction open. DBSCASE is a
+stub because the cases preset CASEID. The lock case removes the wrapper's
+busy handler, so each refusal is immediate rather than after its 20-second
+retry limit. The full suite and the IE file/memory API runs cover integrated
+output.
+
 ## Single decks
 
 For a focused case that the suite does not reach, the older tools run one

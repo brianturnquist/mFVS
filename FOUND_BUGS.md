@@ -1951,3 +1951,109 @@ THINAUTO therefore never thins, even at 10–20% limits. Two further
 deterministic defects remain unfixed. Group 4 is divided by group 3's
 predicted density, `SPTPA(4)/TPRED(3)`. Miscellaneous trees are also
 distributed twice: proportionally, and then again by one seventh each.
+
+## 65. DBSREFERENCE orphans one prepared statement per species row
+
+**Variants:** all 24; every manifest selects `vdbsqlite/dbsreference.f90`.
+
+**Location:** the species loop in `vdbsqlite/dbsreference.f90`, with
+`fsql3_prepare_` in `dbsqlite/fvsqlite3.c`.
+
+**Status:** found on 17 November 2026 while classifying O29's transaction
+candidates. Present in pinned original F77, whose `dbsreference.f` prepares
+inside `DO I=1,MAXSP` and finalizes once after `ENDDO`. Reproduced with
+`tests/parity/check_db_transactions.py`, by both the pre-O32 and the batched
+routine. Deliberately unfixed; table contents are not affected.
+
+DBSREFERENCE prepares a new INSERT for every non-blank species, which FVS
+does for every stand, and finalizes only the last one. `fsql3_prepare_`
+overwrites the connection's single `stmtset` pointer, so every other
+statement is orphaned, as in bug 9. Each stand leaves one fewer outstanding
+statements than it has species: 21 for the fixture's 22 IE species and 42
+after a second stand. A direct close then returns `SQLITE_BUSY` (5). SQLite
+holds 95,760 more bytes after the fixture's second stand.
+
+Full SN runs show the cost. One inventory stand (90 species rows) was
+repeated with one cycle per stand. Peak resident memory was 15.8, 28.7 and
+79.6 MiB for 10, 40 and 160 stands: about 0.42 MiB per stand. A temporary
+diagnostic build that finalizes each statement after its step used 11.8,
+12.4 and 14.1 MiB, with the same row counts. The orphaned statements
+therefore account for about 97% of that growth. At this rate a run of 10,000
+such stands would hold roughly 4 GiB.
+
+**Suggested fix:** finalize each statement after its step, or prepare once
+with the species text bound as parameters and reset it per row. Verify
+unchanged tables with the full suite, the fixture's statement counts and
+repeated-stand memory. Keep it separate from F77-preserving changes, and
+review it with bug 9's statement ownership.
+
+## 66. Batched database writers leave their transaction open after a failure
+
+**Variants:** all 24; the writers are shared.
+
+**Location:** returns taken after a writer's `Begin;` without a `Commit;`:
+- after CREATE TABLE fails: DBSCMPU (`dbsqlite/dbscmpu.f90:114`), DBSCUTS
+  (`dbscuts.f90:177`), DBSFMCANPR (`dbsfmcanpr.f90:105`), DBSFMDSNAG
+  (`dbsfmdsnag.f90:148`), DBSFMDWCOV (`dbsfmdwcov.f90:107`), DBSFMDWVOL
+  (`dbsfmdwvol.f90:112`), DBSFMHRPT (`dbsfmhrpt.f90:107`) and DBSFMMORT
+  (`dbsfmmort.f90:153`);
+- after the INSERT fails to prepare: DBSCALIB (`dbscalib.f90:129`),
+  DBSECHARV_open (`dbsecharv.f90:98`; DBSECHARV_close then skips its COMMIT
+  because IDBSECON is 0), DBSFMCANPR (`:116`), DBSFMDSNAG (`:175`),
+  DBSFMHRPT (`:120`), DBSFMMORT (`:181`), DBSMIS1 (`dbsmis.f90:127`) and
+  DBSMIS3 (`dbsmis.f90:575`);
+- after a row INSERT fails: DBSCUTS (`dbscuts.f90:319`).
+
+DBSATRTLS, DBSTRLS and the three FIA writers commit before such returns.
+
+**Status:** found on 17 November 2026 while examining transaction ownership
+for O29–O32. The same returns are in pinned original F77, for example
+`dbsfmcanpr.f:108`, `dbscmpu.f:125` and `dbscuts.f:128,243`. DBSFMCANPR's
+prepare failure is reproduced with `tests/parity/check_db_transactions.py`;
+the other locations are from inspection. Unfixed.
+
+The output connection then stays inside the failed writer's transaction.
+Rows from later single-row writers join it. The next batched writer's BEGIN
+fails unnoticed and its COMMIT then commits everything, but rows are lost if
+no commit follows before the program ends. The fixture triggers this with a
+stand ID containing a quote: these writers copy stand IDs into SQL text
+unescaped, so DBSFMCANPR's INSERT cannot be prepared. DBSREFERENCE's 22 rows
+written afterwards are invisible to another connection and absent from the
+database after exit. This happens with both the original and the batched
+DBSREFERENCE, which commits only a transaction it began.
+
+**Suggested fix:** at each such return, end the writer's own transaction,
+using BEGIN's result to decide ownership as DBSREFERENCE now does. Escaping
+or binding stand IDs is a separate change. Decide both together with bug 9's
+statement-ownership review.
+
+## 67. One incremental Make build compiles a changed unit without relinking
+
+**Variants:** all; seen in IE, PN, CA and SN with GNU Make 3.81 on macOS.
+
+**Location:** `bin/makefile`, the object-receipt rules introduced by O26's
+final bookkeeping refinement (`c3d5201f`): `$(object): %.o: | %.o.stamp` and
+the ordinary `%.o.stamp` compile recipes.
+
+**Status:** found on 17 November 2026 while measuring O32. Introduced by
+modernization; not present in pinned original F77. Unfixed.
+
+After an ordinary Fortran or C source changes, one `make FVSxx.setup`
+recompiles its object but links neither the executable nor the shared
+library. Both were reproduced, with `-j4` and sequentially. The stamp recipe
+does not touch its stamp; receipts are synchronized in the next prepare. The
+object's only route to the stamp is order-only, and the object has no
+recipe, so Make keeps the modification time it read before compiling. The
+link rules therefore see no newer prerequisite. A second `make` relinks
+without compiling. Until then, the executable and library still contain the
+previous code: in O32's scratch builds, DBSREFERENCE in the binaries still had
+the pre-change `fsql3_exec` calls.
+
+`check_suite.py` and fresh builds are unaffected because they link into new
+trees. Units compiled through `shared_compile.py` (SQLite, FOFEM and NVEL)
+publish receipts immediately and were not tested.
+
+**Suggested fix:** make each ordinary compile leave the link rules a newer
+prerequisite, without restoring a shell per object. One option is a recipe on
+the object rule so that Make re-reads its time. Recheck O26's no-op and
+incremental cases and the single-invocation relink.

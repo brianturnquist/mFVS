@@ -11,7 +11,9 @@ R04's authorized rounding-level power rewrites and O21a's adoption of
 `-O2 -ffp-contract=off` are complete. O22–O28 are also complete: common
 compilation reuse, precise dependencies, native source paths and optional
 stripped release copies are retained with the measured tradeoffs below.
-O29–O35 remain pending.
+O29–O32 are also complete. DBSREFERENCE's per-species rows are now written
+in one transaction. The single-row snag, carbon, fuel and structure-class
+writers were rejected as candidates. O33–O35 remain pending.
 Creating this document does not start implementation.
 
 The objective is to reduce execution time, build time, memory use or storage
@@ -1699,6 +1701,9 @@ compiler settings fixed while measuring build changes.
   receipt in prepare. This version again matches the baseline **24/24** and
   passes the native incremental checks. IE also switches `-O0` and back to
   the default without cleaning; both complete IE suites match the baseline.
+  **Found later, during O32:** after an ordinary source changes, one `make`
+  recompiles its object but does not relink. A second `make` links
+  ([bug 67](FOUND_BUGS.md#67-one-incremental-make-build-compiles-a-changed-unit-without-relinking)).
 
 - [x] **O27 — Reduce copied-source overhead in variant build directories.**
   After O26, measure copying cost and disk use before choosing source-path
@@ -1793,7 +1798,7 @@ compiler settings fixed while measuring build changes.
 
 ## 6. Reduce database transaction overhead
 
-- [ ] **O29 — Classify transaction candidates correctly.**
+- [x] **O29 — Classify transaction candidates correctly.**
   Inspect current writers and their callers, including transaction ownership,
   user SQL, errors and nested calls. The transcript's 21 files with STEP but
   no BEGIN include readers and lifecycle routines; that search is not a list
@@ -1801,24 +1806,195 @@ compiler settings fixed while measuring build changes.
   in autocommit mode and choose only measured candidates. Preserve the known
   prepared-statement leak in bug 9 as separate bug work.
 
-- [ ] **O30 — Batch eligible snag-summary INSERT loops.**
+  Result, 17 November 2026, main `f1a2538e`, NVEL `2503c0d`. Writers live in
+  `dbsqlite/`, `vdbsqlite/`, `metric/vdbsqlite/` and BC/ON's
+  `canada/newmist/dbsmisdm.f90`. The transcript searched only `dbsqlite/`.
+  None of its 21 files loops over INSERTs within one call:
+  - lifecycle, readers or user SQL: DBSOPEN, DBSCLOSE, DBSCASE, DBSEXECSQL
+    (user SQL is never wrapped), DBSTABLES (API reads) and DBSTREESIN;
+  - one row per call: DBSECSUM, DBSERROR, DBSFMBURN, DBSFMCRPT, DBSFMFUEL,
+    DBSFMSSNAG, DBSFUELS, DBSINGROW, DBSPLOTHAB, the three DBSRD routines,
+    DBSSITEPREP, DBSSPRT, both DBSSTATS routines, DBSSTRCLASS and DBSTALLY.
+    Their callers repeat them, mostly once per cycle, with model code and
+    other writers in between.
+
+  In `vdbsqlite/`, DBSSUMRY, DBSFMPF and DBSFMPFC also write one row per call,
+  and DBSSUMRY2 and DBSCARBBIOSUMRY loop over two rows. **DBSREFERENCE is the
+  only autocommit INSERT loop within a call.** It writes one row per non-blank
+  species for every stand, in all 24 variants; its DBSCASE(1) call opens the
+  output database if no report has. Sixteen `dbsqlite/` files and DBSMIS5
+  already use transactions.
+
+  A measurement-only scratch build timed every SQLite wrapper call, attributed
+  to its calling routine. It ran three times on each O02 standard deck at the
+  current `-O2` settings:
+  - a TreeList INSERT inside its transaction steps in 0.42 µs;
+  - an autocommit INSERT takes 8–18 µs;
+  - each writer's table-existence check adds 5–14 µs.
+
+  Values below are milliseconds per run, with rows written in parentheses:
+
+  | Workload | Wall | All SQLite | DBSREFERENCE | Snag sum | Carbon | Fuels | Struct. class |
+  |---|---:|---:|---:|---:|---:|---:|---:|
+  | IE `ie` | 343 | 15.8 | 1.2 (92) | – | 0.5 (20) | 0.6 (18) | – |
+  | IE `iet01` | 228 | 42.6 | 1.1 (92) | – | – | – | 2.7 (96) |
+  | IE `DBReportTest` | 3,785 | 123.9 | 2.6 (207) | 2.1 (99) | 2.8 (99) | 3.7 (99) | 6.0 (205) |
+  | PN `pnt01` | 119 | 3.0 | 2.3 (190) | – | – | – | – |
+  | CA `cat01` | 133 | 3.6 | 3.0 (250) | – | – | – | – |
+  | SN `snt01` | 144 | 5.8 | 5.1 (450) | – | – | – | – |
+  | SN `sn` | 146 | 22.4 | 4.1 (360) | 0.3 (10) | 0.2 (10) | 0.3 (10) | – |
+
+  Most SQLite time is in writers that already use transactions. In `iet01`,
+  DBSCUTS, DBSTRLS and DBSATRTLS take 31.2 of the 42.6 ms; in `sn` they take
+  13.5 of 22.4 ms. Cut-list and after-treatment rows are compiled from SQL
+  text one row at a time, 6.4 µs each, inside their transactions. That is
+  statement reuse, not transaction overhead, and is left for O34's
+  reordering.
+
+  Only DBSREFERENCE was selected (O32). Bug 9 remains separate. Two newly
+  confirmed defects are recorded, both unfixed:
+  - [bug 65](FOUND_BUGS.md#65-dbsreference-orphans-one-prepared-statement-per-species-row):
+    DBSREFERENCE's orphaned statements cause about 97% of per-stand memory
+    growth in repeated SN stands;
+  - [bug 66](FOUND_BUGS.md#66-batched-database-writers-leave-their-transaction-open-after-a-failure):
+    batched writers leave their transaction open after a failure.
+
+- [x] **O30 — Batch eligible snag-summary INSERT loops.**
   After O29, start with `dbsqlite/dbsfmssnag.f90` if it still qualifies. Give
   the batch a clear transaction owner and preserve statement/row order,
   visibility required by callers, and error handling. Acceptance: exact schema
   and typed-row comparisons, repeated/multi-stand cases, no broken surrounding
   transaction, and a measured improvement on a deck that exercises the writer.
 
-- [ ] **O31 — Batch eligible carbon and fuel INSERT loops.**
+  Rejected, 17 November 2026, with no source change: DBSFMSSNAG does not
+  qualify. It writes one row per call, and FMSSUM calls it once per cycle
+  (`IYR = IFMYR1`) between the other fire-model reports. The writer has no
+  batch to own; a caller-owned transaction would span other writers and model
+  code. All its SQLite time is 2.1 ms of DBReportTest (99 rows, 0.06%) and
+  0.3 ms of SN `sn` (10 rows, 0.2%). Removing all of it would still fall
+  within run-to-run variation; DBReportTest's 18 timed runs span 3.75–3.83 s.
+
+- [x] **O31 — Batch eligible carbon and fuel INSERT loops.**
   After O29–O30, assess `dbsfmcrpt.f90`, `dbsfmfuel.f90` and `dbsfuels.f90`
   one writer at a time; skip existing or unsuitable batches. Acceptance:
   unchanged successful outputs and examined failure/transaction behavior,
   exact database comparisons and useful timing improvement for each change.
 
-- [ ] **O32 — Batch other worthwhile report INSERT loops.**
+  Rejected, 17 November 2026, with no source change: each writer adds one row
+  per call, for the same reasons as O30.
+  - DBSFMCRPT: FMCRBOUT, once per cycle. 2.8 ms in DBReportTest (99 rows) and
+    0.2 ms in `sn`.
+  - DBSFUELS: FMDOUT's alternative imperial/metric calls, once per cycle.
+    3.7 ms (99 rows) and 0.3 ms.
+  - DBSFMFUEL: FMFOUT, once per burn. 0.2 ms for DBReportTest's 9 rows.
+
+  All of DBReportTest's single-row writers together spend 38.6 ms (1.0%) in
+  SQLite. Only their commit and lock work could be saved, and only by
+  wrapping several writers in one transaction, which O32 rules out.
+
+- [x] **O32 — Batch other worthwhile report INSERT loops.**
   After O29–O31, consider `dbsstrclass.f90` and remaining measured candidates.
   Split further work by writer rather than wrapping all report calls in one
   transaction. Acceptance: the same ownership, error, output and timing checks;
   stop when small row counts or existing batching make further changes unhelpful.
+
+  Result, 17 November 2026: one writer batched, the rest rejected.
+
+  **Rejected candidates:**
+  - DBSSTRCLASS writes one row per SSTAGE call, twice per cycle, with thinning
+    in between: 2.7 ms of `iet01`'s 228 ms (96 rows) and 6.0 ms of
+    DBReportTest. Only a transaction spanning SSTAGE could batch it.
+  - The caller-level species loops are too small to continue: DBSRD2's
+    RD_Det rows (469 rows, 8.6 ms, 0.2% of DBReportTest), DBSINGROW (129 rows,
+    3.3 ms), DBSTALLY (57 rows, 0.9 ms of `iet01`) and DBSSTATS (52 rows,
+    0.8 ms), plus the two-row loops in DBSSUMRY2 and DBSCARBBIOSUMRY.
+
+  **Retained:** `vdbsqlite/dbsreference.f90` executes `Begin;` before its
+  species loop and owns the transaction only if that BEGIN succeeds.
+  - It commits after the loop. A prepare failure inside the loop also
+    commits, keeping the rows already written, as autocommit did.
+  - If a COMMIT is refused (for example `SQLITE_BUSY`), it rolls back, so no
+    open transaction remains for later writers. Autocommit would also have
+    refused each row.
+  - If a transaction is already open, BEGIN fails, the rows join that
+    transaction as before, and nothing is committed here.
+  - SQL text, binds, statement order and row order are unchanged. Bug 65's
+    orphaned statements are deliberately preserved.
+  - The local is `ITXN`, because `IBEGIN` is a CONTRL COMMON array.
+
+  **Behavior on failure:** an I/O failure during the single commit could lose
+  rows that autocommit would already have stored. The existing batched
+  writers share this risk, and it was not exercised. Under lock contention
+  the batch waits through one busy-retry period instead of one per row; the
+  retry timing was not measured.
+
+  **Mechanism, measured directly.** The O29 instrumentation, rerun on the
+  candidate, shows DBSREFERENCE's SQLite time falling 58–67%:
+  1.17 → 0.49 ms (`ie`), 2.55 → 1.00 (DBReportTest), 2.32 → 0.86 (`pnt01`),
+  2.97 → 1.09 (`cat01`), 5.14 → 1.72 (`snt01`) and 4.11 → 1.33 ms (`sn`).
+  Each INSERT step falls from about 8 µs to 0.4 µs. The remaining time is
+  mostly the per-row prepare.
+
+  **Timing.** Interleaved runs used fresh folders outside the timer and seed
+  1602: one warmup plus 21 runs per version for short decks and 9 for the
+  long ones. They timed the baseline (`f1a2538e`) and candidate binaries
+  with identical inputs, and the candidate binaries were checked to contain
+  the new routine. Values are median wall / CPU milliseconds, timed with
+  `perf_counter` and child `getrusage`, not the 0.01-second `time -p`:
+
+  | Workload | Before | After | Wall reduction |
+  |---|---:|---:|---:|
+  | IE `ie` | 345.6 / 342.3 | 343.9 / 340.7 | 0.5% |
+  | IE `iet01` | 228.7 / 225.9 | 227.3 / 224.6 | 0.6% |
+  | IE `iet02` stop/restart | 234.0 / 229.6 | 233.3 / 228.8 | 0.3% |
+  | IE `DBReportTest` | 3,800 / 3,790 | 3,784 / 3,778 | 0.4% |
+  | IE inventory | 2,770 / 2,765 | 2,765 / 2,758 | 0.2% |
+  | PN `pnt01` | 118.0 / 115.9 | 116.3 / 114.1 | 1.5% |
+  | PN `pnt02` stop/restart | 125.4 / 121.1 | 124.1 / 120.0 | 1.0% |
+  | CA `cat01` | 133.3 / 131.1 | 131.5 / 129.2 | 1.3% |
+  | CA `cat02` stop/restart | 141.5 / 137.3 | 139.5 / 135.2 | 1.5% |
+  | CA inventory | 1,635 / 1,631 | 1,640 / 1,635 | −0.3% |
+  | SN `snt01` | 145.5 / 143.3 | 142.2 / 139.8 | 2.3% |
+  | SN `sn` | 145.2 / 142.9 | 142.5 / 140.3 | 1.9% |
+  | SN `snt02` stop/restart | 153.1 / 148.8 | 149.3 / 145.1 | 2.5% |
+  | SN inventory | 1,138 / 1,134 | 1,138 / 1,133 | 0.1% |
+
+  The saving is a fixed cost per stand of roughly 7–8 µs per species row:
+  0.2–0.7 ms per stand. It is 1.0–2.5% on the short PN/CA/SN decks,
+  consistent with the direct measurement, but each pair of wall ranges
+  still overlaps at its extremes. IE (23 species) and every long workload
+  change by less than their run-to-run variation, so **no gain is claimed
+  for long runs.** The change is retained as a small, low-risk per-stand
+  saving.
+
+  **Verification:**
+  - Full suite: **24/24** against the immediate baseline `f1a2538e`,
+    including status lines, typed SQLite rows and restart records. Original
+    F77 retains the documented Canadian differences:
+
+    ```text
+    FAIL 22/24 variants; working tree f1a2538e+changes vs original c2105365 with R04 squares; failed: bc on
+    ```
+  - All 14 timing workloads match exactly, including stop/restart records.
+    InvReference holds 92–810 rows in each, so every workload reaches the
+    writer.
+  - IE API file and memory-table runs (DBReportTest through `FVSie.so`, 207
+    reference rows) match the baseline library exactly in each mode.
+  - Raw database files keep their sizes. Their header change counters record
+    fewer write transactions (`pnt01`: 197 → 12). As for all outputs, the
+    comparison is by schema and typed rows.
+  - New `tests/parity/check_db_transactions.py` passes **5/5**. It covers two
+    stands, a caller's transaction and rollback, a transaction left open by
+    DBSFMCANPR (bug 66), a prepare failure part-way through the loop, and a
+    commit refused by another reader.
+  - In that check, three temporary mutations were each detected: no ownership
+    guard, no rollback after a refused commit, and no commit on the error
+    path.
+
+  Bugs 65 and 66 are recorded but not repaired. Bug 67, found while
+  measuring, affects incremental builds only, not these fresh-tree results.
+  Source-list and whitespace checks pass. Temporary builds, profiles and
+  timings were discarded.
 
 ## 7. Storage assessment and final review
 

@@ -14,7 +14,7 @@ subroutine DBSREFERENCE
   include 'VOLSTD.f90'
 
   ! Variables
-  integer :: iRet,ColNumber,iInvRef,I,ISPPSDI,ISTIDX
+  integer :: iRet,ITXN,ColNumber,iInvRef,I,ISPPSDI,ISTIDX
   double precision :: MIND,MERCHTOPD,STUMP,SAWD,SAWTD,SAWSTMP,BFD,BFTD,BFSTUMP
   character(len=2000) :: SQLStmtStr
   character(len=20) :: TABLENAME
@@ -68,6 +68,13 @@ subroutine DBSREFERENCE
   iRet = fsql3_addcolifabsent(IoutDBref,TRIM(TABLENAME)//CHAR(0),&
        &"LocationCode"//CHAR(0),"int"//CHAR(0))
 
+  !     WRITE THE PER-SPECIES ROWS AS ONE TRANSACTION, NOT ONE AUTOCOMMIT
+  !     TRANSACTION PER ROW. THIS ROUTINE COMMITS ONLY A TRANSACTION THAT
+  !     ITS OWN BEGIN STARTED: IF ANOTHER WRITER LEFT ONE OPEN, BEGIN FAILS
+  !     AND THE ROWS JOIN THAT TRANSACTION, AS THEY DID WITHOUT THE BEGIN.
+
+  ITXN = fsql3_exec(IoutDBref,"Begin;"//CHAR(0))
+
   do I = 1,MAXSP
      if (TRIM(JSP(I)).eq.'') cycle
      ISPPSDI = NINT(SDIDEF(I))
@@ -111,6 +118,11 @@ subroutine DBSREFERENCE
      iRet = fsql3_prepare(IoutDBref,SQLStmtStr)
      if (iRet.ne.0) then
         iInvRef = 0
+        !     KEEP THE ROWS ALREADY WRITTEN, AS AUTOCOMMIT DID
+        if (ITXN.eq.0) then
+           iRet = fsql3_exec(IoutDBref,"Commit;"//CHAR(0))
+           if (iRet.ne.0) iRet = fsql3_exec(IoutDBref,"Rollback;"//CHAR(0))
+        end if
         return
      end if
 
@@ -157,6 +169,13 @@ subroutine DBSREFERENCE
   end do
   iRet = fsql3_finalize(IoutDBref)
   if (iRet.ne.0) iInvRef = 0
+  if (ITXN.eq.0) then
+     !     A COMMIT REFUSED FOR A LOCK HELD ELSEWHERE (SQLITE_BUSY) LEAVES
+     !     THE TRANSACTION OPEN. ROLL IT BACK, SO LATER WRITERS DO NOT JOIN
+     !     IT; EACH AUTOCOMMIT ROW WOULD ALSO HAVE BEEN REFUSED.
+     iRet = fsql3_exec(IoutDBref,"Commit;"//CHAR(0))
+     if (iRet.ne.0) iRet = fsql3_exec(IoutDBref,"Rollback;"//CHAR(0))
+  end if
 
   return
 end
