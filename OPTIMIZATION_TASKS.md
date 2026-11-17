@@ -7,11 +7,13 @@ O14's additional optimization trial was rejected. O18–O20 are also complete:
 SQLite optimization is retained and the FOFEM trial is rejected. On 17
 November 2026, R03 repaired nine undefined-value hazards. The O21 Fortran
 `-O2` trial was then rejected because it changes results on this platform.
-The remaining tasks are pending.
+The user has since authorized R04's rounding-level power rewrites, so that
+O21a can adopt `-O2`. The remaining tasks are pending.
 Creating this document does not start implementation.
 
 The objective is to reduce execution time, build time, memory use or storage
-without changing model results. Work through one bounded change at a time,
+without changing model results. The one authorized exception is R04's
+rounding-level change to how some powers are evaluated. Work through one bounded change at a time,
 verify it, then decide whether the next candidate still offers enough benefit.
 
 ## Source material and evidence limits
@@ -83,7 +85,9 @@ paths and invalidation rules where they help future debugging.
    Do not add test archives, logs, receipts or separate completion reports.
 
 Prerequisite repairs R01–R03 are separate correctness changes, each placed
-before the tasks whose verification it affects. Complete each one before
+before the tasks whose verification it affects. R04 is an authorized
+arithmetic change rather than a repair; it is staged and verified the same
+way but recorded only in this checklist. Complete each one before
 its gated task starts, with its own focused checks, immediate-baseline
 comparison and pristine-original suite result. Record each repair in
 `FOUND_BUGS.md`. Keep repairs out of optimization changes, so that each
@@ -1389,6 +1393,57 @@ repairs bugs 51 and 11, as separate steps, before O10.
   Make and CMake are unchanged; no Fortran optimization flag is adopted.
   Temporary trees, builds, rewrites and raw timings were removed.
 
+  Decision, 17 November 2026: the user accepts rounding-level changes from
+  these power forms in exchange for the speedup, treating them as a change of
+  arithmetic style rather than of the model. R04 makes power evaluation
+  independent of the optimization level; O21a then adopts the flags.
+
+- [ ] **R04 — Make power evaluation independent of the optimization level.**
+  Prerequisite for O21a. This is the arithmetic change authorized above, not
+  a bug repair, so it is recorded here rather than in `FOUND_BUGS.md`. Make
+  it in two separately verified stages, with no other arithmetic changes:
+  1. **Constant integer powers whose order differs:** exponents 5, 6, 9 or
+     more appear 52 times in 14 files. Rewrite each to use libgcc
+     `__powisf2`'s multiplication order explicitly, for example with
+     temporaries or a small helper, so that both levels keep today's results.
+     Exponents 3, 4, 7 and 8 gave identical results in O21's test; confirm the
+     order for every exponent actually used. Acceptance: all outputs match the
+     immediate baseline exactly.
+  2. **Real exponents equal to 2:** rewrite every `**2.0` form (`**2.`,
+     `**2.0E0`, `**2D0`; 113 selected sites) as integer `**2`, which every
+     level evaluates as `x*x`. This changes results wherever macOS
+     `powf(x, 2.0)` is not correctly rounded (about 0.6% of evaluations).
+     O21's temporary rewrite changed 17 of 24 suites. Preserve each result's
+     kind: an integer base, or a single-precision base with a
+     double-precision exponent, needs an explicit conversion. Acceptance:
+     record the changed outputs and confirm that the diff contains only
+     these rewrites.
+
+  Before stage 2, decide how `check_suite.py` compares with original F77
+  afterwards. The preferred option applies the same mechanical rewrite to the
+  original reference, alongside its existing BC/ON link accommodations, so
+  the comparison stays exact. Do not add numerical tolerances or masks.
+  Overall acceptance: unoptimized and `-O2 -ffp-contract=off` builds of the
+  result match exactly in the full suite, timing workloads and API runs. The
+  chosen original comparison then shows only the documented BC/ON differences.
+
+- [ ] **O21a — Adopt `-O2 -ffp-contract=off` for Fortran.**
+  Prerequisite: R04. Add both flags to every Fortran compile in Make. In CMake,
+  add them for GNU Fortran in configurations that select no optimization of
+  their own, as O18 did for SQLite. Keep `-g`, the trap flags and every other
+  numerical flag, and provide a documented way to build unoptimized for
+  debugging. Do not use fast-math, native-CPU tuning or reassociation.
+  Acceptance:
+  - actual compile commands show the flags on every Fortran unit and no
+    other change;
+  - a fresh optimized full suite, timing workloads and API runs match the
+    unoptimized R04 tree exactly; any other difference blocks adoption until
+    explained (bug 63's unpoisoned ENTRY procedures remain a risk on paths the
+    suite does not reach);
+  - runtime, fresh build time and binary size are re-measured. Before R04,
+    O21 measured 28–48% less wall time, 24–29% longer fresh builds and about
+    20% smaller executables.
+
 ## 5. Reduce repeated compilation and build storage
 
 These tasks can follow O02 independently of runtime work. Keep accepted
@@ -1498,6 +1553,7 @@ compiler settings fixed while measuring build changes.
   can affect model behavior; the reported memory use does not justify it here.
 - Leave powers, transcendental functions, floating-point accumulation and RNG
   sequencing unchanged. A faster mathematical replacement can change results.
+  R04's authorized power rewrites are the only exception.
 - Do not introduce threading inside model routines or cross-year/stand caches
   as an incidental optimization. Those need a separate state/lifecycle design.
 - PCTILE, DIST, DBCHK and scratch-file handling were inspected in the transcript
