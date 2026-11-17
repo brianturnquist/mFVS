@@ -59,7 +59,7 @@ subroutine CCFCAL(ISPC,D,H,JCR,P,LTHIN,CCFT,CRWDTH,MODE)
   !  COMPUTE CCF
 
   if (D .gt.0.1) then
-     CCFT = 0.001803 * TEMCW**2.
+     CCFT = 0.001803 * TEMCW**2
   else
      CCFT = 0.001
   end if

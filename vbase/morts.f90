@@ -221,7 +221,7 @@ contains
           G = (DG(I)/BARK) * (FINT/DGPER)
           CIOBDS = (2.0*D*G+G*G)
           SD2SQ = SD2SQ+P*(D*D+CIOBDS)
-          SDQ0 = SDQ0+P*(D)**2.
+          SDQ0 = SDQ0+P*(D)**2
           if (LZEIDE) then
              SUMDR10 = SUMDR10+P*(D+G)**1.605
              SUMDR0 = SUMDR0+P*(D)**1.605
@@ -877,9 +877,9 @@ contains
                &I,D,DG(I),BARK,PROB(I),WK2(I),P
        end if
        TNEW = TNEW+P
-       BANEW = BANEW+(0.0054542*(D+G)**2.)*P
-       BADEAD = BADEAD+(0.0054542*(D+G)**2.)*WK2(I)
-       QMDNEW = QMDNEW + ((D+G)**2.)*P
+       BANEW = BANEW+(0.0054542*(D+G)**2)*P
+       BADEAD = BADEAD+(0.0054542*(D+G)**2)*WK2(I)
+       QMDNEW = QMDNEW + ((D+G)**2)*P
        if (DEBUG)write(JOSTND,*)'I,P,D,G,TNEW,BANEW,QMDNEW,BADEAD= ',&
             &I,P,D,G,TNEW,BANEW,QMDNEW,BADEAD
        36 continue
@@ -1399,7 +1399,7 @@ contains
           BAL = (1.0 - (PCT(I)/100.)) * BA
           PTBAL = PTBALT(I)
           CRADJ = 1.0
-          if (CR .le.0.17) CRADJ = 1.0-EXP(-(25.0*CR)**2.0)
+          if (CR .le.0.17) CRADJ = 1.0-EXP(-(25.0*CR)**2)
           XSITE2 = SITEAR(19)
           XSITE1 = SITEAR(16)
           if (VARIANTCD.eq.'WC') XSITE1 = 5.21486+0.66486*SITEAR(16)
@@ -2661,7 +2661,7 @@ contains
           CIOBDS = (2.0*D*G+G*G)
           TEM = P*(D*D+CIOBDS)
           SD2SQ = SD2SQ+TEM
-          SDQ0 = SDQ0+P*(D)**2.
+          SDQ0 = SDQ0+P*(D)**2
           if (LZEIDE) then
              SUMDR10 = SUMDR10+P*(D+G)**1.605
              SUMDR0 = SUMDR0+P*(D)**1.605
@@ -3225,9 +3225,9 @@ contains
        BARK = BRATIO(ISP(I),D,HT(I))
        G = (DG(I)/BARK) * (FINT/10.0)
        TNEW = TNEW+P
-       BANEW = BANEW+(0.0054542*(D+G)**2.)*P
-       BADEAD = BADEAD+(0.0054542*(D+G)**2.)*WK2(I)
-       QMDNEW = QMDNEW + ((D+G)**2.)*P
+       BANEW = BANEW+(0.0054542*(D+G)**2)*P
+       BADEAD = BADEAD+(0.0054542*(D+G)**2)*WK2(I)
+       QMDNEW = QMDNEW + ((D+G)**2)*P
        if (DEBUG)write(JOSTND,*)' I,P,D,G,TNEW,BANEW,QMDNEW,BADEAD= ',&
             &I,P,D,G,TNEW,BANEW,QMDNEW,BADEAD
        36 continue

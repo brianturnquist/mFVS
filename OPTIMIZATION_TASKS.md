@@ -7,8 +7,8 @@ O14's additional optimization trial was rejected. O18–O20 are also complete:
 SQLite optimization is retained and the FOFEM trial is rejected. On 17
 November 2026, R03 repaired nine undefined-value hazards. The O21 Fortran
 `-O2` trial was then rejected because it changes results on this platform.
-The user has since authorized R04's rounding-level power rewrites, so that
-O21a can adopt `-O2`. The remaining tasks are pending.
+R04's authorized rounding-level power rewrites and O21a's adoption of
+`-O2 -ffp-contract=off` are complete. Other tasks remain pending.
 Creating this document does not start implementation.
 
 The objective is to reduce execution time, build time, memory use or storage
@@ -1398,7 +1398,7 @@ repairs bugs 51 and 11, as separate steps, before O10.
   arithmetic style rather than of the model. R04 makes power evaluation
   independent of the optimization level; O21a then adopts the flags.
 
-- [ ] **R04 — Make power evaluation independent of the optimization level.**
+- [x] **R04 — Make power evaluation independent of the optimization level.**
   Prerequisite for O21a. This is the arithmetic change authorized above, not
   a bug repair, so it is recorded here rather than in `FOUND_BUGS.md`. Make
   it in two separately verified stages, with no other arithmetic changes:
@@ -1427,7 +1427,43 @@ repairs bugs 51 and 11, as separate steps, before O10.
   result match exactly in the full suite, timing workloads and API runs. The
   chosen original comparison then shows only the documented BC/ON differences.
 
-- [ ] **O21a — Adopt `-O2 -ffp-contract=off` for Fortran.**
+  Result, 17 November 2026: both stages are complete. Stage 1 rewrites all
+  **52 integer powers in 14 selected files** into parenthesized square factors
+  multiplied from low exponent bit to high, matching libgcc's existing order.
+  No helper, source-list change or other arithmetic change is needed. The
+  full immediate-baseline comparison matches **24/24**, including restart
+  records. The 14 native workloads (three inventories, seven O02 decks and
+  four stop/restarts) and both IE API modes match **16/16**. Its separate
+  pristine-original comparison has only the documented BC/ON differences:
+  **22/24**. These checks used fresh candidate builds and unchanged comparators.
+
+  A focused bitwise check covers four million inputs per precision at both
+  `-O0` and `-O2 -ffp-contract=off`: positive/negative bases in [0.25,4] in
+  magnitude, with exponents -2, -1, 0, 1, 2, 3, 4, 7, 8, 9, 10, 11, 16,
+  18, 24, 31, 32, 33 and 41. Every result matches an independently compiled
+  unoptimized variable-exponent oracle. This also checks the retained small
+  powers and both single/double precision; it does not test exceptional bases.
+
+  Stage 2 changes exactly **113 square literals in 33 selected files**.
+  The source diff against stage 1 contains only these exponent rewrites.
+  Every base is real and every exponent is default real, so no conversion is
+  needed; SF_TAPER's double-precision A3 retains its kind. Exactly **17/24**
+  suites change: BC, CR, CS, EM, IE, LS, NC, NE, ON, OP, PN, SN, SO, TT, UT,
+  WC and WS. Changes are in restart records, CR's tree-list database, BC's
+  mistletoe/summary tables, ON's tree/cut tables and IE's tree/cut, root-disease,
+  canopy-profile and snag tables. Text reports and stop codes match.
+
+  The original-reference preparation now applies the same square rewrite to
+  its **174 sites in 78 selected F77 files**, in addition to the BC/ON link
+  accommodations. All those bases/kinds were inspected. Focused checks verify
+  literal boundaries, quoted strings, comments, fixed-form sequence columns
+  and idempotence. The arithmetic-adjusted original matches **22/24**, with
+  only BC/ON differing; this is explicitly not pristine-arithmetic parity.
+  No mask or numerical tolerance was added. The R04 tree then matches exactly
+  between unoptimized and optimized builds in **24/24** suites and both API
+  modes; O21a records the repeated timing-workload comparison below.
+
+- [x] **O21a — Adopt `-O2 -ffp-contract=off` for Fortran.**
   Prerequisite: R04. Add both flags to every Fortran compile in Make. In CMake,
   add them for GNU Fortran in configurations that select no optimization of
   their own, as O18 did for SQLite. Keep `-g`, the trap flags and every other
@@ -1443,6 +1479,92 @@ repairs bugs 51 and 11, as separate steps, before O10.
   - runtime, fresh build time and binary size are re-measured. Before R04,
     O21 measured 28–48% less wall time, 24–29% longer fresh builds and about
     20% smaller executables.
+
+  Result, 17 November 2026: retained `-O2 -ffp-contract=off` as Make's
+  default Fortran flags, with `-g`, traps and all other flags unchanged.
+  Fortran objects/modules depend on the Makefile so existing builds pick up
+  the new default. Switching the documented `FVS_FOPT=-O0` debug override
+  requires a clean build. CMake adds the same two flags for GNU Fortran in
+  empty/Debug configurations unless the caller supplies an optimization
+  switch; other compilers and Release/size configurations retain their flags.
+  `FVS_OPTIMIZE_FORTRAN=OFF` restores unoptimized empty/Debug builds. The
+  parent forwards this option, build type and explicit Fortran flags to its
+  generated projects.
+
+  Fresh optimized builds match the unoptimized R04 tree **24/24** under the
+  existing full-suite comparator, including status codes, exact typed SQLite
+  rows and restart records. Both IE file/memory-table API runs match exactly.
+  All 14 timing workloads match on all six runs (**84/84**, including warmup).
+  Bug 63's unexercised ENTRY paths and the R03 coverage limits remain; these
+  results do not establish behavior on workloads the comparisons do not reach.
+
+  Actual Make commands verify the two added flags on all **15,283 selected
+  variant/source units** in the final fresh full-suite build,
+  with C/C++ commands unchanged. Command sets are compared per source,
+  allowing the existing Make module/object rules' duplicate compilations.
+  Replacing the Makefile in an already-built IE tree recompiles all 683
+  Fortran units with the new flags; only SQLite's two existing C dependencies
+  also rebuild. CMake verifies all **683 IE Fortran units** and the complete
+  IE suite against Make's unoptimized R04 outputs. Its
+  default, Debug, OFF, Debug/OFF, Release, explicit global `-O1` and explicit
+  Debug `-O0` configurations each pass the compile-command scope check.
+  CMake's Mac build uses GNU C and O18's temporary dynamic-lookup shared-link
+  accommodation; no platform/linker repair is included.
+
+  Measurements use O02's Mac and toolchain, identical R04 inputs, no concurrent
+  builds, one warmup and five shuffled repetitions (seed 1602), with fresh
+  folders copied outside the timer. Values are median wall / CPU seconds:
+
+  | Workload | R04 `-O0` | `-O2 -ffp-contract=off` | Wall reduction |
+  |---|---:|---:|---:|
+  | IE `ie` | 0.55 / 0.55 | 0.34 / 0.33 | 38% |
+  | IE `iet01` | 0.30 / 0.29 | 0.22 / 0.21 | 27% |
+  | IE `DBReportTest` | 6.23 / 6.22 | 3.79 / 3.77 | 39% |
+  | IE `iet02` stop/restart | 0.30 / 0.28 | 0.23 / 0.20 | 23% |
+  | IE inventory | 4.63 / 4.61 | 2.76 / 2.75 | 40% |
+  | PN `pnt01` | 0.20 / 0.19 | 0.11 / 0.10 | 45% |
+  | PN `pnt02` stop/restart | 0.20 / 0.20 | 0.11 / 0.10 | 45% |
+  | CA `cat01` | 0.22 / 0.21 | 0.13 / 0.12 | 41% |
+  | CA `cat02` stop/restart | 0.23 / 0.21 | 0.12 / 0.12 | 48% |
+  | CA inventory | 3.07 / 3.06 | 1.63 / 1.62 | 47% |
+  | SN `snt01` | 0.23 / 0.22 | 0.14 / 0.13 | 39% |
+  | SN `sn` | 0.22 / 0.22 | 0.14 / 0.14 | 36% |
+  | SN `snt02` stop/restart | 0.23 / 0.21 | 0.15 / 0.13 | 35% |
+  | SN inventory | 1.92 / 1.91 | 1.13 / 1.12 | 41% |
+
+  No wall-time ranges overlap. DBReportTest spans 6.10–6.29 vs 3.76–3.80 s;
+  the inventories span 4.51–4.63 vs 2.75–2.76 (IE), 2.91–3.21 vs 1.62–1.64
+  (CA) and 1.82–1.96 vs 1.12–1.14 (SN). Short-deck percentages are coarse
+  at the timer's 0.01-second resolution. These are local measurements, not
+  production or Windows/Linux guarantees.
+
+  Fresh sequential `make FVSxx.setup -j4` builds, one per variant/setting,
+  cost **23–32% more wall time**; executables are **20–21% smaller**. Values
+  below are wall / CPU seconds and executable MiB; SQLite/FOFEM flags match:
+
+  | Variant | R04 `-O0` | `-O2 -ffp-contract=off` |
+  |---|---:|---:|
+  | IE | 21.80 / 69.27, 8.09 | 28.41 / 96.87, 6.36 |
+  | PN | 20.92 / 66.62, 8.45 | 27.61 / 93.88, 6.71 |
+  | CA | 19.69 / 63.33, 7.95 | 24.68 / 84.37, 6.36 |
+  | SN | 18.18 / 58.88, 7.30 | 22.35 / 76.76, 5.77 |
+
+  The existing focused VOLINIT checks also pass: 29,229 EcoProv, 2,371
+  weight-factor, 149,985 default-equation, 2,372 VOLINIT and 4,000 VOLINITNVB
+  cases, with the two invalid-input cases stopping both builds identically.
+  The final standard command rebuilt all 24 candidates with the completed
+  Make rules; those outputs again match the unoptimized R04 tree **24/24**.
+  Its arithmetic-adjusted original result is:
+
+  ```text
+  FAIL 22/24 variants; working tree 89ebbad3+changes vs original c2105365 with R04 squares; failed: bc on
+  ```
+
+  BC/ON retain their documented original-input differences, separately from
+  the exact controlled comparisons. Source-list checks and `git diff --check`
+  pass in the main repository and NVEL. Temporary builds, raw timings and
+  results were discarded; no model-bug repair or unrelated optimization is
+  included.
 
 ## 5. Reduce repeated compilation and build storage
 

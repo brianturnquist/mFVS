@@ -395,7 +395,7 @@ subroutine RGNTSW(LESTB,ITRNIN)
               BARK = BRATIO(ISPC,DBH(K),H)
               DG(K) = DGK*BARK
               DDS = DG(K)*(2.0*BARK*DK+DG(K))*SCALE
-              DG(K) = SQRT((DK*BARK)**2.0+DDS)-BARK*DK
+              DG(K) = SQRT((DK*BARK)**2+DDS)-BARK*DK
            end if
            if ((DBH(K)+DG(K)).lt.DIAM(ISPC)) then
               DG(K) = DIAM(ISPC)-DBH(K)

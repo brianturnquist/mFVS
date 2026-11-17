@@ -22,8 +22,9 @@ It does four things:
 1. **Checks the source lists** without compiling: every entry exists, no list
    names two files with the same name, every `bin/fortran_includes.txt` entry
    exists, and every new source file is in at least one source list.
-2. **Builds two versions** of each variant: original F77 and your working
-   tree (including uncommitted and untracked files).
+2. **Builds two versions** of each variant: original F77 with the R04 square
+   rewrites described below, and your working tree (including uncommitted and
+   untracked files).
 3. **Runs each variant's `tests/FVSxx` makefile** in both versions. That is
    the full existing suite, including the stop/restart, database, climate,
    economics and fire tests.
@@ -59,6 +60,16 @@ only the same ON buffer repair applied to its baseline. R02 subsequently
 repairs BC's snag call and ON's snag-volume trap. BC StandStructure now
 finishes its projections with expression warnings and STOP 20. Keep those
 controlled comparisons separate from original F77 parity.
+
+R04 authorizes integer `**2` in place of real-literal square exponents. The
+reference preparation applies that same mechanical rewrite to its 174 selected
+sites, in addition to the BC/ON link inputs. Their bases are all real and their
+exponents are default real, so each result keeps its kind, including double
+precision in SF_TAPER. No other reference arithmetic is changed. The comparison
+remains exact, with the existing masks and no numerical tolerance; it now tests
+against this explicitly adjusted reference rather than pristine arithmetic.
+See [R04](../../OPTIMIZATION_TASKS.md) for the separately verified stages and
+the output changes caused by the authorized rounding change.
 
 ## What is compared
 

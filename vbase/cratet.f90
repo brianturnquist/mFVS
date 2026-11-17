@@ -759,9 +759,9 @@ subroutine CRATET
            ! SPECIES USING ALEXANDER, TACKLE, & DAHMS 1967, RES NOTE RM-29
 
            case(13,17)
-              H = 9.89311 - 0.19177*(50.0) + 0.00124*(50.0**2.0)&
+              H = 9.89311 - 0.19177*(50.0) + 0.00124*(50.0**2)&
                    &- 0.00082*(TEMCCF-125.)*SI + 0.01387*(50.0)*SI&
-                   &- 0.0000455*(50.0**2.0)*SI
+                   &- 0.0000455*(50.0**2)*SI
               SITEAR(ISPC) = H
            end select
         end if
@@ -771,9 +771,9 @@ subroutine CRATET
            ! SPECIES USING ALEXANDER, TACKLE, & DAHMS 1967, RES NOTE RM-29
 
            case(1,2,7,17)
-              H = 9.89311 - 0.19177*(50.0) + 0.00124*(50.0**2.0)&
+              H = 9.89311 - 0.19177*(50.0) + 0.00124*(50.0**2)&
                    &- 0.00082*(TEMCCF-125.)*SI + 0.01387*(50.0)*SI&
-                   &- 0.0000455*(50.0**2.0)*SI
+                   &- 0.0000455*(50.0**2)*SI
               SITEAR(ISPC) = H
 
            ! SPECIES USING ALEXANDER 1967, RES NOTE RM-32
@@ -796,9 +796,9 @@ subroutine CRATET
            ! SPECIES USING ALEXANDER, TACKLE, & DAHMS 1967, RES NOTE RM-29
 
            case(1,2,7,23)
-              H = 9.89311 - 0.19177*(50.0) + 0.00124*(50.0**2.0)&
+              H = 9.89311 - 0.19177*(50.0) + 0.00124*(50.0**2)&
                    &- 0.00082*(TEMCCF-125.)*SI + 0.01387*(50.0)*SI&
-                   &- 0.0000455*(50.0**2.0)*SI
+                   &- 0.0000455*(50.0**2)*SI
               SITEAR(ISPC) = H
 
            ! SPECIES USING ALEXANDER 1967, RES NOTE RM-32
@@ -824,9 +824,9 @@ subroutine CRATET
            ! SPECIES USING ALEXANDER, TACKLE, & DAHMS 1967, RES NOTE RM-29
 
            case(11,12,16)
-              H = 9.89311 - 0.19177*(50.0) + 0.00124*(50.0**2.0)&
+              H = 9.89311 - 0.19177*(50.0) + 0.00124*(50.0**2)&
                    &- 0.00082*(TEMCCF-125.)*SI + 0.01387*(50.0)*SI&
-                   &- 0.0000455*(50.0**2.0)*SI
+                   &- 0.0000455*(50.0**2)*SI
               SITEAR(ISPC) = H
            end select
         end if
@@ -839,9 +839,9 @@ subroutine CRATET
            ! SPECIES USING ALEXANDER, TACKLE, & DAHMS 1967, RES NOTE RM-29
 
            case(10)
-              H = 9.89311 - 0.19177*(50.0) + 0.00124*(50.0**2.0)&
+              H = 9.89311 - 0.19177*(50.0) + 0.00124*(50.0**2)&
                    &- 0.00082*(TEMCCF-125.)*SI + 0.01387*(50.0)*SI&
-                   &- 0.0000455*(50.0**2.0)*SI
+                   &- 0.0000455*(50.0**2)*SI
               SITEAR(ISPC) = H
            end select
            if (DEBUG)write(JOSTND,*)'ISPC,SI,TEMCCF,H= ',ISPC,SI,TEMCCF,H

@@ -1,7 +1,8 @@
 """Prepare isolated F77/current/candidate builds for modernization comparisons.
 
 Snapshots have no git metadata and are never built in the working checkout.
-The original snapshot receives only the documented BC/ON source-list additions.
+The original snapshot receives the documented BC/ON link additions and R04's
+mechanical real-square rewrite. Comparisons still require exact results.
 Run metadata is temporary input to the comparison tools. Discard it with the
 build directory when finished. Candidate builds can reuse an identical current
 binary within this run; no historical results cache is required.
@@ -18,6 +19,7 @@ import json
 import os
 from pathlib import Path
 import platform
+import re
 import shutil
 import subprocess
 import tarfile
@@ -71,8 +73,44 @@ def copy_working_tree(repo: Path, target: Path) -> None:
         shutil.copy2(source, destination)
 
 
+def reference_square_rewrites(snapshot: Path) -> list[tuple[Path, str, str]]:
+    """Apply R04's authorized square arithmetic to the pinned F77 reference.
+
+    All 174 selected sites were inspected: their bases are real, and none has
+    a double-precision exponent. Integer **2 therefore preserves each result's
+    kind, including SF_TAPER's double-precision A3. This is not a general
+    Fortran rewrite: integer bases or mixed kinds would need conversions.
+    Strings, comments and fixed-form sequence fields must remain untouched.
+    """
+    token = re.compile(r"'([^']|'')*'|\"([^\"]|\"\")*\"|!.*|"
+                       r"(\*\*\s*)(2\.0*(?:[eE][+-]?0+)?)(?![\w.])")
+    selected = sorted({(manifest.parent / name).resolve()
+                       for manifest in (snapshot / "bin").glob("FVS??_sourceList.txt")
+                       for name in manifest.read_text().split()
+                       if name.lower().endswith((".f", ".for", ".f90"))})
+    changes = []
+    for path in selected:
+        before = path.read_bytes().decode("latin1")
+        lines = []
+        for line in before.splitlines(keepends=True):
+            fixed = path.suffix.lower() != ".f90"
+            if fixed and line[:1] in ("c", "C", "*", "!"):
+                lines.append(line)
+                continue
+            code, tail = (line[:72], line[72:]) if fixed else (line, "")
+            rewritten = token.sub(lambda m: m[3] + "2" if m[3] else m[0], code)
+            if fixed and tail.rstrip("\r\n"):
+                # Shorter exponents must not pull sequence columns into code.
+                rewritten = rewritten.ljust(72)
+            lines.append(rewritten + tail)
+        after = "".join(lines)
+        if before != after:
+            changes.append((path, before, after))
+    return changes
+
+
 def reference_accommodations(snapshot: Path) -> str:
-    """Append only missing link inputs; preserve the original model sources."""
+    """Apply documented link and R04 arithmetic accommodations to the oracle."""
     additions = [
         "../vdbsqlite/dbsreference.f",
         "../dbsqlite/dbs_fiavbc_atrtls.f",
@@ -98,6 +136,13 @@ def reference_accommodations(snapshot: Path) -> str:
             fromfile=f"a/{relative}", tofile=f"b/{relative}",
         ):
             patch.append(line if line.endswith("\n") else line + "\n\\ No newline at end of file\n")
+    for path, before, after in reference_square_rewrites(snapshot):
+        path.write_bytes(after.encode("latin1"))
+        relative = str(path.relative_to(snapshot))
+        patch.extend(difflib.unified_diff(
+            before.splitlines(keepends=True), after.splitlines(keepends=True),
+            fromfile=f"a/{relative}", tofile=f"b/{relative}",
+        ))
     return "".join(patch)
 
 

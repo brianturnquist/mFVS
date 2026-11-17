@@ -327,7 +327,7 @@ subroutine RDSPRD
         RKILLS(I) = TRURAD(I) * PKILLS(IRTSPC(IRSSP(I)),IRRSP)
         YTK(I) = YTKX * YTK(I)
 
-        SPRQMD(IRRSP,JTIME) = SPRQMD(IRRSP,JTIME) + RRSDBH(I) ** 2.0
+        SPRQMD(IRRSP,JTIME) = SPRQMD(IRRSP,JTIME) + RRSDBH(I) ** 2
         105 continue
      end do
 

@@ -405,7 +405,7 @@ subroutine EVLDX (XLDREG,NXLDX,INSTR,IRC)
               goto 190
               121 continue
               if (DBH(I).lt.DBHSTAGE)go to 190 ! BRANCH IF D IS LT MIN DBH
-              XLDREG(1) = XLDREG(1)+(STAGEA + STAGEB*(DBH(I)**2.0))*TPA
+              XLDREG(1) = XLDREG(1)+(STAGEA + STAGEB*(DBH(I)**2))*TPA
               goto 190
               122 continue
               call RDSLTR(ISP(I),I,TREERD)
@@ -420,7 +420,7 @@ subroutine EVLDX (XLDREG,NXLDX,INSTR,IRC)
               !           CURTIS RELATIVE DENSITY
 
               if (DBH(I).lt.DBHSTAGE)go to 190 ! BRANCH IF D IS LT MIN DBH
-              XLDREG(1) = XLDREG(1)+(CRDTFAC + CRDDFAC*(DBH(I)**2.0))*TPA
+              XLDREG(1) = XLDREG(1)+(CRDTFAC + CRDDFAC*(DBH(I)**2))*TPA
               goto 190
 
               !           NEW SPMCDBH OPTIONS ADDED AS PART OF FIANVB INCLUSION, 2024 (DW)

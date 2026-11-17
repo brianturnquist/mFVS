@@ -205,7 +205,7 @@ subroutine CCFCAL(ISPC,D,H,JCR,P,LTHIN,CCFT,CRWDTH,MODE)
 
      if (MODE.eq.1.or. MODE.eq.3) then
         if (D .ge.1.0) then
-           CCFT = pnRD1(IC) + pnRD2(IC)*D + pnRD3(IC)*D**2.0
+           CCFT = pnRD1(IC) + pnRD2(IC)*D + pnRD3(IC)*D**2
         else
            CCFT = D * (pnRD1(IC) + pnRD2(IC) + pnRD3(IC))
         end if

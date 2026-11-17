@@ -144,9 +144,10 @@ subroutine FVSOLDGRO(ISPC,VN,D,H,BBFV)
 
      !     INTEGRAL OF SPRUCE-HEMLOCK PROFILE EQUATION
 
+     ! Keep libgcc integer-power rounding: square factors, then multiply low bit first.
      FF = .4*R**2.5+(-.0052554*H +.000034947*H**2+.104477*&
           &H/D)*(.4*R**2.5-.25*R**4.)+(7.76807/D**2-.0000094852*H**2&
-          &-.011351*H/D)*(.4*R**2.5-(1./33.)*R**33)
+          &-.011351*H/D)*(.4*R**2.5-(1./33.)*(R*(R**8)**4))
      VS(JJ) = FF*FV
 
      78 continue
@@ -221,7 +222,7 @@ function PROF1(R,D,H)
 
   PROF1 = R**1.5 + (-.0052554*H +.000034947*H**2 + .104477&
        &*H/D) * (R**1.5-R**3) +(7.76807/D**2 -.0000094852*H**2 -&
-       &.011351*H/D)*(R**1.5-R**32)
+       &.011351*H/D)*(R**1.5-((R**8)**4))
   if (PROF1.lt.0.)PROF1 = 0.
   return
 

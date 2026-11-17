@@ -115,12 +115,13 @@ subroutine HTCALC (SINDX,ISPC,AG,HGUESS,JOSTND,DEBUG)
      ! SPECIES: SF, GF, WF
 
   case(4,6,16)
+     ! Keep libgcc integer-power rounding: square factors, then multiply low bit first.
      X2 = -0.30935 + 1.2383*ALOG(AG) + 0.001762*(ALOG(AG))**4&
-          &- 5.4E-6*(ALOG(AG))**9 + 2.046E-7*(ALOG(AG))**11&
-          &- 4.04E-13*(ALOG(AG))**18
+          &- 5.4E-6*((ALOG(AG))*(ALOG(AG))**8) + 2.046E-7*(((ALOG(AG))*(ALOG(AG))**2)*(ALOG(AG))**8)&
+          &- 4.04E-13*((ALOG(AG))**2*((ALOG(AG))**8)**2)
      X3 = -6.2056 + 2.097*ALOG(AG) - 0.09411*(ALOG(AG))**2&
-          &- 0.00004382*(ALOG(AG))**7 + 2.007E-11*(ALOG(AG))**16&
-          &- 2.054E-17*(ALOG(AG))**24
+          &- 0.00004382*(ALOG(AG))**7 + 2.007E-11*(((ALOG(AG))**8)**2)&
+          &- 2.054E-17*((ALOG(AG))**8*((ALOG(AG))**8)**2)
      HGUESS = EXP(X2) - 84.73*EXP(X3) + (SINDX - 4.5)*EXP(X3)&
           &+ 4.5
      if (DEBUG)write(JOSTND,*)' HTCALC WP X2,X3,HGUESS = ',&

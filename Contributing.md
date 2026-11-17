@@ -10,6 +10,11 @@ Please read the [README](README.md) first. It explains the project's goals, its 
 
 **2. Keep model changes separate.** Bug fixes and other changes that alter results are welcome, but each should be its own commit and pull request. It should explain what changes and why, and show the before and after results for the affected tests. Never combine one with restructuring, or the regression comparison can no longer separate the two.
 
+R04 in [OPTIMIZATION_TASKS.md](OPTIMIZATION_TASKS.md) is an explicitly authorized
+rounding-level arithmetic exception. The parity tools apply its real-square
+rewrite to the pinned original too, while keeping comparisons exact. This does
+not authorize other arithmetic changes; see the [parity guidance](tests/parity/README.md).
+
 **3. Record bugs instead of fixing them in passing.** If you find a defect while modernizing, add it to [FOUND_BUGS.md](FOUND_BUGS.md) rather than fixing it in the same change. Give its location, the affected variants, its effect, how you confirmed it and a suggested fix. Defects are being collected so they can be fixed deliberately once modernization is complete.
 
 **4. One definition per routine.** Do not add per-variant copies of a routine. When variants differ, express the difference inside one shared routine (see [Variant-specific code](#variant-specific-code)), or put the differing values in data.
@@ -39,6 +44,8 @@ The steps below are what the command does, in case you need to do them by hand:
    ../dbsqlite/dbs_fiavbc_trls.f
    ```
    BC also needs `../volume/NVEL/wdbkwtdata.inc`.
+   For the R04 comparison, also apply the real-square rewrite performed by
+   `reference_accommodations` in `tests/parity/prepare_builds.py`.
 2. **Run the tests in both trees.** In each tree, build the variants your change affects and run `make` in the matching `tests/FVSxx` folders. When in doubt, build and test all variants: a change to shared code can affect any of them.
 3. **Compare every generated file:** listing (`.out`), summary (`.sum`), tree lists, and database dumps. Ignore only lines that differ in run identifiers (UUIDs), dates, times and version strings. Anything else must match exactly.
 

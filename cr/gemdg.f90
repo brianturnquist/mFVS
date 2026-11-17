@@ -89,10 +89,10 @@ subroutine GEMDG(DDS,IMODTY,IS,BAUTBA,SPBA,SI,DP,BAT,BARK,&
   case(1:2)
      if (IMODTY .le.2) then
         DF = 0.50283 + 0.93999 * DPP - 0.0016822 * BAT + 0.00791&
-             &* SI + 0.16235 * (ALOG(DPP))**2.0
+             &* SI + 0.16235 * (ALOG(DPP))**2
      else
         DF = 2.19459 + 0.94659 * DPP - 0.20410 * BGTTBA&
-             &- 0.35970 * ALOG(BATEM) + 0.11326 * ((ALOG(DPP))**2.0)&
+             &- 0.35970 * ALOG(BATEM) + 0.11326 * ((ALOG(DPP))**2)&
              &+ 0.00615 * SI
      end if
 
@@ -101,7 +101,7 @@ subroutine GEMDG(DDS,IMODTY,IS,BAUTBA,SPBA,SI,DP,BAT,BARK,&
   case(3)
      DF = 0.58234 + 0.94542 * DPP - 0.0025092 * BAT&
           &+ 0.0070474 * SI - 0.14044 * BGTTBA + 0.15738 *&
-          &(ALOG(DPP))**2.0
+          &(ALOG(DPP))**2
 
      !  GRAND FIR
      !  EQN FROM CENTRAL IDAHO VARIANT, HABITAT TYPE 520 (ABGR/CLUN)
@@ -184,7 +184,7 @@ subroutine GEMDG(DDS,IMODTY,IS,BAUTBA,SPBA,SI,DP,BAT,BARK,&
 
   case(11)
      DF = 1.32652 + 0.96279 * DPP - 0.17138 * BGTTBA&
-          &- 0.21827 * ALOG(BATEM) + 0.06298 * ((ALOG(DPP))**2.0)&
+          &- 0.21827 * ALOG(BATEM) + 0.06298 * ((ALOG(DPP))**2)&
           &+ 0.00590 * SI
 
      !  BRISTLECONE PINE
@@ -206,13 +206,13 @@ subroutine GEMDG(DDS,IMODTY,IS,BAUTBA,SPBA,SI,DP,BAT,BARK,&
 
      if (IMODTY .eq.1) then
         DFMCPP = 0.26265 + 0.94001 * DPP - 0.0016405 * BAT&
-             &+ 0.0060074 * SI + 0.16328 * (ALOG(DPP))**2.0
+             &+ 0.0060074 * SI + 0.16328 * (ALOG(DPP))**2
         BGTTBA = BAUTBA
         BATEM = BAT
         if (BATEM .lt.21.0) BATEM = 21.0
         DFSWPP = 4.10552 + 0.88872 * DPP&
              &-0.83531 * ALOG(BATEM) + 0.013781 * SI - 0.52784 * BGTTBA&
-             &+ 0.23834 * (ALOG(DP))**2.0
+             &+ 0.23834 * (ALOG(DP))**2
         ADJB = 0.0
         if (BAT .gt.60.0.and. BAT .lt.100.0) then
            ADJB = -0.025 * BAT + 2.5
@@ -236,19 +236,19 @@ subroutine GEMDG(DDS,IMODTY,IS,BAUTBA,SPBA,SI,DP,BAT,BARK,&
      else if (IMODTY .eq.2) then
         DF = 4.10552 + 0.88872 * DPP&
              &- 0.83531 * ALOG(BATEM) + 0.013781 * SI&
-             &- 0.52784 * BGTTBA + 0.23834 * (ALOG(DPP))**2.0
+             &- 0.52784 * BGTTBA + 0.23834 * (ALOG(DPP))**2
 
         ! PONDEROSA PINE -- BLACK HILLS PONDEROSA PINE TYPE
 
      else if (IMODTY .eq.3) then
         DF = 2.50428 + 0.94573 * DPP - 0.45765 * ALOG(BATEM)&
-             &+ 0.01354*SI - 0.46350*BGTTBA + 0.05940*(ALOG(DPP))**2.0
+             &+ 0.01354*SI - 0.46350*BGTTBA + 0.05940*(ALOG(DPP))**2
         if (AGERNG.gt.40..and. BGTTBA.gt.0.3) then
            SIMINR = 0.57593 + 0.92561*SI
            if (BATEM .lt.21.) BATEM = 21.
            DFSWPP = 4.10552 + 0.88872 * DPP&
                 &- 0.83531 * ALOG(BATEM) + 0.013781 * SIMINR&
-                &- 0.52784 * BGTTBA + 0.23834 * (ALOG(DPP))**2.0
+                &- 0.52784 * BGTTBA + 0.23834 * (ALOG(DPP))**2
            if (DF .gt. DFSWPP) then
               if (BGTTBA .ge.0.5) then
                  DF = DFSWPP
@@ -265,7 +265,7 @@ subroutine GEMDG(DDS,IMODTY,IS,BAUTBA,SPBA,SI,DP,BAT,BARK,&
 
      else
         DF = 2.50428 + 0.94573 * DPP - 0.45765 * ALOG(BATEM)&
-             &+ 0.01354*SI - 0.46350*BGTTBA + 0.05940*(ALOG(DPP))**2.0
+             &+ 0.01354*SI - 0.46350*BGTTBA + 0.05940*(ALOG(DPP))**2
      end if
 
      !  WHITEBARK PINE
@@ -286,7 +286,7 @@ subroutine GEMDG(DDS,IMODTY,IS,BAUTBA,SPBA,SI,DP,BAT,BARK,&
 
   case(15)
      DF = 0.89451 + 0.95435 * DPP - 0.0012183 * BAT + 0.00159&
-          &* SI - 0.20815 * BGTTBA + 0.09987 * (ALOG(DPP))**2.0
+          &* SI - 0.20815 * BGTTBA + 0.09987 * (ALOG(DPP))**2
 
      !  BLUE SPRUCE
 
@@ -304,7 +304,7 @@ subroutine GEMDG(DDS,IMODTY,IS,BAUTBA,SPBA,SI,DP,BAT,BARK,&
              &+ 0.00633 * SI - 0.0010875 * DPP * DPP
      else
         DF = 2.28652 + 0.94475 * DPP - 0.48056 * BGTTBA&
-             &- 0.41632 * ALOG(BATEM) + 0.10778 * ((ALOG(DPP))**2.0)&
+             &- 0.41632 * ALOG(BATEM) + 0.10778 * ((ALOG(DPP))**2)&
              &+ 0.01295 * SI
      end if
 
@@ -312,7 +312,7 @@ subroutine GEMDG(DDS,IMODTY,IS,BAUTBA,SPBA,SI,DP,BAT,BARK,&
 
   case(19)
      DF = 2.94734 + 0.88423 * DPP - 0.64449 * ALOG(BATEM)&
-          &+ 0.01207 * SI + 0.25363 * (ALOG(DPP))**2.0
+          &+ 0.01207 * SI + 0.25363 * (ALOG(DPP))**2
 
      !  ASPEN, PAPER BIRCH
      !  NARROWLEAF COTTONWOOD, PLAINS COTTONWOOD
@@ -346,7 +346,7 @@ subroutine GEMDG(DDS,IMODTY,IS,BAUTBA,SPBA,SI,DP,BAT,BARK,&
   !  CONVERT TO LN(DDS) SCALE BEFORE EXITING.
 
   if (IDDS .gt.0) then
-     DIAGR = SQRT(EXP(DDS)+((DPP*BARK)**2.0))-DPP*BARK
+     DIAGR = SQRT(EXP(DDS)+((DPP*BARK)**2))-DPP*BARK
   else
      if (DF .gt. DBHMAX(IS)) DF = DBHMAX(IS)
      if (DF .lt. DPP) DF = DPP

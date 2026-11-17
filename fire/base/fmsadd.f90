@@ -313,7 +313,8 @@ subroutine FMSADD (YEAR,ITYP)
      if (ITYP .eq.3) then
         XDCAY = 1.0
         if (CRDCAY .gt.0.0) then
-           XDCAY = (1.0 - CRDCAY)**10
+           ! Keep libgcc integer-power rounding: square factors, then multiply low bit first.
+           XDCAY = ((1.0 - CRDCAY)**2*(1.0 - CRDCAY)**8)
         end if
      end if
      BIOROOT = BIOROOT + (RBIO * SNGNEW(I) * XDCAY)

@@ -20,7 +20,7 @@ mFVS aims to make FVS:
 
 ## Same answers, cleaner code
 
-The guiding rule is that modernization must not change model results. Every step is checked against a fixed reference: upstream FVS commit [`c2105365`](https://github.com/USDAForestService/ForestVegetationSimulator/commit/c2105365) (the 2027.1.0 release plus one README edit, 28 October 2026), the last commit before modernization began. The regression tests are run with both versions, and their outputs must match apart from run identifiers, dates and times.
+The guiding rule is that modernization must not change model results. Every step is checked against a fixed reference: upstream FVS commit [`c2105365`](https://github.com/USDAForestService/ForestVegetationSimulator/commit/c2105365) (the 2027.1.0 release plus one README edit, 28 October 2026), the last commit before modernization began. The regression tests are run with both versions, and their outputs must match apart from run identifiers, dates and times. R04's explicitly authorized rounding-level power rewrite is applied to both versions; the [parity guidance](tests/parity/README.md) describes this arithmetic exception.
 
 Defects found along the way are deliberately *not* fixed during modernization, because a fix changes results and would mix model changes with code restructuring. Instead they are recorded in [FOUND_BUGS.md](FOUND_BUGS.md), to be fixed later as separate, documented changes.
 
@@ -72,6 +72,19 @@ make clean       # remove build directories and programs
 ```
 
 Programs are written to `bin/`. Each variant is compiled separately in `bin/FVSxx_buildDir`, from the files listed in `bin/FVSxx_sourceList.txt`. The version string is taken from git, and a build made from a working tree with uncommitted changes is marked `-dirty`.
+
+GNU Make uses Fortran `-O2 -ffp-contract=off`, keeping debug information and
+the existing floating-point traps. For unoptimized debugging, run `make clean`
+and then `make FVSie.setup FVS_FOPT=-O0` (substitute your variant). Clean again
+when returning to the defaults; changing a command-line flag alone does not
+invalidate existing objects.
+
+CMake uses the same GNU Fortran defaults in empty/Debug configurations, while
+preserving explicit optimization switches and Release/size settings. For an
+unoptimized Debug build, configure from `bin/` with
+`cmake -G "Unix Makefiles" -DFVS_VARIANTS=FVSie -DCMAKE_BUILD_TYPE=Debug -DFVS_OPTIMIZE_FORTRAN=OFF .`,
+then build `FVSie_CmakeDir`. The option is also available when configuring a
+generated variant project directly. Other Fortran compilers retain their flags.
 
 On Windows, the makefile relies on the `OS` environment variable. If `make` reports that there is no rule for `FVSie.exe`, add `OS=Windows_NT` to the command. If `gfortran` reports that it cannot create a temporary file, make sure `TMP` points to a writable directory.
 

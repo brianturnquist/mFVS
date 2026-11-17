@@ -37,12 +37,13 @@ subroutine HTCALC(SINDX,ISPC,AG,HGUESS,JOSTND,DEBUG)
      ! SPECIES: WF, GF
 
   case(2,3)
+     ! Keep libgcc integer-power rounding: square factors, then multiply low bit first.
      X2 = -0.30935 + 1.2383*ALOG(AG) + 0.001762*(ALOG(AG))**4&
-          &- 5.4E-6*(ALOG(AG))**9 + 2.046E-7*(ALOG(AG))**11&
-          &- 4.04E-13*(ALOG(AG))**18
+          &- 5.4E-6*((ALOG(AG))*(ALOG(AG))**8) + 2.046E-7*(((ALOG(AG))*(ALOG(AG))**2)*(ALOG(AG))**8)&
+          &- 4.04E-13*((ALOG(AG))**2*((ALOG(AG))**8)**2)
      X3 = -6.2056 + 2.097*ALOG(AG) - 0.09411*(ALOG(AG))**2&
-          &- 4.382E-5*(ALOG(AG))**7 + 2.007E-11*(ALOG(AG))**16&
-          &- 2.054E-17*(ALOG(AG))**24
+          &- 4.382E-5*(ALOG(AG))**7 + 2.007E-11*(((ALOG(AG))**8)**2)&
+          &- 2.054E-17*((ALOG(AG))**8*((ALOG(AG))**8)**2)
      HGUESS = EXP(X2) - 84.93*EXP(X3) + (SINDX - 4.5)*EXP(X3)&
           &+ 4.5
      if (DEBUG)write(JOSTND,*)' HTCALC WF/GF X2,X3,HGUESS= ',&
@@ -180,7 +181,7 @@ subroutine HTCALC(SINDX,ISPC,AG,HGUESS,JOSTND,DEBUG)
   case(6,18)
      AZ = -0.2050542 + 1.449615*ALOG(AG) - 0.01780992*ALOG(AG)**3. +&
           &6.519748E-5*ALOG(AG)**5. - 1.095593E-23*ALOG(AG)**30.
-     BZ = -5.611879 + 2.418604*ALOG(AG) - 0.2593110*ALOG(AG)**2. +&
+     BZ = -5.611879 + 2.418604*ALOG(AG) - 0.2593110*ALOG(AG)**2 +&
           &1.351445E-4*ALOG(AG)**5.- 1.701139E-12*ALOG(AG)**16. +&
           &7.964197E-27*ALOG(AG)**36.
      HGUESS = 4.5 + EXP(AZ) - 86.43*EXP(BZ) + (SINDX-4.5)*EXP(BZ)

@@ -1218,7 +1218,7 @@ subroutine CUTS
               !         USE LU, H.B. TPA AND DIAMETER FACTORS TO CALCULATE CONTRIBUTION
               !         OF THIS TREE TO THE CURTIS RD.
 
-              CUT = (TPAFAC + DIAMFAC*(DBH(IT)**2.0))*PREM
+              CUT = (TPAFAC + DIAMFAC*(DBH(IT)**2))*PREM
               XLEFT = REMOVE - (TOTCUT + CUT)
 
            else if (ICFLAG.eq.15.and. ITHNPA.eq.5) then

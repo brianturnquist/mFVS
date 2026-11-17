@@ -218,7 +218,7 @@ subroutine CCFCAL(ISPC,D,H,JCR,P,LTHIN,CCFT,CRWDTH,MODE)
         if (D .lt.1.0) then
            CCFT = D * (0.0204 + 0.0246 + 0.0074)
         else
-           CCFT = 0.0204 + 0.0246*D + 0.0074*D**2.0
+           CCFT = 0.0204 + 0.0246*D + 0.0074*D**2
         end if
 
         !  SPECIES USING SURROGATE EQNS FROM THE UT VARIANT
@@ -236,7 +236,7 @@ subroutine CCFCAL(ISPC,D,H,JCR,P,LTHIN,CCFT,CRWDTH,MODE)
 
      case default
         if (D .ge.1.0) then
-           CCFT = ((RD1(ISPC)+D*RD2(ISPC))**2.0)*0.001803
+           CCFT = ((RD1(ISPC)+D*RD2(ISPC))**2)*0.001803
         else if (D.gt.0.1) then
            CCFT = RDA(ISPC) * (D**RDB(ISPC))
         else

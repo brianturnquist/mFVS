@@ -96,7 +96,7 @@ subroutine ESTUMP (JSSP,DBH,PREM,JPLOT,ISHAG)
   call ESASID(VARACD,INDXAS)
   if (JSSP .eq. INDXAS) then
      ASTPAR = ASTPAR + PREM
-     ASBAR = ASBAR + 0.0054542*PREM*DBH**2.
+     ASBAR = ASBAR + 0.0054542*PREM*DBH**2
   end if
 
   return

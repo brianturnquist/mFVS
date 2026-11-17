@@ -493,7 +493,7 @@ subroutine HG_SWO(ISPGRP,PHTGRO,CR,TCCH,HG)
      MODIFER = P8*(B0+(B1-B0)*EXP(FCR))
   end if
   CRADJ = 1.0
-  if (CR .le.0.17) CRADJ = 1.0-EXP(-(25.0*CR)**2.0)
+  if (CR .le.0.17) CRADJ = 1.0-EXP(-(25.0*CR)**2)
   HG = PHTGRO*MODIFER*CRADJ
   return
 end
@@ -545,7 +545,7 @@ subroutine HG_NWO(ISPGRP,PHTGRO,CR,TCCH,HG)
      MODIFER = P8*(B0+(B1-B0)*EXP(FCR))
   end if
   CRADJ = 1.0
-  if (CR.le.0.17) CRADJ = 1.0-EXP(-(25.0*CR)**2.0)
+  if (CR.le.0.17) CRADJ = 1.0-EXP(-(25.0*CR)**2)
   HG = PHTGRO*MODIFER*CRADJ
   return
 end
@@ -619,7 +619,7 @@ subroutine HG_RAP(ISPGRP,PHTGRO,CR,TCCH,HG)
      MODIFER = P8*(B0+(B1-B0)*EXP(FCR))
   end if
   CRADJ = 1.0
-  if (CR.le.0.17) CRADJ = 1.0-EXP(-(25.0*CR)**2.0)
+  if (CR.le.0.17) CRADJ = 1.0-EXP(-(25.0*CR)**2)
   HG = PHTGRO*MODIFER*CRADJ
   return
 end

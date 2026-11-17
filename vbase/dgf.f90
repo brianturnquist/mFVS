@@ -4372,7 +4372,7 @@ contains
           P = PROB(I)
           D = DIAM(I)
           if (D.lt.5.)go to 10
-          SDQGE5 = SDQGE5+P*(D)**2.
+          SDQGE5 = SDQGE5+P*(D)**2
           T = T+P
           BAGE5 = BAGE5+D*D*P*0.005454154
           10 continue
@@ -4511,7 +4511,7 @@ contains
           DIAGRO = SQRT(DBH(I)*DBH(I)+EXP(DDS))-DBH(I)
           BARK = BRATIO(ISPC,DBH(I),HT(I))
           DIAGRI = DIAGRO*BARK
-          DDS = ALOG(((DBH(I)*BARK+DIAGRI)**2.0)-(DBH(I)*BARK)**2.0)
+          DDS = ALOG(((DBH(I)*BARK+DIAGRI)**2)-(DBH(I)*BARK)**2)
           if (DEBUG) write(JOSTND,*) 'IN DGF-I= ',I,' D=',D,&
                &' DIAGRO= ',DIAGRO,' DIAGRI= ',DIAGRI,' BARK= ',BARK,&
                &' DDS= ',DDS
@@ -12536,7 +12536,7 @@ contains
 
                 DSQ = EXP(DDSS)
                 TEMDG = (SQRT(D*D+DSQ)-D)*2.
-                DSQNEW = (TEMDG+D)**2. - D*D
+                DSQNEW = (TEMDG+D)**2 - D*D
                 if (DSQNEW .le.0.) then
                    DDSS = 0.
                 else

@@ -20,6 +20,7 @@ endif()
 # Choose variants with -DFVS_VARIANTS="FVSie;FVSpn", or "all".
 # Keep the existing BC default when no selection is supplied.
 set(FVS_VARIANTS "FVSbc" CACHE STRING "Variants to build, e.g. FVSie;FVSpn, or all")
+option(FVS_OPTIMIZE_FORTRAN "Use conservative GNU Fortran optimization by default" ON)
 if (FVS_VARIANTS STREQUAL "all")
     file(GLOB tobuild FVS*_sourceList.txt)
 else()
@@ -63,7 +64,14 @@ endforeach()
 
 # Execute sub-builds
 foreach(toProcess ${dirsToProcess})
-    execute_process(COMMAND cmake -G "${CMAKE_GENERATOR}" . WORKING_DIRECTORY ${toProcess})
+    # Pass the default-optimization choice to each generated variant project.
+    set(fvsChildOptions "-DFVS_OPTIMIZE_FORTRAN=${FVS_OPTIMIZE_FORTRAN}")
+    foreach(setting CMAKE_BUILD_TYPE CMAKE_Fortran_FLAGS CMAKE_Fortran_FLAGS_DEBUG)
+        if(DEFINED ${setting})
+            list(APPEND fvsChildOptions "-D${setting}=${${setting}}")
+        endif()
+    endforeach()
+    execute_process(COMMAND cmake -G "${CMAKE_GENERATOR}" ${fvsChildOptions} . WORKING_DIRECTORY ${toProcess})
 endforeach()
 
 # This 'return' prevents the parent script from executing the code below
@@ -78,6 +86,7 @@ if(CMAKE_GENERATOR MATCHES "Visual Studio 18 2026")
 endif()
 
 project(FVS LANGUAGES C CXX Fortran)
+option(FVS_OPTIMIZE_FORTRAN "Use conservative GNU Fortran optimization by default" ON)
 
 # --- 3. VERSION AND BUILD METADATA ---
 # Derived from git at cmake configure time. All fields fall back to
@@ -297,6 +306,21 @@ endforeach()
 add_library(FVSfofem SHARED ${CsourceFFE})
 add_library(FVS_${varName} SHARED ${FsourceFVS} ${FortranHeaders})
 add_executable(${prgName} ${FsourceMAIN} ${FortranHeaders})
+
+# Match Make in configurations without an optimization choice of their own.
+# An explicit -O switch or a Release/size configuration keeps its own flags.
+# OFF leaves empty/Debug builds unoptimized for source-level debugging.
+if(FVS_OPTIMIZE_FORTRAN AND NOT CMAKE_Fortran_FLAGS MATCHES "(^|[ \t])-O[^ \t]*")
+    set(fvsDefaultConfigs "$<CONFIG:>")
+    if(NOT CMAKE_Fortran_FLAGS_DEBUG MATCHES "(^|[ \t])-O[^ \t]*")
+        set(fvsDefaultConfigs "$<OR:$<CONFIG:>,$<CONFIG:Debug>>")
+    endif()
+    foreach(fortranTarget FVS_${varName} ${prgName})
+        target_compile_options(${fortranTarget} PRIVATE
+            "$<$<AND:$<COMPILE_LANG_AND_ID:Fortran,GNU>,${fvsDefaultConfigs}>:-O2>"
+            "$<$<AND:$<COMPILE_LANG_AND_ID:Fortran,GNU>,${fvsDefaultConfigs}>:-ffp-contract=off>")
+    endforeach()
+endif()
 
 # --- 8. TARGET PROPERTIES & LINKING ---
 set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT ${prgName})

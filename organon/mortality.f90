@@ -132,7 +132,7 @@ subroutine MORTAL_RUN(VERSION,CYCLG,NTREES,IB,TDATAI,POST,MORT,&
      end if
      !         CRADJ=1.0-EXP(-(10.0*CR)**5.0)
      CRADJ = 1.0
-     if (CR.le.0.17) CRADJ = 1.0-EXP(-(25.0*CR)**2.0)
+     if (CR.le.0.17) CRADJ = 1.0-EXP(-(25.0*CR)**2)
      XPM = 1.0/(1.0+EXP(-PMK(I)))
      PS = (1.0-XPM)**POW(I)
      PM = 1.0-PS*CRADJ
@@ -224,7 +224,7 @@ subroutine MORTAL_RUN(VERSION,CYCLG,NTREES,IB,TDATAI,POST,MORT,&
            end if
            !                   CRADJ=1.0-EXP(-(10.0*CR)**5.0)
            CRADJ = 1.0
-           if (CR.le.0.17) CRADJ = 1.0-EXP(-(25.0*CR)**2.0)
+           if (CR.le.0.17) CRADJ = 1.0-EXP(-(25.0*CR)**2)
            XPM = 1.0/(1.0+EXP(-PMK(I)))
            PS = (1.0-XPM)**POW(I)
            PM = 1.0-PS*CRADJ
@@ -250,12 +250,12 @@ subroutine MORTAL_RUN(VERSION,CYCLG,NTREES,IB,TDATAI,POST,MORT,&
               end if
               !                      CRADJ=1.0-EXP(-(10.0*CR)**5.0)
               CRADJ = 1.0
-              if (CR.le.0.17) CRADJ = 1.0-EXP(-(25.0*CR)**2.0)
+              if (CR.le.0.17) CRADJ = 1.0-EXP(-(25.0*CR)**2)
               XPM = 1.0/(1.0+EXP(-(KR1+PMK(I))))
               PS = (1.0-XPM)**POW(I)
               PM = 1.0-PS*CRADJ
               NAA = NAA+TDATAR(I,4)*(1.0-PM)
-              BAAA = BAAA+KB*(TDATAR(I,1)+GROWTH(I,2))**2.0*&
+              BAAA = BAAA+KB*(TDATAR(I,1)+GROWTH(I,2))**2*&
                    &TDATAR(I,4)*(1.0-PM)
            end do
            QMDA = SQRT(BAAA/(KB*NAA))
@@ -286,7 +286,7 @@ subroutine MORTAL_RUN(VERSION,CYCLG,NTREES,IB,TDATAI,POST,MORT,&
               end if
               !                     CRADJ=1.0-EXP(-(10.0*CR)**5.0)
               CRADJ = 1.0
-              if (CR.le.0.17) CRADJ = 1.0-EXP(-(25.0*CR)**2.0)
+              if (CR.le.0.17) CRADJ = 1.0-EXP(-(25.0*CR)**2)
               XPM = 1.0/(1.0+EXP(-(KR1+PMK(I))))
               PS = (1.0-XPM)**POW(I)
               PM = 1.0-PS*CRADJ
@@ -304,7 +304,7 @@ subroutine MORTAL_RUN(VERSION,CYCLG,NTREES,IB,TDATAI,POST,MORT,&
         end if
         !                   CRADJ=1.0-EXP(-(10.0*CR)**5.0)
         CRADJ = 1.0
-        if (CR.le.0.17) CRADJ = 1.0-EXP(-(25.0*CR)**2.0)
+        if (CR.le.0.17) CRADJ = 1.0-EXP(-(25.0*CR)**2)
         XPM = 1.0/(1.0+EXP(-PMK(I)))
         PS = (1.0-XPM)**POW(I)
         PM = 1.0-PS*CRADJ

@@ -189,7 +189,7 @@ subroutine CCFCAL(ISPC,D,H,JCR,P,LTHIN,CCFT,CRWDTH,MODE)
         if (D .lt.1.0) then
            CCFT = D * (RD1(ISPC)+RD2(ISPC)+RD3(ISPC))
         else
-           CCFT = RD1(ISPC) + RD2(ISPC)*D + RD3(ISPC)*D**2.0
+           CCFT = RD1(ISPC) + RD2(ISPC)*D + RD3(ISPC)*D**2
         end if
         CCFT = CCFT * P
      case(9,27)

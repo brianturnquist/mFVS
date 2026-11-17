@@ -1,6 +1,7 @@
 """Check a change against original F77 using the existing regression suite.
 
-For every requested variant this builds the original F77 reference and the
+For every requested variant this builds the original F77 reference (with the
+documented R04 square rewrites and BC/ON link accommodations) and the
 working tree, runs that variant's whole `tests/FVSxx` makefile in each, and
 requires every generated file to match, restart (`.stop`) files included.
 
@@ -291,10 +292,11 @@ def main() -> int:
             print(f"       outputs to diff: original {original / 'files'}")
             print(f"                    working tree {candidate / 'files'}")
         else:
-            print(f"PASS {variant}: {len(outputs)} files match original F77{note}")
+            print(f"PASS {variant}: {len(outputs)} files match original F77 with R04 squares{note}")
     dirty = "+changes" if git(ROOT, "status", "--porcelain") else ""
     summary = (f"{len(args.variants) - len(failed)}/{len(args.variants)} variants; working tree "
-               f"{git(ROOT, 'rev-parse', '--short', 'HEAD')}{dirty} vs original {REFERENCE[:8]}")
+               f"{git(ROOT, 'rev-parse', '--short', 'HEAD')}{dirty} vs original {REFERENCE[:8]} "
+               "with R04 squares")
     print(("FAIL " + summary + "; failed: " + " ".join(failed)) if failed else "PASS " + summary)
     return 1 if failed else 0
 

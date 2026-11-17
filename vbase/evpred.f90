@@ -98,7 +98,7 @@ subroutine EVPRED
      if (DBH(ISRTI) .lt.1.) goto 30
      if (ICR(ISRTI) .lt.31) goto 30
      if (HT(ISRTI) .ge. HTMAX) then
-        CCPCT = CCPCT + P*CRWDTH(ISRTI)**2.0
+        CCPCT = CCPCT + P*CRWDTH(ISRTI)**2
         SUMPIN = SUMPIN + P
         if (DEBUG)write(JOSTND,*)' ISRTI,P,CRWDTH,CCPCT,SUMPIN= ',&
              &ISRTI,P,CRWDTH(ISRTI),CCPCT,SUMPIN

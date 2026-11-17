@@ -431,7 +431,7 @@ contains
                 DGSM = (DK-DKK)*BARK*XRDGRO
                 if (DGSM .lt.0.0) DGSM = 0.0
                 DDS = DGSM*(2.0*BARK*D+DGSM)*SCALE2
-                DGSM = SQRT((D*BARK)**2.0+DDS)-BARK*D
+                DGSM = SQRT((D*BARK)**2+DDS)-BARK*D
                 DGLT = DG(K)
                 if (DGSM.lt.0.0) DGSM = 0.0
                 DG(K) = DGSM*(1.0-XDWT)+DGLT*XDWT
@@ -1048,7 +1048,7 @@ contains
                    DGSM = (DKK-DK)*BARK*XRDGRO
                    if (DGSM .lt.0.0) DGSM = 0.0
                    DDS = DGSM*(2.0*BARK*D+DGSM)*SCALE2
-                   DGSM = SQRT((D*BARK)**2.0+DDS)-BARK*D
+                   DGSM = SQRT((D*BARK)**2+DDS)-BARK*D
                    if (DGSM.lt.0.0) DGSM = 0.0
 
                    !         COMPUTE WEIGHTED DIAMETER INCREMENT FOR NEXT TRIPLE.
@@ -1699,7 +1699,7 @@ contains
                       DGSM = (DK-DKK)*BARK*XRDGRO
                       if (DGSM .lt.0.0) DGSM = 0.0
                       DDS = DGSM*(2.0*BARK*D+DGSM)*SCALE2
-                      DGSM = SQRT((D*BARK)**2.0+DDS)-BARK*D
+                      DGSM = SQRT((D*BARK)**2+DDS)-BARK*D
                       if (DEBUG)write(JOSTND,*)'IN REGENT - RW/GS DEBUG',&
                            &' D=',D,' XDWT=',XDWT,' DKK=', DKK,' DK=',DK,&
                            &' BARK=', BARK,' DGSM=',DGSM,' LTDG=', DG(K)
@@ -1722,7 +1722,7 @@ contains
                 !         OF DG TO BE CONSISTENT WITH GRADD.
 
                 DDS = DG(K)*(2.0*BARK*D+DG(K))*SCALE2
-                DG(K) = SQRT((D*BARK)**2.0+DDS)-BARK*D
+                DG(K) = SQRT((D*BARK)**2+DDS)-BARK*D
              end if
              200 continue
              if ((DBH(K)+DG(K)).lt.DIAM(ISPC)) then
@@ -2331,7 +2331,7 @@ contains
                 !    ESTIMATE BEFORE WEIGHTING.
 
                 DDS = (DGSM*(2.0*BARK*D+DGSM)) * SCALE2
-                DGSM = SQRT((D*BARK)**2.0+DDS)-BARK*D
+                DGSM = SQRT((D*BARK)**2+DDS)-BARK*D
                 DGLT = DG(K)
                 DG(K) = DGSM*(1.0-XDWT) + XDWT*DGLT
                 if (DEBUG)write(JOSTND,*)' K=',K,' ISPC=',ISPC,' D=',D, &
@@ -3105,7 +3105,7 @@ contains
                 end if
 
                 DDS = DG(K)*(2.0*BARK*D+DG(K))*SCALE2
-                DG(K) = SQRT((D*BARK)**2.0 + DDS)-BARK*D
+                DG(K) = SQRT((D*BARK)**2 + DDS)-BARK*D
              end if
              if ((DBH(K)+DG(K)).lt.DIAM(ISPC)) then
                 DG(K) = DIAM(ISPC)-DBH(K)
@@ -4944,7 +4944,7 @@ contains
                 BARK = BRATIO(ISPC,DBH(K),HT(K))
                 DG(K) = DGK*BARK
                 DDS = DG(K)*(2.0*BARK*D+DG(K))*SCALE
-                DG(K) = SQRT((D*BARK)**2.0+DDS)-BARK*D
+                DG(K) = SQRT((D*BARK)**2+DDS)-BARK*D
              end if
              if ((DBH(K)+DG(K)).lt.DIAM(ISPC)) then
                 DG(K) = DIAM(ISPC)-DBH(K)
@@ -5814,7 +5814,7 @@ contains
                    DGSM = (DKK-DK)*BARK*XRDGRO
                    if (DGSM .lt.0.0) DGSM = 0.0
                    DDS = DGSM*(2.0*BARK*D+DGSM)*SCALE2
-                   DGSM = SQRT((D*BARK)**2.0+DDS)-BARK*D
+                   DGSM = SQRT((D*BARK)**2+DDS)-BARK*D
                    if (DGSM.lt.0.0) DGSM = 0.0
 
                    !         COMPUTE WEIGHTED DIAMETER INCREMENT FOR NEXT TRIPLE.
@@ -7216,7 +7216,7 @@ contains
                    DDS = DG(K)*(2.0*BARK*D+DG(K))*SCALE2
                    if (DEBUG)write(JOSTND,*)'K,D,DKK,DK,BARK,DDS,DG(K)= ',&
                         &K,D,DKK,DK,BARK,DDS,DG(K)
-                   DG(K) = SQRT((D*BARK)**2.0+DDS)-BARK*D
+                   DG(K) = SQRT((D*BARK)**2+DDS)-BARK*D
                 else
                    DG(K) = 0.0
                 end if
@@ -7326,7 +7326,7 @@ contains
                 else
                    DDS = DG(K)*(2.0*BARK*D+DG(K))*SCALE2
                 end if
-                DG(K) = SQRT((D*BARK)**2.0+DDS)-BARK*D
+                DG(K) = SQRT((D*BARK)**2+DDS)-BARK*D
              end if
              if ((DBH(K)+DG(K)).lt.DIAM(ISPC)) then
                 DG(K) = DIAM(ISPC)-DBH(K)
@@ -8052,7 +8052,7 @@ contains
                 !         OF DG TO BE CONSISTENT WITH GRADD.
 
                 DDS = DG(K)*(2.0*BARK*D + DG(K))*SCALE2
-                DG(K) = SQRT((D*BARK)**2.0 + DDS) - BARK*D
+                DG(K) = SQRT((D*BARK)**2 + DDS) - BARK*D
              end if
              if ((DBH(K)+DG(K)).lt.DIAM(ISPC)) then
                 DG(K) = DIAM(ISPC)-DBH(K)
@@ -8761,7 +8761,7 @@ contains
                 !         OF DG TO BE CONSISTENT WITH GRADD.
 
                 DDS = DG(K)*(2.0*BARK*D+DG(K))*SCALE2
-                DG(K) = SQRT((D*BARK)**2.0+DDS)-BARK*D
+                DG(K) = SQRT((D*BARK)**2+DDS)-BARK*D
              end if
              if ((DBH(K)+DG(K)).lt.DIAM(ISPC)) then
                 DG(K) = DIAM(ISPC)-DBH(K)
@@ -9818,7 +9818,7 @@ contains
                 DDS = DG(K)*(2.0*BARK*D+DG(K))*SCALE
                 if (DEBUG)write(JOSTND,*)'K,D,DKK,DK,BARK,DDS,DG(K)= ',&
                      &K,D,DKK,DK,BARK,DDS,DG(K)
-                DG(K) = SQRT((D*BARK)**2.0+DDS)-BARK*D
+                DG(K) = SQRT((D*BARK)**2+DDS)-BARK*D
 
                 !  IF CALLED FROM ESTAB, BOUND DIAMETER INCREMENT FOR ADVANCED
                 !  REGENERATION.
@@ -9882,7 +9882,7 @@ contains
                    DDS = DG(K)*(2.0*BARK*D+DG(K))
                    if (DEBUG)write(JOSTND,*)'K,D,DKK,DK,BARK,DDS,DG(K)= ',&
                         &K,D,DKK,DK,BARK,DDS,DG(K)
-                   DG(K) = SQRT((D*BARK)**2.0+DDS)-BARK*D
+                   DG(K) = SQRT((D*BARK)**2+DDS)-BARK*D
                 else
                    DG(K) = 0.0
                 end if
@@ -9933,7 +9933,7 @@ contains
                    DG(K) = DGK
                 end if
                 DDS = DG(K)*(2.0*BARK*D+DG(K))*SCALE
-                DG(K) = SQRT((D*BARK)**2.0+DDS)-BARK*D
+                DG(K) = SQRT((D*BARK)**2+DDS)-BARK*D
              end if
              if ((DBH(K)+DG(K)).lt.DIAM(ISPC)) then
                 DG(K) = DIAM(ISPC)-DBH(K)
@@ -11348,7 +11348,7 @@ contains
                    DG(K) = DGK
                 end if
                 DDS = DG(K)*(2.0*BARK*D+DG(K))*SCALE2
-                DG(K) = SQRT((D*BARK)**2.0+DDS)-BARK*D
+                DG(K) = SQRT((D*BARK)**2+DDS)-BARK*D
              end if
              if ((DBH(K)+DG(K)).lt.DIAM(ISPC)) then
                 DG(K) = DIAM(ISPC)-DBH(K)
@@ -12407,7 +12407,7 @@ contains
                 BARK = BRATIO(ISPC,DBH(K),HT(K))
                 DG(K) = DGK*BARK
                 DDS = DG(K)*(2.0*BARK*D+DG(K))*SCALE
-                DG(K) = SQRT((D*BARK)**2.0+DDS)-BARK*D
+                DG(K) = SQRT((D*BARK)**2+DDS)-BARK*D
              end if
              if ((DBH(K)+DG(K)).lt.DIAM(ISPC)) then
                 DG(K) = DIAM(ISPC)-DBH(K)
@@ -13086,7 +13086,7 @@ contains
 
                 DDS = DGSM*(2.0*BARK*D+DGSM)*SCALE2
                 if (ISPC .eq.12) then
-                   DGSM = SQRT((D*BARK)**2.0+DDS)-BARK*D
+                   DGSM = SQRT((D*BARK)**2+DDS)-BARK*D
                    XDWT = (D-XMN)/(DGMIN(ISPC)-XMN)
                    if (D .le. XMN) XDWT = 0.0
                    DGLT = DG(K)
@@ -13096,7 +13096,7 @@ contains
                         &' DGSM=',DGSM,' DGLT=',DGLT,' DGSM FINAL=', DG(K),&
                         &' SCALE2=',SCALE2
                 else
-                   DG(K) = SQRT((D*BARK)**2.0+DDS)-BARK*D
+                   DG(K) = SQRT((D*BARK)**2+DDS)-BARK*D
                 end if
              end if
              if ((DBH(K)+DG(K)).lt.DIAM(ISPC)) then
@@ -13586,7 +13586,7 @@ contains
                 !         OF DG TO BE CONSISTENT WITH GRADD.
 
                 DDS = DG(K)*(2.0*BARK*D+DG(K))*SCALE2
-                DG(K) = SQRT((D*BARK)**2.0+DDS)-BARK*D
+                DG(K) = SQRT((D*BARK)**2+DDS)-BARK*D
 
              end if
              if ((DBH(K)+DG(K)).lt.DIAM(ISPC)) then
@@ -14388,7 +14388,7 @@ contains
                    if (DG(K) .lt.0.0) DG(K) = 0.1
                    if (DG(K) .gt. DGMX) DG(K) = DGMX
                    DDS = DG(K)*(2.0*BARK*D+DG(K))*SCALE2
-                   DG(K) = SQRT((D*BARK)**2.0+DDS)-BARK*D
+                   DG(K) = SQRT((D*BARK)**2+DDS)-BARK*D
                    if (DEBUG)write(JOSTND,*)'HARDWOOD EQU DG(K),DGMX,LHTDRG= '
                    if (DEBUG)write(JOSTND,*)DG(K),DGMX,LHTDRG(ISPC)
 
@@ -14410,7 +14410,7 @@ contains
                    DGSM = (DK-DKK)*BARK*XRDGRO
                    if (DGSM .lt.0.0) DGSM = 0.0
                    DDS = DGSM*(2.0*BARK*D+DGSM)*SCALE2
-                   DGSM = SQRT((D*BARK)**2.0+DDS)-BARK*D
+                   DGSM = SQRT((D*BARK)**2+DDS)-BARK*D
                    if (DGSM.lt.0.0) DGSM = 0.0
                    DG(K) = DGSM*(1.0-XDWT)+DG(K)*XDWT
                    if (DEBUG)write(JOSTND,*)'XDWT,D,DDS,DG(K),DK,DKK,DGSM= '
@@ -14445,7 +14445,7 @@ contains
                 end if
 
                 DDS = (DG(K)*(2.0*BARK*D+DG(K))) * SCALE2
-                DG(K) = SQRT((D*BARK)**2.0+DDS)-BARK*D
+                DG(K) = SQRT((D*BARK)**2+DDS)-BARK*D
              end if
              if ((DBH(K)+DG(K)).lt.DIAM(ISPC)) then
                 DG(K) = DIAM(ISPC)-DBH(K)
@@ -15605,7 +15605,7 @@ contains
                    DDS = DG(K)*(2.0*BARK*D+DG(K))*SCALE2
                    if (DEBUG)write(JOSTND,*)'K,D,DKK,DK,BARK,DDS,DG(K)= ',&
                         &K,D,DKK,DK,BARK,DDS,DG(K)
-                   DG(K) = SQRT((D*BARK)**2.0+DDS)-BARK*D
+                   DG(K) = SQRT((D*BARK)**2+DDS)-BARK*D
                 else
                    DG(K) = 0.0
                 end if
@@ -15711,7 +15711,7 @@ contains
                 else
                    DDS = DG(K)*(2.0*BARK*D+DG(K))*SCALE2
                 end if
-                DG(K) = SQRT((D*BARK)**2.0+DDS)-BARK*D
+                DG(K) = SQRT((D*BARK)**2+DDS)-BARK*D
              end if
              if ((DBH(K)+DG(K)).lt.DIAM(ISPC)) then
                 DG(K) = DIAM(ISPC)-DBH(K)
@@ -16560,7 +16560,7 @@ contains
                 if (DG(K) .lt.0.0) DG(K) = 0.0
                 if (DG(K) .gt. DGMX) DG(K) = DGMX
                 DDS = DG(K)*(2.0*BARK*D + DG(K))*SCALE2
-                DG(K) = SQRT((D*BARK)**2.0 + DDS) - BARK*D
+                DG(K) = SQRT((D*BARK)**2 + DDS) - BARK*D
              end if
              if ((DBH(K)+DG(K)).lt.DIAM(ISPC)) then
                 DG(K) = DIAM(ISPC)-DBH(K)
@@ -17370,7 +17370,7 @@ contains
                    if (DG(K) .lt.0.0) DG(K) = 0.0
                    if (DG(K) .gt. DGMX) DG(K) = DGMX
                    DDS = DG(K)*(2.0*BARK*D + DG(K))*SCALE2
-                   DG(K) = SQRT((D*BARK)**2.0 + DDS) - BARK*D
+                   DG(K) = SQRT((D*BARK)**2 + DDS) - BARK*D
                    if (DEBUG)write(JOSTND,*)'K,DG= ',K,DG(K)
 
                    !  FROM SO (ORIGINALLY FROM WC)
@@ -17431,7 +17431,7 @@ contains
                    DGSM = (DK-DKK)*BARK*XRDGRO
                    if (DGSM .lt.0.0) DGSM = 0.0
                    DDS = DGSM*(2.0*BARK*D+DGSM)*SCALE2
-                   DGSM = SQRT((D*BARK)**2.0+DDS)-BARK*D
+                   DGSM = SQRT((D*BARK)**2+DDS)-BARK*D
                    if (DGSM.lt.0.0) DGSM = 0.0
                    DGLT = DG(K)
                    DG(K) = DGSM*(1.0-XDWT)+DGLT*XDWT

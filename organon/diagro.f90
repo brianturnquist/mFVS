@@ -212,7 +212,7 @@ subroutine DG_SWO(ISPGRP,DBH,CR,SITE,SBAL1,SBA1,DG)
   !     CROWN RATIO ADJUSTMENT
 
   CRADJ = 1.0
-  if (CR .le.0.17) CRADJ = 1.0-EXP(-(25.0*CR)**2.0)
+  if (CR .le.0.17) CRADJ = 1.0-EXP(-(25.0*CR)**2)
 
   !      FULL ADJUSTMENTS
 
@@ -337,7 +337,7 @@ subroutine DG_NWO_RUN(ISPGRP,DBH,CR,SITE,SBAL1,SBA1,DG)
   !     CROWN RATIO ADJUSTMENT
 
   CRADJ = 1.0
-  if (CR .le.0.17) CRADJ = 1.0-EXP(-(25.0*CR)**2.0)
+  if (CR .le.0.17) CRADJ = 1.0-EXP(-(25.0*CR)**2)
 
   !      FULL ADJUSTMENTS
 
@@ -456,7 +456,7 @@ subroutine DG_SMC(ISPGRP,DBH,CR,SITE,SBAL1,SBA1,DG)
   !     CROWN RATIO ADJUSTMENT
 
   CRADJ = 1.0
-  if (CR .le.0.17) CRADJ = 1.0-EXP(-(25.0*CR)**2.0)
+  if (CR .le.0.17) CRADJ = 1.0-EXP(-(25.0*CR)**2)
 
   !      FULL ADJUSTMENTS
 
@@ -563,7 +563,7 @@ subroutine DG_RAP(ISPGRP,DBH,CR,SITE,SBAL1,SBA1,DG)
   !     CROWN RATIO ADJUSTMENT
 
   CRADJ = 1.0
-  if (CR .le.0.17) CRADJ = 1.0-EXP(-(25.0*CR)**2.0)
+  if (CR .le.0.17) CRADJ = 1.0-EXP(-(25.0*CR)**2)
 
   !      FULL ADJUSTMENTS
 

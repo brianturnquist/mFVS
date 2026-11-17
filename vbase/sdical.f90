@@ -259,7 +259,7 @@ subroutine SDICAL (IWHO,XMAX)
      else
         TPACRE = WK4(I)
      end if
-     SDSQ = SDSQ + (DBH(I)**2.0)*TPACRE
+     SDSQ = SDSQ + (DBH(I)**2)*TPACRE
      SPROB = SPROB+TPACRE
      110 continue
   end do
@@ -313,7 +313,7 @@ subroutine SDICAL (IWHO,XMAX)
      if (LINCL) then
         if (DBH(I).ge.DLO .and. DBH(I).lt.DHI) then
            if (DBH(I).ge.DBHZEIDE)SDIC2 = SDIC2+TPACRE*(DBH(I)/10.)**1.605
-           if (DBH(I).ge.DBHSTAGE)SDIC = SDIC + (A+B*(DBH(I)**2.0))*TPACRE
+           if (DBH(I).ge.DBHSTAGE)SDIC = SDIC + (A+B*(DBH(I)**2))*TPACRE
            if (DEBUG)write(JOSTND,*)' CALC SDIC- I,SDIC,SDIC2,JSPEC,',&
                 &'ISP,DBH,TPACRE,A,B,= ',I,SDIC,SDIC2,JSPEC,ISP(I),&
                 &DBH(I),TPACRE,A,B
@@ -447,7 +447,7 @@ subroutine SDICAL (IWHO,XMAX)
   !     STATIC COMPONENTS OF EQUATIONS SET HERE.
 
   CMPNT1 = 0.25*3.14159
-  CMPNT2 = 24.0**2.0
+  CMPNT2 = 24.0**2
   CMPNT4 = 1.5/2.0
   CMPNT5 = CMPNT1/CMPNT2
   CMPNT6 = 0.75*3.14159
@@ -464,7 +464,7 @@ subroutine SDICAL (IWHO,XMAX)
      else
         TPACRE = WK4(I)
      end if
-     CLSD2 = CLSD2 + (DBH(I)**2.0)*TPACRE
+     CLSD2 = CLSD2 + (DBH(I)**2)*TPACRE
      CLSTPA = CLSTPA + TPACRE
      320 continue
   end do
@@ -527,7 +527,7 @@ subroutine SDICAL (IWHO,XMAX)
      if (LINCL) then
         if (DBH(I).ge.DLO .and. DBH(I).lt.DHI) then
            if (DBH(I).ge.DBHSTAGE) then
-              CRD = CRD + (TPAFAC+DIAMFAC*(DBH(I)**2.0))*TPACRE
+              CRD = CRD + (TPAFAC+DIAMFAC*(DBH(I)**2))*TPACRE
            end if
            if (DEBUG)write(JOSTND,*)' CALC CRD CLASS- I,CRD,JSPEC,',&
                 &'ISP,DBH,TPACRE= ',I,CRD,JSPEC,ISP(I),DBH(I),TPACRE

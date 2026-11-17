@@ -784,7 +784,7 @@ subroutine HTGF
            HTG(I) = HTCON(ISPC)&
                 &+ HGDG2(ISPC)*DG(I)&
                 &+ HGRDG2(ISPC)*SQRT(DG(I)) + HGBA2(ISPC)*BA&
-                &+ HGBAI2(ISPC)*(((DBH(I)+DG(I))**2.0)- DBH(I)*DBH(I))&
+                &+ HGBAI2(ISPC)*(((DBH(I)+DG(I))**2)- DBH(I)*DBH(I))&
                 &+ HGLBA2(ISPC)*ALBA + HGBLT2(ISPC)*BAL&
                 &+ HGBAD2(ISPC)*BAL/DBH(I) + HGCR2(ISPC) * FLOAT(ICR(I))&
                 &+ HGDSQ(ISPC)*DBH(I)*DBH(I)
@@ -829,7 +829,7 @@ subroutine HTGF
            ! CHECK TO SEE THAT PREDICTED HTG DOES NOT EXCEED MAXIMUM BOUND
            ! FOR JP,OS, AND PM. (DID NOT HAVE A MAX HT FN FOR THESE SPECIES.
 
-           BAI = ((DBH(I) + DG(I))**2.0) - DBH(I)*DBH(I)
+           BAI = ((DBH(I) + DG(I))**2) - DBH(I)*DBH(I)
            if (ISPC.eq.42.or. ISPC.eq.6) then
               MAXHTG = -2.16 + 4.22 * ALOG(BAI)
               if (HTG(I) .gt. MAXHTG) HTG(I) = MAXHTG
@@ -845,7 +845,7 @@ subroutine HTGF
            select case (ISPC)
            case(28:33,40,43)
               HTMAX = EXP(MXHTG1(ISPC)+MXHTG2(ISPC)/&
-                   &((DBH(I)+DG(INDX)+1.)**2.0))+4.5
+                   &((DBH(I)+DG(INDX)+1.)**2))+4.5
            case default
               HTMAX = EXP(MXHTG1(ISPC)+MXHTG2(ISPC)/(DBH(I)+DG(INDX)+1.))+4.5
            end select

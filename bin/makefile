@@ -58,7 +58,10 @@ $(info mingw64: $(mingw64); FCprf: $(FCprf); CCprf: $(CCprf))
 
 export CC = gcc
 export FC = gfortran 
-export FFLAGS = $(PIC) -g -cpp -DCMP${CC} -Wall -Wno-integer-division -ffpe-trap=invalid,zero,underflow,overflow,denormal -fbacktrace 
+# Keep power rounding fixed by R04; disable optimization with FVS_FOPT=-O0.
+# Clean before switching this option, since command-line flags are not files.
+export FVS_FOPT ?= -O2 -ffp-contract=off
+export FFLAGS = $(PIC) $(FVS_FOPT) -g -cpp -DCMP${CC} -Wall -Wno-integer-division -ffpe-trap=invalid,zero,underflow,overflow,denormal -fbacktrace
 # C optimization is scoped at the individual object rules below.
 export CFLAGS = $(PIC) -DANSI -DCMP${CC} -DSQLITE_THREADSAFE=0 -DSQLITE_OMIT_LOAD_EXTENSION $(WIN) 
 export LD = gfortran
@@ -204,6 +207,12 @@ endif
 
 %.o : %.F $(includes) $(mods_mods)
 	$(FCprf)$(FC) $(FFLAGS) -c -o $@ $<
+
+# A changed default must recompile existing Fortran objects and modules too.
+ifdef sourceFileList
+fortran_objects := $(addsuffix .o,$(basename $(filter %.f %.f90 %.F90 %.F %.for,$(source))))
+$(fortran_objects) $(mods_mods): $(FVS_ROOT)/bin/makefile
+endif
 
 # SQLite optimization is isolated from Fortran, FOFEM and API glue.
 # Depend on the build rules so an existing build picks up changed C flags.

@@ -398,7 +398,7 @@ subroutine SITSET
            SIM = 0.0
         else
            SIM = A1(KSP) + 0.4396*(HTM-1.3) + A2(KSP)*LOG(HTM-1.3) -&
-                &A3(KSP)*LOG(AGEDIF) - A4(KSP)*(LOG(AGEDIF))**2.0 +&
+                &A3(KSP)*LOG(AGEDIF) - A4(KSP)*(LOG(AGEDIF))**2 +&
                 &A5(KSP)*(HTM-1.3)/(AGEDIF)
         end if
 
