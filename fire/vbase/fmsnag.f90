@@ -62,9 +62,9 @@ subroutine FMSNAG (IYR, YR1)
   integer :: I,JSP,YR1,YEAR
   integer :: IYR,NTODO,JDO,NPRM,IACTK,JYR
   real    :: DENTTL,DFIS,DFIH,DFALLN,DZERO,HTSNEW
-  real    :: OLDHTH,OLDHTS,XS,XH
+  real    :: OLDHTH,OLDHTS,XS,XH,PAIRVOL
   real    :: D,DKTIME,HTD,AGE,SNUM,RSOFT,RSMAL
-  logical :: DEBUG,LASCO
+  logical :: DEBUG,LASCO,LPAIRVOL
 
   integer :: MYACT(1)
   real    :: PRMS(6)
@@ -224,7 +224,10 @@ subroutine FMSNAG (IYR, YR1)
 
      !     Add the fallen snags to down debris pools.
 
-     call CWD1(I, DFIH, DFIS)
+     !     Carry one total-volume result only across this snag/year's pair.
+     !     CWD1V clears validity even when no snags fall; CWD2V then falls
+     !     back to its own calculation. Neither value survives this pair.
+     call CWD1V(I, DFIH, DFIS, PAIRVOL, LPAIRVOL)
 
      !     Skip the rest of the loop if no snags are left in the current record.
 
@@ -252,7 +255,7 @@ subroutine FMSNAG (IYR, YR1)
         HTIS(I) = HTSNEW
      end if
 
-     call CWD2(I, DENIH(I), DENIS(I), OLDHTH, OLDHTS)
+     call CWD2V(I, DENIH(I), DENIS(I), OLDHTH, OLDHTS, PAIRVOL, LPAIRVOL)
 
      !     If all the init-hard or init-soft snags in this record have zero
      !     height, set their density to zero.  Skip the rest of the loop if

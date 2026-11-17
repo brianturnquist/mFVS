@@ -192,6 +192,11 @@ and the immediate baseline exactly. These are controlled comparisons, not
 pristine-original Canadian simulation parity or fixes to the remaining
 model defects.
 
+R02 subsequently repairs the BC snag-call interface (section 42), allowing
+StandStructure's projections to finish with its expression warnings and
+`STOP 20`, and repairs ON's snag-volume trap (section 46). Those changes are
+separate correctness repairs; the pristine-original comparison remains 22/24.
+
 An earlier, pre-M05a scratch build with bugs 5 and 2 fixed showed two further,
 unexplained problems:
 
@@ -1204,8 +1209,7 @@ two routine definitions.
 
 **Status:** confirmed by source inspection and compiler diagnostics during
 the fresh audit on 15 November 2026 at `1cf093f3`. Present in original F77
-`c2105365:canada/fire/bc/fmsvol.f:118`; deliberately unfixed. Runtime
-volume effects and crash frequency have not been measured.
+`c2105365:canada/fire/bc/fmsvol.f:118`. Repaired by R02 on 16 November 2026.
 
 BC calls `CFTOPK(ISPC,D,H,VN,VM,VMAX,LCONE,BARK,IHT)`, but the selected
 routine expects `(ISPC,D,H,TCF,MCF,SCF,VMAX,LCONE,BARK,ITHT)`. The missing
@@ -1221,11 +1225,20 @@ original F77 and current sources, gfortran diagnosed the LOGICAL-to-REAL,
 REAL-to-LOGICAL and INTEGER-to-REAL argument mismatches. No repository
 source or compiler flags were changed.
 
-**Suggested fix:** supply the complete, correctly typed argument list and
-an explicit interface, after checking BC's intended total, merchantable and
-sawtimber-volume handling. Validate broken-top snag calculations as a
-separate bug fix rather than silently correcting the call in a shared
-volume-routine extraction.
+**Repair:** FMSVOL now passes a separate `SCF=0.0` and the complete ten-argument
+list, checked by an explicit interface. BC CFVOL/MIN returns total and
+merchantable cubic volume, without a separate sawtimber-cubic product. The
+existing total/merchantable correction, Kozak calculation and truncation
+sequence are retained; no new sawtimber standard or equation is introduced.
+
+Before repair, StandStructure traps with arguments shifted into VMAX, LCONE,
+BARK and ITHT. After repair its projections finish with the existing expression
+warnings (`STOP 20`); YSM-SkyRanch remains identical to its immediate baseline.
+The other 23 standard-suite variants match exactly. Additional BC snag/down-wood
+decks finish, and direct entry/height/merchantability cases pass with bounds
+checking and signaling-NaN initialization. The pristine-original suite still
+reports only the BC/ON differences. The independent live-tree VOLS call sites
+remain under section 54.
 
 ## 43. ON planted white pine is omitted from pine crown cover in fuel selection
 
@@ -1321,7 +1334,8 @@ the down-wood report (FMDOUT).
 
 **Status:** reproduced during F21–F22 verification on 16 November 2026 at
 `94c172ea`. Original F77 `c2105365` cannot reach this path, because its ON
-decks stop at keyword input (bug 5). Not diagnosed; deliberately unfixed.
+decks stop at keyword input (bug 5). Diagnosed and repaired by R02 on
+16 November 2026.
 
 ON's Hardwood regression deck with `FMIN`, `SNAGOUT` and `END` added before
 `PROCESS` stops with a trapped invalid floating-point operation while
@@ -1334,10 +1348,22 @@ nine-argument call (bug 42).
 **Confirmation:** the HEAD build and the F21–F24 working tree stop at the
 same statement with identical output up to that point.
 
-**Suggested fix:** inspect the CFTOPK inputs for ON snags (D, H,
-SCFSTMP/SCFTOPD and the taper coefficients AHAT/BHAT) to find the
-non-positive BEHRE argument or zero VOLT, then correct the input or guard
-the calculation as a separate model change.
+**Cause and repair:** ON's older CFVOL/OCFVOL contracts do not return the
+separate SCF that the shared FMSVOL now passes to CFTOPK. OCFVOL also returns
+positive `0.0001` total/merchantable placeholders below DBHMIN. A reproduced
+snag with D=0.100147352 inches and H=4.70686865 feet has TOPD=3.937 inches.
+Its positive merchantable placeholder reaches BEHRE with HTMRCH=-0.00758577324
+and `AHAT*HTMRCH+BHAT=-0.000192962121`, outside the logarithm's domain.
+Separately, undefined positive SCF enters an unsupported sawtimber correction
+using uninitialized Canadian sawtimber standards or a zero integral.
+
+FMSVOL now sets the unused Canadian SCF to zero and sets MCF to zero below
+the existing DBHMIN threshold before top-kill correction. Total cubic volume,
+the FFE tiny-tree cone floor, equations, standards and U.S. paths are unchanged.
+No logarithm clamp, epsilon denominator or disabled trap was added.
+Hardwood with SNAGOUT/down-wood reporting now finishes. Its ordinary standard
+suite remains identical to the BC-repaired baseline for all 24 variants;
+the pristine-original result remains 22/24, with only BC/ON differing.
 
 ## 47. BC prints undefined volume-equation codes after an invalid VOLEQNUM
 
@@ -1590,3 +1616,77 @@ it can compare `VOL(5)` meaningfully. Repository sources are unchanged.
 **Suggested fix:** decide NONSAW's intended source. With no defect input,
 `NONSAW = 0` (sawlog volume equal to gross cubic volume) appears to be the
 intent. This is a separate correctness change.
+
+## 54. Canadian live-tree VOLS still calls CFTOPK with nine arguments
+
+**Variants:** BC and ON
+
+**Location:** `canada/bc/vols.f90:143`, `canada/on/vols.f90:155`, and the
+ten-argument interface in `ie/cftopk.f90`.
+
+**Status:** confirmed by source inspection and compiler diagnostics during
+R02 on 16 November 2026. The same calls occur in pinned original F77.
+Deliberately unfixed: R02 repairs the separate snag callers in sections 42/46.
+
+Both live-tree callers still pass `(ISPC,D,H,VN,VM,VMAX,LCONE,BARK,ITRUNC(I))`,
+omitting SCF and shifting the remaining arguments as in section 42. Compiling
+ON's selected VOLS and CFTOPK together diagnoses LOGICAL/REAL/INTEGER argument
+mismatches. The calls require top kill and positive VMAX; BC's current CFVOL
+sets VMAX to zero, so its normal path does not reach this call. Runtime impact
+on ON live trees has not been measured. Standard-deck completion does not
+verify this separate broken-top path.
+
+**Suggested fix:** separately establish the Canadian live-tree volume
+contracts and pass a complete, explicitly checked interface. Do not bundle
+that model change with the snag-volume optimization.
+
+## 55. ON's shared snag wrapper passes the newer NATCRS interface to the older entry
+
+**Variant:** ON
+
+**Location:** `fire/base/fmsvol.f90` calls NATCRS for METHC 6/10, but
+`canada/on/varvol.f90:NATCRS` implements the older thirteen-argument entry.
+
+**Status:** confirmed by source inspection and a combined-translation-unit
+compiler check during O16 on 16 November 2026. The mismatch is inherited from
+the pre-modernization sources. Deliberately unfixed; the standard ON deck uses
+the native OCFVOL path instead, and runtime impact for METHC 6/10 is unmeasured.
+
+The shared call supplies the newer twenty-argument total/merchantable/sawtimber,
+biomass and live/dead contract. ON expects total, merchantable and board-foot
+volumes followed immediately by species and geometry. SCF and BBFV therefore
+shift the old species and diameter arguments, with additional incompatible
+positions later. gfortran diagnoses the REAL/INTEGER/LOGICAL mismatches when
+the actual caller and callee are compiled together.
+
+**Suggested fix:** reconcile ON's older NATCRS product meanings and argument
+contract as a separate model repair. O17 leaves this path unchanged and does
+not reuse its output. R02's supported native Canadian paths remain covered.
+
+## 56. FVSVOL debug output prints the undefined retired I1 local
+
+**Variants:** all 22 U.S. variants selecting `vvolume/fvsvol.f90`.
+
+**Location:** NATCRS's cubic and board-foot debug records in
+`vvolume/fvsvol.f90:283-284,444-445`.
+
+**Status:** reproduced during O17 on 16 November 2026, including different
+debug records from two fresh runs of the identical immediate-baseline binary.
+Present in pinned original F77. Deliberately unfixed; no model calculation
+uses this retired local.
+
+The former I1 arguments were replaced by initialized HTLOG/HTREF in 2022 and
+the I1 assignments were commented out. Both FVSVOL debug WRITE statements
+still print I1, so their final integer depends on leftover stack contents.
+One observed record prints 1 in the baseline and 0 after O17, while an
+unchanged-baseline repeat differs later in the same field. Ordinary model
+outputs and restart files match.
+
+The extended FVSVOL debug comparison therefore gives I1 a test-only zero in
+both temporary builds. This controls an undefined diagnostic input without
+changing the comparator, masking a field or shipping a model/diagnostic fix.
+Other defined debug output must still match exactly. Uncontrolled native
+FVSVOL debug output remains unsuitable for exact whole-file comparison.
+
+**Suggested fix:** remove the retired I1 field from the diagnostic text and
+argument list as a separate diagnostic repair.

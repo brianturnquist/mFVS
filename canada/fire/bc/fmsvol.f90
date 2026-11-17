@@ -46,7 +46,7 @@ subroutine FMSVOL (II, XHT, VOL2HT, DEBUG, IOUT)
   !.... VARIABLE DECLARATIONS.
 
   ! Variables
-  real    :: VM,VMAX,VN
+  real    :: VM,VMAX,VN,SCF
   logical :: LTKIL,LC,LCONE,CTKFLG,DEBUG
   logical :: LMERCHIN,LMERCH
   integer :: JS,ISPC,IT
@@ -55,6 +55,18 @@ subroutine FMSVOL (II, XHT, VOL2HT, DEBUG, IOUT)
   integer :: CRWNRTO
   real    :: XH,XD,BRATIO,D2H,X
   character(len=1) :: LIVEDEAD
+
+  !     BC returns total and merchantable cubic volume, without a separate
+  !     sawtimber-cubic result. Keep that unused correction at zero and check
+  !     the complete interface so later argument additions cannot shift it.
+  interface
+     subroutine CFTOPK(ISPC,D,H,TCF,MCF,SCF,VMAX,LCONE,BARK,ITHT)
+       implicit none
+       integer :: ISPC,ITHT
+       real :: D,H,TCF,MCF,SCF,VMAX,BARK
+       logical :: LCONE
+     end subroutine CFTOPK
+  end interface
 
   !     CALCULATE THE VOLUME
 
@@ -123,7 +135,8 @@ subroutine FMSVOL (II, XHT, VOL2HT, DEBUG, IOUT)
        &CTKFLG)
   if (CTKFLG .and. LTKIL) then
      VMAX = VN
-     call CFTOPK (ISPC,D,H,VN,VM,VMAX,LCONE,BARK,IHT)
+     SCF = 0.0
+     call CFTOPK (ISPC,D,H,VN,VM,SCF,VMAX,LCONE,BARK,IHT)
   end if
 
   !     Give some small volume to very tiny trees.

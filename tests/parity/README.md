@@ -55,9 +55,10 @@ folders that hold each version's outputs, so you can `diff` them directly.
 Original BC/ON stop during keyword input (bug 5). Both variants now have
 repaired buffers and run farther, so their pristine-original comparisons
 differ. Their outputs match the immediate pre-extraction baselines, with
-only the same ON buffer repair applied to its baseline; BC StandStructure
-still fails later. Keep those controlled comparisons separate from
-original F77 parity.
+only the same ON buffer repair applied to its baseline. R02 subsequently
+repairs BC's snag call and ON's snag-volume trap. BC StandStructure now
+finishes its projections with expression warnings and STOP 20. Keep those
+controlled comparisons separate from original F77 parity.
 
 ## What is compared
 
@@ -149,6 +150,39 @@ the documented zero-coefficient-row repair applied to that reference. Separate
 cases check the existing unknown-species fallback. This is a controlled
 corrected-baseline comparison, not pristine-original simulation parity.
 Use `--variants pn ca sn` for a focused run; the default covers all 24 variants.
+
+## Focused Canadian snag-volume repairs
+
+```sh
+python3 -B tests/parity/check_snag_volumes.py
+```
+
+This uses native BC/ON COMMON dimensions, the actual CFTOPK/Behre routines
+and small providers with the Canadian total/merchantable return contracts.
+Both FMSVOL entries, truncation/negative-height argument behavior and merchant
+selection are checked exactly. ON's below-minimum positive placeholder must
+not enter merchantable taper integration, and neither provider supplies SCF.
+Bounds checks, floating-point traps and a second signaling-NaN build catch
+undefined result reads. Native snag/debug/restart decks and the full suite
+provide separate integration coverage; this fixture does not establish
+pristine-original Canadian simulation parity.
+
+## Focused CWD-pair reuse checks
+
+```sh
+python3 -B tests/parity/check_cwd_reuse.py
+```
+
+This compares the current paired entries with frozen pre-reuse FMCWD in every
+variant's native COMMON dimensions. Debris arrays must match bit for bit, with
+the expected volume-call counts for positive/zero fall and breakage, a valid
+zero volume, hard/soft mixtures, FVS/NVEL debug modes, unaudited equation
+families and ON's unsupported NATCRS path. Independent CWD1/CWD2 and CWD3 calls
+must always calculate their own volumes. The driver uses a counting volume
+provider; the actual providers, RNG state and restart bytes are checked by
+the full suite and exercising model decks separately. FVSVOL debug-only I1
+remains undefined (bug 56); extended comparisons control it in both temporary
+builds, while native uncontrolled FVSVOL debug text remains unverified.
 
 ## Single decks
 

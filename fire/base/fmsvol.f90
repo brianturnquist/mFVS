@@ -44,6 +44,7 @@ subroutine FMSVOL (II, XHT, VOL2HT, DEBUG, IOUT)
 
   include 'FMCOM.f90'
   include 'CONTRL.f90'
+  include 'COEFFS.f90'
 
   !.... VARIABLE DECLARATIONS.
 
@@ -139,6 +140,13 @@ subroutine FMSVOL (II, XHT, VOL2HT, DEBUG, IOUT)
   else
      call CFVOL (ISPC,D,H,D2H,TCF,MCF,VMAX,LTKIL,LCONE,BARK,IHT,&
           &CTKFLG)
+  end if
+  !     ON's volume routines return only total and merchantable cubic volume.
+  !     OCFVOL uses a small positive placeholder below the merchantable DBH;
+  !     it is not a merchantable bole to integrate with the Behre taper.
+  if (LMETRICVAR) then
+     SCF = 0.0
+     if (D.lt.DBHMIN(ISPC)) MCF = 0.0
   end if
   if (CTKFLG .and. LTKIL)&
        &call CFTOPK (ISPC,D,H,TCF,MCF,SCF,VMAX,LCONE,BARK,IHT)

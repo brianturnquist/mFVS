@@ -3,6 +3,7 @@
 !=======================!
 ! FIRE-BASE $Id$
 subroutine FMCWD(IYR)
+  use DEBUG_MOD, only: ANY_DEBUG,NVEL_DEBUG => DEBUG
   implicit none
 
   !     CALLED FROM: FMSNAG
@@ -33,6 +34,8 @@ subroutine FMCWD(IYR)
   include 'FMCOM.f90'
   include 'FMFCOM.f90'
   include 'CONTRL.f90'
+  include 'DBSTK.f90'
+  include 'VOLSTD.f90'
 
   !.... Variable declarations.
 
@@ -40,7 +43,7 @@ subroutine FMCWD(IYR)
   !     LOGICAL LMERCH
 
   ! Variables
-  logical :: LCUTS,DEBUG
+  logical :: LCUTS,DEBUG,LPAIR,LREUSE,PAIRREADY
   integer :: I,J,K,L
   integer :: SP,IDCL,IYR
   integer :: ISNG,KSP
@@ -51,6 +54,7 @@ subroutine FMCWD(IYR)
   real    :: VHI(2),VLO(2),RHRAT,DIF,HICUT,LOCUT
   real    :: BP(0:9),BPH(0:9),SCNV(2),TOSOFT,DUMHT
   integer :: IDANUW,CRWNRTO
+  real    :: PAIRVOL
 
   !     Conventional breakpoints for fuel size categories.
 
@@ -154,6 +158,20 @@ subroutine FMCWD(IYR)
 
   entry CWD1(ISNG, DIH, DISIN)
 
+  LPAIR = .false.
+  goto 1010
+
+  !     FMSNAG alone carries this result to its matching CWD2V call. Reset
+  !     validity before the density guard so an early return cannot reuse a
+  !     previous snag/year. Independent CWD1 callers keep the original path.
+
+  entry CWD1V(ISNG, DIH, DISIN, PAIRVOL, PAIRREADY)
+
+  LPAIR = .true.
+  PAIRREADY = .false.
+  PAIRVOL = 0.0
+  1010 continue
+
   call DBCHK (DEBUG,'FMCWD',5,ICYC)
 
   if (DEBUG) write(JOSTND,7) 'FM-CWD1',ICYC
@@ -190,6 +208,27 @@ subroutine FMCWD(IYR)
   call FMSVL2(SP,DIAM,HTD,DUMHT,TVOLI,0,&
        &'D',.false.,.false.,JOSTND)
   !      CALL FMSVOL(I,HTD,TVOLI,.false.,JOSTND)
+  if (LPAIR) then
+     PAIRVOL = TVOLI
+     ! Preserve every diagnostic call. Legacy U.S. providers can also issue
+     ! unconditional warnings; only the audited NVEL families are reused.
+     PAIRREADY = ITOP.eq.0
+     if (VARACD.ne.'BC') then
+        PAIRREADY = PAIRREADY.and..not.ANY_DEBUG.and.&
+             &.not.NVEL_DEBUG%MODEL.and..not.NVEL_DEBUG%VOLEQ
+        if (VARACD.eq.'ON') then
+           PAIRREADY = PAIRREADY.and.METHC(SP).ne.6.and.METHC(SP).ne.10
+        else
+           PAIRREADY = PAIRREADY.and.(METHC(SP).eq.6.or.METHC(SP).eq.10)
+           PAIRREADY = PAIRREADY.and.(VEQNNC(SP)(1:3).eq.'NVB'.or.&
+                &VEQNNC(SP)(4:6).eq.'FW2'.or.VEQNNC(SP)(4:6).eq.'FW3'.or.&
+                &VEQNNC(SP)(4:6).eq.'CLK')
+           PAIRREADY = PAIRREADY.and.(VEQNNB(SP)(1:3).eq.'NVB'.or.&
+                &VEQNNB(SP)(4:6).eq.'FW2'.or.VEQNNB(SP)(4:6).eq.'FW3'.or.&
+                &VEQNNB(SP)(4:6).eq.'CLK')
+        end if
+     end if
+  end if
   if (DEBUG) write (JOSTND,*) 'I(CWD1)=',I,' HTD=',HTD,&
        &' TVOLI=',TVOLI
 
@@ -206,6 +245,20 @@ subroutine FMCWD(IYR)
   !     OLDHTH  = HEIGHT (FT) BEFORE BREAKAGE OF INITIALLY-HARD SNAGS
 
   entry CWD2(ISNG, DIH, DISIN, OLDHTH, OLDHTS)
+
+  LREUSE = .false.
+  goto 1020
+
+  !     Consume only the same FMSNAG operation's CWD1V result. No entry has
+  !     saved cache state, and the original CWD2 always computes its volume.
+
+  entry CWD2V(ISNG, DIH, DISIN, OLDHTH, OLDHTS, PAIRVOL, PAIRREADY)
+
+  LREUSE = PAIRREADY.and.ITOP.eq.0
+  if (VARACD.ne.'BC') LREUSE = LREUSE.and..not.ANY_DEBUG.and.&
+       &.not.NVEL_DEBUG%MODEL.and..not.NVEL_DEBUG%VOLEQ
+  PAIRREADY = .false.
+  1020 continue
 
   call DBCHK (DEBUG,'FMCWD',5,ICYC)
 
@@ -239,8 +292,12 @@ subroutine FMCWD(IYR)
 
   TVOLI = 0.
   DUMHT = -1.0
-  call FMSVL2(SP,DIAM,HTD,DUMHT,TVOLI,0,&
-       &'D',.false.,.false.,JOSTND)
+  if (LREUSE) then
+     TVOLI = PAIRVOL
+  else
+     call FMSVL2(SP,DIAM,HTD,DUMHT,TVOLI,0,&
+          &'D',.false.,.false.,JOSTND)
+  end if
   !      CALL FMSVOL(I,HTD,TVOLI,.false.,JOSTND)
 
   goto 1000

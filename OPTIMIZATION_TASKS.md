@@ -2,9 +2,9 @@
 
 Created 16 November 2026 from the material in [task_documents](task_documents/).
 This is a new checklist; the deleted working task list is not a source for it.
-O01–O15 and prerequisite repair R01 were completed on 16 November 2026;
+O01–O17 and prerequisite repairs R01/R02 were completed on 16 November 2026;
 O14's additional optimization trial was rejected. The remaining tasks are
-pending. R02 and R03 gate O16 and O21 respectively.
+pending. R03 gates O21.
 Creating this document does not start implementation.
 
 The objective is to reduce execution time, build time, memory use or storage
@@ -918,7 +918,7 @@ repairs bugs 51 and 11, as separate steps, before O10.
 
 ## 3. Avoid repeated snag-volume work
 
-- [ ] **R02 — Repair bugs 42 and 46 before O16.**
+- [x] **R02 — Repair bugs 42 and 46 before O16.**
   BC's FMSVOL calls the ten-argument CFTOPK with nine arguments, leaving one
   input undefined ([bug 42](FOUND_BUGS.md#42-bc-snag-volume-calls-the-ten-argument-cftopk-with-nine-arguments)).
   O16 therefore cannot show that two BC snag-volume calls are equivalent.
@@ -933,7 +933,29 @@ repairs bugs 51 and 11, as separate steps, before O10.
   defined repair can be established, record that decision here; O16 then
   proceeds with Canadian snag paths explicitly excluded.
 
-- [ ] **O16 — Audit CWD1/CWD2 volume-call equivalence.**
+  Result, 16 November 2026: verified as two separate source stages before
+  O17. BC FMSVOL now supplies a zero, unused SCF and the complete typed
+  CFTOPK argument list, with an explicit interface. CFVOL/MIN's existing
+  total/merchantable calculations and truncation sequence are retained.
+  StandStructure now finishes its projections with expression warnings and
+  `STOP 20`; YSM-SkyRanch and all other 23 variants match the preceding
+  baseline. ON's older providers leave SCF undefined and use positive
+  merchantable placeholders below DBHMIN; those reach an invalid Behre
+  logarithm for tiny trees. The shared FMSVOL now sets the unused Canadian
+  SCF to zero and MCF to zero below that existing threshold. All 24 standard
+  suites match the BC-repaired baseline after this second repair.
+
+  Native BC YSM-SkyRanch and ON Hardwood with FMIN/SNAGOUT/down-wood reports
+  complete, including separate debug and stop/restart runs. The BC stage
+  and ON stage produce identical BC extended outputs; ordinary ON outputs
+  are unchanged. Both stages retain the full pristine-original 22/24 result,
+  with only BC/ON differing. Direct checks exercise both entries, full/partial
+  and negative heights, merchantable selection and ON's tiny-tree guard:
+  21 exact cases each under default and signaling-NaN initialization, with
+  bounds checking and traps enabled. See repaired bugs 42/46 and the separate,
+  unfixed live-tree calls in bug 54. No comparison masks or equations changed.
+
+- [x] **O16 — Audit CWD1/CWD2 volume-call equivalence.**
   Prerequisite: R02. After O15, trace `fire/vbase/fmsnag.f90`, the ENTRY
   paths in `fire/base/fmcwd.f90`, FMSVL2 and other callers such as
   FMSALV/CWD3. Check hidden state, mutable arguments, diagnostics, early
@@ -941,13 +963,108 @@ repairs bugs 51 and 11, as separate steps, before O10.
   inputs. Acceptance: establish whether removing a repeated call preserves
   every observable effect; matching argument values alone are insufficient.
 
-- [ ] **O17 — Reuse volume within a proven snag call pair.**
+  Result, 16 November 2026: all 24 manifests select the shared FMCWD and
+  FMSNAG. The annual FMSNAG pair uses identical species, DBH, original death
+  height, crown ratio 0, dead flag, total-volume selection and negative XHT.
+  FMSVL2 copies species/DBH/height into locals; only XHT and the volume result
+  are mutated at this boundary. CWD1 changes debris pools, and FMSNGHT changes
+  current snag heights and sometimes the RNG seed, but neither changes the
+  volume inputs, volume standards, taper/log COMMON state or NVEL settings.
+  Repeating the eligible volume calls overwrites that state identically and
+  consumes no random numbers. The volume does not depend on the current
+  heights changed between the entries.
+
+  This is not unconditional equivalence. Legacy IE CFVOL can emit repeated
+  warnings and update return codes; FVS and NVEL debug modes emit repeated
+  diagnostics. DVE paths include the undefined reads in bugs 52/53. O17 will
+  therefore retain both calls for debugging, U.S. legacy CFVOL/OCFVOL and
+  unreviewed NVEL equation families. Reuse is limited to native Canadian
+  providers and U.S. NATCRS with NVB/FW2/FW3/CLK cubic and board-foot equation
+  families. ON's unsupported newer NATCRS interface remains excluded (bug 55).
+  CWD1's non-positive-density return supplies no reusable value; CWD2 must then
+  calculate its own. All-fallen records skip CWD2. FMSALV's independent CWD1,
+  direct CWD2 and CWD3 retain their existing interfaces and calls. No persistent
+  or cross-year state is needed: only a result and validity flag for one pair.
+
+- [x] **O17 — Reuse volume within a proven snag call pair.**
   Only if O16 establishes equivalence, reuse the computed total volume within
   the same snag/year operation. Handle pairs where either entry returns early
   and independent CWD callers. Avoid cross-year/stand caches. Acceptance:
   focused fall/breakage/salvage, multi-year, debug and restart comparisons,
   unchanged RNG state, fewer calls and a measured benefit. Retain explicit
   limits for Canadian snag paths only where R02 leaves a defect unresolved.
+
+  Result, 16 November 2026: FMSNAG now uses paired CWD1V/CWD2V entries with
+  caller-local volume/validity values. CWD1V resets validity before its density
+  guard; CWD2V consumes it and calculates independently when no reusable value
+  exists. Existing CWD1/CWD2/CWD3 callers retain their interfaces and volume
+  calculations. Eligibility follows O16's provider/equation restrictions and
+  disables reuse for FVS/NVEL diagnostics. BC adds the existing DEBUG_MOD to
+  its manifest so the shared routine can check NVEL diagnostic settings;
+  no persistent cache, COMMON layout or restart record changed.
+
+  All 24 full suites match the R02-repaired immediate baseline, including
+  SQLite contents and restart files. Direct checks pass 408 exact cases in
+  native variant dimensions, with bounds checks, traps and signaling-NaN
+  initialization: falling/broken hard and soft pools, zero returned volume,
+  either/both early returns, excluded methods, debug flags and independent
+  calls. The native Canadian report/debug/restart cases and four U.S. FMCWD
+  debug cases also match. FVSVOL debugging exposed an inherited retired-I1
+  diagnostic read (bug 56): even identical baseline runs differ there. Four
+  additional controlled debug comparisons initialize only that unused field
+  in both temporary builds; no production fix or comparison mask was added.
+  Native uncontrolled FVSVOL debug text remains an explicit coverage limit.
+  RANN call order is unchanged, and the full-suite restart comparisons retain
+  exact RNG state; the existing masks do not relax RNG bytes.
+
+  Timings compare the repaired baseline with O17, using O15's local machine,
+  toolchain and unchanged flags: one warm-up and five unprofiled runs per
+  workload/version, shuffled with seed 1602, fresh input folders and separate
+  builds/instrumentation. Values are median wall / user-plus-system CPU
+  seconds. Inventory decks follow O15's regenerated protocol and stand counts.
+
+  | Workload | Repaired baseline | O17 | Wall reduction | CWD2 calculations avoided |
+  |---|---:|---:|---:|---:|
+  | IE `ie` | 0.71 / 0.71 | 0.57 / 0.56 | 19.7% | 6,854 |
+  | IE `iet01` | 0.38 / 0.37 | 0.38 / 0.37 | 0.0% | 0 |
+  | IE `DBReportTest` | 8.62 / 8.60 | 6.41 / 6.40 | 25.6% | 97,779 |
+  | PN `pnt01` | 0.21 / 0.20 | 0.20 / 0.19 | 4.8% | 620 |
+  | CA `cat01` | 0.24 / 0.23 | 0.23 / 0.22 | 4.2% | 733 |
+  | SN `snt01` | 0.23 / 0.22 | 0.23 / 0.22 | 0.0% | 1,876 |
+  | SN `sn` | 0.27 / 0.26 | 0.26 / 0.26 | 3.7% | 1,878 |
+  | IE `iet02` stop/restart | 0.39 / 0.37 | 0.39 / 0.37 | 0.0% | 0 |
+  | PN `pnt02` stop/restart | 0.22 / 0.20 | 0.21 / 0.20 | 4.5% | 620 |
+  | CA `cat02` stop/restart | 0.25 / 0.23 | 0.23 / 0.22 | 8.0% | 733 |
+  | SN `snt02` stop/restart | 0.25 / 0.23 | 0.23 / 0.21 | 8.0% | 1,876 |
+  | Native inventory, IE | 6.25 / 6.24 | 4.61 / 4.59 | 26.2% | 76,274 |
+  | Native inventory, CA | 3.21 / 3.20 | 3.18 / 3.17 | 0.9% | 0 |
+  | Native inventory, SN | 2.49 / 2.48 | 2.13 / 2.13 | 14.5% | 50,919 |
+
+  The larger IE/SN wall ranges are separate: DBReportTest 8.45–8.74 ->
+  6.29–6.53 seconds, IE inventory 6.19–6.46 -> 4.54–4.67 and SN inventory
+  2.33–2.73 -> 1.95–2.28. Short-deck percentages are coarse at the timer's
+  0.01-second resolution; overlapping ranges on CA `cat01` and SN `snt01`/`sn`
+  do not establish separate gains. CA inventory has no eligible pairs and no
+  claimed gain. The change is retained for the demonstrated larger-workload
+  benefit, not a universal speedup. Median peak RSS spans 13.63–36.98 MiB
+  before and 13.64–36.95 MiB after; no memory reduction is claimed.
+
+  All 14 timing-workload output trees match exactly. Separate instrumented
+  runs reproduce those outputs and verify unchanged CWD1/CWD3 counts; every
+  avoided CWD2 calculation corresponds to one consumed pair result. Compiler
+  flags, equations, arithmetic/accumulation order and comparator rules are
+  unchanged. The final pristine-original command is:
+
+  ```text
+  FAIL 22/24 variants; working tree e27f4348+changes vs original c2105365; failed: bc on
+  ```
+
+  The two Canadian differences remain separate from controlled R02/O17
+  comparisons. Newly confirmed inherited defects 54–56 are recorded without
+  unrelated repairs. Source-list checks and `git diff --check` pass. Temporary
+  builds, raw measurements, debug controls and generated outputs were removed;
+  only sources, focused regression fixtures and concise documentation remain.
+  These are local test results, not production or Windows/Linux guarantees.
 
 ## 4. Evaluate compiler optimization in isolated steps
 
