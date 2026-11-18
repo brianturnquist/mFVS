@@ -1,7 +1,9 @@
 """Exercise cache identity, concurrent publication and private linked state.
 
 These are compiled behavioral cases, not expected hashes of the implementation.
-All fixture sources, objects, libraries and cache entries are disposable.
+They call the build's own launcher, bin/fvsbuild.c, compiled here with gcc as
+Make and CMake compile it. All fixture sources, objects, libraries, the
+compiled helper and cache entries are disposable.
 """
 
 from __future__ import annotations
@@ -16,12 +18,12 @@ import tempfile
 
 sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parents[2]
-LAUNCHER = ROOT / "bin/shared_compile.py"
+TOOL: Path  # compiled from bin/fvsbuild.c in main()
 
 
 def compile(directory: Path, cache: Path, compiler: str, source: str,
             kind: str, flags: tuple[str, ...] = (), groups: str = "sqlite,nvel") -> str:
-    result = subprocess.run([sys.executable, "-B", str(LAUNCHER), "--cache-dir", str(cache),
+    result = subprocess.run([str(TOOL), "compile", "--cache-dir", str(cache),
                              "--kind", kind, "--groups", groups, "--hardlink", "--",
                              compiler, *flags, "-c", "-o", Path(source).stem + ".o", source],
                             cwd=directory, capture_output=True, text=True, check=True)
@@ -110,10 +112,13 @@ def check_fortran(root: Path) -> None:
 
 
 def main() -> None:
+    global TOOL
     if not shutil.which("gcc") or not shutil.which("gfortran"):
         raise SystemExit("GNU C and Fortran compilers are required")
     with tempfile.TemporaryDirectory(prefix="mfvs-build-check-", dir="/private/tmp" if sys.platform == "darwin" else None) as name:
         root = Path(name)
+        TOOL = root / "fvsbuild"
+        subprocess.run(["gcc", "-O2", "-o", str(TOOL), str(ROOT / "bin/fvsbuild.c")], check=True)
         check_c(root)
         check_parallel(root)
         check_fortran(root)

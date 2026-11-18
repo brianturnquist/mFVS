@@ -61,7 +61,8 @@ def static_check(baseline: str) -> list[str]:
     added += git(ROOT, "ls-files", "--others", "--exclude-standard").splitlines()
     for name in sorted(set(added)):
         path = (ROOT / name).resolve()
-        if (name.lower().endswith(SOURCE_SUFFIXES) and not name.startswith("tests/")
+        # bin/ holds build tooling (bin/fvsbuild.c), not model source.
+        if (name.lower().endswith(SOURCE_SUFFIXES) and not name.startswith(("tests/", "bin/"))
                 and path.is_file() and path not in listed):
             problems.append(f"new source file is in no source list: {name}")
     return problems

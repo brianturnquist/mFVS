@@ -13,7 +13,12 @@ compilation reuse, precise dependencies, native source paths and optional
 stripped release copies are retained with the measured tradeoffs below.
 O29–O32 are also complete. DBSREFERENCE's per-species rows are now written
 in one transaction. The single-row snag, carbon, fuel and structure-class
-writers were rejected as candidates. O33–O35 remain pending.
+writers were rejected as candidates. R05 and R06 then repaired the stale
+incremental link (bug 67) and DBSREFERENCE's statement leak (bug 65). O35
+removed Python from the build, so it needs nothing the original F77 build
+did not. O33 found no compatible output-size reduction. O34's final review
+completes the checklist: wall time falls 61–81% on the measured workloads,
+and builds take 29–60% longer at `-O2`.
 Creating this document does not start implementation.
 
 The objective is to reduce execution time, build time, memory use or storage
@@ -1574,7 +1579,10 @@ repairs bugs 51 and 11, as separate steps, before O10.
 ## 5. Reduce repeated compilation and build storage
 
 These tasks can follow O02 independently of runtime work. Keep accepted
-compiler settings fixed while measuring build changes.
+compiler settings fixed while measuring build changes. O35 later replaced the
+Python helpers named below (`build_dependencies.py`, `shared_compile.py`,
+`package_release.py`) with `bin/fvsbuild.c`. Packaging now relinks stripped
+copies instead of stripping them.
 
 - [x] **O22 — Identify genuinely reusable compilation units.**
   Inventory current source lists, transitive includes, preprocessor definitions,
@@ -1998,7 +2006,71 @@ compiler settings fixed while measuring build changes.
 
 ## 7. Storage assessment and final review
 
-- [ ] **O33 — Assess optional database-output size reduction; deferred.**
+Two repairs, authorized on 17 November 2026, come first: R05 before O35,
+which replaces the receipt machinery, and R06 before O34's measurements.
+
+- [x] **R05 — Repair bug 67 before O35.**
+  After an ordinary source changed, one `make` recompiled its object without
+  relinking. Acceptance: one invocation compiles and relinks, a no-op build
+  does nothing, no program the original build did not use, and an unchanged
+  suite.
+
+  Result, 17 November 2026: after a successful compile, each `%.o.stamp`
+  recipe now rewrites its receipt with a shell redirection (`&& echo > $@`).
+  `touch` is not used, because the original build never ran it. Prepare
+  still repairs receipts left by an interrupted build.
+
+  Each edit to a built IE tree was followed by one `make`, a no-op `make` and
+  a revert:
+
+  | Edit | Before | After (`-j8` and sequential) |
+  |---|---|---|
+  | `dbsreference.f90` (ordinary unit) | 1 compile, no link; the no-op make then links both binaries | 1 compile and both links; no-op does nothing |
+  | `wdbkwtdata.inc` (include) | 8 compiles, 2 links | the same |
+  | `r9clark.f90` (shared NVEL unit) | 1 compile, 2 links | the same |
+
+  The include and NVEL cases already relinked, because shared units' launcher
+  refreshes its receipt; that is why O26's checks missed the defect. Apple's
+  GNU Make 3.81 compares whole seconds, so the edits were spaced more than a
+  second apart.
+
+  The redirection makes Make start each compile through the shell rather
+  than directly. Three alternating fresh IE builds (`-j4`, populated cache)
+  took 27.92–28.29 s wall / 86.82–87.35 s CPU, against 27.70–28.14 /
+  85.92–86.89 before: about 1% more. No-op builds are unchanged.
+
+  The full suite matches the immediate baseline `0aa06d83` **24/24**. Against
+  the original:
+
+  ```text
+  FAIL 22/24 variants; working tree 0aa06d83+changes vs original c2105365 with R04 squares; failed: bc on
+  ```
+
+  `check_build_support.py` passes.
+
+- [x] **R06 — Repair bug 65 before O34.**
+  DBSREFERENCE orphaned one prepared statement per species row for every
+  stand. Acceptance: no outstanding statements and unchanged tables, checked
+  by the transaction fixture, repeated-stand memory and the suite.
+
+  Result, 17 November 2026: DBSREFERENCE finalizes each row's statement after
+  its step. The trailing finalize, which no longer has a statement, is removed,
+  and its unused error flag moves with it. SQL text, binds, statement and row
+  order, and O32's transaction are unchanged.
+
+  `check_db_transactions.py` applies the same repair to its frozen reference,
+  so every observation is still compared exactly. It passes **6/6**: every
+  case reports no outstanding statements and a clean close, and the
+  unrepaired routine is still reported as leaking 21/42 statements and
+  returning `SQLITE_BUSY`.
+
+  One SN inventory stand was repeated with one cycle per stand. Peak RSS fell
+  from 15.8 / 29.0 / 79.9 MiB to **11.8 / 12.5 / 14.3 MiB** for 10 / 40 / 160
+  stands, with identical outputs. The full suite matches R05 **24/24**, and
+  the original again gives 22/24 (`bc on`). IE API file and memory-table runs
+  match R05 exactly.
+
+- [x] **O33 — Assess optional database-output size reduction; deferred.**
   Recheck page use, free pages and dominant tables on representative outputs.
   The transcript found a compact DB dominated by FVS_TreeList, so VACUUM was
   not a demonstrated opportunity. Acceptance for this assessment is a measured
@@ -2006,7 +2078,22 @@ compiler settings fixed while measuring build changes.
   changing schemas, omitting rows/columns or changing requested reports needs
   separate user authorization and is outside this parity-preserving checklist.
 
-- [ ] **O34 — Verify cumulative behavior and summarize measured savings.**
+  Result, 17 November 2026: **no compatible reduction is worthwhile; no
+  change.** The full suite's 37 output databases (all 24 variants, 54.8 MB)
+  all use 4,096-byte pages and have **no free pages**. In the four largest,
+  tree lists take 74–94% of the pages (FVS_DM_TreeList_Metric in BC,
+  FVS_TreeList elsewhere), and unused space inside pages is 3.5–5.7%.
+
+  Rewrites keep the schema and every row count:
+  - `VACUUM INTO` at the same page size saves nothing.
+  - Other page sizes help at most one file by 2.1% (BC at 16 KiB) and make
+    others up to 51% larger. There is no consistent gain.
+
+  The only material option changes the schema. Repeated 36-character CaseID
+  text is 14–20% of row payload (3.0 MB of DBReportTest's 16.5 MB file).
+  Normalizing it needs separate authorization and is not pursued.
+
+- [x] **O34 — Verify cumulative behavior and summarize measured savings.**
   After the selected implementation tasks, repeat the full comparison and O02
   measurements using the final tree. Summarize accepted runtime, build-time,
   memory and disk changes, rejected/deferred candidates and coverage limits
@@ -2014,7 +2101,121 @@ compiler settings fixed while measuring build changes.
   no overstated platform guarantees and no generated result archives added to
   the repository. Reorder remaining tasks from the measured final profile.
 
-- [ ] **O35 — Remove Python from the build process and remove the Rtools option; deferred.**
+  Result, 17 November 2026. The final tree is main `0aa06d83` plus R05, R06
+  and O35 (NVEL `2503c0d`). The environment was macOS 27.2.1, Apple M5 Pro,
+  GNU Fortran 15.2.0, GNU C 16.2.0, GNU Make 3.81 and SQLite 3.54.0. O02's
+  baseline (main `b344e862`, NVEL `a73e697e`, effective `-O0`) was rebuilt
+  today with the same tools, because the OS has changed since O02 and its
+  recorded numbers are not comparable.
+
+  **Comparison.** The full suite ran with no Python on the PATH. Against the
+  original it again leaves only the documented Canadian differences:
+
+  ```text
+  FAIL 22/24 variants; working tree 0aa06d83+changes vs original c2105365 with R04 squares; failed: bc on
+  ```
+
+  It also matches each recent predecessor **24/24**: O35's earlier run, R06
+  and `0aa06d83`. Changes against pristine F77 are only those already
+  documented: R04's authorized rounding, the recorded repairs and BC/ON. No
+  comparator mask or tolerance changed.
+
+  **Runtime.** Values are median wall / CPU seconds over one warmup and five
+  shuffled runs (seed 1602), each in a fresh folder, with peak RSS from
+  `/usr/bin/time -l`:
+
+  | Workload | Baseline | Final | Wall reduction | Peak RSS MiB |
+  |---|---:|---:|---:|---:|
+  | IE `ie` | 1.27 / 1.26 | 0.34 / 0.33 | 73% | 16.8 → 14.5 |
+  | IE `iet01` | 0.58 / 0.58 | 0.22 / 0.21 | 62% | 17.8 → 16.6 |
+  | IE `DBReportTest` | 14.72 / 14.71 | 3.79 / 3.78 | 74% | 36.9 → 30.2 |
+  | IE `iet02` stop/restart | 0.59 / 0.59 | 0.23 / 0.23 | 61% | 15.7 → 14.5 |
+  | IE inventory (8 stands) | 10.99 / 10.97 | 2.76 / 2.75 | 75% | 15.2 → 13.4 |
+  | PN `pnt01` | 0.56 / 0.55 | 0.11 / 0.10 | 80% | 14.5 → 12.6 |
+  | PN `pnt02` stop/restart | 0.58 / 0.56 | 0.11 / 0.10 | 81% | 15.3 → 12.9 |
+  | CA `cat01` | 0.58 / 0.56 | 0.13 / 0.12 | 78% | 13.7 → 11.5 |
+  | CA `cat02` stop/restart | 0.60 / 0.59 | 0.13 / 0.12 | 78% | 14.5 → 11.9 |
+  | CA inventory (5 stands) | 7.06 / 7.05 | 1.63 / 1.63 | 77% | 14.0 → 12.1 |
+  | SN `snt01` | 0.64 / 0.63 | 0.14 / 0.13 | 78% | 14.9 → 11.9 |
+  | SN `sn` | 0.62 / 0.62 | 0.14 / 0.13 | 77% | 17.1 → 13.0 |
+  | SN `snt02` stop/restart | 0.67 / 0.66 | 0.15 / 0.13 | 78% | 15.6 → 12.2 |
+
+  **Wall time falls 61–81%**, and no ranges overlap. Exit codes are unchanged
+  (`iet01=20`, `iet02=20,0`, `sn=10`, CA inventory `10`). The SN inventory is
+  excluded: the baseline still stops on its eighth stand at bug 6's R9 Clark
+  trap (signal 4), as in O02, while the final tree completes it in 1.14 s.
+
+  Peak memory falls 1.2–6.7 MiB per workload. Separately, R06 removes
+  per-stand memory growth: a run repeating one SN stand 160 times peaks at
+  14.3 MiB instead of 79.9. Short decks are coarse at `time`'s 0.01-second
+  resolution.
+
+  **Build and storage.** Fresh sequential `make FVSxx.setup -j4` builds, wall /
+  CPU seconds; the final IE build starts from an empty cache:
+
+  | Variant | Baseline (`-O0`, staged copies) | Final | Wall change |
+  |---|---:|---:|---:|
+  | IE | 19.49 / 56.39 | 31.19 / 100.54 | +60% |
+  | PN | 19.43 / 55.87 | 25.11 / 77.65 | +29% |
+  | CA | 17.87 / 51.29 | 23.28 / 71.25 | +30% |
+  | SN | 18.19 / 52.15 | 24.28 / 72.52 | +33% |
+
+  **Builds take 29–60% more wall time.** That is O21a's accepted `-O2` cost,
+  partly offset by O22–O27 reuse and O35. For these four variants:
+  - build directories plus cache fall from 151,872 to 93,000 KiB (−38.8%);
+  - distinct-inode file bytes fall from 143.2 MB to 68.2 MB (−52.4%);
+  - developer programs and libraries are 21.4% smaller (68.5 MB to 53.9 MB),
+    and optional release copies save another 6.1%.
+
+  **Accepted changes:**
+  - integer parsing: O04–O12;
+  - snag-volume reuse: O16–O17;
+  - compiler optimization: SQLite `-O2` (O18), and Fortran `-O2
+    -ffp-contract=off` after R04's authorized power rewrite (O21a);
+  - build: compilation reuse, precise dependencies, native sources and
+    release packaging (O22–O28), made Python-free in O35;
+  - database: DBSREFERENCE's transaction (O32);
+  - repairs R01–R06.
+
+  **Rejected or deferred:** O14's extra trial, FOFEM `-O2` (O19), O21 before
+  R04, the snag/carbon/fuel/structure-class batches (O30–O32), any
+  compatible output-size reduction (O33; CaseID normalization needs
+  authorization) and O28's separate symbol files (removed in O35).
+
+  **Final profile.** `/usr/bin/sample` ran on three fresh runs per deck.
+  Inclusive shares of main-thread samples, nested frames counted once:
+
+  | Workload | Samples | Formatted I/O % | FMSNAG % | NVBC % | NVEL PROFILE % | SQLite % |
+  |---|---:|---:|---:|---:|---:|---:|
+  | IE `ie` | 734 | 1.2 | 24.7 | 29.0 | 54.2 | 5.7 |
+  | IE `iet01` | 441 | 20.6 | 0.0 | 11.6 | 24.7 | 22.2 |
+  | IE `DBReportTest` | 10,151 | 1.8 | 35.5 | 28.6 | 53.5 | 3.6 |
+  | PN `pnt01` | 124 | 4.8 | 48.4 | 70.2 | 5.6 | 0.8 |
+  | CA `cat01` | 157 | 5.1 | 22.9 | 40.1 | 21.7 | 0.6 |
+  | SN `snt01` | 194 | 28.9 | 14.9 | 37.1 | 0.0 | 1.0 |
+  | SN `sn` | 197 | 20.3 | 16.2 | 42.1 | 0.0 | 7.1 |
+
+  NATCRS → VOLINITNVB covers 66–87% of samples (39% in `iet01`), and FMSVL2
+  42–64%. Short decks have few samples.
+
+  **No checklist tasks remain.** Ranked by this profile, possible future
+  tasks, each needing its own authorization and bit-identical verification:
+  1. the NVEL volume path (NVBC, PROFILE/TAPERMODEL) and its FMSVL2/FMSNAG
+     callers, beyond O17's paired reuse;
+  2. SN's remaining formatted I/O (20–29%; O15 points to R8PREP, MRULES and
+     R9CLARK);
+  3. `iet01`'s SQLite share (22%), mostly CutList/after-treatment SQL
+     compiled once per row (O29).
+
+  **Coverage limits:**
+  - Measurements are from this Mac only; Windows and Linux were neither
+    built nor run.
+  - BC/ON keep their documented limits on pristine-original parity, and bug
+    63's unpoisoned ENTRY paths remain a risk the suite does not reach.
+  - No result archives, logs or generated files were added to the
+    repository; temporary trees were discarded.
+
+- [x] **O35 — Remove Python from the build process and remove the Rtools option; deferred.**
   Retain the current O22–O28 implementation's behavior and optimizations while
   replacing its Python build helpers. Cover dependency preparation, shared
   compilation reuse and optional release packaging in both Make and CMake;
@@ -2027,6 +2228,104 @@ compiler settings fixed while measuring build changes.
   Complete this before O34's final review and update the build documentation
   with the actual prerequisites. **Planning only: deferred at the user's request;
   adding this task does not authorize implementation now.**
+
+  Result: authorized and completed on 17 November 2026, after R05. The user
+  added a constraint: the build may require or use nothing the original F77
+  build did not. Python is not replaced by other tools such as hashing
+  utilities, `awk`, `touch`, `mv` or `strip`.
+
+  **Implementation.** The three Python helpers are removed. `bin/fvsbuild.c`
+  ports their logic to C:
+  - `prepare` writes the dependency graph;
+  - `compile` is the reuse launcher, with the same identity, locks, atomic
+    publication and fallbacks;
+  - `install-self` is described below.
+
+  The build compiles the helper with the C compiler it already requires, and
+  the helper starts no program but the compilers. Make builds it into
+  `bin/.build_tool/`. Separate top-level makes, as `check_suite.py` runs them,
+  can build it at once; in a first version one such make failed. So each
+  compiles under a name unique to its shell, and the new helper renames
+  itself into place atomically. Six concurrent cold starts then succeeded,
+  leaving one helper.
+
+  CMake compiles the helper at configure time with the project's GNU C
+  compiler; cross-compiled projects build without reuse. The launcher stays
+  when reuse is disabled, so that read-only cached copies are removed before
+  compiling. Packaging now relinks stripped copies from the variant's objects
+  with `-Wl,-S -Wl,-x` (macOS) or `-Wl,--strip-debug`. `FVS_PACKAGE_SYMBOLS`
+  is removed, because separate symbols need `dsymutil`/`objcopy`; requesting
+  it, or packaging into `bin/` itself, stops with an explanation. Rtools is
+  dropped from the documentation, which now names MSYS2's MinGW-w64 packages
+  as an example toolchain. The source-list check treats `bin/` as build
+  tooling.
+
+  **Tools.** The new IE build succeeds with a PATH holding only `make`, `sh`,
+  `mkdir`, `cp`, `rm`, `cat`, `ls`, `sed`, `git`, `uname`, `gfortran`, `gcc`
+  and `g++`, plus the compilers' own `as`/`ld`. On macOS `as` is a script that
+  also needs `realpath`, `dirname` and its neighbouring `clang`. Original F77
+  (`c2105365`) IE builds with exactly the same PATH. The new build does not
+  need `cp`.
+
+  **Equivalence.** For all 24 variants, `prepare` writes the same
+  `dependencies.mk`, link inputs, module ownership and staged file bytes as
+  the Python helper. Only the command named in the NVEL module-restore rule
+  differs. The same holds for four variants in staged mode, and for a second
+  PN run with compiler `.d` files present. A no-op prepare takes 0.30 s
+  (Python 0.29 s). `check_build_support.py`, which now compiles the helper,
+  passes. It covers content identity, eight concurrent publishers and
+  Fortran interface invalidation.
+
+  **Incremental builds** were checked on IE:
+  - R05's cases behave identically with `-j8` and sequentially: one `make`
+    compiles and relinks, and a no-op `make` does nothing.
+  - Switching to `FVS_FOPT=-O0` and back recompiles exactly the 683 Fortran
+    units each time; the 121 NVEL units miss the cache, then hit it.
+  - Switching native/staged sources recompiles all 705 units, with 142 hits.
+  - A deleted `charmod.mod` is restored and its consumers recompile; a
+    deleted object is recompiled. Both relink.
+  - With reuse disabled, an edited NVEL unit gets a private object; with
+    reuse re-enabled it is linked from the cache again.
+
+  **Results:**
+  - The full suite, run with **no Python on the PATH**, matches R06 **24/24**.
+    Against the original:
+
+    ```text
+    FAIL 22/24 variants; working tree 0aa06d83+changes vs original c2105365 with R04 squares; failed: bc on
+    ```
+  - IE API file and memory-table runs match R06 exactly.
+  - All 24 suites match with the release copies in place of the developer
+    binaries. Exported symbols are identical, and developer binaries are
+    unchanged by packaging. The 48 copies fall from 322,430,592 to
+    302,685,568 bytes (6.1%; 5.3–6.5% each), against O28's 4.9%.
+  - GNU CMake builds IE and PN without Python; PN reuses all 142 pooled units
+    built for IE. Both suites match the Make results. On macOS they need
+    `-Wl,-undefined,dynamic_lookup` and `-DCMAKE_C_FLAGS=-Dunix`, as the
+    original CMake project would: GCC does not define `unix` there.
+
+  Fresh sequential `make FVSxx.setup -j4` builds, wall / CPU seconds. IE's
+  cache starts empty, and its O35 times include compiling the helper. The
+  first R06 IE build stalled at 639 s wall without `caffeinate` and is
+  replaced by two repetitions:
+
+  | Variant | R06 (Python) | O35 (C helper) |
+  |---|---:|---:|
+  | IE, empty cache | 32.76 / 106.40 | 31.17–31.23 / 100.17–100.35 |
+  | PN, cache populated | 27.47 / 84.91 | 24.70 / 76.01 |
+  | CA, cache populated | 24.76 / 76.62 | 22.41 / 68.63 |
+  | SN, cache populated | 22.25 / 68.17 | 20.30 / 61.81 |
+
+  Builds with a populated cache take 8–10% less wall time and about 10% less
+  CPU, because each shared unit no longer starts Python. No-op IE builds take
+  0.65 s either way. Build directories, cache and helper together use the
+  same storage (92,532 against 92,516 KiB).
+
+  **Coverage limits:** nothing was built or run on Windows or Linux. The
+  helper's Windows code (process start and quoting, `LockFileEx`,
+  `MoveFileEx`) was not even compiled. Previously a GNU Fortran compiler
+  paired with a non-GNU C compiler could still reuse under CMake; now reuse
+  needs GNU C.
 
 ## Boundaries retained from the review
 

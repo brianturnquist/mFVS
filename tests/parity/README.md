@@ -79,10 +79,13 @@ Build-support changes also have compiled behavioral checks:
 python3 -B tests/parity/check_build_support.py
 ```
 
-These cover cache identity, concurrent publication, immutable object reuse,
-separate library state and Fortran interface restoration/invalidation. Use
-temporary native builds for dependency/touch, source-list, clean/parallel and
-packaging checks. Build helpers participate in the full-suite cache identity.
+These compile the build's launcher, `bin/fvsbuild.c`, and call it as Make
+does. They cover cache identity, concurrent publication, immutable object
+reuse, separate library state and Fortran interface restoration/invalidation.
+Use temporary native builds for dependency/touch, source-list, clean/parallel
+and packaging checks. The helper's source participates in the full-suite
+cache identity, and the source-list check treats `bin/` as build tooling. These
+test tools use Python; the build they check does not.
 
 The comparator checks which files were produced, program stop codes, all text,
 and every SQLite schema and typed row. It masks only the version, date and

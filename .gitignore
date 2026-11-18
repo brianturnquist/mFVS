@@ -5,6 +5,7 @@ bin/FVS??.so
 bin/FVS??.dylib
 bin/FVS??_buildDir
 bin/.shared_build/
+bin/.build_tool/
 bin/release/
 bin/release-symbols/
 bin/BuildAll_MinGW.bat

@@ -296,14 +296,26 @@ include_directories(BEFORE ${includeDirs} "${CMAKE_CURRENT_BINARY_DIR}")
 add_library(FVSsql SHARED ${CsourceSQL})
 # Compiler-launcher reuse preserves these per-variant libraries and their state.
 # Respect an explicitly supplied launcher (for example a caller's own cache).
-if(CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_Fortran_COMPILER_ID STREQUAL "GNU")
-    find_package(Python3 3.12 COMPONENTS Interpreter REQUIRED)
-endif()
 set(FVS_SHARED_GROUPS "sqlite,fofem,nvel" CACHE STRING "Reusable GNU compilation groups; empty disables reuse")
 set(FVS_SHARED_CACHE "${FVS_ROOT}/bin/.shared_build" CACHE PATH "Disposable shared object cache")
-if(CMAKE_C_COMPILER_ID STREQUAL "GNU" AND NOT CMAKE_C_COMPILER_LAUNCHER)
-    set_property(TARGET FVSsql PROPERTY C_COMPILER_LAUNCHER
-        "${Python3_EXECUTABLE};${FVS_ROOT}/bin/shared_compile.py;--cache-dir;${FVS_SHARED_CACHE};--groups;${FVS_SHARED_GROUPS};--")
+# The launcher is bin/fvsbuild.c, compiled here with the project's GNU C
+# compiler: reuse needs nothing the original build did not. It stays in place
+# with reuse disabled, to remove read-only cached copies before compiling.
+# Cross-compiled projects cannot run it, so they compile without reuse.
+set(fvsLauncher "")
+if(CMAKE_C_COMPILER_ID STREQUAL "GNU" AND NOT CMAKE_CROSSCOMPILING)
+    set(fvsBuildTool "${CMAKE_CURRENT_BINARY_DIR}/fvsbuild${CMAKE_EXECUTABLE_SUFFIX}")
+    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${FVS_ROOT}/bin/fvsbuild.c")
+    execute_process(COMMAND "${CMAKE_C_COMPILER}" -O2 -o "${fvsBuildTool}" "${FVS_ROOT}/bin/fvsbuild.c"
+        RESULT_VARIABLE fvsToolResult OUTPUT_VARIABLE fvsToolOutput ERROR_VARIABLE fvsToolOutput)
+    if(fvsToolResult EQUAL 0)
+        set(fvsLauncher "${fvsBuildTool};compile;--cache-dir;${FVS_SHARED_CACHE};--groups;${FVS_SHARED_GROUPS};--")
+    else()
+        message(WARNING "Cannot compile bin/fvsbuild.c; building without compilation reuse.\n${fvsToolOutput}")
+    endif()
+endif()
+if(fvsLauncher AND NOT CMAKE_C_COMPILER_LAUNCHER)
+    set_property(TARGET FVSsql PROPERTY C_COMPILER_LAUNCHER "${fvsLauncher}")
 endif()
 # Match the scoped GNU Make SQLite optimization in unoptimized configurations.
 # Release/size configurations keep their existing caller-selected flags.
@@ -316,14 +328,12 @@ foreach(sqliteSource ${CsourceSQL})
 endforeach()
 
 add_library(FVSfofem SHARED ${CsourceFFE})
-if(CMAKE_C_COMPILER_ID STREQUAL "GNU" AND NOT CMAKE_C_COMPILER_LAUNCHER)
-    set_property(TARGET FVSfofem PROPERTY C_COMPILER_LAUNCHER
-        "${Python3_EXECUTABLE};${FVS_ROOT}/bin/shared_compile.py;--cache-dir;${FVS_SHARED_CACHE};--groups;${FVS_SHARED_GROUPS};--")
+if(fvsLauncher AND NOT CMAKE_C_COMPILER_LAUNCHER)
+    set_property(TARGET FVSfofem PROPERTY C_COMPILER_LAUNCHER "${fvsLauncher}")
 endif()
 add_library(FVS_${varName} SHARED ${FsourceFVS} ${FortranHeaders})
-if(CMAKE_Fortran_COMPILER_ID STREQUAL "GNU" AND NOT CMAKE_Fortran_COMPILER_LAUNCHER)
-    set_property(TARGET FVS_${varName} PROPERTY Fortran_COMPILER_LAUNCHER
-        "${Python3_EXECUTABLE};${FVS_ROOT}/bin/shared_compile.py;--cache-dir;${FVS_SHARED_CACHE};--groups;${FVS_SHARED_GROUPS};--")
+if(fvsLauncher AND CMAKE_Fortran_COMPILER_ID STREQUAL "GNU" AND NOT CMAKE_Fortran_COMPILER_LAUNCHER)
+    set_property(TARGET FVS_${varName} PROPERTY Fortran_COMPILER_LAUNCHER "${fvsLauncher}")
 endif()
 add_executable(${prgName} ${FsourceMAIN} ${FortranHeaders})
 

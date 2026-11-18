@@ -2,7 +2,8 @@
 !   tests/parity : db_transaction_cases                               !
 !=====================================================================!
 ! Direct cases for check_db_transactions.py. Each run calls DBSREFERENCE,
-! or the frozen pre-batching routine renamed BASE_DBSREFERENCE, through
+! the frozen pre-batching routine renamed BASE_DBSREFERENCE (with bug 65's
+! repair applied) or that routine unrepaired (UNREPAIRED_DBSREFERENCE), through
 ! the repository's SQLite wrapper in states that the regression decks do
 ! not reach. The cases are an outer transaction opened by the caller or
 ! left open by a failed batched writer, a prepare failure part-way
@@ -11,7 +12,7 @@
 ! observe. The script compares those lines and the final database rows
 ! between the two routines.
 !
-! usage: check <case> <base|current>; the database is out.db.
+! usage: check <case> <base|unrepaired|current>; the database is out.db.
 
 program DB_TRANSACTION_CASES
   implicit none
@@ -131,6 +132,8 @@ contains
     NPLT = STAND
     if (ROUTINE .eq. 'base') then
        call BASE_DBSREFERENCE
+    else if (ROUTINE .eq. 'unrepaired') then
+       call UNREPAIRED_DBSREFERENCE
     else
        call DBSREFERENCE
     end if

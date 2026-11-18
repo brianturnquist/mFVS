@@ -166,9 +166,12 @@ subroutine DBSREFERENCE
      iRet = fsql3_bind_double(IoutDBref,ColNumber,BFSTUMP)
 
      iRet = fsql3_step(IoutDBref)
+
+     !     FINALIZE EVERY ROW'S STATEMENT. THE WRAPPER KEEPS ONE STATEMENT
+     !     PER CONNECTION, SO THE NEXT PREPARE WOULD ORPHAN IT (BUG 65).
+     iRet = fsql3_finalize(IoutDBref)
+     if (iRet.ne.0) iInvRef = 0
   end do
-  iRet = fsql3_finalize(IoutDBref)
-  if (iRet.ne.0) iInvRef = 0
   if (ITXN.eq.0) then
      !     A COMMIT REFUSED FOR A LOCK HELD ELSEWHERE (SQLITE_BUSY) LEAVES
      !     THE TRANSACTION OPEN. ROLL IT BACK, SO LATER WRITERS DO NOT JOIN

@@ -67,7 +67,6 @@ export CFLAGS = $(PIC) -DANSI -DCMP${CC} -DSQLITE_THREADSAFE=0 -DSQLITE_OMIT_LOA
 export LD = gfortran
 
 # Reuse code only; each executable/shared library keeps its own linked state.
-export PYTHON ?= python3
 export FVS_SHARED_GROUPS ?= sqlite,fofem,nvel
 export FVS_NATIVE_SOURCES ?= 1
 .DEFAULT_GOAL := all
@@ -87,7 +86,13 @@ GIT_REMOTE_NAME := origin
 
 FVS_ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/..)
 export FVS_SHARED_CACHE ?= $(FVS_ROOT)/bin/.shared_build
-FVS_SHARED_COMPILE = $(PYTHON) "$(FVS_ROOT)/bin/shared_compile.py" --cache-dir "$(FVS_SHARED_CACHE)" --groups "$(FVS_SHARED_GROUPS)" --kind $(FVS_SHARED_KIND) --hardlink --
+# Dependency preparation and compilation reuse use bin/fvsbuild.c, built with
+# the host C compiler. The build needs nothing the original F77 build did not.
+FVS_HOST_CC ?= $(CC)
+FVS_TOOL_NAME := .build_tool/fvsbuild$(strip $(PRGSUFX))
+export FVS_TOOL = $(FVS_ROOT)/bin/$(FVS_TOOL_NAME)
+FVS_SHARED_COMPILE = "$(FVS_TOOL)" compile --cache-dir "$(FVS_SHARED_CACHE)" --groups "$(FVS_SHARED_GROUPS)" --kind $(FVS_SHARED_KIND) --hardlink --
+FVS_NVEL_COMPILE = "$(FVS_TOOL)" compile --cache-dir "$(FVS_SHARED_CACHE)" --groups "$(FVS_SHARED_GROUPS)" --kind nvel --hardlink --
 
 GIT_REMOTE  := $(shell git -C $(FVS_ROOT) remote get-url $(GIT_REMOTE_NAME) 2>/dev/null || echo unknown)
 GIT_ORG     := $(shell u="$(GIT_REMOTE)"; \
@@ -159,28 +164,49 @@ Canada : $(addsuffix $(SLIBSUFX),$(CANprgs)) $(addsuffix $(PRGSUFX),$(CANprgs))
 US : $(addsuffix $(SLIBSUFX),$(USprgs)) $(addsuffix $(PRGSUFX),$(USprgs))
 
 clean :
-	rm -frv *_buildDir .shared_build $(addsuffix $(SLIBSUFX),$(FVSprgs)) $(addsuffix $(PRGSUFX),$(FVSprgs))
+	rm -frv *_buildDir .shared_build .build_tool $(addsuffix $(SLIBSUFX),$(FVSprgs)) $(addsuffix $(PRGSUFX),$(FVSprgs))
 
-# Packaging is opt-in and writes stripped copies; it never strips build outputs.
+# Packaging is opt-in. The linker writes stripped release copies from each
+# variant's objects, in link order; developer binaries are never changed.
 FVS_PACKAGE_VARIANTS ?= $(FVSprgs)
 FVS_PACKAGE_DIR ?= $(FVS_ROOT)/bin/release
-FVS_PACKAGE_SYMBOLS ?=
-FVS_STRIP ?= $(FCprf)strip
-FVS_OBJCOPY ?= $(FCprf)objcopy
+ifeq ($(OSARCH),osx)
+FVS_RELEASE_LDFLAGS ?= -Wl,-S -Wl,-x
+else
+FVS_RELEASE_LDFLAGS ?= -Wl,--strip-debug
+endif
+export FVS_PACKAGE_DIR FVS_RELEASE_LDFLAGS
 .PHONY: package
-package: $(addsuffix $(PRGSUFX),$(FVS_PACKAGE_VARIANTS)) $(addsuffix $(SLIBSUFX),$(FVS_PACKAGE_VARIANTS))
-	$(PYTHON) "$(FVS_ROOT)/bin/package_release.py" --output "$(FVS_PACKAGE_DIR)" $(if $(FVS_PACKAGE_SYMBOLS),--symbols-dir "$(FVS_PACKAGE_SYMBOLS)") --strip "$(FVS_STRIP)" --objcopy "$(FVS_OBJCOPY)" $(addsuffix $(PRGSUFX),$(FVS_PACKAGE_VARIANTS)) $(addsuffix $(SLIBSUFX),$(FVS_PACKAGE_VARIANTS))
+package: $(addsuffix .package,$(FVS_PACKAGE_VARIANTS))
 
 ifndef sourceFileList
 
+ifneq ($(FVS_PACKAGE_SYMBOLS),)
+$(error FVS_PACKAGE_SYMBOLS was removed: separate symbols need tools the original build never used; keep the developer binaries instead)
+endif
+ifeq ($(abspath $(FVS_PACKAGE_DIR)),$(abspath $(FVS_ROOT)/bin))
+$(error FVS_PACKAGE_DIR must differ from bin/, which holds the developer binaries)
+endif
+
+# Separate top-level makes (as check_suite.py runs) may build this at once:
+# compile under a name unique to this shell, then let the new helper rename
+# itself into place atomically.
+FVS_TOOL_TEMP = .build_tool/fvsbuild-$$$$$(strip $(PRGSUFX))
+$(FVS_TOOL_NAME): fvsbuild.c
+	mkdir -pv .build_tool
+	$(FVS_HOST_CC) -O2 -o $(FVS_TOOL_TEMP) fvsbuild.c && $(FVS_TOOL_TEMP) install-self $@
+
 # Both artifacts share one setup; the child tracks selected inputs/settings.
 define variantRules
-$(1).setup: FORCE
+$(1).setup: FORCE $$(FVS_TOOL_NAME)
 $(1)$$(SLIBSUFX) $(1)$$(PRGSUFX) : $(1).setup
+$(1).package: $(1).setup
+	$$(MAKE) --file=../makefile --directory=$(1)_buildDir buildDir=$(1)_buildDir \
+	         sourceFileList=../$(1)_sourceList.txt $(1).release
 endef
 $(foreach prg,$(FVSprgs),$(eval $(call variantRules,$(prg))))
 
-.PHONY: FORCE
+.PHONY: FORCE $(addsuffix .package,$(FVSprgs))
 FORCE:
 
 %.setup : 
@@ -208,7 +234,7 @@ FVS_DEPFLAGS = -MMD -MP -MF $(basename $(1)).d -MT $(1).stamp
 # $(shell) can inherit a parent's target-specific environment on older Make.
 # Quote and pass this parse's settings explicitly, including recursive restores.
 fvs_quote = '$(subst ','"'"',$(1))'
-FVS_PREPARED := $(shell FFLAGS=$(call fvs_quote,$(FFLAGS)) CFLAGS=$(call fvs_quote,$(CFLAGS)) FC=$(call fvs_quote,$(FC)) CC=$(call fvs_quote,$(CC)) FCprf=$(call fvs_quote,$(FCprf)) CCprf=$(call fvs_quote,$(CCprf)) LD=$(call fvs_quote,$(LD)) DBLINK=$(call fvs_quote,$(DBLINK)) $(PYTHON) "$(FVS_ROOT)/bin/build_dependencies.py" --manifest "$(sourceFileList)" $(if $(filter 1,$(FVS_NATIVE_SOURCES)),--native-sources))
+FVS_PREPARED := $(shell FFLAGS=$(call fvs_quote,$(FFLAGS)) CFLAGS=$(call fvs_quote,$(CFLAGS)) FC=$(call fvs_quote,$(FC)) CC=$(call fvs_quote,$(CC)) FCprf=$(call fvs_quote,$(FCprf)) CCprf=$(call fvs_quote,$(CCprf)) LD=$(call fvs_quote,$(LD)) DBLINK=$(call fvs_quote,$(DBLINK)) "$(FVS_TOOL)" prepare --root "$(FVS_ROOT)" --manifest "$(sourceFileList)" $(if $(filter 1,$(FVS_NATIVE_SOURCES)),--native-sources))
 ifneq ($(FVS_PREPARED),ready)
 $(error Cannot prepare selected source dependencies)
 endif
@@ -232,15 +258,33 @@ else
 	$(LD) -shared -o $@ $(filter-out main.o,$(object)) $(DBLINK)
 endif
 
-# Prepare repairs missing/older receipts in one pass. Objects are side effects
-# of receipt recipes; no per-object shell is needed to test their presence.
+# Release copies: the developer link commands plus FVS_RELEASE_LDFLAGS, which
+# omit debug information (and, on macOS, local symbols) as strip did in O28.
+release_program = "$(FVS_PACKAGE_DIR)/$(variant_name)$(strip $(PRGSUFX))"
+release_library = "$(FVS_PACKAGE_DIR)/$(variant_name)$(strip $(SLIBSUFX))"
+.PHONY: $(variant_name).release
+$(variant_name).release: $(object) $(addsuffix .stamp,$(object))
+	mkdir -pv "$(FVS_PACKAGE_DIR)"
+ifeq (${OSARCH},w64)
+	$(FCprf)$(LD) -static $(FVS_RELEASE_LDFLAGS) -o $(release_program) $(object)
+	$(FCprf)$(LD) -static -shared -Wl,--export-all-symbols $(FVS_RELEASE_LDFLAGS) -o $(release_library) $(filter-out main.o,$(object))
+else
+	$(LD) $(FVS_RELEASE_LDFLAGS) -o $(release_program) $(object) $(DBLINK)
+	$(LD) -shared $(FVS_RELEASE_LDFLAGS) -o $(release_library) $(filter-out main.o,$(object)) $(DBLINK)
+endif
+
+# Objects are side effects of receipt recipes; no per-object shell is needed to
+# test their presence. Make keeps an object's time from before its order-only
+# receipt ran, so each compile rewrites its receipt (a shell redirection, not
+# another process). The link rules then relink in the same invocation (bug 67).
+# Prepare still repairs receipts left by an interrupted build.
 $(object): %.o: | %.o.stamp
 
 $(addsuffix .stamp,$(fortran_objects)): %.o.stamp:
-	$(FVS_COMPILE_PREFIX) $(FCprf)$(FC) $(FFLAGS) $(call FVS_DEPFLAGS,$(@:.stamp=)) -c -o $(@:.stamp=) "$<"
+	$(FVS_COMPILE_PREFIX) $(FCprf)$(FC) $(FFLAGS) $(call FVS_DEPFLAGS,$(@:.stamp=)) -c -o $(@:.stamp=) "$<" && echo > $@
 
 $(addsuffix .stamp,$(c_objects)): %.o.stamp:
-	$(FVS_COMPILE_PREFIX) $(CCprf)$(CC) $(CFLAGS) $(call FVS_DEPFLAGS,$(@:.stamp=)) -c -o $(@:.stamp=) "$<"
+	$(FVS_COMPILE_PREFIX) $(CCprf)$(CC) $(CFLAGS) $(call FVS_DEPFLAGS,$(@:.stamp=)) -c -o $(@:.stamp=) "$<" && echo > $@
 
 include dependencies.mk
 -include $(object:.o=.d)

@@ -1963,7 +1963,11 @@ distributed twice: proportionally, and then again by one seventh each.
 candidates. Present in pinned original F77, whose `dbsreference.f` prepares
 inside `DO I=1,MAXSP` and finalizes once after `ENDDO`. Reproduced with
 `tests/parity/check_db_transactions.py`, by both the pre-O32 and the batched
-routine. Deliberately unfixed; table contents are not affected.
+routine. Table contents are not affected. **Repaired by R06 on 17 November
+2026:** each row's statement is finalized after its step. The fixture now
+reports no outstanding statements and a clean close, while the unrepaired
+routine still shows 21/42 and `SQLITE_BUSY`. The repeated SN stand peaks at
+11.8, 12.5 and 14.3 MiB for 10, 40 and 160 stands, with identical outputs.
 
 DBSREFERENCE prepares a new INSERT for every non-blank species, which FVS
 does for every stand, and finalizes only the last one. `fsql3_prepare_`
@@ -2036,7 +2040,11 @@ final bookkeeping refinement (`c3d5201f`): `$(object): %.o: | %.o.stamp` and
 the ordinary `%.o.stamp` compile recipes.
 
 **Status:** found on 17 November 2026 while measuring O32. Introduced by
-modernization; not present in pinned original F77. Unfixed.
+modernization; not present in pinned original F77. **Repaired by R05 on 17
+November 2026:** after a successful compile each ordinary recipe rewrites its
+receipt with a shell redirection (`&& echo > $@`), adding no program the
+original build did not use. One `make` now compiles and relinks; a following
+no-op `make` does nothing. The description below records the defect.
 
 After an ordinary Fortran or C source changes, one `make FVSxx.setup`
 recompiles its object but links neither the executable nor the shared
@@ -2053,7 +2061,7 @@ the pre-change `fsql3_exec` calls.
 trees. Units compiled through `shared_compile.py` (SQLite, FOFEM and NVEL)
 publish receipts immediately and were not tested.
 
-**Suggested fix:** make each ordinary compile leave the link rules a newer
-prerequisite, without restoring a shell per object. One option is a recipe on
-the object rule so that Make re-reads its time. Recheck O26's no-op and
-incremental cases and the single-invocation relink.
+The repair gives up one optimization: the redirection makes Make start each
+compile through the shell, about 1% more fresh-build time (R05). Make's own
+rules offered no shell-free alternative: an object rule with an empty recipe
+is still never remade by an order-only receipt.

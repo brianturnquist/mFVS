@@ -11,6 +11,11 @@ codes) and the final typed rows must match exactly. A few expected facts are
 asserted, so that each case is known to reach its path. Test-only controls:
 DBSCASE is a stub (CASEID is preset), and the busy case removes the busy
 handler so a refusal is immediate. No generated files remain in the checkout.
+
+R06 repaired bug 65's orphaned statements. The frozen routine therefore gets
+the same per-row finalize, a corrected reference as in check_stkval.py, and
+the current routine must leave no statement outstanding. An unrepaired copy
+runs the two-stand case to show that the check still sees the leak.
 """
 
 from pathlib import Path
@@ -44,6 +49,12 @@ EXPECTED = {
 # FVS_InvReference rows in out.db after the program exits (None: no table).
 # In "leaked" nothing commits the transaction DBSFMCANPR left open.
 FINAL_ROWS = {"normal": 44, "outer": 22, "midfail": 2, "busy": 22, "leaked": None}
+# Bug 65 as it was: each stand left one statement per species but the last.
+UNREPAIRED_STATEMENTS = {"first stand": 21, "second stand": 42}
+LEAK = ("     iRet = fsql3_step(IoutDBref)\n  end do\n"
+        "  iRet = fsql3_finalize(IoutDBref)\n  if (iRet.ne.0) iInvRef = 0\n")
+REPAIR = ("     iRet = fsql3_step(IoutDBref)\n"
+          "     iRet = fsql3_finalize(IoutDBref)\n     if (iRet.ne.0) iInvRef = 0\n  end do\n")
 PROBES = r"""
 /* Test-only probes of the wrapper's connections. */
 #include "sqlite3.h"
@@ -73,10 +84,13 @@ int fx_count_(int *db)
 def build(directory: Path) -> Path:
     original = subprocess.check_output(
         ["git", "-C", str(ROOT), "show", f"{BASELINE}:vdbsqlite/dbsreference.f90"], text=True)
-    if original.count("subroutine DBSREFERENCE") != 1 or "Begin;" in original:
+    if (original.count("subroutine DBSREFERENCE") != 1 or "Begin;" in original
+            or original.count(LEAK) != 1):
         raise SystemExit("unexpected baseline DBSREFERENCE")
-    (directory / "original.f90").write_text(
-        original.replace("subroutine DBSREFERENCE", "subroutine BASE_DBSREFERENCE"))
+    (directory / "original.f90").write_text(original.replace(LEAK, REPAIR).replace(
+        "subroutine DBSREFERENCE", "subroutine BASE_DBSREFERENCE"))
+    (directory / "unrepaired.f90").write_text(
+        original.replace("subroutine DBSREFERENCE", "subroutine UNREPAIRED_DBSREFERENCE"))
     (directory / "probes.c").write_text(PROBES)
     manifest = ROOT / "bin" / "FVSie_sourceList.txt"
     selected = {(manifest.parent / name).name: (manifest.parent / name).resolve()
@@ -91,8 +105,8 @@ def build(directory: Path) -> Path:
                     "-DSQLITE_OMIT_LOAD_EXTENSION", "sqlite3.c", "fvsqlite3.c", "probes.c"],
                    cwd=directory, check=True)
     subprocess.run(["gfortran", "-cpp", "-DCMPgcc", "-g", "-fcheck=all", "-fbacktrace",
-                    "-ffpe-trap=invalid,zero,overflow", "original.f90", "dbsreference.f90",
-                    "dbsfmcanpr.f90", "driver.f90", "sqlite3.o", "fvsqlite3.o", "probes.o",
+                    "-ffpe-trap=invalid,zero,overflow", "original.f90", "unrepaired.f90",
+                    "dbsreference.f90", "dbsfmcanpr.f90", "driver.f90", "sqlite3.o", "fvsqlite3.o", "probes.o",
                     "-o", "check"], cwd=directory, check=True)
     return directory / "check"
 
@@ -129,6 +143,10 @@ def main() -> int:
                 problems.append("observations or database rows differ from the pre-batching routine")
             for line in observed["current"][0]:
                 match = LINE.fullmatch(line)
+                if match and match["stmts"] != "0":
+                    problems.append(f"{match['label']}: {match['stmts']} statements outstanding (bug 65)")
+                if line.startswith("close: ") and line != "close: 0":
+                    problems.append(f"{line} (bug 65 kept the connection busy)")
                 if match and (case, match["label"]) in EXPECTED:
                     actual = (int(match["auto"]), int(match["rows"]), int(match["seen"]))
                     if actual != EXPECTED[case, match["label"]]:
@@ -150,7 +168,19 @@ def main() -> int:
             if problems:
                 for line in observed["base"][0]:
                     print(f"  base {line}")
-    print(("FAIL" if failures else "PASS") + f" {len(CASES) - failures}/{len(CASES)} DBSREFERENCE cases")
+        # The same check must still see bug 65 in the unrepaired routine.
+        run = directory / "normal-unrepaired"
+        run.mkdir()
+        lines = subprocess.run([str(program), "normal", "unrepaired"], cwd=run, check=True,
+                               capture_output=True, text=True, timeout=60).stdout.splitlines()
+        leaked = {m["label"]: int(m["stmts"]) for m in map(LINE.fullmatch, lines) if m}
+        detected = leaked == UNREPAIRED_STATEMENTS and "close: 5" in lines
+        failures += not detected
+        print(("PASS" if detected else "FAIL") + " unrepaired routine leaves "
+              + ", ".join(f"{n} after the {label}" for label, n in leaked.items())
+              + " outstanding; " + next((line for line in lines if line.startswith("close")), "no close"))
+    total = len(CASES) + 1
+    print(("FAIL" if failures else "PASS") + f" {total - failures}/{total} DBSREFERENCE checks")
     return 1 if failures else 0
 
 
