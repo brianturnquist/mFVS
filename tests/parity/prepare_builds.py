@@ -29,6 +29,10 @@ import time
 ROOT = Path(__file__).resolve().parents[2]
 REFERENCE = "c210536536d81fd9b46dccb9a571f0de1e55e944"
 REFERENCE_NVEL = "38548071d5aa652bb90c7f111f86b427f798a1c9"
+# MOD02: the committed, post-correction source reference. Never apply the
+# original-F77 link/arithmetic accommodations to these already corrected files.
+CORRECTED_REFERENCE = "d31a9ff0d0a51e1f0622d0a9b8d431dd310b54c4"
+CORRECTED_REFERENCE_NVEL = "2503c0de71cb07b7d04c4d2edba38a3ff27237fc"
 
 
 def git(repo: Path, *args: str) -> str:

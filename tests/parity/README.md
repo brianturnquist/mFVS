@@ -1,4 +1,4 @@
-# Comparisons with original F77
+# Comparisons with fixed references
 
 These tools check that a change leaves model results identical to the original
 fixed-form code: main revision `c210536536d81fd9b46dccb9a571f0de1e55e944` with
@@ -52,6 +52,49 @@ cache directory at any time to start again; it holds nothing that must be kept.
 
 When a variant fails, the output names the files that differ and the cached
 folders that hold each version's outputs, so you can `diff` them directly.
+
+## Corrected reference and immediate pre-change version
+
+Use this for module/procedure/state restructuring after the selected bug fixes:
+
+```sh
+python3 -B tests/parity/check_suite.py --reference corrected --cache-dir /private/tmp/mfvs-corrected
+```
+
+The fixed corrected source is main
+`d31a9ff0d0a51e1f0622d0a9b8d431dd310b54c4`, with NVEL
+`2503c0de71cb07b7d04c4d2edba38a3ff27237fc`. Both identities are pinned in
+`prepare_builds.py`. The suite also checks HEAD as the immediate pre-change
+commit; `--immediate REV` selects another committed immediate version without
+changing that fixed reference. It derives each commit's own NVEL gitlink.
+No F77 source accommodations are applied to corrected/immediate snapshots.
+`--baseline` continues to control only the new-source membership check.
+
+Corrected/immediate text and database comparisons keep the existing exact
+rules. Restart bytes are exact after run-identifier normalization: neither
+the original TT location allowance nor the original decay-code allowance
+applies. Identical selected inputs share the existing content cache. Use a
+new cache directory when changing ambient compiler/Make switches; those
+settings are not all represented in the suite's run key.
+
+Phase 1 passed 24/24 against both corrected and immediate `d31a9ff0`, and
+reproduced the separate original-F77 22/24 result. As a negative control,
+`--immediate 3f456123 --variants bc on` kept the corrected comparison at 2/2
+but rejected both older immediate runs because they precede the selected
+expression/summary repairs. A changed year in actual IE output was also
+rejected. These controls used disposable copies of sources and outputs.
+
+The small comparator controls include text, missing files, SQLite one-ULP
+changes, restart changes in both formerly allowed fields, and unchanged
+run-identifier normalization:
+
+```sh
+python3 -B tests/parity/test_corrected_reference.py
+```
+
+The [module inventory](../../MODULE_INVENTORY.md) records the supported scope,
+known defects, restart/Canadian coverage limits and the first pilot. Run the
+original command separately to keep intentional corrections visible.
 
 Original BC/ON stop during keyword input (bug 5). Both variants now have
 separately verified keyword, volume, expression and summary repairs, so their

@@ -21,15 +21,15 @@ not authorize other arithmetic changes; see the [parity guidance](tests/parity/R
 
 ## Verifying a change
 
-The `.save` files in `tests/` contain results from upstream FVS releases, and some tests differ from them or stop with a non-zero code even in unmodified code. They therefore cannot show whether *your* change altered results. Instead, compare your build with a reference build of the pre-modernization code. One command does this for every variant:
+The `.save` files in `tests/` contain results from upstream FVS releases, and some tests differ from them or stop with a non-zero code even in unmodified code. They therefore cannot show whether *your* change altered results. For module/procedure/state restructuring, compare with the fixed post-repair source and the immediate pre-change commit:
 
 ```sh
-python3 tests/parity/check_suite.py --cache-dir /private/tmp/mfvs-suite
+python3 -B tests/parity/check_suite.py --reference corrected --cache-dir /private/tmp/mfvs-corrected
 ```
 
-It checks the source lists, builds the original code and your working tree, runs every `tests/FVSxx` makefile in each, and compares every generated file, including restart files. It prints one line per variant and a final `PASS` or `FAIL`; quote that final line in your commit or pull request. Results are cached, so the original code is built only once and variants your change does not touch are not rebuilt. See [tests/parity/README.md](tests/parity/README.md) for options.
+It checks source membership, builds the fixed corrected/immediate/current sources, runs every `tests/FVSxx` makefile and compares all generated files, including restart bytes. `--immediate REV` selects a committed pre-change version (default HEAD); `--baseline` still controls only new-source discovery. The fixed corrected reference is `d31a9ff0` with NVEL `2503c0de`. Quote both final comparison lines in the commit or pull request. Results are cached by selected inputs. See [tests/parity/README.md](tests/parity/README.md) for exact identities, comparison rules and compiler-cache limits.
 
-The steps below are what the command does, in case you need to do them by hand:
+Also run the existing command without `--reference corrected` to retain the separate original-F77 comparison. Its manual equivalent is:
 
 1. **Build the reference.** Check out upstream commit `c2105365` in a separate directory, initialize its submodule and build it:
    ```sh

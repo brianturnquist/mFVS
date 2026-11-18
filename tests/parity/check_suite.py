@@ -1,9 +1,11 @@
-"""Check a change against original F77 using the existing regression suite.
+"""Check a change against original F77 or the fixed corrected reference.
 
 For every requested variant this builds the original F77 reference (with the
 documented R04 square rewrites and BC/ON link accommodations) and the
 working tree, runs that variant's whole `tests/FVSxx` makefile in each, and
 requires every generated file to match, restart (`.stop`) files included.
+With --reference corrected, compare against the committed corrected sources
+and the immediate pre-change commit instead, without original-defect masks.
 
 Results are cached by the content of each variant's build and test inputs, so
 the reference is built once, and a variant the change does not touch is not
@@ -26,7 +28,8 @@ import sys
 sys.dont_write_bytecode = True  # keep the repository free of __pycache__
 
 from compare_outputs import UUID, compare_directories
-from prepare_builds import (REFERENCE, REFERENCE_NVEL, ROOT, archive,
+from prepare_builds import (CORRECTED_REFERENCE, CORRECTED_REFERENCE_NVEL,
+                            REFERENCE, REFERENCE_NVEL, ROOT, archive,
                             copy_working_tree, git, reference_accommodations,
                             selected_inputs, sha256)
 
@@ -79,6 +82,8 @@ def snapshot(state: str, revision: str | None, target: Path) -> None:
     nvel = git(ROOT, "ls-tree", revision, "volume/NVEL").split()[2]
     if state == "original" and nvel != REFERENCE_NVEL:
         raise RuntimeError("Original NVEL identity differs from the recorded reference")
+    if state == "corrected" and nvel != CORRECTED_REFERENCE_NVEL:
+        raise RuntimeError("Corrected NVEL identity differs from the recorded reference")
     archive(ROOT, revision, target, target.with_suffix(".tar"))
     archive(ROOT / "volume/NVEL", nvel, target / "volume/NVEL", target.with_suffix(".nvel.tar"))
     if state == "original":
@@ -135,7 +140,8 @@ def restart_bytes(path: Path) -> bytes:
                           path.read_bytes())
 
 
-def restart_difference(left: Path, right: Path, variant: str) -> str | None:
+def restart_difference(left: Path, right: Path, variant: str,
+                       original_defects: bool = True) -> str | None:
     """Compare two restart files, allowing only two documented original defects.
 
     Both are repaired in the working tree (right), but not in original F77
@@ -154,6 +160,10 @@ def restart_difference(left: Path, right: Path, variant: str) -> str | None:
     positions = [i for i in range(len(a)) if a[i] != b[i]] if a != b else []
     if not positions:
         return None
+    # Corrected and immediate references already define these values. The
+    # original's undefined TT/decay values must not hide a new regression.
+    if not original_defects:
+        return f"{len(positions)} bytes differ, first at offset {positions[0]}"
     allowed: set[int] = set()
     if variant == "tt":
         # The file starts with stop code, year, name length and name, then the
@@ -181,14 +191,16 @@ def restart_difference(left: Path, right: Path, variant: str) -> str | None:
     return None
 
 
-def compare(left: Path, right: Path, variant: str) -> list[str]:
+def compare(left: Path, right: Path, variant: str,
+            original_defects: bool = True) -> list[str]:
     """Return one line per difference between two stored runs."""
     names = [set(json.loads((side / "outputs.json").read_text())) for side in (left, right)]
-    differences = [f"{name}: only in {'original' if name in names[0] else 'working tree'}"
+    differences = [f"{name}: only in {'reference' if name in names[0] else 'working tree'}"
                    for name in sorted(names[0] ^ names[1])]
     restarts = sorted(name for name in names[0] & names[1] if name.endswith(".stop"))
     for name in restarts:
-        message = restart_difference(left / "files" / name, right / "files" / name, variant)
+        message = restart_difference(left / "files" / name, right / "files" / name,
+                                     variant, original_defects)
         if message:
             differences.append(f"{name}: {message}")
     others = [sorted(name for name in side if not name.endswith(".stop")) for side in names]
@@ -217,15 +229,26 @@ def main() -> int:
     parser.add_argument("--baseline", default="HEAD",
                         help="Commit before the change, used only to find new source files "
                              "(default HEAD, for uncommitted work)")
+    parser.add_argument("--reference", choices=("original", "corrected"), default="original",
+                        help="Simulation reference; corrected also checks the immediate version")
+    parser.add_argument("--immediate", metavar="REV",
+                        help="Immediate pre-change commit for corrected comparisons (default HEAD); "
+                             "this does not change the fixed corrected reference")
     parser.add_argument("--variants", nargs="+", choices=variants_in(ROOT), default=variants_in(ROOT))
     parser.add_argument("--workers", type=int, default=4, help="Variants built and tested at once")
     parser.add_argument("--jobs", type=int, default=4, help="Compiler processes per build")
     parser.add_argument("--static-only", action="store_true", help="Check the source lists and stop")
     args = parser.parse_args()
+    if args.immediate and args.reference != "corrected":
+        parser.error("--immediate requires --reference corrected")
     cache = args.cache_dir.resolve()
     if cache.is_relative_to(ROOT):
         parser.error("Use a cache directory outside the repository")
     baseline = git(ROOT, "rev-parse", args.baseline)
+    references = [("original", REFERENCE)]
+    if args.reference == "corrected":
+        references = [("corrected", CORRECTED_REFERENCE),
+                      ("immediate", git(ROOT, "rev-parse", args.immediate or "HEAD"))]
 
     problems = static_check(baseline)
     for problem in problems:
@@ -248,7 +271,7 @@ def main() -> int:
     (cache / "runs").mkdir(parents=True, exist_ok=True)
 
     stores: dict[tuple[str, str], Path] = {}
-    for state, revision in (("original", REFERENCE), ("candidate", None)):
+    for state, revision in references + [("candidate", None)]:
         tree = cache / "trees" / state
         print(f"Preparing {state}" + (f" {revision[:8]}" if revision else " (working tree)"), flush=True)
         snapshot(state, revision, tree)
@@ -277,29 +300,34 @@ def main() -> int:
             return 1
         shutil.rmtree(tree)
 
-    failed = []
-    for variant in args.variants:
-        original, candidate = stores["original", variant], stores["candidate", variant]
-        differences = compare(original, candidate, variant)
-        outputs = json.loads((candidate / "outputs.json").read_text())
-        note = "  (original stops at keyword input; see FOUND_BUGS.md)" if variant in ("bc", "on") else ""
-        if differences:
-            failed.append(variant)
-            print(f"FAIL {variant}: {len(differences)} of {len(outputs)} files differ{note}")
-            for line in differences[:8]:
-                print(f"       {line}")
-            if len(differences) > 8:
-                print(f"       ... and {len(differences) - 8} more")
-            print(f"       outputs to diff: original {original / 'files'}")
-            print(f"                    working tree {candidate / 'files'}")
-        else:
-            print(f"PASS {variant}: {len(outputs)} files match original F77 with R04 squares{note}")
-    dirty = "+changes" if git(ROOT, "status", "--porcelain") else ""
-    summary = (f"{len(args.variants) - len(failed)}/{len(args.variants)} variants; working tree "
-               f"{git(ROOT, 'rev-parse', '--short', 'HEAD')}{dirty} vs original {REFERENCE[:8]} "
-               "with R04 squares")
-    print(("FAIL " + summary + "; failed: " + " ".join(failed)) if failed else "PASS " + summary)
-    return 1 if failed else 0
+    any_failed = False
+    for state, revision in references:
+        failed = []
+        label = (f"original F77 {revision[:8]} with R04 squares" if state == "original"
+                 else f"{state} {revision[:8]}")
+        for variant in args.variants:
+            reference, candidate = stores[state, variant], stores["candidate", variant]
+            differences = compare(reference, candidate, variant, original_defects=state == "original")
+            outputs = json.loads((candidate / "outputs.json").read_text())
+            note = ("  (original stops at keyword input; see FOUND_BUGS.md)"
+                    if state == "original" and variant in ("bc", "on") else "")
+            if differences:
+                failed.append(variant)
+                print(f"FAIL {variant}: {len(differences)} of {len(outputs)} files differ vs {label}{note}")
+                for line in differences[:8]:
+                    print(f"       {line}")
+                if len(differences) > 8:
+                    print(f"       ... and {len(differences) - 8} more")
+                print(f"       outputs to diff: {state} {reference / 'files'}")
+                print(f"                    working tree {candidate / 'files'}")
+            else:
+                print(f"PASS {variant}: {len(outputs)} files match {label}{note}")
+        dirty = "+changes" if git(ROOT, "status", "--porcelain") else ""
+        summary = (f"{len(args.variants) - len(failed)}/{len(args.variants)} variants; working tree "
+                   f"{git(ROOT, 'rev-parse', '--short', 'HEAD')}{dirty} vs {label}")
+        print(("FAIL " + summary + "; failed: " + " ".join(failed)) if failed else "PASS " + summary)
+        any_failed |= bool(failed)
+    return 1 if any_failed else 0
 
 
 if __name__ == "__main__":

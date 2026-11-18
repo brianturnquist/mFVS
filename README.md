@@ -20,7 +20,7 @@ mFVS aims to make FVS:
 
 ## Same answers, cleaner code
 
-The guiding rule is that modernization must not change model results. Every step is checked against a fixed reference: upstream FVS commit [`c2105365`](https://github.com/USDAForestService/ForestVegetationSimulator/commit/c2105365) (the 2027.1.0 release plus one README edit, 28 October 2026), the last commit before modernization began. The regression tests are run with both versions, and their outputs must match apart from run identifiers, dates and times. R04's explicitly authorized rounding-level power rewrite is applied to both versions; the [parity guidance](tests/parity/README.md) describes this arithmetic exception.
+The guiding rule is that modernization must not change model results. Module restructuring is checked against fixed post-repair main `d31a9ff0` with NVEL `2503c0de`, and against the immediate pre-change version. The separate historical comparison uses upstream FVS commit [`c2105365`](https://github.com/USDAForestService/ForestVegetationSimulator/commit/c2105365) (the 2027.1.0 release plus one README edit, 28 October 2026), the last commit before modernization began. R04's explicitly authorized rounding-level power rewrite is applied to that original reference too. The [parity guidance](tests/parity/README.md) gives exact identities, masks, restart rules and the intentional Canadian differences.
 
 Defects found along the way are deliberately *not* fixed during modernization, because a fix changes results and would mix model changes with code restructuring. Instead they are recorded in [FOUND_BUGS.md](FOUND_BUGS.md), to be fixed later as separate, documented changes.
 

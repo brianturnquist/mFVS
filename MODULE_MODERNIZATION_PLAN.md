@@ -1,12 +1,12 @@
 # mFVS module and simulation-state modernization plan
 
-Created 16 November 2026. All tasks are pending. Creating this plan does not
-start implementation or change the existing optimization and bug-fix work.
+Created 16 November 2026. Phase 1 (MOD01–MOD05) completed 17 November 2026.
+MOD06 onward remain pending; no procedure or state migration has started.
 
-The proposed sequence is: finish or explicitly defer the optimization tasks,
-complete the separately selected bug fixes, establish a corrected reference,
-then begin this modernization. Recheck the code and these tasks at that point;
-this document describes the intended work, not a completed dependency audit.
+The optimization work and selected correctness pass now supply the entry
+baseline. Phase 1 establishes the corrected reference, source/state inventory
+and pilot below. Recheck each bounded batch against that inventory before
+implementation; later dependency and migration acceptance checks remain due.
 
 ## Objective and scope
 
@@ -24,9 +24,12 @@ clearer data flow. This plan makes no execution-time or memory-saving claim.
 
 Read [Contributing.md](Contributing.md), [FOUND_BUGS.md](FOUND_BUGS.md),
 [the parity guidance](tests/parity/README.md) and
-[OPTIMIZATION_TASKS.md](OPTIMIZATION_TASKS.md) before starting work. This plan
+[the migration inventory](MODULE_INVENTORY.md) before starting work. This plan
 refines the module step in [README.md](README.md); it does not change the
 scientific or product contract.
+
+The optimization checklist was retired in `3f456123`; its completed/rejected/
+deferred decisions remain in Git at `399dfef7:OPTIMIZATION_TASKS.md`.
 
 ## Current starting points
 
@@ -42,17 +45,17 @@ implementations and consumers before using them:
 - `pg/putstd.f90` and `pg/getstd.f90` connect simulation state to restart files.
   PUTSTD also uses EQUIVALENCE for packing and storage reuse. Moving the
   underlying declarations requires an explicit compatibility design.
-- `bin/FVSxx_sourceList.txt` selects each variant's actual sources. Make copies
-  them into a flat per-variant directory, recognizes `_mod.f90` files and has
-  broad module/include prerequisites. General module-to-module dependencies
-  need deliberate ordering before expanding the module structure.
-- The existing parity suite compares simulation output with pinned original
-  F77. Its `--baseline` option controls discovery of new source files; it does
-  **not** select a corrected simulation reference.
+- `bin/FVSxx_sourceList.txt` selects each variant's actual sources. Make now
+  compiles original paths, stages selected includes and uses `fvsbuild.c` for
+  compiler dependencies, actual module names and USE ordering. MOD06 must
+  verify the required dependency changes on Make/CMake rather than reintroduce
+  the former blanket include or filename-only module rules.
+- The parity suite defaults to pinned original F77. MOD02 adds
+  `--reference corrected`, checking the fixed corrected source and an immediate
+  commit separately. `--baseline` still controls only new-source discovery.
 
-No builds, simulation runs or performance measurements were performed to
-prepare this plan. Current counts, bug status and Canadian coverage must be
-refreshed before implementation.
+The initial plan involved no builds or simulations. Phase 1's current checks
+are recorded below. No performance improvement is claimed.
 
 ## Rules for each implementation task
 
@@ -95,13 +98,23 @@ Current original-F77 command, subject to the guidance above:
 python3 tests/parity/check_suite.py --cache-dir /private/tmp/mfvs-suite
 ```
 
+For migrations, also use the corrected/immediate comparison:
+
+```sh
+python3 -B tests/parity/check_suite.py --reference corrected --cache-dir /private/tmp/mfvs-corrected
+```
+
+`--immediate REV` selects a committed pre-change version (default HEAD) without
+changing the fixed corrected reference. If an immediate baseline includes
+uncommitted work, make its source state reproducible before beginning a batch.
+
 Use a distinct temporary cache/build location for each reference and compiler
 configuration when existing cache identities do not already distinguish them.
 A cached run does not demonstrate that a new module dependency or flag was used.
 
 ## Phase 1. Establish scope, references and dependencies
 
-- [ ] **MOD01 — Confirm the entry conditions and implementation scope.**
+- [x] **MOD01 — Confirm the entry conditions and implementation scope.**
   Review the completed optimization work and selected bug fixes. Identify any
   remaining defects that prevent meaningful module verification. Define the
   supported variants, build paths and external interfaces in scope, including
@@ -110,7 +123,18 @@ A cached run does not demonstrate that a new module dependency or flag was used.
   Acceptance: a concise scope and prerequisite list; no unfinished correctness
   change is mixed into a modernization batch.
 
-- [ ] **MOD02 — Establish corrected-reference comparisons.**
+  Result, 17 November 2026: optimization completion/defer decisions reviewed
+  from Git, followed by the committed focused bug repairs at `d31a9ff0`.
+  [MODULE_INVENTORY.md](MODULE_INVENTORY.md) defines all 24 live variants,
+  GNU Make/CMake and the executable/library/API boundaries. NVEL/ORGANON
+  internals and the foreign C/C++ libraries remain named compatibility
+  boundaries; mFVS-side adapters remain in scope. Bugs 6/8/13/17–19/36–39/
+  45–47/52–53/56/63/66 and the root-disease restart limit are assigned to
+  affected later batches, not made prerequisites for the state-free pilot.
+  Native Windows/Intel execution remains unverified. No model repair is
+  mixed into this phase.
+
+- [x] **MOD02 — Establish corrected-reference comparisons.**
   Depends on MOD01. Identify exact main and NVEL revisions and any necessary
   source changes defining the corrected reference. If the reference includes
   uncommitted work, make the exact source snapshot reproducible without
@@ -123,7 +147,24 @@ A cached run does not demonstrate that a new module dependency or flag was used.
   original-reference results and explicit BC/ON coverage limits. Matching
   early failures must never be described as simulation parity.
 
-- [ ] **MOD03 — Inventory live procedure contracts.**
+  Result, 17 November 2026: fixed main
+  `d31a9ff0d0a51e1f0622d0a9b8d431dd310b54c4` and NVEL
+  `2503c0de71cb07b7d04c4d2edba38a3ff27237fc` are pinned in
+  `tests/parity/prepare_builds.py`. The existing suite accepts
+  `--reference corrected` and `--immediate REV`; corrected and immediate
+  restarts use exact bytes after run-identifier normalization, with neither
+  original-side undefined-value allowance. Both comparisons pass **24/24**;
+  original F77 with the existing R04 accommodation remains **22/24**, with
+  BC/ON's documented intentional differences. Seven comparator controls
+  pass, and a changed year in actual IE output is rejected. The separate
+  older-immediate negative control is documented with the comparison guidance.
+  Identical source inputs reuse the existing temporary cache; these results
+  do not claim three independent builds of identical sources. BC/ON normal
+  projections are compared to the corrected source, not the failing original;
+  unexercised Canadian restart/option paths still need focused cases when an
+  affected batch reaches them. Raw builds/results remain disposable.
+
+- [x] **MOD03 — Inventory live procedure contracts.**
   Depends on MOD01. Use all current variant manifests and auxiliary targets to
   map definitions, callers, functions, ENTRY groups, procedure arguments,
   callbacks, exports and existing modules. Include conditional compilation,
@@ -132,7 +173,20 @@ A cached run does not demonstrate that a new module dependency or flag was used.
   procedure belongs to a migration family or a named compatibility boundary;
   apparent duplicate names and incompatible signatures are investigated.
 
-- [ ] **MOD04 — Inventory state, initialization and storage associations.**
+  Result, 17 November 2026: the regenerable source index covers all 1,541
+  selected paths and 1,355 Fortran compilation sources: 2,123 scoped units,
+  366 ENTRY declarations and 31 statement functions. Every definition has a
+  family or explicit library boundary, native selection and a source/scope
+  identity. Signatures, known function/direct calls, callbacks, interfaces,
+  USEs and ABI directives are indexed. DGCONS's EM argument and the other
+  native signature splits remain distinct; arrays/statement functions are
+  distinguished from same-named externals. All indexed call targets resolve
+  to definitions or named callback/foreign/runtime boundaries. See the
+  inventory for API clients and the legacy-wrapper policy. The seven source
+  inventory controls pass. This is a conservative source index; each batch
+  still owes semantic/alias/branch checks before introducing interfaces.
+
+- [x] **MOD04 — Inventory state, initialization and storage associations.**
   Depends on MOD01. Map every live COMMON block, declaration include, BLOCK
   DATA initializer, SAVE variable, DATA-initialized local, EQUIVALENCE and
   persistent module variable. Identify readers/writers, variant layouts,
@@ -141,7 +195,18 @@ A cached run does not demonstrate that a new module dependency or flag was used.
   Acceptance: proposed owners and lifetimes are identified, with unresolved
   aliasing, initialization and external-storage contracts called out explicitly.
 
-- [ ] **MOD05 — Choose module boundaries and the first pilot.**
+  Result, 17 November 2026: 99 named COMMON blocks have 103 source/scope
+  layouts, with ordered members, types, native include views and proposed
+  owners. DMMIST's fourteen fragments remain one layout. The index maps
+  consumers, references, direct assignments, possible call/I/O mutations,
+  873 persistent scopes, 38 EQUIVALENCE scopes, 87 BLOCK DATA units and the
+  three mutable NVEL module owners. The inventory records initialization/
+  reset owners, file/database resources, serializers, seed/workspace overlays
+  and exported-storage boundaries. Member-level reset/alias proofs and the
+  single-backing-store compatibility method remain explicit MOD17–MOD25 work;
+  no default initialization, synchronized copies or restart change is selected.
+
+- [x] **MOD05 — Choose module boundaries and the first pilot.**
   Depends on MOD02–MOD04. Establish dependency layers for configuration,
   state, numerical procedures, model orchestration and external adapters.
   Choose one small routine family with few callers, adequate coverage and no
@@ -150,6 +215,17 @@ A cached run does not demonstrate that a new module dependency or flag was used.
   names and scientific expressions unchanged. Acceptance: an acyclic proposed
   dependency graph and a bounded pilot; no single module imports the entire
   model merely to avoid choosing boundaries.
+
+  Result, 17 November 2026: the inventory gives an acyclic target layering
+  for configuration, state/callback contracts, helpers, foreign adapters,
+  equations/extensions, orchestration and external adapters. The first pilot
+  is **ISTFNB only**, with one internal SUMHED caller and no shared/persistent
+  state. Its future ISTFNB_MOD will have private defaults and only ISTFNB
+  public; preserve the external function through an assumed-length character
+  wrapper, and import the checked procedure only in SUMHED. The existing
+  function passes 87,381 direct string cases and five focused SUMHED title
+  cases for every variant. Keep a focused screen-output check because the
+  suite does not compare that output. MOD06/07 implementation is still pending.
 
 ## Phase 2. Make module builds reliable and prove the pattern
 
