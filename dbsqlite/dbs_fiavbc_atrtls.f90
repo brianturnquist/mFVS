@@ -35,7 +35,7 @@ subroutine DBS_FIAVBC_ATRTLS
        &DAGCARB,DMERCHCARB,DSAWCARB,DFOLICARB
 
   integer :: fsql3_tableexists,fsql3_exec,fsql3_bind_int,fsql3_step,fsql3_prepare,fsql3_bind_double,&
-       &fsql3_bind_text,fsql3_reset
+       &fsql3_bind_text,fsql3_reset,fsql3_finalize
 
   !     IF VBC AFTER TREATMENT LIST IS NOT TURNED ON OR FIAVBC NOT ACTIVE
   !     THEN JUST RETURN
@@ -262,6 +262,9 @@ subroutine DBS_FIAVBC_ATRTLS
         end do
      end if
   end do
+  ! The following report may prepare on this same connection. Finalize
+  ! before returning so it cannot orphan this statement (FOUND_BUGS.md 9).
+  iRet = fsql3_finalize(IoutDBref)
   iRet = fsql3_exec (IoutDBref,"Commit;"//Char(0))
   return
 end

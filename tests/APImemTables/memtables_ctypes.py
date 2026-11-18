@@ -337,7 +337,11 @@ def _rows(
     con: sqlite3.Connection, name: str, cols: list[str]
 ) -> Counter[tuple[object, ...]]:
     """Multiset of a table's rows over cols, with values normalized by _norm."""
-    rows = con.execute(f'SELECT {",".join(f"{c!r}" for c in cols)} FROM "{name}"')
+    # SQLite single quotes select constant text, so quote identifiers with
+    # double quotes and escape embedded quotes in both columns and tables.
+    columns = ",".join('"' + c.replace('"', '""') + '"' for c in cols)
+    table = name.replace('"', '""')
+    rows = con.execute(f'SELECT {columns} FROM "{table}"')
     return Counter(tuple(_norm(v) for v in r) for r in rows)
 
 

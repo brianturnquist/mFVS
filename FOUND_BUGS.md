@@ -1,5 +1,19 @@
 # Found Bugs
 
+For repaired entries, the reproduction and suggested-fix text records the
+pre-repair behavior; the dated status and repair paragraph give the current
+outcome. The focused 17 November pass covers sections 9, 20, 30, 31, 38,
+54, 55 and 57, plus the directly exposed section-68 prerequisite.
+
+That pass used pre-fix main `3f456123` and NVEL `2503c0de`. All 24 variants
+built; all 22 U.S. suites matched that immediate baseline exactly. BC's
+expression-only control accounts for the simulation changes; the remaining
+Canadian differences are summary indexing/schema corrections. StandStructure
+now completes without its expression-related STOP 20. The focused checks and
+IE file/memory-table API comparison pass. The original-F77 suite remains
+22/24, with only the intentional BC/ON differences and the documented R04
+reference accommodation; no comparison masks or tolerances were relaxed.
+
 The first five confirmed model defects below were found during the 2026-11 consolidation of duplicated routines. Every one is already present in the pre-modernization source (commit `c2105365`), so none was introduced by the conversion to free-form Fortran or by the consolidation. M02a–M07a resolve the interfaces in section 1 and the missing arguments in section 2, and remove DBSIN's part of section 5; M12a subsequently repairs BC INITRE/MISIN's buffers in section 5, and M17a repairs ON INITRE's buffers. The remaining defects are deliberately retained. These interface repairs define behavior where the original calls were undefined and cannot establish simulation parity on those paths. Sections 6–8 separately record a reproduced R9 Clark power trap, a historical documentation discrepancy, and ESADDT data-flow concerns requiring follow-up. Section 9 records a reproduced SQLite resource defect with scientific-output impact still unmeasured. Section 10 records a restart-file difference that modernization itself introduced, now corrected. Sections 11 and 12 record two original defects that read undefined values and so make restart files vary between runs. Sections 13 and 14 record an invalid stub diagnostic and a fuel-model fallback defect found during the safe reapplication; neither was fixed. Sections 15–18 record DGDRIV tripling/bounds defects and undefined local reads found during L05; all were preserved. Section 19 records conditional undefined local reads in KT CRATET; these were also retained. Sections 20 and 21 record two defects in the former metric copy of EVLDX found during the M01 audit; the M01a merge carried both into `base/evldx.f90` unfixed. Sections 22–24 were found during the M02–M07 audits: section 22 is an output difference in BC and ON that the free-form conversion introduced, six of whose FORMATs are now corrected by M05a/M07a; sections 23 and 24 are original defects retained in the shared STATS and FMDOUT.
 
 Unless a later status or location is given, file and line references are to the tree at commit `b5657da3` plus the then-uncommitted `VARIANTCD` change. Bugs 1 and 2 have the same root cause: FVS calls external procedures with no explicit interface, so gfortran cannot check argument lists across files. Moving these routines into modules would let the compiler catch this class of bug.
@@ -12,8 +26,9 @@ Canadian integrated simulation coverage.
 
 Sections 30–32 were found during the bounded M15–M21 audits on 15 November
 2026 at `6dcf25a6`. All three are present in the pinned original F77
-reference and remain unfixed. Direct original/current SUMOUT, SQLite and
-sampling-field checks reproduce them without relying on Canadian keyword
+reference and were retained during consolidation. Sections 30 and 31 were
+subsequently repaired in the focused correctness pass below. Direct
+original/current SUMOUT, SQLite and sampling-field checks reproduce them without relying on Canadian keyword
 input or claiming integrated simulation parity.
 
 ---
@@ -196,6 +211,9 @@ R02 subsequently repairs the BC snag-call interface (section 42), allowing
 StandStructure's projections to finish with its expression warnings and
 `STOP 20`, and repairs ON's snag-volume trap (section 46). Those changes are
 separate correctness repairs; the pristine-original comparison remains 22/24.
+The 17 November focused pass then repairs sections 20, 30 and 31:
+StandStructure completes without the expression-related STOP 20, and the
+Canadian summary cycles and ON ordinary database rows are corrected.
 
 An earlier, pre-M05a scratch build with bugs 5 and 2 fixed showed two further,
 unexplained problems:
@@ -297,8 +315,14 @@ Later work should trace OPGET's parameter-count contract and the unit/IKEEP life
 
 ## 9. FIA cut-list and after-treatment writers orphan prepared statements
 
-**Status:** reproduced on 14 November 2026 in original F77 `c2105365`, immediate baseline `fb27261e`, and the C13–C18 candidate. Deliberately unfixed. This is a resource-lifecycle defect; no scientific-output change or full-engine memory-growth measurement is claimed.
+**Status:** reproduced on 14 November 2026 in original F77 `c2105365`, immediate baseline `fb27261e`, and the C13–C18 candidate. Repaired 17 November 2026 in the focused correctness pass. This is a resource-lifecycle defect; no scientific-output change or full-engine memory-growth measurement is claimed.
 **Scope:** all 24 variants select these SQLite writers; both FIA reports must be active for the consecutive-writer reproduction.
+
+**Repair:** each writer finalizes its INSERT before COMMIT and return, so
+the next writer cannot orphan it. A direct three-pair empty-report case now
+closes cleanly; the same case fails with `SQLITE_BUSY` before the repair.
+The description below records the former leak. Transaction failure handling
+in section 66 remains separate.
 
 `vbase/cuts.f90` calls `DBS_FIAVBC_CUTLST` followed by `DBS_FIAVBC_ATRTLS`. Both writers prepare an INSERT statement, reset it after each row, and return after COMMIT without finalizing it. `fsql3_prepare_` in `dbsqlite/fvsqlite3.c` overwrites the single `stmtset[dbnum]` pointer. Preparing the after-treatment INSERT therefore loses the pointer to the cut-list statement. `DBSCLOSE` finalizes only the currently tracked statement; that cannot release the orphan. The close wrapper also clears its database slot even if `sqlite3_close` fails.
 
@@ -494,7 +518,14 @@ preceding species' value or its initial 0; that defined carry-over is unchanged.
 **Location:** `MXCNST` in `base/evldx.f90` (before the M01a merge,
 `metric/base/evldx.f90:55`)
 **Status:** reproduced by a direct call on 14 November 2026; present in
-`c2105365:metric/base/evldx.f`. Unfixed; M01a kept the limit for BC and ON.
+`c2105365:metric/base/evldx.f`. Repaired 17 November 2026 in the focused
+correctness pass; M01a had kept the limit for BC and ON.
+
+**Repair:** all variants accept exactly the constant codes 1001 through
+`MAXPRM+1000`, using OPCOM's declared PARMS extent rather than the obsolete
+metric limit. Direct real-loader checks cover all 7,999 indices and reject
+the next instruction. Before repair BC/ON fail at index 6000; IE is a
+passing control. Unit conversions and the other section-21 limits are unchanged.
 
 Numbers in `IF` and `COMPUTE` expressions are stored from the top of `PARMS`
 downward and loaded with instruction code 1000 plus the index. Upstream
@@ -845,7 +876,13 @@ Keep the repair separate from M14a's height/DBH extraction.
 `common/OUTCOM.f90` declares `IOSUM(22,MAXCY1)`.
 **Status:** confirmed during M18 by source tracing and direct
 original/current routine calls. Present in `c2105365` (including its
-`common/OUTCOM.F77`). Unfixed; full-engine impact was not measured.
+`common/OUTCOM.F77`). Repaired 17 November 2026 in the focused correctness
+pass. The historical direct-call reproduction follows.
+
+**Repair:** DISPLY passes `size(IOSUM,1)`, keeping the existing 20-field metric
+report selection. Native YSM-SkyRanch and Hardwood runs now retain the correct
+year/age sequence across their cycles, including final rows. The focused
+checks exercise these native decks separately from pristine-original parity.
 
 DISPLY stores cycles in columns of a 22-row array. SUMOUT instead advances
 20 elements between columns. The first cycle is read correctly, but every
@@ -875,8 +912,17 @@ extraction.
 **Variants:** ON, when ISUMARY=1 creates a fresh summary table.
 **Location:** the first routine in `metric/vdbsqlite/dbssumry.f90`.
 **Status:** confirmed during M21 with actual original/current DBSSUMRY
-routines linked to SQLite. Present in `c2105365`. Unfixed; DBSSUMRY2's
+routines linked to SQLite. Present in `c2105365`. Repaired 17 November 2026;
+DBSSUMRY2's
 separate ISUMARY=2 record is outside this audit.
+
+**Repair:** the ordinary writer uses its existing CREATE schema's
+TCuM/MCuM/CCuM and RTCuM/RMCuM/RCCuM columns for ON's GTV/GMV/NMV values.
+A read-only schema probe also accepts existing MCuM/SCuM/NCuM and
+RMCuM/RSCuM/RNCuM tables, retaining their column meanings and previous rows.
+Direct SQLite checks use distinct values in all six fields, two successive
+cycles, fresh tables and a pre-existing legacy row. BC is a passing control;
+no table is renamed or migrated.
 
 ON selects `FVS_Summary_East_Metric`. Its CREATE and INSERT disagree:
 
@@ -1122,8 +1168,16 @@ executed path. These reads affect debug output only.
 **Location:** REGEM in `vbase/regent.f90` (formerly `em/regent.f90`), the
 small-tree transition call; `em/dubscr.f90`.
 **Status:** source-confirmed during L03. Both contracts are present in
-pinned original F77. Deliberately preserved; prevalence and total projection
-impact have not been measured.
+pinned original F77. Repaired 17 November 2026 in the focused correctness
+pass; prevalence and total projection impact remain unmeasured.
+
+**Repair:** REGEM uses the same six-argument call as EM CROWN, with CR in
+argument four and `PCT(I)` in the unused TPCT slot. BA, AVH and RMAI remain
+the callee's PLOT values. An explicit local interface checks the contract.
+A native-stand API case stops before growth and supplies a defined missing-
+crown transition. Before repair BA is overwritten; afterwards BA remains
+85.1312714 and the tree receives a 54 percent crown ratio. The ordinary EM
+suite does not change; this case supplies the missing branch coverage.
 
 REGENT calls `DUBSCR(ISPC,DNEW,HK,BA,CR,TPCCF,AVH,RMAI)`, the eight-argument
 contract used by IE/CI. EM's selected routine instead declares
@@ -1663,7 +1717,17 @@ ten-argument interface in `ie/cftopk.f90`.
 
 **Status:** confirmed by source inspection and compiler diagnostics during
 R02 on 16 November 2026. The same calls occur in pinned original F77.
-Deliberately unfixed: R02 repairs the separate snag callers in sections 42/46.
+Repaired 17 November 2026 in the focused correctness pass; R02 had repaired
+the separate snag callers in sections 42/46.
+
+**Repair:** both live-tree callers pass a separate zero SCF and an explicitly
+checked ten-argument interface, retaining their native two-product volume
+contracts. The cone flag starts false before a provider can override it.
+ON also excludes the below-minimum merchantable placeholder from top-kill
+integration, as in section 46. A direct native ON provider/Behre oracle
+matches both VOLS products; the pre-repair caller traps in CFTOPK. BC's
+ordinary CFVOL still returns VMAX=0, so its live correction remains unreachable
+through that provider; compilation checks the repaired BC contract.
 
 Both live-tree callers still pass `(ISPC,D,H,VN,VM,VMAX,LCONE,BARK,ITRUNC(I))`,
 omitting SCF and shifting the remaining arguments as in section 42. Compiling
@@ -1686,10 +1750,16 @@ that model change with the snag-volume optimization.
 
 **Status:** confirmed by source inspection and a combined-translation-unit
 compiler check during O16 on 16 November 2026. The mismatch is inherited from
-the pre-modernization sources. Deliberately unfixed; the standard ON deck uses
-the native OCFVOL path instead, and runtime impact for METHC 6/10 is unmeasured.
+the pre-modernization sources. Repaired 17 November 2026 in the focused
+correctness pass. The standard ON deck uses the native OCFVOL path instead.
 
-The shared call supplies the newer twenty-argument total/merchantable/sawtimber,
+**Repair:** an ON-only contained adapter calls the native thirteen-argument
+entry through its explicit interface, with IT=0 for a snag. The U.S. call is
+unchanged. Direct real-NVEL cases cover methods 6 and 10, intact and truncated
+heights, and both total/merchantable FMSVL2 selections. Section 68 records the
+additional internal R9CLARK mismatch exposed while verifying this path.
+
+The shared call supplies the newer twenty-one-argument total/merchantable/sawtimber,
 biomass and live/dead contract. ON expects total, merchantable and board-foot
 volumes followed immediately by species and geometry. SCF and BBFV therefore
 shift the old species and diameter arguments, with additional incompatible
@@ -1735,7 +1805,12 @@ model or memory-table API.
 
 **Location:** `_rows`, line 340.
 
-**Status:** reproduced during O18. Deliberately unfixed in this compiler trial.
+**Status:** reproduced during O18. Repaired 17 November 2026 in the focused
+correctness pass.
+
+**Repair:** SELECT uses escaped double-quoted column and table identifiers.
+The focused check distinguishes values 10 and 99, accepts embedded quotes,
+counts duplicate rows and preserves the helper's NULL/empty-text normalization.
 
 The SELECT list formats column names with Python `repr`, which puts ordinary
 names in single quotes. SQLite interprets these as string constants, so each
@@ -2065,3 +2140,28 @@ The repair gives up one optimization: the redirection makes Make start each
 compile through the shell, about 1% more fresh-build time (R05). Make's own
 rules offered no shell-free alternative: an object rule with an empty recipe
 is still never remade by an order-only receipt.
+
+## 68. ON NATCRS omits R9CLARK's three log-count outputs
+
+**Variant:** ON, using the NATCRS entry for cruise volume.
+
+**Location:** all five R9CLARK calls in `canada/on/varvol.f90`.
+
+**Status:** found and repaired 17 November 2026 while verifying section 55.
+Present in pinned original main `c2105365`; pinned original NVEL `38548071`
+already requires the three additional outputs.
+
+The callers supplied 22 arguments, ending at UPSHT1, while R9CLARK expects
+25, including integer TLOGS and real NUMLOGP/NUMLOGS. Its writes therefore
+use addresses that were never passed. A direct ON NATCRS call with a valid
+LS/region-9 default equation for FIA species 68, D=12 inches and H=80 feet
+segfaults in the pre-repair routine. Repairing the outer FMSVOL call alone
+does not make this internal call valid.
+
+**Repair:** provide three separate local outputs at every call and declare
+the actual R9CLARK interface, including its array dimensions. The counters
+are not used to alter ON's products, equations or standards. Direct native
+NVEL/FMSVL2 cases now return positive volumes and match the separately
+called provider and Behre correction for methods 6/10, top-kill on/off and
+both product selections. The normal ON regression deck selects OCFVOL and
+does not reach this path.

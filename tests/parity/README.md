@@ -54,12 +54,12 @@ When a variant fails, the output names the files that differ and the cached
 folders that hold each version's outputs, so you can `diff` them directly.
 
 Original BC/ON stop during keyword input (bug 5). Both variants now have
-repaired buffers and run farther, so their pristine-original comparisons
-differ. Their outputs match the immediate pre-extraction baselines, with
-only the same ON buffer repair applied to its baseline. R02 subsequently
-repairs BC's snag call and ON's snag-volume trap. BC StandStructure now
-finishes its projections with expression warnings and STOP 20. Keep those
-controlled comparisons separate from original F77 parity.
+separately verified keyword, volume, expression and summary repairs, so their
+pristine-original comparisons differ. BC StandStructure now completes without
+its expression-related STOP 20. Compare restructuring against a reproducible
+corrected reference and its immediate baseline; keep those controlled
+comparisons separate from original F77 parity. The focused checks below cover
+the repaired paths that the original decks cannot reach.
 
 R04 authorizes integer `**2` in place of real-literal square exponents. The
 reference preparation applies that same mechanical rewrite to its 174 selected
@@ -105,6 +105,25 @@ are made with the unrepaired original.
 
 `check_comparator.py` checks the comparator itself against deliberately
 changed IE outputs.
+
+## Focused pre-module bug repairs
+
+```sh
+python3 -B tests/parity/check_focused_bugs.py
+```
+
+This builds BC, ON, EM and IE in a temporary snapshot. The direct driver links
+the selected real model objects and rebuilds affected routines with bounds
+checks and signaling-NaN locals (subject to bug 63's ENTRY limit). It covers
+all expression constants, fresh and legacy metric summary schemas, ON live
+top-kill and cruise snag volumes, EM's missing-crown transition and consecutive
+FIA writers. Native BC/ON decks check summary indexing across cycles. A SQLite
+check also verifies that the memory-table helper detects changed row values.
+`--build-tree /path/to/built/snapshot` explicitly reuses prepared objects.
+
+These are correctness checks against defined inputs and product contracts,
+not claims of pristine-original Canadian parity. Sections 9, 20, 30, 31, 38,
+54, 55, 57 and 68 of [FOUND_BUGS.md](../../FOUND_BUGS.md) record the repairs.
 
 ## Focused NVEL correctness repairs
 

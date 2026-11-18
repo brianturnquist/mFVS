@@ -57,8 +57,19 @@ subroutine VOLS
   real    :: DBHCLS(9)
   integer :: I,J,IPASS,ILOW,IHI,ISPC,IT,IM,ICDF,IBDF
   real    :: P,D,H,BARK,BRATIO,D2H,VN,VM,VMAX,BBFV,TEMCFI,TEMVOL,ALGSLP
-  real    :: VOLCOR,PULPV
+  real    :: VOLCOR,PULPV,SCF
   logical :: TKILL,LCONE,BTKFLG,CTKFLG
+
+  !  ON RETAINS ITS TWO CUBIC PRODUCTS. DO NOT PASS VMAX IN THE NEW
+  !  SAWTIMBER-CUBIC SLOT OR SHIFT THE REMAINING TOP-KILL ARGUMENTS.
+  interface
+     subroutine CFTOPK(ISPC,D,H,TCF,MCF,SCF,VMAX,LCONE,BARK,ITHT)
+       implicit none
+       integer :: ISPC,ITHT
+       real :: D,H,TCF,MCF,SCF,VMAX,BARK
+       logical :: LCONE
+     end subroutine CFTOPK
+  end interface
 
   !  INITIALIZE DBH CLASSES.
 
@@ -135,6 +146,10 @@ subroutine VOLS
      VN = 0.
      VM = 0.
      VMAX = 0.
+     SCF = 0.
+     ! NATCRS AND THE NATIVE ON TAPER ROUTINES DO NOT RETURN A CONE FLAG.
+     ! OTHER PROVIDERS MAY OVERRIDE THIS DEFAULT THROUGH THEIR ARGUMENT.
+     LCONE = .false.
      if (DEBUG)write(JOSTND,*)' CUBIC SECTION, I,ISPC,METHC= ',&
           &I,ISPC,METHC(ISPC)
 
@@ -151,8 +166,12 @@ subroutine VOLS
         call CFVOL (ISPC,D,H,D2H,VN,VM,VMAX,TKILL,LCONE,BARK,ITRUNC(I),&
              &CTKFLG)
      end if
-     if (CTKFLG .and. TKILL .and. VMAX .gt.0.)&
-          &call CFTOPK (ISPC,D,H,VN,VM,VMAX,LCONE,BARK,ITRUNC(I))
+     if (CTKFLG .and. TKILL .and. VMAX .gt.0.) then
+        ! OCFVOL'S BELOW-MINIMUM PLACEHOLDER IS NOT A MERCHANTABLE BOLE,
+        ! AS IN THE SNAG REPAIR (FOUND_BUGS.md 46 AND 54).
+        if (D.lt.DBHMIN(ISPC)) VM = 0.0
+        call CFTOPK (ISPC,D,H,VN,VM,SCF,VMAX,LCONE,BARK,ITRUNC(I))
+     end if
 
      !  LOAD WK1 WITH MERCH CUBIC SAWLOG VOLUME PER TREE.
 

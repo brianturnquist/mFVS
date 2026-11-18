@@ -8948,6 +8948,10 @@ contains
     logical :: LCON
     ! Regional callees retain their native argument lists.
     interface
+       subroutine DUBSCR(ISPC,D,H,CR,TPCT,TPCCF)
+         integer :: ISPC
+         real :: D,H,CR,TPCT,TPCCF
+       end subroutine DUBSCR
        subroutine SMHTGF(ISPC,I,HTGRTH,CR,TPCCF)
          integer :: ISPC
          integer :: I
@@ -9963,7 +9967,9 @@ contains
              TPCCF = PCCF(IITRE)
              if (DNEW.ge.3.0) then
                 if (ICRK .eq.0) then
-                   call DUBSCR(ISPC,DNEW,HK,BA,CR,TPCCF,AVH,RMAI)
+                   ! EM reads BA, AVH and RMAI from PLOT. Match its CROWN
+                   ! caller: return CR in argument 4, never into stand BA.
+                   call DUBSCR(ISPC,DNEW,HK,CR,PCT(I),TPCCF)
                    ICRK = IFIX(CR*100. + 0.5)
                 end if
                 ICR(K) = ICRK

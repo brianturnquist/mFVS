@@ -49,9 +49,20 @@ subroutine VOLS
   logical :: DEBUG
   real    :: SPCCC(MAXSP,3),SPCAC(MAXSP,3),SPCBV(MAXSP,3),SPCMC(MAXSP,3)
   real    :: DBHCLS(9),P,D,H,BARK,BRATIO
-  real    :: D2H,VM,VN,VMAX,ALGSLP,VOLCOR
+  real    :: D2H,VM,VN,VMAX,ALGSLP,VOLCOR,SCF
   integer :: I,J,IPASS,ILOW,IHI,ISPC,IT,IM,ICDF
   logical :: TKILL,LCONE,CTKFLG
+
+  !  BC HAS NO SEPARATE SAWTIMBER-CUBIC PRODUCT. KEEP ITS CORRECTION
+  !  ZERO AND CHECK THE COMPLETE TOP-KILL CONTRACT (FOUND_BUGS.md 54).
+  interface
+     subroutine CFTOPK(ISPC,D,H,TCF,MCF,SCF,VMAX,LCONE,BARK,ITHT)
+       implicit none
+       integer :: ISPC,ITHT
+       real :: D,H,TCF,MCF,SCF,VMAX,BARK
+       logical :: LCONE
+     end subroutine CFTOPK
+  end interface
 
   !  INITIALIZE DBH CLASSES.
 
@@ -131,6 +142,8 @@ subroutine VOLS
      VN = 0.0
      VM = 0.0
      VMAX = 0.0
+     SCF = 0.0
+     LCONE = .false.
      if (DEBUG)write(JOSTND,*)' CUBIC SECTION, I,ISPC,METHC= ',&
           &I,ISPC,METHC(ISPC)
 
@@ -140,7 +153,7 @@ subroutine VOLS
      call CFVOL (ISPC,D,H,D2H,VN,VM,VMAX,TKILL,LCONE,BARK,ITRUNC(I),&
           &CTKFLG)
      if (CTKFLG .and. TKILL .and. VMAX .gt.0.)&
-          &call CFTOPK (ISPC,D,H,VN,VM,VMAX,LCONE,BARK,ITRUNC(I))
+          &call CFTOPK (ISPC,D,H,VN,VM,SCF,VMAX,LCONE,BARK,ITRUNC(I))
 
      !  LOAD WK1 WITH MERCH CUBIC VOLUME PER TREE.
 

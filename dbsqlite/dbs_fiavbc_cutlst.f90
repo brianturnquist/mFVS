@@ -36,7 +36,7 @@ subroutine DBS_FIAVBC_CUTLST()
        &DAGCARB,DMERCHCARB,DSAWCARB,DFOLICARB
 
   integer :: fsql3_tableexists,fsql3_exec,fsql3_bind_int,fsql3_step,fsql3_prepare,fsql3_bind_double,&
-       &fsql3_bind_text,fsql3_reset
+       &fsql3_bind_text,fsql3_reset,fsql3_finalize
 
   !     IF IVBCCUTLST IS NOT TURNED ON OR THE FIAVBC NOT ACTIVE
   !     THEN JUST RETURN
@@ -263,6 +263,9 @@ subroutine DBS_FIAVBC_CUTLST()
         end do
      end if
   end do
+  ! Release this writer's statement before the next writer replaces the
+  ! connection's single tracked statement (FOUND_BUGS.md 9).
+  iRet = fsql3_finalize(IoutDBref)
   IRCODE = fsql3_exec (IoutDBref,"Commit;"//Char(0))
   return
 end

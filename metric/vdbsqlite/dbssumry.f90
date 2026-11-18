@@ -69,6 +69,7 @@ subroutine DBSSUMRY(IYEAR,IAGE,NPLT,ITPA,IBA,ISDI,ICCF,&
   double precision :: FQMDB,FATQMDB,YMAIB
   real    :: FQMD,FATQMD,YMAI
   character(len=2000) :: SQLStmtStr
+  character(len=32) :: CVOLS,RVOLS
   character(len=*) :: NPLT
 
   !OMMONS END
@@ -180,10 +181,26 @@ subroutine DBSSUMRY(IYEAR,IAGE,NPLT,ITPA,IBA,ISDI,ICCF,&
        &(VARACD .eq. 'NE') .or. (VARACD .eq. 'SN') .or.&
        &(VARACD .eq. 'ON')) then
 
+     !     KEEP THE EXISTING CREATE SCHEMA: TCuM/MCuM/CCuM ARE ON'S
+     !     GTV/GMV/NMV IN THAT ORDER. ALSO ACCEPT AN EXISTING TABLE WITH
+     !     THE FORMER INSERT'S MCuM/SCuM/NCuM NAMES, WITHOUT RENAMING OR
+     !     REINTERPRETING ITS PREVIOUS ROWS (FOUND_BUGS.md 31).
+     SQLStmtStr = 'SELECT TCuM,MCuM,CCuM,RTCuM,RMCuM,RCCuM '//&
+          &'FROM FVS_Summary_East_Metric LIMIT 0;'//CHAR(0)
+     iRet = fsql3_prepare(IoutDBref,SQLStmtStr)
+     if (iRet.eq.0) then
+        iRet = fsql3_finalize(IoutDBref)
+        CVOLS = 'TCuM,MCuM,CCuM,'
+        RVOLS = 'RTCuM,RMCuM,RCCuM,'
+     else
+        CVOLS = 'MCuM,SCuM,NCuM,'
+        RVOLS = 'RMCuM,RSCuM,RNCuM,'
+     end if
+
      write(SQLStmtStr,*)'INSERT INTO FVS_Summary_East_Metric',&
           &' (CaseID,StandID,',&
-          &'Year,Age,Tph,BA,SDI,CCF,TopHt,QMD,MCuM,SCuM,NCuM,',&
-          &'RTph,RMCuM,RSCuM,RNCuM,ATBA,ATSDI,ATCCF,ATTopHt,',&
+          &'Year,Age,Tph,BA,SDI,CCF,TopHt,QMD,',TRIM(CVOLS),&
+          &'RTph,',TRIM(RVOLS),'ATBA,ATSDI,ATCCF,ATTopHt,',&
           &'ATQMD,PrdLen,Acc,Mort,MAI,ForTyp,SizeCls,StkCls)',&
           &'VALUES(''',CASEID,''',''',TRIM(NPLT),''',?,?,?,',&
           &'?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);'

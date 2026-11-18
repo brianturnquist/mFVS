@@ -130,10 +130,14 @@ subroutine FMSVOL (II, XHT, VOL2HT, DEBUG, IOUT)
   BTKFLG = .false.
 
   if (METHC(ISPC).eq.6.or. METHC(ISPC).eq.10) then
-     call NATCRS (TCF,MCF,SCF,BBFV,ISPC,D,H,LTKIL,&
-          &CWN,BARK,IHT,VMAX,BFMAX,&
-          &CL,DCY,WSTM,BIODRY,&
-          &LVD,CTKFLG,BTKFLG,-1)
+     if (VARIANTCD.eq.'ON') then
+        call ONNATCRS
+     else
+        call NATCRS (TCF,MCF,SCF,BBFV,ISPC,D,H,LTKIL,&
+             &CWN,BARK,IHT,VMAX,BFMAX,&
+             &CL,DCY,WSTM,BIODRY,&
+             &LVD,CTKFLG,BTKFLG,-1)
+     end if
   else if ((METHC(ISPC).eq.8).or.(METHC(ISPC).eq.5)) then
      call OCFVOL (TCF,MCF,ISPC,D,H,LTKIL,BARK,IHT,VMAX,LCONE,&
           &CTKFLG,IT)
@@ -169,4 +173,24 @@ subroutine FMSVOL (II, XHT, VOL2HT, DEBUG, IOUT)
        &' LCONE=',L2,' VN=',F7.3,' VOL2HT=',F10.3)
 
   return
+contains
+
+  subroutine ONNATCRS
+    implicit none
+
+    ! ON'S NATCRS HAS THE SAME TWO CUBIC PRODUCTS AND THIRTEEN ARGUMENTS
+    ! AS ITS LIVE-TREE VOLS CALL. KEEP THAT CHECKED CONTRACT LOCAL, SO
+    ! THE NEWER U.S. BIOMASS/LIVE-DEAD ARGUMENTS CANNOT SHIFT ITS INPUTS.
+    ! IT=0 DENOTES A SNAG, WITH NO LIVE-TREE HT2TD ELEMENT TO UPDATE.
+    interface
+       subroutine NATCRS(VN,VM,BBFV,ISPC,D,H,TKILL,BARK,ITRNC,VMAX,CTKFLG,BTKFLG,IT)
+         implicit none
+         integer :: ISPC,ITRNC,IT
+         real :: VN,VM,BBFV,D,H,BARK,VMAX
+         logical :: TKILL,CTKFLG,BTKFLG
+       end subroutine NATCRS
+    end interface
+
+    call NATCRS(TCF,MCF,BBFV,ISPC,D,H,LTKIL,BARK,IHT,VMAX,CTKFLG,BTKFLG,IT)
+  end subroutine ONNATCRS
 end
