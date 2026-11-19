@@ -35,7 +35,7 @@ Defects found along the way are deliberately *not* fixed during modernization, b
 Planned next steps:
 
 1. Finish consolidating duplicated routines, including the remaining metric copies used by BC and ON.
-2. Move shared data and routines from common blocks and include files into modules, so the compiler checks every call.
+2. Move shared data and routines from common blocks and include files into modules, so the compiler checks every call, and combine the variants into one program in which each variant is a default configuration. See [MODERNIZATION_PLAN.md](MODERNIZATION_PLAN.md).
 3. Restore BC and ON regression testing, then fix the recorded bugs one at a time, each as a documented model change.
 
 ## Variants

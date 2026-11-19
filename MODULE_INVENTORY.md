@@ -141,7 +141,7 @@ each block batch must resolve member-level resets before moving declarations.
 | MOD20 other extensions | EMCOM, FFCOM, TWIGCOM |
 | MOD24 separate RNG streams | RANCOM, ESRNCM, DMRNCM, RRANN |
 | ORGANON boundary/shared adapters | ORGANON, GGCOM, INFO, SITEFPRM |
-| MOD16 unit-system selector | METRIC |
+| SP04 configuration owner (formerly MOD16) | METRIC |
 
 PRGPRM, FMPARM and declaration-only parameter definitions form the configuration
 layer. Preserve compiled VARIANTCD/LMETRICVAR and every native value/kind/bound;
