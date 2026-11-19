@@ -48,7 +48,7 @@ The module plan was written for compile-time, per-variant configuration. The
 single-program plan makes the variant a runtime value. Followed separately,
 several module tasks would build structures the single-program tasks then
 undo, or would edit the same lines twice. This plan therefore orders the work
-around three principles.
+around four principles.
 
 First, variant identity, species and tree extents, and BLOCK DATA become
 runtime configuration **while the 24 separate builds still exist** (SP04–SP07),
@@ -61,7 +61,14 @@ names and dispatcher in the same batch (MOD12 with SP10). Extension stubs are
 turned into runtime switches as their families are migrated, rather than
 being moved into modules and then deleted (MOD14 with SP08, SP09 and SP11).
 
-Third, shared-state ownership (MOD17–MOD26) is done after the single program
+Third, BC and ON go through every phase with the U.S. variants rather than
+being joined at the end (SP00(b), decided 19 November 2026). Their metric twins,
+Canadian fire, mistletoe and volume code, and the larger tree limit are
+handled by the same tasks that handle every other variant difference. A
+Canadian readiness pass (SP19) first strengthens their weak test coverage and
+repairs the few Canadian defects that would make those batches unverifiable.
+
+Fourth, shared-state ownership (MOD17–MOD26) is done after the single program
 exists, so each COMMON block is migrated once, in one source set, with storage
 already separated from active extents. Restart compatibility (MOD17) is
 designed after SP05/SP06 have changed which extents PUTSTD/GETSTD write.
@@ -77,6 +84,7 @@ designed after SP05/SP06 have changed which extents PUTSTD/GETSTD write.
 | MOD21 "do not pad layouts" | Species storage is padded to the maximum by design (SP05); native counts stay the active extents |
 | MOD22 "preserve MAXTRE" | Preserve the active tree limit; storage is sized for the largest configuration. Still no allocatable storage |
 | MOD25 BLOCK DATA reconciliation | Verification of SP07's initialization routines |
+| SP19 BC and ON (last task of the one-program phase) | Moved before SP04 as the Canadian readiness pass; the Canadian conversion itself is spread across SP04–SP16 |
 
 MOD06, MOD07, MOD10, MOD11 and MOD13 are unchanged in substance.
 
@@ -177,9 +185,10 @@ a difference a regression (see the next section).
 
 ## Known bugs and the tasks they affect
 
-No recorded bug needs fixing before Phases 3–5 begin, and the corrected
-reference at `d31a9ff0` remains valid. The following bugs constrain particular
-tasks and should be checked when a batch reaches them.
+No recorded bug needs fixing before Phase 3 or SP01–SP03, and the corrected
+reference at `d31a9ff0` remains valid until SP19's repairs are re-pinned. The
+following bugs constrain particular tasks and should be checked when a batch
+reaches them.
 
 | Task | Bugs | Consequence |
 |---|---|---|
@@ -191,7 +200,8 @@ tasks and should be checked when a batch reaches them.
 | MOD08, MOD12 batches that contain them | 8, 13, 17–19, 36–39, 45–47, 56 | Undefined or debug-only reads. Review in the batch; do not force an interface through with casts or blanket initialization. |
 | NVEL boundary | 6 (R9DIB), 52, 53 | Preserve the documented direct-test controls and limits. |
 | MOD19 | 66 | Settle transaction failure behavior before migrating database resource state. |
-| SP19 | 1, 2, 5, 21, 23–29, 32–34, 43, 44, 47, 48 | BC/ON behavior that depends on recorded bugs must be kept; open Canadian defects stay with the BC/ON decision. |
+| SP19 (repair) | 22, 28, 44, 47 | Repair before Phase 5. 44 and 47 are undefined, layout-dependent reads (44 also writes out of bounds); 28's biocontrol handlers read an unassigned flag and stop on a type mismatch; 22 was introduced by the free-form conversion. |
+| SP04–SP17 (frozen) | 2 (decay code), 17, 21, 23–27, 32, 34, 43, 48 | Deterministic Canadian defects. Keep them through rename-and-dispatch; fix later as separate model changes. 24 and 25 suppress two fire reports, so those paths stay coverage gaps until fixed. |
 
 ## Phase 1. Scope, references and dependencies (complete)
 
@@ -299,15 +309,14 @@ tasks and should be checked when a batch reaches them.
 ## Phase 2. Decisions
 
 - [ ] **SP00 — Settle scope, sequencing and interfaces.**
-  Six decisions are needed, but only (a) and (b) block the next phases.
+  Six decisions are needed; none of the open ones blocks the next phases.
 
-  - (a) Stage A only, or Stage A followed by Stage B. *Proposed:* Stage A now;
-    decide Stage B after SP17.
-  - (b) Whether BC/ON join the single program (SP19) or remain separate
-    builds. *Proposed:* separate builds through SP17. This keeps the 21
-    metric twins (about 33k lines), `MAXTRE` 6000, the absent NVEL, the open
-    Canadian bugs and the weakest references off the critical path; SP14
-    already covers the 22 U.S. variants.
+  - (a) Stage A only, or Stage A followed by Stage B. *Decided 19 November
+    2026:* Stage A now. Whether to start Stage B is decided after SP17.
+  - (b) Whether BC/ON join the single program or remain separate builds.
+    *Decided 19 November 2026:* BC and ON join, and are converted alongside
+    the U.S. variants in every phase so that the result is one cohesive
+    program. SP19 is moved ahead of SP04 to prepare them.
   - (c) How a run selects its default configuration: program name
     (`argv[0]` = `FVSxx`), `--variant=xx`, an API call, and/or the `Variant`
     column of `FVS_StandInit`. Needed before MOD09.
@@ -319,8 +328,11 @@ tasks and should be checked when a batch reaches them.
   - (f) Whether the 24 separate builds remain supported once SP15 lands.
     Needed before SP18.
 
-  Acceptance: (a) and (b) confirmed before SP04, (c) and (d) before MOD09,
-  (f) before SP18, each recorded here.
+  Acceptance: (c) and (d) recorded here before MOD09, (f) before SP18, and
+  the Stage B decision after SP17.
+
+  Result, 19 November 2026: (a), (b) and (e) decided as above. (c), (d) and
+  (f) remain open; none blocks Phases 3–5.
 
 ## Phase 3. Module builds and the pilot
 
@@ -384,11 +396,35 @@ tasks and should be checked when a batch reaches them.
   `-finit-*` flags (bugs 58 and 63). Acceptance: a planted output change is
   detected, and a planted read of an inactive species slot traps.
 
+- [ ] **SP19 — Canadian readiness** (moved from the end of the one-program
+  phase).
+  Depends on SP03. BC and ON have three standard decks between them
+  (StandStructure, YSM-SkyRanch, Hardwood) and no pristine-original
+  simulation parity, so most batches would otherwise verify them weakly.
+  First add focused BC/ON decks for the paths later batches change and the
+  standard decks miss: stop/restart with byte-identical `.stop` files,
+  multi-stand runs, BC mistletoe, the Canadian fire and snag reports, Canadian
+  volume (including VOLEQNUM and MCDEFECT), CRNMULT, and a stand near ON's
+  6,000-tree limit. Record their outputs from the current corrected source.
+  Then make one separate correctness pass for the Canadian defects that would
+  make batch comparisons unreliable: 44 (CRNMULT's unset species index and
+  out-of-bounds writes), 47 (undefined equation codes after an invalid
+  VOLEQNUM), 28 (biocontrol diagnostic type mismatch, wrong activity code and
+  unassigned IPRMPT) and 22 (the thirteen remaining split FORMATs the
+  free-form conversion broke). Each repair follows the usual bug-fix rules
+  and is recorded in FOUND_BUGS. Re-pin the corrected reference once, after
+  the whole pass. Acceptance: the new decks are repeatable across builds and
+  under poisoned storage, the four repairs are verified individually, the
+  U.S. variants are unchanged, and the corrected reference is re-pinned.
+  The deterministic Canadian defects listed in the bug table stay frozen.
+
 ## Phase 5. Runtime configuration (still 24 programs)
 
 - [ ] **SP04 — Make variant identity a runtime value** (supersedes MOD16).
-  Add a configuration owner module, set before anything reads it and earlier
-  than GRINIT. Initially each program copies its `PRGPRM` constants into it.
+  Depends on SP19. Add a configuration owner module, set before anything
+  reads it: earlier than GRINIT and earlier than `filopn`, which already reads
+  `LMETRICVAR`. Initially each program copies its `PRGPRM` constants into it,
+  including the metric flag, which becomes a runtime value for BC and ON.
   Convert the `VARIANTCD` and `LMETRICVAR` uses inside `parameter`
   expressions to runtime values; at the time of writing these are in
   `vbase/dgf.f90`, `estb/esaddt.f90`, `estb/esfltr.f90`,
@@ -414,9 +450,10 @@ tasks and should be checked when a batch reaches them.
 - [ ] **SP06 — Do the same for trees and plots.**
   Give `MAXTRE` an active limit, including the `IREC2..MAXTRE` dead-record
   region, compression thresholds and API limits. Treat `MAXPLT` the same way.
-  Storage is sized for the largest configuration. Acceptance: identical
-  results and byte-identical `.stop` files under both modes, including decks
-  near the tree limit.
+  Storage is sized for the largest configuration: 6,000 trees (ON) and 500
+  plots. Acceptance: identical results and byte-identical `.stop` files under
+  both modes, including the SP19 deck near ON's tree limit and decks near the
+  3,000 and 4,000 limits.
 
 - [ ] **SP07 — Convert BLOCK DATA to initialization routines.**
   Turn each per-variant BLOCK DATA into a uniquely named routine that assigns
@@ -477,10 +514,14 @@ implementation's tables and initializers compile under any configuration.
 - [ ] **MOD12 + SP10 — Move the variant equation families into modules behind
   per-family dispatchers.**
   Depends on SP02's batch order, SP04–SP07 and the relevant MOD08–MOD10
-  batches. Covers the 72 colliding equation-family names (about 113k lines)
-  and the rest of the inventory's equation family: diameter/height growth,
-  crown, mortality, regeneration and volume, including regional
-  implementations and their NVEL/ORGANON boundary adapters. In each batch,
+  batches. Covers the 72 colliding equation-family names (about 113k lines),
+  the 21 BC/ON metric twins (about 33k lines) and the rest of the inventory's
+  equation family: diameter/height growth, crown, mortality, regeneration and
+  volume, including regional and Canadian implementations and their
+  NVEL/ORGANON boundary adapters. A metric twin is renamed and dispatched on
+  the runtime metric flag like any other implementation (for example
+  `NAME_metric`); folding it into runtime metric branches of the imperial
+  routine is optional later merging under rule 5. In each batch,
   give each implementation and its ENTRY points a unique module-procedure
   name (`NAME_xx` or `NAME_family`); one dispatcher keeps the original name
   and selects on the runtime configuration. Keep implementation bodies
@@ -492,9 +533,11 @@ implementation's tables and initializers compile under any configuration.
   variant's results.
 
 - [ ] **SP11 + MOD14 (fire) — Fire per-variant families.**
-  Apply the MOD12/SP10 pattern to 13 names in about 46k lines. `FMCBLK`
-  follows SP07, and the three `FMBIOGRP` versions become per-variant data.
-  Acceptance: identical results, including fire, snag and carbon outputs.
+  Apply the MOD12/SP10 pattern to 13 names in about 46k lines, including the
+  Canadian fire code under `canada/fire` and the metric fire twins. `FMCBLK`
+  follows SP07, and the three `FMBIOGRP` versions (BC, IE and KT) become
+  per-variant data. Acceptance: identical results, including fire, snag and
+  carbon outputs and the SP19 Canadian fire decks.
 
 - [ ] **SP08 + MOD14 (stubbed extensions) — Turn extension stubs into
   runtime switches.**
@@ -502,7 +545,10 @@ implementation's tables and initializers compile under any configuration.
   flags, moving each extension into its modules in the same batch. Reproduce
   each stub's behavior exactly, including messages and keyword rejection. Do
   one extension per batch: climate, cover, mistletoe, root disease, ORGANON,
-  economics, fertilization, the `exhtdbh` stub, and others found in SP02.
+  economics, fertilization, the `exhtdbh` stub, and others found in SP02. ON
+  links the climate, cover, mistletoe and root-disease stubs, and BC uses its
+  own mistletoe implementation (`canada/newmist`, `metric/newmist`), which is
+  dispatched as an alternate implementation alongside `mistoe`.
   Acceptance: identical results with the extension disabled and enabled;
   extension keyword decks run in variants that previously linked the stub;
   internal calls in the migrated extension are checked.
@@ -522,8 +568,14 @@ implementation's tables and initializers compile under any configuration.
 
 - [ ] **SP12 — Remaining collisions.**
   Cover `RDBLK1`, `VOLS`, `DGCONS_ENTRY` (EM), the inline COMMON blocks, and
-  anything else SP02 lists. Acceptance: the SP02 table has no open U.S.
-  variant rows.
+  anything else SP02 lists. This includes the Canadian volume code (BC and ON
+  use 3 volume files instead of NVEL's 152) and the apparent same-variant
+  duplicates CFTOPK (BC, ON) and R9CLARK (ON). ON's thirteen-argument NATCRS
+  has a different contract from the U.S. twenty-one-argument NATCRS, so it
+  cannot share a dispatcher: give it its own name and keep it reached only
+  through the ON adapter added for bug 55. NVEL is linked into the single
+  program, but the BC/ON defaults never call it. Acceptance: the SP02 table
+  has no open rows.
 
 - [ ] **MOD13 — Migrate core simulation orchestration.**
   Depends on its callee batches above. Work through initialization, cycle
@@ -548,15 +600,15 @@ implementation's tables and initializers compile under any configuration.
   decision.
 
 - [ ] **SP14 — Converge the manifests (checkpoint).**
-  Give the 22 U.S. variants one common source list plus their own `PRGPRM`,
-  and build all 22 programs from it. Acceptance: 22/22 identical. Stopping
-  here is a valid outcome: one source set, 22 builds, and only the default
-  configuration differs.
+  Give all 24 variants one common source list plus their own `PRGPRM`, and
+  build all 24 programs from it. Acceptance: 24/24 identical, including the
+  SP19 Canadian decks. Stopping here is a valid outcome: one source set, 24
+  builds, and only the default configuration differs.
 
 ## Phase 7. One program
 
 - [ ] **SP15 — Single program with a configuration table.**
-  Use one `PRGPRM` holding the storage maxima, and a table of the 22 (or 24)
+  Use one `PRGPRM` holding the storage maxima, and a table of the 24
   defaults: identity, active extents, metric flag, extension flags and
   initialization routines. Implement the selection mechanism chosen in
   SP00(c), including the variant-selection API call, and fail clearly when no
@@ -566,13 +618,15 @@ implementation's tables and initializers compile under any configuration.
 - [ ] **SP16 — Build and compatibility names.**
   Use one build directory for Make and CMake, and provide `FVSxx` and
   `FVSxx.so` as SP00(d) decided, working on Windows as well. `make FVSxx` and
-  `make all` keep working. Acceptance: fresh, incremental and parallel builds
-  succeed, and the test makefiles run unchanged.
+  `make all` keep working. BC's CFIM C++ code is now linked into the one
+  program, so the link step needs the C++ runtime for every configuration.
+  Acceptance: fresh, incremental and parallel builds succeed, and the test
+  makefiles run unchanged.
 
 - [ ] **SP17 — Verify the single program.**
   Run the full suite for each default against original F77, the corrected
-  reference and the SP14 per-variant programs. Also run poisoned storage,
-  multi-stand decks, stop/restart (byte-identical `.stop` files), API clients
+  reference and the SP14 per-variant programs, including the SP19 Canadian
+  decks. Also run poisoned storage, multi-stand decks, stop/restart (byte-identical `.stop` files), API clients
   (`fvsDimSizes`, species attributes, tree add/cut), timing and memory.
   Acceptance: bit-identical results; coverage limits recorded honestly.
 
@@ -580,16 +634,6 @@ implementation's tables and initializers compile under any configuration.
   Remove the per-variant `PRGPRM` files and source lists, and update the
   README, Contributing.md and parity guidance. Acceptance: no dangling
   references, and the suite is unchanged.
-
-- [ ] **SP19 — BC and ON,** or a recorded decision to keep them as separate
-  builds.
-  Put `LMETRICVAR` under runtime control and handle the 21 metric twins (about
-  33k lines) as runtime metric branches, keeping the BC/ON behavior that
-  depends on recorded bugs 1, 2 and 5. Bring in the Canadian fire, mistletoe
-  and volume code, the absence of NVEL, and `MAXTRE` 6000. Acceptance:
-  matches the immediate and corrected references, with the BC/ON limits
-  stated. Until this task is done, every later task must keep the separate
-  BC/ON builds compiling and matching.
 
 ## Phase 8. State ownership in the single source set
 
@@ -698,7 +742,7 @@ cycle.
   library calls, relevant extensions, multi-stand execution and stop/restart.
   Refresh focused cases where standard decks do not reach a migrated path.
   Acceptance: checked internal interfaces, authoritative state declarations,
-  reliable dependency builds, one program for the selected variants and no new
+  reliable dependency builds, one program for all 24 variants and no new
   output differences. Record unresolved variant/platform coverage honestly;
   deferred in-scope work prevents claiming full completion. Update the
   current-facing build/contribution guidance and add concise outcomes here.
@@ -709,7 +753,8 @@ user-selectable components.
 
 ## Conditional follow-on A: configurable components (Stage B)
 
-Start only if SP00(a) chose Stage B, and only after MOD17–MOD26 have given
+Stage A is under way; whether to start Stage B is decided after SP17
+(SP00(a)). If it goes ahead, it starts only after MOD17–MOD26 have given
 ownership of the tables each component uses. Free mixing of every component,
 especially the core diameter- and height-growth equations, is not
 scientifically neutral; it should be offered as documented research use, not
@@ -911,5 +956,6 @@ the result. Undefined reads become visible after layout changes (bugs 53 and
 63). BLOCK DATA values live for the whole process, and some are changed during
 a run without being reset per stand, so their replacements must keep that
 lifetime. BC/ON carry most of the remaining divergence and have the weakest
-references. Stage B is science rather than refactoring, for the reasons given
+references, which is why SP19 adds focused decks before Phase 5. Stage B is
+science rather than refactoring, for the reasons given
 under "Objectives".
