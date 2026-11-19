@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 from collections import Counter
+from contextlib import closing
 import hashlib
 import json
 from pathlib import Path
@@ -116,7 +117,9 @@ def normalize_text(data: bytes, aliases: dict[str, str]) -> tuple[bytes, dict[st
 
 def database(path: Path) -> dict:
     """Read every schema object and row, without changing the database file."""
-    with sqlite3.connect(path.resolve().as_uri() + "?mode=ro", uri=True) as connection:
+    # A connection's own context manager ends a transaction but leaves it open;
+    # close it so Windows can later remove or replace the file.
+    with closing(sqlite3.connect(path.resolve().as_uri() + "?mode=ro", uri=True)) as connection:
         aliases = case_ids(connection)
         schema = connection.execute(
             "SELECT type,name,tbl_name,sql FROM sqlite_master ORDER BY type,name"

@@ -128,7 +128,7 @@ export FFLAGS += $(VERSION_FLAGS)
 # Lists are: FVSprgs (all varaints), CANprgs (Canada variants), USprgs (US variants)
 
 ifndef sourceFileList
-export FVSprgs = $(subst _sourceList.txt,,$(shell ls FVS*_sourceList.txt))
+export FVSprgs := $(subst _sourceList.txt,,$(shell ls FVS*_sourceList.txt))
 $(info FVSprgs: $(FVSprgs))
 endif
 
@@ -143,14 +143,17 @@ $(info USprgs: $(USprgs))
 ifdef sourceFileList
  ifndef sourceList
   export sourceFileList
-  export sourceList = $(shell cat $(sourceFileList))
+  # Simply expanded: Make re-expands an exported recursive variable for every
+  # recipe it starts, so a $(shell) here ran once per compile and, where process
+  # creation is slow (Windows/MSYS), left a -j build effectively serial (bug 69).
+  export sourceList := $(shell cat $(sourceFileList))
   # Converted includes retain .f90 names but are never compiled alone.
   include_names := $(notdir $(shell cat $(FVS_ROOT)/bin/fortran_includes.txt))
-  export includes = $(notdir $(filter %.F77 %.INC %.inc %.h,$(sourceList))) $(filter $(include_names),$(notdir $(sourceList)))
-  export mods = $(notdir $(filter %_mod.f90, $(sourceList)))
-  export mods_mods = $(addsuffix .mod,$(basename $(mods)))
-  export source = $(filter-out $(includes),$(notdir $(filter %.c %.f %.f90 %.F90 %.F %.for %.cpp, $(sourceList))))
-  export object = $(addsuffix .o,$(basename $(source)))
+  export includes := $(notdir $(filter %.F77 %.INC %.inc %.h,$(sourceList))) $(filter $(include_names),$(notdir $(sourceList)))
+  export mods := $(notdir $(filter %_mod.f90, $(sourceList)))
+  export mods_mods := $(addsuffix .mod,$(basename $(mods)))
+  export source := $(filter-out $(includes),$(notdir $(filter %.c %.f %.f90 %.F90 %.F %.for %.cpp, $(sourceList))))
+  export object := $(addsuffix .o,$(basename $(source)))
  endif
 endif
 

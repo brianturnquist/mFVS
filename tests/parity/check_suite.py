@@ -24,6 +24,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 
 sys.dont_write_bytecode = True  # keep the repository free of __pycache__
 
@@ -36,6 +37,21 @@ from prepare_builds import (CORRECTED_REFERENCE, CORRECTED_REFERENCE_NVEL,
 SOURCE_SUFFIXES = (".f90", ".f", ".f77", ".for", ".inc", ".c", ".cpp", ".h")
 STATUS_LINE = re.compile(r"^(make.*Error \d+|STOP\b.*|Test .* ended)")
 UUID_BYTES = re.compile(UUID.pattern.encode())
+WINDOWS = sys.platform == "win32"
+
+
+def make_command(*arguments: str) -> list[str]:
+    """Run GNU make; on Windows, pass what MSYS make would not give recipes.
+
+    The makefile selects its Windows settings from OS. MSYS make does not hand
+    TMP/TEMP to the native compilers and FVS programs it starts, which then fail
+    to create temporary files; command-line variables reach every recipe.
+    """
+    command = ["make", *arguments]
+    if WINDOWS:
+        scratch = os.environ.get("TMP") or tempfile.gettempdir()
+        command += ["OS=Windows_NT", f"TMP={scratch}", f"TEMP={scratch}", f"GFORTRAN_TMPDIR={scratch}"]
+    return command
 
 
 def variants_in(root: Path) -> list[str]:
@@ -110,13 +126,14 @@ def build_and_run(tree: Path, variant: str, tests: dict[str, str], store: Path,
         shutil.rmtree(scratch)
     (scratch / "files").mkdir(parents=True)
     with (scratch / "build.log").open("wb") as log:
-        built = subprocess.run(["make", f"FVS{variant}.setup", f"-j{jobs}"], cwd=tree / "bin",
+        built = subprocess.run(make_command(f"FVS{variant}.setup", f"-j{jobs}"), cwd=tree / "bin",
                                env=env, stdout=log, stderr=subprocess.STDOUT)
-    if built.returncode or not (tree / "bin" / f"FVS{variant}").is_file():
+    program = tree / "bin" / (f"FVS{variant}.exe" if WINDOWS else f"FVS{variant}")
+    if built.returncode or not program.is_file():
         raise RuntimeError(f"build failed; see {scratch / 'build.log'}")
     directory = tree / "tests" / f"FVS{variant}"
     with (scratch / "suite.log").open("wb") as log:
-        subprocess.run(["make", "--ignore-errors"], cwd=directory, env=env, stdin=subprocess.DEVNULL,
+        subprocess.run(make_command("--ignore-errors"), cwd=directory, env=env, stdin=subprocess.DEVNULL,
                        stdout=log, stderr=subprocess.STDOUT, timeout=3600)
     # Program stop codes and ignored make errors are results too.
     status = [line for line in (scratch / "suite.log").read_text(errors="replace").splitlines()

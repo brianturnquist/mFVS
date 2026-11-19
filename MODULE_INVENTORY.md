@@ -259,3 +259,12 @@ output is not part of the suite's normal file comparison, so MOD07 must retain
 a focused SUMHED output check as well as the full corrected/immediate suites.
 Add its incompatible-call compiler control during MOD07. No procedure has
 been moved and no module or state owner has been implemented in Phase 1.
+
+MOD07 (19 November 2026) carried out this design as written; ISTFNB_MOD's
+argument is `intent(in)`, since the function only reads it. The retained
+check is `tests/parity/check_istfnb_pilot.py`, which covers the same string
+set, seven titles and the compiler control; see the plan for the outcome. The
+index's call resolution is lexical: it lists SUMHED's call against both the
+module function and the external wrapper, and it does not follow the
+wrapper's renamed import. Later batches should not read a second listed
+definition as a second implementation without checking the caller's USE.

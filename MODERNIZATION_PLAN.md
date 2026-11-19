@@ -336,7 +336,7 @@ reaches them.
 
 ## Phase 3. Module builds and the pilot
 
-- [ ] **MOD06 — Support the required module dependency ordering.**
+- [x] **MOD06 — Support the required module dependency ordering.**
   Depends on MOD05. Recheck build improvements already made under the
   optimization plan. Address only the remaining dependency gaps in Make and
   the supported CMake path. Account for actual module names, modules using
@@ -350,7 +350,45 @@ reaches them.
   `.mod` files, cycles or simultaneous compiler writes to the same module
   output.
 
-- [ ] **MOD07 — Migrate and verify the procedure pilot.**
+  Result, 19 November 2026 (Windows 11, Rtools 4.5: GNU Fortran 14.3.0, GNU
+  Make 4.4.1, CMake 3.31.8): the Make path needed no dependency change.
+  `fvsbuild.c prepare` already orders every consumer after the `.mod` files
+  it uses, restores a missing `.mod` from its object, prunes the `.mod` of a
+  renamed or removed module and rejects two producers of one module. A
+  disposable five-file variant built through the real makefile and helper
+  (module A re-exported through B to C, a leaf user of A, a USE inside `#if`,
+  and a main program that prints the values) confirmed each case: a fresh
+  `-j1` build; a no-op rebuild; an implementation-only edit recompiling only A;
+  an interface edit recompiling A, B, the leaf and C but not main, whose
+  view was unchanged; a deleted `.mod` restored; a renamed module's stale
+  `.mod` removed; a duplicate producer rejected; and `make clean` followed
+  by a fresh `-j8` build. The program printed the expected values after every
+  step. `check_build_support.py` passes (cache identity, concurrent
+  publication, Fortran interface invalidation). A real fresh `-j1` FVSpn
+  build succeeded, and the suite's 24 candidate builds are fresh parallel builds.
+
+  One defect was repaired (bug 69, inherited from upstream): exported
+  recursive variables re-ran `$(shell cat)` for every recipe, so `-j` builds
+  ran one compile at a time on Windows. They are now `:=`, with identical
+  values. A variant builds in about 3 minutes at `-j12` instead of about 20.
+
+  CMake: the recipe requires CMake 4.3, which is not installed here, so a
+  scratch copy with the minimum lowered to 3.31 was used. Through CMake's own
+  generated rules, all 683 Fortran objects of FVSie compiled at `-j12`, with
+  ISTFNB_MOD before its consumers. Incremental rebuilds were exact: nothing on
+  a no-op, the module and both consumers after an interface edit, and only
+  the module after an implementation-only edit. The CMake recipe cannot link
+  with MinGW (`libFVSsql.dll` has unresolved references from `apisubsc.c` to
+  Fortran symbols in the other library), independently of modules; linking
+  remains unverified for Visual Studio/Intel and was not rerun on Linux.
+
+  Test tools now run on Windows: `check_suite.py` passes `OS`, `TMP`, `TEMP`
+  and `GFORTRAN_TMPDIR` to make, the inventory uses POSIX relative paths, the
+  comparator closes its SQLite connections, and `check_build_support.py`
+  tolerates DLLs that ctypes still holds. The seven comparator controls and
+  the seven inventory tests pass on Windows.
+
+- [x] **MOD07 — Migrate and verify the procedure pilot.**
   Depends on MOD06. Move ISTFNB into `base/istfnb_mod.f90` (ISTFNB_MOD) and
   update SUMHED to import it, as planned in the inventory. Retain existing
   COMMON includes. Use explicit argument declarations; add `intent` only after
@@ -360,6 +398,50 @@ reaches them.
   focused SUMHED screen-output check passes and corrected/immediate
   comparisons show no new differences. Record the small set of conventions
   reused below, including module procedure naming for SP10.
+
+  Result, 19 November 2026: ISTFNB is in ISTFNB_MOD (`base/istfnb_mod.f90`,
+  added to all 24 manifests before `base/istfnb.f90`). Its argument is
+  `intent(in)`, since the function only reads it; the body is otherwise
+  unchanged. `base/istfnb.f90` is now the external wrapper and SUMHED, the
+  only internal caller, imports the module function. The full suite passes
+  **24/24** against corrected `d31a9ff0` and **24/24** against immediate
+  `0cf347e4` (Windows; reference runs built with each commit's own sources).
+  `tests/parity/check_istfnb_pilot.py` passes for all 24 variants: SUMHED's
+  screen output for seven titles and with screen output off, and ISTFNB on
+  all 87,381 strings of length 0–8 against VERIFY, are byte-identical to
+  `0cf347e4`, with the CR and metric header branches exercised; the module
+  and wrapper agree on every string. A planted mutation (tab treated as
+  blank) is detected. An INTEGER argument to the module function is rejected
+  by the compiler (`Type mismatch in argument 'string'`), while the same call
+  to the legacy external still compiles. The inventory test now asserts this
+  shape. The original-F77 comparison was not rerun; the change touches no
+  model arithmetic and the corrected reference already carries that
+  relationship. Coverage limit: the index lists SUMHED's call against both
+  definitions, because its call resolution does not follow USE.
+
+  Conventions for later batches:
+
+  1. A module lives in `<name>_mod.f90` as module `<NAME>_MOD`, with a basename
+     unique in the tree. Add it to every manifest that selects a consumer,
+     immediately before the file it came from.
+  2. Modules use `implicit none`, `private` by default and an explicit
+     `public ::` list. Move procedure bodies verbatim, including comments,
+     labels and layout; add `intent` only after checking writes and aliasing.
+  3. Callers write `use <NAME>_MOD, only: <NAME>` before `implicit none` and
+     remove their own type declaration of that name.
+  4. A procedure that may have external users keeps its legacy file as a
+     wrapper with the same name, result, arguments and implicit-interface ABI,
+     importing the module procedure as `<NAME>_CHECKED`. Wrappers stay until
+     MOD09 accounts for their consumers.
+  5. Each batch adds a compiler control (a wrong call rejected) and, for paths
+     the suite does not compare, a focused check against a pinned pre-change
+     commit, and updates the inventory test.
+  6. For SP10/SP11, each implementation of a colliding family becomes a module
+     procedure `<NAME>_<XX>` (variant) or `<NAME>_<FAMILY>` (a file several
+     variants share, as in `vbase/htgf_ls.f90`), in module `<NAME>_<XX>_MOD`
+     and file `<name>_<xx>_mod.f90` next to its source. ENTRY points are renamed
+     the same way. The dispatcher keeps the original external name and
+     interface. SP02 confirms or adjusts these names before the first batch.
 
 ## Phase 4. Inventories and verification support
 

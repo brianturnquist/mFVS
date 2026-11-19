@@ -27,7 +27,7 @@ START = re.compile(r"\b(subroutine|function|program|block\s*data|module)\s+([A-Z
 REGIONS = {"ak", "bc", "bm", "ca", "ci", "cr", "cs", "ec", "em", "ie", "kt", "ls",
            "nc", "ne", "oc", "on", "op", "pn", "sn", "so", "tt", "ut", "wc", "ws"}
 LEAVES = {"algslp", "algexp", "alglim", "algmod", "algpnt", "algprc", "algout", "algarg",
-          "sort", "sorts", "sortin", "sortre", "istlnb", "istfnb", "rdanuw", "fvs_truncate"}
+          "sort", "sorts", "sortin", "sortre", "istlnb", "istfnb", "istfnb_mod", "rdanuw", "fvs_truncate"}
 API = {"main", "apisubs", "apisubsc", "cmdline", "dbstables", "version"}
 RUNTIME = {"SLEEP", "GET_COMMAND_ARGUMENT", "DATE_AND_TIME", "RANDOM_SEED",
            "RANDOM_NUMBER", "FLUSH", "SYSTEM_CLOCK", "SYSTEM", "GETPID"}
@@ -50,7 +50,7 @@ OWNERS = {
     "MOD20:other-extensions": "EMCOM FFCOM TWIGCOM",
     "MOD24:random-streams": "RANCOM ESRNCM DMRNCM RRANN",
     "boundary:ORGANON-state": "ORGANON GGCOM INFO SITEFPRM",
-    "MOD16:unit-selector": "METRIC",
+    "SP04:configuration": "METRIC",
 }
 
 
@@ -251,11 +251,11 @@ def build_index() -> dict:
     selected, views = defaultdict(set), {}
     for manifest in sorted((ROOT / "bin").glob("FVS??_sourceList.txt")):
         variant = manifest.name[3:5]
-        paths = [str((manifest.parent / name).resolve().relative_to(ROOT)) for name in manifest.read_text().split()]
+        paths = [(manifest.parent / name).resolve().relative_to(ROOT).as_posix() for name in manifest.read_text().split()]
         views[variant] = {Path(path).name.upper(): path for path in paths}
         for path in paths:
             selected[path].add(variant)
-    include_paths = {str((ROOT / name).resolve().relative_to(ROOT)) for name in
+    include_paths = {(ROOT / name).resolve().relative_to(ROOT).as_posix() for name in
                      (ROOT / "bin/fortran_includes.txt").read_text().split()}
     files, units, layouts, empty = {}, [], [], []
     for path, variants in sorted(selected.items()):

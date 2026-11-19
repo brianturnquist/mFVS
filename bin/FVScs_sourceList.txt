@@ -204,6 +204,7 @@
 ../base/intrscrn.f90
 ../base/iqrsrt.f90
 ../base/isstag.f90
+../base/istfnb_mod.f90
 ../base/istfnb.f90
 ../base/istlnb.f90
 ../base/keydmp.f90

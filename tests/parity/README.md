@@ -9,6 +9,16 @@ the `sqlite3` command and Git.
 Builds and results are temporary. Keep them outside the repository and do not
 commit generated reports, archives, logs or run metadata.
 
+On Windows, use Rtools 4.5's GNU toolchain: put
+`C:\rtools45\x86_64-w64-mingw32.static.posix\bin` (gfortran, gcc, sqlite3)
+and `C:\rtools45\usr\bin` (make) on `PATH`. MSYS make does not hand `TMP` and
+`TEMP` to the native compilers and FVS programs it starts, which then cannot
+create temporary files, and the makefile chooses its Windows settings from
+`OS`. `check_suite.py` passes `OS`, `TMP`, `TEMP` and `GFORTRAN_TMPDIR` to make
+as command-line variables, which reach every recipe; do the same for a manual
+build, for example `make OS=Windows_NT TMP=%TMP% TEMP=%TMP% FVSie.setup -j8`.
+Use a cache directory under your temporary folder rather than `/private/tmp`.
+
 ## Check a change: the whole regression suite
 
 Run this from the repository root before committing a change:
@@ -148,6 +158,26 @@ are made with the unrepaired original.
 
 `check_comparator.py` checks the comparator itself against deliberately
 changed IE outputs.
+
+## Module pilot (MOD07)
+
+```sh
+python3 -B tests/parity/check_istfnb_pilot.py
+```
+
+ISTFNB moved into ISTFNB_MOD, with `base/istfnb.f90` kept as the external
+wrapper, and SUMHED, its only internal caller, imports the module function.
+The suite does not compare screen output, so this check builds one driver per
+variant twice, with that variant's includes: with the frozen pre-pilot ISTFNB
+and SUMHED (`--frozen`, default `0cf347e4`, the commit before MOD07) and with
+the working tree. Both must
+print the same bytes for SUMHED's header under seven titles (blank, leading
+blanks, a full 72 characters, a final character only, tab and NUL) and with
+screen output off, and for ISTFNB on all 87,381 strings of length 0–8 over
+blank, `a`, tab and NUL, which are also checked against `VERIFY`. The working
+tree's module function and wrapper must agree on every string. A call passing
+an INTEGER to the module function must be rejected by the compiler, while the
+same call to the legacy external still compiles. REVISE is the only stub.
 
 ## Focused pre-module bug repairs
 

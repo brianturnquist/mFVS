@@ -60,12 +60,24 @@ class ModuleInventoryChecks(unittest.TestCase):
                       if not c["definitions"] and not c["boundary"]]
         self.assertEqual(unresolved, [])
 
-    def test_pilot_has_one_caller_and_no_persistent_state(self) -> None:
-        pilot = self.unit("base/istfnb.f90", "ISTFNB")
-        self.assertEqual(pilot["arguments"], ["STRING"])
-        self.assertEqual(pilot["common"], [])
-        self.assertEqual(pilot["persistent_locals"], [])
-        self.assertEqual(pilot["entries"], [])
+    def test_pilot_is_checked_with_an_external_wrapper(self) -> None:
+        # MOD07: the checked function lives in ISTFNB_MOD; the external keeps
+        # the legacy symbol by importing it; SUMHED, the only internal caller,
+        # imports the module function. Neither keeps persistent state.
+        checked = self.unit("base/istfnb_mod.f90", "ISTFNB")
+        self.assertEqual(checked["parent"], "base/istfnb_mod.f90:8:ISTFNB_MOD")
+        self.assertEqual(checked["declarations"]["STRING"], "character(len=*), intent(in) :: STRING")
+        wrapper = self.unit("base/istfnb.f90", "ISTFNB")
+        self.assertEqual(wrapper["uses"], ["use ISTFNB_MOD, only: ISTFNB_CHECKED => ISTFNB"])
+        for pilot in (checked, wrapper):
+            self.assertEqual(pilot["family"], "MOD10:helpers")
+            self.assertEqual(pilot["arguments"], ["STRING"])
+            self.assertEqual(pilot["common"], [])
+            self.assertEqual(pilot["persistent_locals"], [])
+            self.assertEqual(pilot["entries"], [])
+            self.assertEqual(len(pilot["variants"]), 24)
+        sumhed = self.unit("vbase/sumhed.f90", "SUMHED")
+        self.assertIn("use ISTFNB_MOD, only: ISTFNB", sumhed["uses"])
         callers = [(u["source"], c) for u in self.units for c in u["calls"] if c["name"] == "ISTFNB"]
         self.assertEqual(len(callers), 1)
         self.assertEqual(callers[0][0], "vbase/sumhed.f90")

@@ -2165,3 +2165,30 @@ NVEL/FMSVL2 cases now return positive volumes and match the separately
 called provider and Behre correction for methods 6/10, top-kill on/off and
 both product selections. The normal ON regression deck selects OCFVOL and
 does not reach this path.
+
+## 69. Exported recursive Make variables leave Windows `-j` builds serial
+
+**Variants:** all; build tooling only. Reproduced with Rtools 4.5's GNU Make
+4.4.1 (MSYS) on Windows.
+
+**Location:** `bin/makefile`, the exported source-list variables
+(`sourceList`, `includes`, `mods`, `mods_mods`, `source`, `object`) and
+`FVSprgs`.
+
+**Status:** found on 19 November 2026 during MOD06. Present in pinned original
+F77 (`c2105365:bin/makefile`, lines 115 and 130–135) and in the upstream
+makefile since at least 2012; not introduced by modernization. **Repaired in
+MOD06 on 19 November 2026:** the variables are simply expanded (`:=`). Their
+values are unchanged, because every input is fixed when the makefile is read.
+No model output can change.
+
+GNU Make re-expands an exported recursive variable to build the environment of
+every recipe it starts. `sourceList` was `$(shell cat $(sourceFileList))`, and
+the other variables expand it, so each compile ran several `cat` processes in
+Make's main loop before starting. Process creation is cheap on macOS and
+Linux, so this went unnoticed there. Under MSYS on Windows it costs about as
+much as a small compile: `make FVSie.setup -j12` never had more than one
+compiler running (Make's `--debug=jobs` log showed one live child throughout),
+and it averaged about 5 seconds per object. A minimal makefile with a single
+such export kept 5 of 12 jobs running; with `:=` it ran all 12. After the
+repair, 432 remaining IE objects compiled and linked in 118 seconds at `-j12`.

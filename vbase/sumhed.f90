@@ -3,6 +3,7 @@
 !====================!
 ! VBASE $Id$
 subroutine SUMHED
+  use ISTFNB_MOD, only: ISTFNB
   implicit none
 
   !  THIS SUBROUTINE WRITES A HEADER FOR THE SUMMARY OUTPUT ON THE
@@ -21,7 +22,7 @@ subroutine SUMHED
 
   character(len=2) :: CRMT(5)
 
-  integer :: I1,I2,ISTFNB,ISTLNB
+  integer :: I1,I2,ISTLNB
 
   !  DEFINITION OF LOCAL VARIABLES:
 

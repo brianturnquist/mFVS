@@ -115,7 +115,9 @@ def main() -> None:
     global TOOL
     if not shutil.which("gcc") or not shutil.which("gfortran"):
         raise SystemExit("GNU C and Fortran compilers are required")
-    with tempfile.TemporaryDirectory(prefix="mfvs-build-check-", dir="/private/tmp" if sys.platform == "darwin" else None) as name:
+    # Windows cannot delete the fixture libraries while ctypes holds them loaded.
+    with tempfile.TemporaryDirectory(prefix="mfvs-build-check-", dir="/private/tmp" if sys.platform == "darwin" else None,
+                                     ignore_cleanup_errors=sys.platform == "win32") as name:
         root = Path(name)
         TOOL = root / "fvsbuild"
         subprocess.run(["gcc", "-O2", "-o", str(TOOL), str(ROOT / "bin/fvsbuild.c")], check=True)
