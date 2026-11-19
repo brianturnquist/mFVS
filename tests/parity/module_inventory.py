@@ -247,13 +247,19 @@ def scan(path: str) -> tuple[list[dict], list[dict], list[dict]]:
     return units, layouts, directives
 
 
-def build_index() -> dict:
-    selected, views = defaultdict(set), {}
+def manifest_views() -> dict[str, dict[str, str]]:
+    """Each variant's selected files by upper-case basename (its include view)."""
+    views = {}
     for manifest in sorted((ROOT / "bin").glob("FVS??_sourceList.txt")):
-        variant = manifest.name[3:5]
         paths = [(manifest.parent / name).resolve().relative_to(ROOT).as_posix() for name in manifest.read_text().split()]
-        views[variant] = {Path(path).name.upper(): path for path in paths}
-        for path in paths:
+        views[manifest.name[3:5]] = {Path(path).name.upper(): path for path in paths}
+    return views
+
+
+def build_index() -> dict:
+    selected, views = defaultdict(set), manifest_views()
+    for variant, view in views.items():
+        for path in view.values():
             selected[path].add(variant)
     include_paths = {(ROOT / name).resolve().relative_to(ROOT).as_posix() for name in
                      (ROOT / "bin/fortran_includes.txt").read_text().split()}
@@ -524,14 +530,390 @@ def build_index() -> dict:
             "method": "conservative lexical source index; CPP alternatives retained; no semantic alias proof"}
 
 
+# ---------------------------------------------------------------------------
+# SP01: compile-time variant inputs (configuration inventory).
+
+SIZE_NAMES = ("MAXSP", "MAXTRE", "MAXTP1", "MAXPLT", "NSPSPE", "MXFRCDS")
+IDENTITY_NAMES = ("VARIANTCD", "LMETRICVAR", "VARACD")
+CONFIG_WORD = re.compile(r"\b(" + "|".join(SIZE_NAMES + IDENTITY_NAMES) + r")\b", re.I)
+SERIALIZERS = {"pg/putstd.f90", "pg/getstd.f90"}
+RELATION = r"(?:\.(?:eq|ne|lt|le|gt|ge)\.|==|/=|<=?|>=?)"
+
+
+def config_use(code: str, name: str) -> tuple[str, str]:
+    """Classify one statement's use of a compile-time variant input as (kind, use).
+
+    Kinds follow SP01: storage dimension, active extent, identity test or
+    initializer. A size in a declaration is storage; in executable code it is an
+    extent the run actually uses. This is lexical: SP05 still checks each site.
+    """
+    low = STRINGS.sub(lambda m: " " * len(m[0]), code).lower()
+    word = name.lower()
+    size = name.upper() in SIZE_NAMES
+    head = low.split("::")[0]
+    if re.match(r"parameter\b", low) or (DECL.match(code) and re.search(r"\bparameter\b", head)):
+        return ("storage dimension" if size else "identity test", "parameter expression")
+    if re.match(r"data\b", low):
+        literal = bool(re.search(r"/[^/]*\b\d+\s*\*", low))
+        return "initializer", "DATA with literal repeat count" if literal else "DATA"
+    if DECL.match(code) and "::" in low and re.search(r"\(\s*/|\[", low.split("::", 1)[1]) \
+            and re.search(r"=\s*(\(\s*/|\[)", low.split("::", 1)[1]):
+        return "initializer", "declaration initializer"
+    if DECL.match(code) or re.match(r"(dimension|common)\b", low):
+        return ("storage dimension", "declaration") if size else ("identity test", "declaration")
+    if not size:
+        if name.upper() == "VARACD" and re.search(r"\bvaracd\s*=(?!=)", low):
+            return "identity test", "runtime assignment"
+        return "identity test", "runtime test" if name.upper() == "VARACD" else "compile-time test"
+    if re.match(r"do\b[^=]*=", low) and re.search(r",[^,]*\b" + word + r"\b", low.split("=", 1)[1]):
+        return "active extent", "loop bound"
+    if re.search(RELATION + r"\s*\(?\s*" + word + r"\b|\b" + word + r"\s*\)?\s*" + RELATION, low):
+        return "active extent", "bound check"
+    if re.search(r":\s*" + word + r"\b", low):
+        return "active extent", "array section"
+    if re.match(r"call\b", low):
+        return "active extent", "call argument"
+    return "active extent", "other expression"
+
+
+def configuration_inventory(index: dict, collisions: dict | None = None) -> dict:
+    """Every compile-time variant input in the live sources, classified for SP01."""
+    views = manifest_views()
+    files = index["files"]
+    values = {}
+    for variant, view in views.items():
+        found = {}
+        for _, code in statements(view["PRGPRM.F90"]):
+            if re.match(r"parameter\b", code, re.I):
+                inner = re.sub(r"^parameter\s*\((.*)\)\s*$", r"\1", code, flags=re.I)
+                for item in split_fields(inner):
+                    name, _, value = item.partition("=")
+                    found[name.strip().upper()] = value.strip()
+        values[variant] = found
+    names = sorted({name for found in values.values() for name in found})
+    varying = {name: {variant: values[variant].get(name) for variant in sorted(values)}
+               for name in names if len({found.get(name) for found in values.values()}) > 1}
+    per_variant_includes = {}
+    for name in sorted({name for view in views.values() for name in view}):
+        paths = sorted({view[name] for view in views.values() if name in view})
+        if len(paths) > 1 and files[paths[0]]["include"]:
+            per_variant_includes[name] = {path: files[path]["variants"] for path in paths}
+    block_data = defaultdict(dict)
+    for unit in index["units"]:
+        if unit["kind"] == "block data":
+            block_data[unit["name"]][unit["source"]] = unit["variants"]
+    prgprm = {view["PRGPRM.F90"] for view in views.values()}
+    sites = []
+    for path, record in sorted(files.items()):
+        if not path.endswith(".f90") or path in prgprm:
+            continue
+        for line, code in statements(path):
+            if code.startswith("#"):
+                continue
+            for name in sorted({w.upper() for w in CONFIG_WORD.findall(STRINGS.sub("", code))}):
+                kind, use = config_use(code, name)
+                flags = [flag for flag, test in (("restart", path in SERIALIZERS),
+                                                 ("API", record["family"].startswith("MOD09"))) if test]
+                sites.append({"name": name, "kind": kind, "use": use, "flags": flags,
+                              "source": path, "line": line, "code": code})
+    # Link-time selection: files that not every variant links.
+    colliding_sources = ({impl["source"] for family in collisions["families"] for impl in family["implementations"]}
+                         if collisions else set())
+    selection = defaultdict(list)
+    for path, record in sorted(files.items()):
+        if len(record["variants"]) == len(views) or record["include"]:
+            continue
+        if path in prgprm:
+            continue
+        if path.startswith("volume/NVEL/"):
+            group = "NVEL (every variant but BC)"
+        elif re.match(r"(base|fire/base)/ex\w+\.f90$", path):
+            group = "extension stub"
+        elif path in colliding_sources:
+            group = "alternate implementation"
+        elif Path(path).suffix.lower() in (".c", ".cpp", ".h"):
+            group = "foreign source"
+        else:
+            group = "variant-only source (no name conflict)"
+        selection[group].append(path)
+    # Line counts comparable with the plan's audit (code lines, comments removed).
+    lines, line_files = Counter(), defaultdict(set)
+    patterns = {"do ...,MAXSP": r"\bdo\b.*=.*,\s*MAXSP\b", "do ...,MAXTRE": r"\bdo\b.*=.*,\s*MAXTRE\b"}
+    for path in files:
+        if not path.endswith(".f90") or path in prgprm:
+            continue
+        for text in (ROOT / path).read_text(encoding="latin1").splitlines():
+            code = text.split("!")[0]
+            for name in {w.upper() for w in CONFIG_WORD.findall(code)}:
+                lines[name] += 1
+                line_files[name].add(path)
+            for label, pattern in patterns.items():
+                if re.search(pattern, code, re.I):
+                    lines[label] += 1
+                    line_files[label].add(path)
+    totals = Counter((site["name"], site["kind"], site["use"]) for site in sites)
+    return {
+        "parameters": varying,
+        "per_variant_includes": per_variant_includes,
+        "block_data": {name: dict(sources) for name, sources in sorted(block_data.items())},
+        "link_selection": {group: paths for group, paths in sorted(selection.items())},
+        "sites": sites,
+        "totals": [{"name": n, "kind": k, "use": u, "statements": c} for (n, k, u), c in sorted(totals.items())],
+        "kind_totals": dict(sorted(Counter(site["kind"] for site in sites).items())),
+        "flagged": dict(sorted(Counter(f"{site['name']} {flag}" for site in sites for flag in site["flags"]).items())),
+        "code_lines": {label: {"lines": lines[label], "files": len(line_files[label])} for label in sorted(lines)},
+    }
+
+
+# ---------------------------------------------------------------------------
+# SP02: external names defined more than once across the 24 manifests.
+
+def argument_type(unit: dict, name: str) -> str:
+    """Normalized type and rank of a dummy argument, e.g. real, integer[1]."""
+    declaration = unit["declarations"].get(name)
+    if not declaration:
+        return ("integer" if name[0] in "IJKLMN" else "real") if not unit["implicit"] else "undeclared"
+    if "::" in declaration:
+        head, body = declaration.split("::", 1)
+    else:
+        match = re.match(r"^\s*(\w+(?:\s+precision)?(?:\s*\*\s*\d+|\s*\([^)]*\))?)(.*)$", declaration, re.I)
+        head, body = match[1], match[2]
+    base = re.sub(r",\s*intent\s*\([^)]*\)", "", head.lower()).replace(" ", "")
+    dimension = re.search(r"dimension\s*\(([^)]*)\)", head, re.I)
+    base = re.sub(r",?dimension\([^)]*\)", "", base)
+    item = next((f for f in split_fields(body) if re.match(name + r"\b", f, re.I)), "")
+    shape = re.match(name + r"\s*\((.*)\)", item, re.I)
+    rank = len(split_fields((shape or dimension)[1])) if (shape or dimension) else 0
+    base = {"real*4": "real", "integer*4": "integer", "doubleprecision": "real*8",
+            "real(kind=8)": "real*8", "real(8)": "real*8"}.get(base, base)
+    return f"{base}[{rank}]" if rank else base
+
+
+def collision_kind(name: str, sources: list[str]) -> tuple[str, str]:
+    """Return (kind, plan task) for a colliding name.
+
+    Precedence follows the plan's task split: extension stubs (SP08); fire,
+    including metric fire twins (SP11); establishment, including metric
+    sprouting (SP09); the named remaining collisions (SP12); other metric twins
+    and the variant equation families (SP10).
+    """
+    if any(re.match(r"(base|fire/base)/ex\w+\.f90$", s) for s in sources):
+        return "extension stub/real", "SP08"
+    if any("/fire/" in "/" + s for s in sources):
+        return "fire per-variant", "SP11"
+    if (any(part in ("estb", "strp", "vestb", "vstrp") for s in sources for part in s.split("/")[:-1])
+            or name.startswith("ES")):
+        return "establishment", "SP09"
+    if any(s.endswith("DGCONS_ENTRY.f90") for s in sources) or name in ("RDBLK1", "VOLS"):
+        return "remaining", "SP12"
+    if any(s.startswith("metric/") for s in sources):
+        return "metric twin", "SP10"
+    return "variant equation family", "SP10"
+
+
+def implementation_tag(source: str, variants: list[str], name: str) -> str:
+    """Suffix for an implementation's proposed name: its variant or family."""
+    parts = source.split("/")
+    stem = Path(source).stem.lower()
+    if len(variants) == 1:
+        return variants[0].upper()
+    if stem.startswith(name.lower()) and stem != name.lower():
+        return stem[len(name):].strip("_").upper()
+    if "_" in stem:
+        return stem.rsplit("_", 1)[1].upper()
+    if re.match(r"(base|fire/base)/ex\w+\.f90$", source):
+        return "STUB"
+    if parts[0] == "metric":
+        return "METRIC"
+    for part in parts[:-1]:
+        if part in REGIONS:
+            return part.upper()
+    return parts[-2].upper() if len(parts) > 1 else "BASE"
+
+
+def collision_inventory(index: dict) -> dict:
+    """SP02 family table: implementations, signatures, callers and batch order."""
+    units = index["units"]
+    by_id = {u["id"]: u for u in units}
+    children = defaultdict(list)
+    for unit in units:
+        if unit["parent"]:
+            children[unit["parent"]].append(unit["id"])
+
+    def subtree(uid: str) -> list[dict]:
+        found, pending = [], [uid]
+        while pending:
+            current = pending.pop()
+            found.append(by_id[current])
+            pending.extend(children[current])
+        return found
+
+    definitions = defaultdict(list)
+    for unit in units:
+        # Module procedures are namespaced by their module; only external
+        # procedures, ENTRY points and named BLOCK DATA meet at link time.
+        if unit["parent"] is not None or unit["kind"] in ("module", "program"):
+            continue
+        definitions[unit["name"]].append({"unit": unit["id"], "source": unit["source"], "entry": False,
+                                          "variants": unit["variants"], "arguments": unit["arguments"]})
+        for entry in unit["entries"]:
+            definitions[entry["name"]].append({"unit": unit["id"], "source": entry.get("source") or unit["source"],
+                                               "entry": True, "variants": entry.get("variants") or unit["variants"],
+                                               "arguments": entry["arguments"]})
+    colliding = {name: impls for name, impls in definitions.items() if len({i["source"] for i in impls}) > 1}
+    existing = set(definitions)
+    families = []
+    for name, impls in sorted(colliding.items()):
+        kind, task = collision_kind(name, [i["source"] for i in impls])
+        rows, signatures = [], []
+        for impl in impls:
+            unit = by_id[impl["unit"]]
+            scope = subtree(impl["unit"])
+            types = [argument_type(unit, argument) for argument in impl["arguments"]]
+            signatures.append(tuple(types))
+            tag = implementation_tag(impl["source"], impl["variants"], name)
+            # NVEL already uses NAME_XX for some of its own routines (FORMCL_BM
+            # and others), so fall back to NAME_FVS_XX where NAME_XX is taken.
+            proposed = f"{name}_{tag}" if f"{name}_{tag}" not in existing else f"{name}_FVS_{tag}"
+            rows.append({"proposed": proposed, "source": impl["source"], "unit": impl["unit"],
+                         "entry": impl["entry"], "variants": impl["variants"], "arguments": impl["arguments"],
+                         "types": types, "entries": [e["name"] for e in unit["entries"]],
+                         "persistent_locals": sorted({n for u in scope for n in u["persistent_locals"]}),
+                         "data_statements": sum(len(u["data"]) for u in scope)})
+        if len({len(s) for s in signatures}) > 1:
+            status = "argument count"
+        elif len(set(signatures)) == 1:
+            status = "same"
+        elif len({tuple(re.sub(r"\[\d+\]$", "", t) for t in s) for s in signatures}) == 1:
+            status = "rank"
+        else:
+            status = "types"
+        callers = sorted({(u["id"], tuple(u["variants"])) for u in units for c in u["calls"] if c["name"] == name})
+        depends = sorted({c["name"] for impl in impls for u in subtree(impl["unit"]) for c in u["calls"]
+                          if c["name"] in colliding and c["name"] != name})
+        families.append({"name": name, "kind": kind, "task": task, "signature": status,
+                         "implementations": rows, "depends_on": depends,
+                         "callers": [{"unit": uid, "variants": list(v)} for uid, v in callers]})
+    # Leaf-first levels over the collision call graph; a cycle shares a level.
+    by_name = {f["name"]: f for f in families}
+    order, low, stack, on_stack, components = {}, {}, [], set(), []
+
+    def strongconnect(node: str) -> None:
+        order[node] = low[node] = len(order)
+        stack.append(node)
+        on_stack.add(node)
+        for target in by_name[node]["depends_on"]:
+            if target not in order:
+                strongconnect(target)
+                low[node] = min(low[node], low[target])
+            elif target in on_stack:
+                low[node] = min(low[node], order[target])
+        if low[node] == order[node]:
+            component = []
+            while True:
+                member = stack.pop()
+                on_stack.discard(member)
+                component.append(member)
+                if member == node:
+                    break
+            components.append(component)
+
+    sys.setrecursionlimit(max(sys.getrecursionlimit(), 10000))
+    for name in sorted(by_name):
+        if name not in order:
+            strongconnect(name)
+    level = {}
+    for component in components:  # Tarjan emits components callee-first
+        members = set(component)
+        deps = {d for m in component for d in by_name[m]["depends_on"]} - members
+        value = 1 + max((level[d] for d in deps), default=-1)
+        for member in component:
+            level[member] = value
+            by_name[member]["level"] = value
+            by_name[member]["cycle"] = sorted(members) if len(members) > 1 else []
+    batches = []
+    for task in ("SP10", "SP11", "SP08", "SP09", "SP12"):
+        for value in sorted({f["level"] for f in families if f["task"] == task}):
+            batches.append({"task": task, "level": value,
+                            "names": [f["name"] for f in families if f["task"] == task and f["level"] == value]})
+    # A proposed name must be unique within its family and must not already
+    # be an external name somewhere in the union.
+    clashes = sorted({r["proposed"] for f in families for r in f["implementations"]
+                      if len({x["source"] for x in f["implementations"] if x["proposed"] == r["proposed"]}) > 1
+                      or r["proposed"] in existing})
+    same_variant = sorted(f["name"] for f in families
+                          if max(Counter(v for r in f["implementations"] for v in r["variants"]).values()) > 1)
+    return {"families": families, "batches": batches, "name_clashes": clashes,
+            "same_variant_duplicates": same_variant,
+            "summary": {"names": len(families),
+                        "extra_definitions": sum(len({r["source"] for r in f["implementations"]}) - 1 for f in families),
+                        "by_kind": dict(sorted(Counter(f["kind"] for f in families).items())),
+                        "by_signature": dict(sorted(Counter(f["signature"] for f in families).items())),
+                        "levels": max((f["level"] for f in families), default=-1) + 1}}
+
+
+def print_configuration(report: dict) -> None:
+    print("PRGPRM values that differ by variant:")
+    for name, values in report["parameters"].items():
+        print(f"  {name}: " + ", ".join(sorted(set(values.values()))))
+    print("Per-variant includes: " + ", ".join(f"{name} ({len(paths)} versions)"
+                                                for name, paths in report["per_variant_includes"].items()))
+    print(f"BLOCK DATA: {sum(len(s) for s in report['block_data'].values())} units under "
+          f"{len(report['block_data'])} names; per-variant names: " +
+          ", ".join(f"{name} x{len(s)}" for name, s in report["block_data"].items() if len(s) > 1))
+    print("Link-time selection (files not linked by every variant):")
+    for group, paths in report["link_selection"].items():
+        print(f"  {group}: {len(paths)}")
+    print(f"Sites: {len(report['sites'])} statements; by kind: " +
+          ", ".join(f"{k} {v}" for k, v in report["kind_totals"].items()))
+    for row in report["totals"]:
+        print(f"  {row['name']:<10} {row['kind']:<18} {row['use']:<32} {row['statements']}")
+    print("Flagged: " + ", ".join(f"{k} {v}" for k, v in report["flagged"].items()))
+    print("Code lines (comments removed): " + ", ".join(
+        f"{k} {v['lines']}/{v['files']} files" for k, v in report["code_lines"].items()))
+
+
+def print_collisions(report: dict) -> None:
+    summary = report["summary"]
+    print(f"{summary['names']} colliding names, {summary['extra_definitions']} extra definitions; "
+          f"same-variant duplicates: {report['same_variant_duplicates'] or 'none'}; "
+          f"proposed-name clashes: {report['name_clashes'] or 'none'}")
+    print("By kind: " + ", ".join(f"{k} {v}" for k, v in summary["by_kind"].items()))
+    print("Signatures: " + ", ".join(f"{k} {v}" for k, v in summary["by_signature"].items()))
+    print("Batch order (leaf first):")
+    for batch in report["batches"]:
+        print(f"  {batch['task']} level {batch['level']}: " + " ".join(batch["names"]))
+    print("Signature mismatches:")
+    for family in report["families"]:
+        if family["signature"] != "same":
+            shapes = Counter(f"{len(r['types'])}:" + ",".join(r["types"]) for r in family["implementations"])
+            print(f"  {family['name']} ({family['signature']}): " + " | ".join(
+                f"{'/'.join(sorted(r['proposed'].rsplit('_', 1)[1] for r in family['implementations'] if f'{len(r['types'])}:' + ','.join(r['types']) == shape))} "
+                f"({shape.split(':', 1)[0]} args)" for shape in shapes))
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--json", action="store_true", help="Print the complete source index to stdout")
     parser.add_argument("--procedure", help="Show a definition/ENTRY contract and all indexed callers")
     parser.add_argument("--common", help="Show native layouts and their consumers/access sites")
+    parser.add_argument("--configuration", action="store_true",
+                        help="SP01: classify every compile-time variant input (summary; --detail for all sites)")
+    parser.add_argument("--collisions", action="store_true",
+                        help="SP02: family table of names defined more than once (summary; --detail for JSON)")
+    parser.add_argument("--detail", action="store_true", help="With --configuration/--collisions, print full JSON")
     args = parser.parse_args()
     index = build_index()
-    if args.json:
+    if args.configuration or args.collisions:
+        collisions = collision_inventory(index)
+        report = configuration_inventory(index, collisions) if args.configuration else collisions
+        if args.detail:
+            print(json.dumps(report, indent=1))
+        elif args.configuration:
+            print_configuration(report)
+        else:
+            print_collisions(report)
+    elif args.json:
         print(json.dumps(index, indent=1))
     elif args.procedure:
         name = args.procedure.upper()

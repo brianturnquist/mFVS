@@ -1228,7 +1228,7 @@ subroutine BECSET
 
   if (INOSPP .lt. MAXSP) then
      write (JOSTND, 31)
-     31 format (/1X,T12,'THE FOLLOWING LARGE-TREE FACTOR '&
+     31 format (/1X,T12,'THE FOLLOWING LARGE-TREE FACTOR ',&
           &'COEFFICIENT ADJUSTMENTS WILL BE APPLIED:',&
           &2(/1X),T13,'SPP',T17,'INTERCEPT',T27,'   BEC/SS',&
           &/1X,T13,3("-"),T17,9("-"),T27,9("-"))
@@ -1240,7 +1240,7 @@ subroutine BECSET
      end do
 
      write (JOSTND, 34)
-     34 format (/1X,T12,'THE FOLLOWING LARGE-TREE CONTINUOUS '&
+     34 format (/1X,T12,'THE FOLLOWING LARGE-TREE CONTINUOUS ',&
           &'COEFFICIENT ADJUSTMENTS WILL BE APPLIED:',&
           &2(/1X),T13,'SPP',&
           &T17,'    SLOPE',T27,'  SIN ASP',T37,'  COS ASP',&
@@ -1459,9 +1459,9 @@ subroutine BECSET
   !     BECINFO KEYWORD)
 
   write (JOSTND,41)
-  41 format (/T12,'THE FOLLOWING DIAMETER-HEIGHT MODEL '&
+  41 format (/T12,'THE FOLLOWING DIAMETER-HEIGHT MODEL ',&
        &'COEFFICIENTS WILL BE USED FOR DUBBING',/T12,&
-       &'MISSING HEIGHTS. MARKED COEFFICIENTS FIT A '&
+       &'MISSING HEIGHTS. MARKED COEFFICIENTS FIT A ',&
        &'CM/M MODEL; OTHERS AN IN/FT MODEL:',2(/1X),T13,'SPP',&
        &T17,'       C0',T27,'       C1',T37,'NEW'/1X,&
        &T13,3("-"),T17,9("-"),T27,9("-"),T37,3("-"))
@@ -1519,7 +1519,7 @@ subroutine BECSET
 
      if (INOSPP .lt. MAXSP) then
         write (JOSTND, 61)
-        61 format (/1X,T12,'THE FOLLOWING BREAKPOINTS '&
+        61 format (/1X,T12,'THE FOLLOWING BREAKPOINTS ',&
              &'WILL BE USED FOR ADJUSTING HEIGHT GROWTH',&
              &2(/1X),T13,'SPP',T17,'  LOW (M)',T27,' HIGH (M)',&
              &/1X,T13,3("-"),T17,9("-"),T27,9("-"))
@@ -1578,7 +1578,7 @@ subroutine BECSET
 
      if (INOSPP .lt. MAXSP) then
         write (JOSTND, 71)
-        71 format (/T12,'THE FOLLOWING BREAKPOINTS '&
+        71 format (/T12,'THE FOLLOWING BREAKPOINTS ',&
              &'WILL BE USED FOR ADJUSTING MORTALITY',&
              &2(/1X),T13,'SPP',T17,' LOW (CM)',T27,'HIGH (CM)',&
              &/T13,3("-"),T17,9("-"),T27,9("-"))

@@ -1384,7 +1384,8 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
 
   if (LOK) then
      BC(I)%Spp = ISPL
-     write(JOSTND,2902) KEYWRD,I,KARD(2)(1:3),&
+     ! Bug 28: FORMAT 2902 prints the species code after its text.
+     write(JOSTND,2902) KEYWRD,I,KARD(2)(1:3),ISPL,&
           &(BC(I)%Mort(K),  K = 1,ACTIVE),&
           &(BC(I)%Suprs(K), K = 1,ACTIVE),&
           &(BC(I)%Yr(K),    K = 1,ACTIVE)
@@ -1404,7 +1405,11 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
 
   3000 continue
   IDT = 1
-  IKD = 2004
+  ! Bug 28: DMCYCL applies biocontrol from activity 2010; 2004 is MISTHMOD's.
+  IKD = 2010
+  ! The reader above rejects PARMS records (any nonzero KODE), so a DMBCA
+  ! record never carries one; the unassigned flag used to decide this.
+  IPRMPT = 0
   if (LNOTBK(1)) IDT = IFIX(ARRAY(1))
 
   if (IPRMPT.gt.0) then

@@ -2,7 +2,7 @@
 
 import unittest
 
-from module_inventory import build_index
+from module_inventory import build_index, collision_inventory, configuration_inventory
 
 
 class ModuleInventoryChecks(unittest.TestCase):
@@ -10,6 +10,8 @@ class ModuleInventoryChecks(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.index = build_index()
         cls.units = cls.index["units"]
+        cls.collisions = collision_inventory(cls.index)
+        cls.configuration = configuration_inventory(cls.index, cls.collisions)
 
     def unit(self, source: str, name: str) -> dict:
         return next(u for u in self.units if u["source"] == source and u["name"] == name)
@@ -82,6 +84,39 @@ class ModuleInventoryChecks(unittest.TestCase):
         self.assertEqual(len(callers), 1)
         self.assertEqual(callers[0][0], "vbase/sumhed.f90")
         self.assertEqual(callers[0][1]["arguments"], ["ITITLE"])
+
+
+    def test_configuration_sites_are_all_classified(self) -> None:
+        # SP01: every statement naming a variant input has one of four kinds.
+        kinds = {"storage dimension", "active extent", "identity test", "initializer"}
+        self.assertTrue(self.configuration["sites"])
+        self.assertTrue(all(site["kind"] in kinds and site["use"] for site in self.configuration["sites"]))
+        self.assertLessEqual({"PRGPRM.F90", "DGCONS_ENTRY.F90"}, set(self.configuration["per_variant_includes"]))
+        self.assertLessEqual({"MAXSP", "MAXTRE", "VARIANTCD", "LMETRICVAR"}, set(self.configuration["parameters"]))
+        # The constant-expression identity tests SP04 must convert (update
+        # this to an empty set when SP04 completes).
+        constant = {s["source"] for s in self.configuration["sites"]
+                    if s["name"] == "VARIANTCD" and s["use"] == "parameter expression"}
+        self.assertEqual(constant, {"vbase/dgf.f90", "estb/esaddt.f90", "estb/esfltr.f90", "fire/base/fmcba.f90",
+                                    "fire/base/fmsnft.f90", "vbase/crown_pn.f90"})
+
+    def test_collision_families_are_consistent(self) -> None:
+        # SP02: no name is defined twice for one variant, proposed names are
+        # unique and new, and every dependency sits at a lower level unless
+        # both are in one call cycle.
+        self.assertEqual(self.collisions["same_variant_duplicates"], [])
+        self.assertEqual(self.collisions["name_clashes"], [])
+        families = {f["name"]: f for f in self.collisions["families"]}
+        for family in families.values():
+            self.assertIn(family["task"], {"SP08", "SP09", "SP10", "SP11", "SP12"})
+            self.assertGreater(len({r["source"] for r in family["implementations"]}), 1)
+            for dependency in family["depends_on"]:
+                self.assertTrue(families[dependency]["level"] < family["level"]
+                                or dependency in family["cycle"], (family["name"], dependency))
+        self.assertEqual(families["BALMOD"]["signature"], "argument count")
+        # NVEL already defines FORMCL_BM, so the FVS implementation needs the fallback.
+        proposed = {r["source"]: r["proposed"] for r in families["FORMCL"]["implementations"]}
+        self.assertEqual(proposed["bm/formcl.f90"], "FORMCL_FVS_BM")
 
 
 if __name__ == "__main__":

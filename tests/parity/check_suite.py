@@ -29,6 +29,7 @@ import tempfile
 sys.dont_write_bytecode = True  # keep the repository free of __pycache__
 
 from compare_outputs import UUID, compare_directories
+import poison_storage
 from prepare_builds import (CORRECTED_REFERENCE, CORRECTED_REFERENCE_NVEL,
                             REFERENCE, REFERENCE_NVEL, ROOT, archive,
                             copy_working_tree, git, reference_accommodations,
@@ -106,32 +107,83 @@ def snapshot(state: str, revision: str | None, target: Path) -> None:
         reference_accommodations(target)
 
 
+def use_working_decks(tree: Path, variants: list[str]) -> None:
+    """Give a reference snapshot the working tree's test folders.
+
+    New or changed decks then run on every reference as well as on the
+    candidate, so their outputs are compared rather than reported as present
+    only in the working tree. Generated outputs in the checkout are not copied.
+    """
+    for variant in variants:
+        folder = f"tests/FVS{variant}"
+        names = subprocess.check_output(["git", "-C", str(ROOT), "ls-files", "-z", "--cached", "--others",
+                                         "--exclude-standard", "--", folder]).decode().split("\0")
+        shutil.rmtree(tree / folder)
+        for name in filter(None, names):
+            if (ROOT / name).is_file():
+                (tree / name).parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(ROOT / name, tree / name)
+
+
 def inventory(directory: Path) -> dict[str, str]:
     return {str(path.relative_to(directory)): sha256(path)
             for path in sorted(directory.rglob("*")) if path.is_file()}
 
 
-def run_key(tree: Path, variant: str, toolchain: str) -> tuple[str, dict[str, str]]:
+DEFAULT_PROGRAM = "FVS{variant}"
+
+
+def program_target(template: str, variant: str) -> tuple[str, str]:
+    """The command a variant's decks run, and the make target that builds it.
+
+    The default runs each variant's own program. A template such as
+    "FVSall --variant={variant}" will select a default configuration of a
+    combined program once SP15/SP16 provide one; until then the build target
+    must still be one of the per-variant programs.
+    """
+    command = template.format(variant=variant)
+    target = command.split()[0]
+    if not re.fullmatch(r"FVS[a-z]{2}", target):
+        raise RuntimeError(f"no build rule for program {target!r} before SP15/SP16")
+    return command, target
+
+
+def run_key(tree: Path, variant: str, toolchain: str,
+            mode: dict | None = None) -> tuple[str, dict[str, str]]:
     """Identify a run by everything that can change its outputs."""
     tests = inventory(tree / "tests" / f"FVS{variant}")
-    identity = {"toolchain": toolchain, "build": selected_inputs(tree, variant), "tests": tests}
+    target = program_target((mode or {}).get("program") or DEFAULT_PROGRAM, variant)[1]
+    identity = {"toolchain": toolchain, "build": selected_inputs(tree, target[3:5]), "tests": tests}
+    if mode:
+        identity["mode"] = mode
     return hashlib.sha256(json.dumps(identity, sort_keys=True).encode()).hexdigest()[:24], tests
 
 
 def build_and_run(tree: Path, variant: str, tests: dict[str, str], store: Path,
-                  jobs: int, env: dict[str, str]) -> None:
-    """Build one variant, run its suite, and keep only the generated files."""
+                  jobs: int, env: dict[str, str], template: str = DEFAULT_PROGRAM) -> None:
+    """Build the program a variant's decks use, run them, keep only generated files."""
+    command, target = program_target(template, variant)
     scratch = store.with_name(store.name + ".partial")
     if scratch.exists():
         shutil.rmtree(scratch)
     (scratch / "files").mkdir(parents=True)
     with (scratch / "build.log").open("wb") as log:
-        built = subprocess.run(make_command(f"FVS{variant}.setup", f"-j{jobs}"), cwd=tree / "bin",
+        built = subprocess.run(make_command(f"{target}.setup", f"-j{jobs}"), cwd=tree / "bin",
                                env=env, stdout=log, stderr=subprocess.STDOUT)
-    program = tree / "bin" / (f"FVS{variant}.exe" if WINDOWS else f"FVS{variant}")
+    program = tree / "bin" / (f"{target}.exe" if WINDOWS else target)
     if built.returncode or not program.is_file():
         raise RuntimeError(f"build failed; see {scratch / 'build.log'}")
     directory = tree / "tests" / f"FVS{variant}"
+    if command != f"FVS{variant}":
+        # Point this variant's decks at the chosen program configuration. The
+        # rewritten makefile is an input, not a result.
+        makefile = directory / "makefile"
+        text = makefile.read_text()
+        rewritten = re.sub(rf"\.\./\.\./bin/FVS{variant}\b", lambda _: "../../bin/" + command, text)
+        if rewritten == text:
+            raise RuntimeError(f"tests/FVS{variant}/makefile does not run ../../bin/FVS{variant}")
+        makefile.write_text(rewritten)
+        tests = {**tests, "makefile": sha256(makefile)}
     with (scratch / "suite.log").open("wb") as log:
         subprocess.run(make_command("--ignore-errors"), cwd=directory, env=env, stdin=subprocess.DEVNULL,
                        stdout=log, stderr=subprocess.STDOUT, timeout=3600)
@@ -255,6 +307,15 @@ def main() -> int:
     parser.add_argument("--workers", type=int, default=4, help="Variants built and tested at once")
     parser.add_argument("--jobs", type=int, default=4, help="Compiler processes per build")
     parser.add_argument("--static-only", action="store_true", help="Check the source lists and stop")
+    parser.add_argument("--program", default=DEFAULT_PROGRAM, metavar="TEMPLATE",
+                        help="Working-tree command each variant's decks run, {variant} substituted "
+                             "(default FVS{variant}: each variant's own program)")
+    parser.add_argument("--with-new-decks", action="store_true",
+                        help="Run the working tree's tests/FVSxx decks on the references too "
+                             "(for decks that the reference commits do not have yet)")
+    parser.add_argument("--poison-storage", action="store_true",
+                        help="Raise working-tree storage sizes and poison inactive COMMON slots (SP03); "
+                             "see poison_storage.py")
     args = parser.parse_args()
     if args.immediate and args.reference != "corrected":
         parser.error("--immediate requires --reference corrected")
@@ -292,9 +353,21 @@ def main() -> int:
         tree = cache / "trees" / state
         print(f"Preparing {state}" + (f" {revision[:8]}" if revision else " (working tree)"), flush=True)
         snapshot(state, revision, tree)
+        if revision is not None and args.with_new_decks:
+            use_working_decks(tree, args.variants)
+        # Only the working tree runs a chosen configuration or poisoned storage;
+        # every reference runs its own per-variant programs.
+        mode = None
+        if state == "candidate" and (args.program != DEFAULT_PROGRAM or args.poison_storage):
+            mode = {"program": args.program, "poison": args.poison_storage}
+            if args.poison_storage:
+                targets = sorted({program_target(args.program, v)[1][3:5] for v in args.variants})
+                skipped = poison_storage.apply(tree, targets)
+                print(f"  poisoned storage in {len(targets)} variants; not poisoned: "
+                      f"{sum(len(s) for s in skipped.values())} logical or derived-extent arrays", flush=True)
         pending = []
         for variant in args.variants:
-            key, tests = run_key(tree, variant, toolchain)
+            key, tests = run_key(tree, variant, toolchain, mode)
             stores[state, variant] = cache / "runs" / key
             if not stores[state, variant].is_dir():
                 pending.append((variant, tests))
@@ -304,7 +377,8 @@ def main() -> int:
 
         def work(item: tuple[str, dict[str, str]]) -> str | None:
             try:
-                build_and_run(tree, item[0], item[1], stores[state, item[0]], args.jobs, env)
+                build_and_run(tree, item[0], item[1], stores[state, item[0]], args.jobs, env,
+                              args.program if mode else DEFAULT_PROGRAM)
             except (RuntimeError, subprocess.TimeoutExpired) as error:
                 return f"FAIL {item[0]} ({state}): {error}"
             return None

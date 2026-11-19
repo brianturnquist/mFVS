@@ -1,6 +1,6 @@
 # $Id: makefile 734 2013-03-22 22:39:10Z ncrookston.fs@gmail.com $
 
-all : StandStructure YSM-SkyRanch
+all : StandStructure YSM-SkyRanch BCRestart BCVolume BCVoleqnumInvalid BCBiocontrol
 
 StandStructure :
 	@echo "Test StandStructure (4 stands)"
@@ -130,6 +130,38 @@ YSM-SkyRanch :
 	-diff -w YSM-SkyRanchDBdump.txt YSM-SkyRanchDBdump.txt.save
 
 	@echo "Test YSM-SkyRanch (15 stands) ended"
+
+# SP19 focused Canadian decks. Outputs are compared by tests/parity/check_suite.py.
+
+BCRestart :
+	@echo "Test BCRestart (straight run, then stop in 2034 and restart)"
+	rm -f BCRestart.db BCRestart_full.db BCRestart.out BCRestart_full.out BCRestart.sum BCRestart_full.sum BCRestart.stop
+	-../../bin/FVSbc --keywordfile=BCRestart.key
+	-mv BCRestart.sum BCRestart_full.sum
+	-mv BCRestart.out BCRestart_full.out
+	-mv BCRestart.db BCRestart_full.db
+	-../../bin/FVSbc --keywordfile=BCRestart.key --stoppoint=2,2034,BCRestart.stop
+	-../../bin/FVSbc --restart=BCRestart.stop
+	-diff -w BCRestart_full.sum BCRestart.sum
+	@echo "Test BCRestart ended"
+
+BCVolume :
+	@echo "Test BCVolume (valid VOLEQNUM, MCDEFECT)"
+	rm -f BCVolume.db BCVolume.out BCVolume.sum
+	-../../bin/FVSbc --keywordfile=BCVolume.key
+	@echo "Test BCVolume ended"
+
+BCVoleqnumInvalid :
+	@echo "Test BCVoleqnumInvalid (bug 47)"
+	rm -f BCVoleqnumInvalid.out BCVoleqnumInvalid.sum
+	-../../bin/FVSbc --keywordfile=BCVoleqnumInvalid.key
+	@echo "Test BCVoleqnumInvalid ended"
+
+BCBiocontrol :
+	@echo "Test BCBiocontrol (bug 28)"
+	rm -f BCBiocontrol.db BCBiocontrol.out BCBiocontrol.sum
+	-../../bin/FVSbc --keywordfile=BCBiocontrol.key
+	@echo "Test BCBiocontrol ended"
 
 clean:
 # Do nothing, no rule

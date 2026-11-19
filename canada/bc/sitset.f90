@@ -248,7 +248,7 @@ subroutine SITSET
           &'IS SET BY DEFAULT TO:', F6.1, ' SQ M/HA.')
   else
      write(JOSTND, 57) BAMAX * FT2pACRtoM2pHA
-     57 format(/1X,'MAXIMUM BASAL AREA FOR THIS STAND '&
+     57 format(/1X,'MAXIMUM BASAL AREA FOR THIS STAND ',&
           &'HAS BEEN CHANGED BY KEYWORD TO:', F6.1, ' SQ M/HA.')
   end if
 
@@ -293,15 +293,21 @@ subroutine SITSET
   DIST = '  '
   PROD = '  '
   VAR = VARACD
+  ! Bug 47: BC's forest code is 0, so VOLEQDEF finds no region and leaves
+  ! VOLEQ unassigned; it also never sets the eleventh character. Start from
+  ! BC's own default, as set in GRINIT, so a code reset by an invalid
+  ! VOLEQNUM returns to that default instead of undefined bytes.
   do ISPC = 1,MAXSP
      read(FIAJSP(ISPC),'(I4)')IFIASP
      if (((METHC(ISPC).eq.6).or.(METHC(ISPC).eq.9)).and.&
           &(VEQNNC(ISPC).eq.'           ')) then
+        VOLEQ = '---        '
         call VOLEQDEF(VAR,IREGN,FORST,DIST,IFIASP,PROD,VOLEQ,ERRFLAG)
         VEQNNC(ISPC) = VOLEQ
      end if
      if (((METHB(ISPC).eq.6).or.(METHB(ISPC).eq.9)).and.&
           &(VEQNNB(ISPC).eq.'           ')) then
+        VOLEQ = '---        '
         call VOLEQDEF(VAR,IREGN,FORST,DIST,IFIASP,PROD,VOLEQ,ERRFLAG)
         VEQNNB(ISPC) = VOLEQ
      end if

@@ -927,7 +927,7 @@ subroutine MISPRT
 
   900 format(1X,I5,'1',25X,'DWARF MISTLETOE INFECTION AND MORTALITY ',&
        &'STATISTICS DETAIL TABLE')
-  905 format(1X,I5,' ',32X,'(BY SPECIES, BY 5 CM DIAMETER CLASS,'&
+  905 format(1X,I5,' ',32X,'(BY SPECIES, BY 5 CM DIAMETER CLASS,',&
        &' BY CYCLE)')
   910 format(1X,I5,' ',114('-'))
   925 format(1X,I5,' ','MEAN DMR = Average DM rating for all trees of',&

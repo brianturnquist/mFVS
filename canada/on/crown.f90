@@ -98,6 +98,8 @@ subroutine CROWN
      call OPGET(I,5,IDATE,IACTK,NP,PRM)
      IDT = IDATE
      call OPDONE(I,IDT)
+     ! Bug 44: take the species from the keyword, as the U.S. CROWN routines do.
+     ISPCC = INT(PRM(1))
 
      !  ISPCC<0 CHANGE FOR ALL SPECIES IN THE SPECIES GROUP
      !  ISPCC=0 CHANGE FOR ALL SPEICES

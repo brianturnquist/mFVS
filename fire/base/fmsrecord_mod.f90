@@ -81,7 +81,7 @@ contains
        write(JSNOUT,222)
        ! Retain the existing metric heading apostrophe (bug 22) for parity
        ! with the immediate baseline; its original F77 text is recorded there.
-       201 format(' ESTIMATED SNAG CHARACTERISTICS '&
+       201 format(' ESTIMATED SNAG CHARACTERISTICS ',&
             &'(BASED ON STOCKABLE AREA), STAND ID=',A)
        212 format(13X,'DEATH CURR',&
             &' HEIGHT CURR VOLUME (M3)       ',&

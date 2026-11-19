@@ -596,6 +596,16 @@ DBSIN/FMDOUT comparisons confirm the exercised messages. The other thirteen
 FORMATs remain unfixed. The full regression decks cannot reach these
 messages because BC/ON stop at keyword input (bug 5).
 
+**Repaired in SP19 on 19 November 2026:** the remaining 14 breaks in 13
+FORMATs end their first line with `',&`, as the suggested fix describes. The
+ON MORTS FORMAT 351 now lives in `vbase/morts.f90`, and the CLIN message is
+`clim/base/clin.f90` FORMAT 9106 (originally `metric/clim/clin.f` 106).
+`tests/parity/check_canadian_repairs.py` tokenizes each repaired FORMAT into
+text and edit descriptors, merges adjacent text, and requires the sequence
+to equal the original F77 FORMAT at `c2105365`; all 13 match, all 13
+pre-repair versions differ, and no quote-joined split remains in any
+selected source. The U.S. CLIN branch and every other FORMAT are unchanged.
+
 At the audit baseline, nineteen FORMAT statements split a text item
 across two lines with no comma between the halves:
 
@@ -811,6 +821,18 @@ tables. Keep the existing formula during M13a's structural extraction.
 `c2105365:metric/newmist/misin.f`; DMCYCL's original consumer also selects
 activity 2010. Unfixed. M12a repairs BC's separate field-width defect (bug 5)
 and preserves these biocontrol handlers.
+
+**Repaired in SP19 on 19 November 2026:** the DMBCI echo passes `ISPL`, DMBCA
+schedules activity 2010, and DMBCA sets `IPRMPT = 0`. The last follows the
+reader's own contract: MISIN rejects every record with a nonzero KODE,
+PARMS records included, so a DMBCA record never carries PARMS; accepting
+them as FMIN does would be a new feature. The new `tests/FVSbc/BCBiocontrol`
+deck defines agent 1 for PL and applies it in 2024. Before the repair it
+stops with `Fortran runtime error: Expected INTEGER for item 4`; afterwards
+the echo reads `Host species: PL (CODE= 7)` and the activity summary shows the
+application DONE IN 2024, so DMCYCL found it. That summary labels the
+activity `BASE *UNKNOWN`, because the activity-name table has no entry for
+code 2010; the label is cosmetic and left unchanged.
 
 - DMBCI's unconditional WRITE supplies keyword, agent index, species text
   and REAL mortality values. FORMAT 2902 also expects an integer species
@@ -1371,7 +1393,14 @@ consistently. Validate resulting fuel selection as a separate model change.
 
 **Status:** reproduced during F15–F20 verification on 16 November 2026.
 Present in original F77 `c2105365` (`canada/on/crown.f:116-146`);
-deliberately unfixed.
+deliberately unfixed. **Repaired in SP19 on 19 November 2026; see below.**
+
+**Repair:** `ISPCC = INT(PRM(1))` after OPDONE, as in the U.S. routines. The
+new `tests/FVSon/ONCrnmult` deck applies CRNMULT 0.5 to MH in 2004 and 0.8 to
+all species in 2014. Compared with the same deck without CRNMULT, the first
+cycle changes the crowns of 48 of 50 MH records and no BE or IW record; from
+2014 every species changes. Before the repair the same comparison changed no
+MH crown at all, the multiplier having gone to whatever index the stack held.
 
 For each scheduled CRNMULT activity, CROWN reads the keyword parameters with
 OPGET but never assigns `ISPCC = INT(PRM(1))`, which the other variants'
@@ -1463,11 +1492,23 @@ the pristine-original result remains 22/24, with only BC/ON differing.
 **Location:** reached from the VOLEQNUM handler (`vbase/initrevol_mod.f90`;
 formerly `canada/bc/initre.f90`) through `volume/voleqdef.f90`; the
 printed values appear in the listing's NATIONAL VOLUME ESTIMATOR LIBRARY
-EQUATION NUMBERS table. Source of the undefined values not diagnosed.
+EQUATION NUMBERS table. Diagnosed in SP19: `canada/bc/sitset.f90`.
 
 **Status:** reproduced during F21 verification on 16 November 2026 at
 `94c172ea`. Original F77 `c2105365` cannot reach this path for BC (bug 5).
-Deliberately unfixed.
+**Diagnosed and repaired in SP19 on 19 November 2026; see below.**
+
+**Cause and repair:** an invalid code blanks `VEQNNC`/`VEQNNB`, and BC's
+SITSET then fills blank entries by calling VOLEQDEF with region
+`KODFOR/100`. BC's forest code is 0, so VOLEQDEF matches no region and
+returns SITSET's local `VOLEQ` unassigned; it also never writes the eleventh
+character, since its dummy is ten characters long. SITSET now starts `VOLEQ`
+from BC's own default, `---` (the value BC's GRINIT gives every species),
+before each call, so a reset code returns to that default, as the message
+promises, and a valid region still overwrites the first ten characters. The
+new `tests/FVSbc/BCVoleqnumInvalid` deck reproduces the original 112
+non-printable bytes before the repair; afterwards the table is printable
+text with `---` for every species.
 
 On BC's StandStructure deck, adding `VOLEQNUM` with an invalid cubic-foot
 equation number for all species prints the expected "INVALID VOLUME
@@ -2192,3 +2233,57 @@ compiler running (Make's `--debug=jobs` log showed one live child throughout),
 and it averaged about 5 seconds per object. A minimal makefile with a single
 such export kept 5 of 12 jobs running; with `:=` it ran all 12. After the
 repair, 432 remaining IE objects compiled and linked in 118 seconds at `-j12`.
+
+## 70. BC and ON restarted projections diverge from the straight run
+
+**Variants:** BC and ON; reached by `--stoppoint`/`--restart`.
+
+**Status:** found 19 November 2026 by the SP19 restart decks
+`tests/FVSbc/BCRestart` and `tests/FVSon/ONRestart`, at `f17ff270` with the
+SP19 repairs. Original F77 `c2105365` cannot reach this path for BC or ON
+(bug 5). Unfixed; the cause has not been diagnosed.
+
+Each deck runs one stand straight through, then stops it and restarts it
+from the `.stop` file. The restarted projection does not reproduce the
+straight run. ON's Hardwood stand, stopped in 2019, differs from the first
+restarted cycle: in 2024 it has 706 rather than 716 trees per hectare, with
+a different mortality column, and the difference persists. BC's YSM029-271
+stand with the spatial mistletoe model, stopped in 2034, matches until 2043
+and differs from 2048. Both results are deterministic: a repeated stop and
+restart gives the same summary and, after run identifiers are masked, a
+byte-identical `.stop` file. The U.S. stop/restart decks (for example IE's
+iet02 against iet01) do not show this, which points to Canadian state that
+PUTSTD/GETSTD do not save or restore.
+
+The decks' `diff` of the two summaries records the divergence as an ignored
+make error in the suite status, so any change to it is detected.
+
+**Suggested fix:** compare the COMMON and extension state that BC and ON use
+with what PUTSTD/GETSTD and the extension serializers write, find the value
+that is lost, and verify with these decks that the restarted summary equals
+the straight run. MOD17 and SP06 also depend on these serializers.
+
+## 71. The build helper gives up when Windows briefly locks a fresh object
+
+**Variants:** all; build tooling only, Windows.
+
+**Location:** `replace_path` in `bin/fvsbuild.c`, used when a compiled or
+cached object is published into a build directory.
+
+**Status:** found 19 November 2026 during SP19, when ON's build of the pinned
+corrected reference stopped with `fvsbuild: cannot install voleqdef.o` while
+BC's build ran alongside it. Introduced by modernization with the helper
+(O22–O28); not in pinned original F77. **Repaired on 19 November 2026.**
+
+On Windows, publishing replaces the destination with
+`MoveFileEx(..., MOVEFILE_REPLACE_EXISTING)`. That fails with a sharing
+violation if any process still has the destination open, and a virus
+scanner or indexer commonly opens a file just written by the compiler.
+One failed attempt stopped the whole variant build. No output was ever
+wrong: the build failed rather than producing a mixed object set.
+
+**Repair:** on Windows, retry the move for up to about five seconds before
+giving up. Other platforms keep the single atomic `rename`.
+`check_build_support.py` still passes. Commits before the repair keep the
+old helper, so a reference build can still fail this way; rerunning it is
+the remedy.

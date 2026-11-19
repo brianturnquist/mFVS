@@ -195,12 +195,12 @@ reaches them.
 | SP03 | 58, 63 | Poisoned storage must fill inactive tails at run time. `-finit-*` flags skip locals in the 146 files with ENTRY and `-finit-real=snan` crashes the compiler on `vbase/morts.f90`. |
 | SP04 | 3, 10 | `IDF` in `estb/esaddt.f90` and `LTPAINV` in `estb/esfltr.f90` are among the parameter expressions to convert. Convert them unchanged; do not fix them in the same batch. |
 | SP05, SP07, SP10/SP12 for `MISINT` | 4 | Renaming is safe. Do not rewrite the mislabelled CA/OC/WS DATA blocks as assignments until the fix is decided: assignment makes the last value win, which would change `ADGP`. |
-| SP06, SP17, MOD17 | 60 and the root-disease restart limit | Compare restarted runs with restarted runs; IE restarted and continuous runs already differ in six tables. |
+| SP06, SP17, MOD17 | 60, 70 and the root-disease restart limit | Compare restarted runs with restarted runs. IE restarted and continuous runs already differ in six tables, and BC and ON restarted projections diverge from the straight run (bug 70, recorded by the SP19 restart decks). |
 | SP05–SP07, SP15 | 53, 56, 63 | Undefined values that depend on memory layout. None reaches standard outputs, but debug output and direct NVEL checks can change. Repeat runs before calling a difference a regression. |
-| MOD08, MOD12 batches that contain them | 8, 13, 17–19, 36–39, 45–47, 56 | Undefined or debug-only reads. Review in the batch; do not force an interface through with casts or blanket initialization. |
+| MOD08, MOD12 batches that contain them | 8, 13, 17–19, 36–39, 45, 56 | Undefined or debug-only reads. Review in the batch; do not force an interface through with casts or blanket initialization. |
 | NVEL boundary | 6 (R9DIB), 52, 53 | Preserve the documented direct-test controls and limits. |
 | MOD19 | 66 | Settle transaction failure behavior before migrating database resource state. |
-| SP19 (repair) | 22, 28, 44, 47 | Repair before Phase 5. 44 and 47 are undefined, layout-dependent reads (44 also writes out of bounds); 28's biocontrol handlers read an unassigned flag and stop on a type mismatch; 22 was introduced by the free-form conversion. |
+| SP19 (repaired 19 November 2026) | 22, 28, 44, 47 | Repaired before Phase 5: 44 and 47 were undefined, layout-dependent reads (44 also wrote out of bounds); 28's biocontrol handlers read an unassigned flag and stopped on a type mismatch; 22 was introduced by the free-form conversion. Their decks are now part of the BC/ON suites. |
 | SP04–SP17 (frozen) | 2 (decay code), 17, 21, 23–27, 32, 34, 43, 48 | Deterministic Canadian defects. Keep them through rename-and-dispatch; fix later as separate model changes. 24 and 25 suppress two fire reports, so those paths stay coverage gaps until fixed. |
 
 ## Phase 1. Scope, references and dependencies (complete)
@@ -445,7 +445,7 @@ reaches them.
 
 ## Phase 4. Inventories and verification support
 
-- [ ] **SP01 — Configuration inventory.**
+- [x] **SP01 — Configuration inventory.**
   Classify every compile-time variant input at the current HEAD as a storage
   dimension, active extent, identity test, initializer (BLOCK DATA or DATA),
   link-time selection (manifest-only files, stubs, alternate implementations)
@@ -457,7 +457,23 @@ reaches them.
   Acceptance: every site classified, and totals reconciled with the audit
   appendix.
 
-- [ ] **SP02 — Name-collision inventory.**
+  Result, 19 November 2026: `module_inventory.py --configuration` (summary;
+  `--detail` for every site). All 4,729 statements outside `PRGPRM` that name
+  a variant input have one kind and a use: 2,059 active extents, 1,374
+  identity tests, 978 storage dimensions and 318 initializers. Seven `PRGPRM`
+  values differ by variant; `NSPSPE` and `MXFRCDS`, not in the audit, are
+  extents like `MAXSP`. The report also lists the three per-variant includes,
+  87 BLOCK DATA units under 10 names, the link-time selection groups and the
+  restart (MAXSP 210, MAXPLT 12, MAXTRE 4) and API sites. Totals reconcile
+  with the appendix once its 24 `PRGPRM` files are added back: `VARIANTCD`
+  932 lines in 60 files, `LMETRICVAR` 402 in 86 and `VARACD` 589 in 123
+  exactly, `do …,MAXSP` 974 lines in 310 files (audit 972) and DATA using
+  MAXSP 316 statements (audit 309 lines). Details are in
+  [MODULE_INVENTORY.md](MODULE_INVENTORY.md); the inventory tests check that
+  every site has a kind and pin the six files whose parameter expressions
+  SP04 must convert.
+
+- [x] **SP02 — Name-collision inventory.**
   For each of the 211 colliding names, list the implementations, consuming
   variants, ENTRY points, argument lists, SAVE/DATA locals and callers.
   Compare signatures across the implementations of a family; a dispatcher
@@ -469,7 +485,21 @@ reaches them.
   Acceptance: a family table with an ordered batch list (leaf routines first)
   and mismatches recorded.
 
-- [ ] **SP03 — Make the harness ready for a combined program.**
+  Result, 19 November 2026: `module_inventory.py --collisions`. 211 names
+  with 746 extra definitions and 957 implementations, as the audit
+  estimated; per task SP10 72 names, SP11 22, SP08 84, SP09 30, SP12 3. None
+  of the six apparent same-variant duplicates is real: all are explicit
+  `interface` bodies. The batch order is leaf-first over the collision call
+  graph, which has no cycles. 41 names have signature mismatches (29 argument
+  count, 8 rank, 4 type), among them BALMOD, DUBSCR, HTCALC, SMHTGF and ON's
+  NATCRS; each is listed in the inventory with the variants on each side.
+  Proposed names follow MOD07's convention, except that NVEL already defines
+  `FORMCL_BM` and five similar names, so those FVS implementations fall back
+  to `FORMCL_FVS_XX`. 622 implementations keep SAVE/DATA locals. The
+  inventory tests check that names are unique and new, that no variant
+  defines a name twice, and that every dependency sits at a lower level.
+
+- [x] **SP03 — Make the harness ready for a combined program.**
   Make the smallest extension to `check_suite.py` that can run any
   `tests/FVSxx` deck against a program in a chosen default configuration. Add
   a poisoned-storage mode: build with storage dimensions larger than the
@@ -477,6 +507,28 @@ reaches them.
   integer sentinels, and run with the existing traps. Do not rely on
   `-finit-*` flags (bugs 58 and 63). Acceptance: a planted output change is
   detected, and a planted read of an inactive species slot traps.
+
+  Result, 19 November 2026: `check_suite.py --program TEMPLATE` runs a
+  variant's decks against the command the template names (`{variant}`
+  substituted), building its first word and pointing the test makefile at
+  it; the template enters the run key. Until SP15/SP16 provide a combined
+  target the program must be one of the `FVSxx` programs. Planted change:
+  IE's decks run on the KT program fail 43 of 43 files against corrected IE.
+  `--poison-storage` uses `tests/parity/poison_storage.py`: it raises the
+  candidate's `PRGPRM` storage sizes to MAXSP 108, MAXTRE 6000 and MAXPLT 500,
+  generates one POISON_INACTIVE routine per variant from the inventory's
+  COMMON layouts (signalling NaN, `-HUGE` or `ACHAR(127)` in every tail; 20
+  logical and derived-extent arrays are listed as not poisoned for IE) and
+  calls it after GRINIT in the three INITRE sources.
+  `check_poison_storage.py` passes 5/5 on a planted fixture: storage is
+  raised once per size, unpoisonable arrays are reported, active-extent code
+  gives the unpoisoned output, a planted real read of an inactive species slot
+  stops with a floating-point exception, and a planted integer read changes
+  the output. Real variants cannot use the mode until SP05/SP06: IE's
+  generated routine compiles against its real includes, but 74 MAXSP-shaped
+  DATA statements in 17 files fail, which is SP05's DATA list for IE.
+  `--with-new-decks` (added for SP19) runs the working tree's test folders on
+  the references too.
 
 - [ ] **SP19 — Canadian readiness** (moved from the end of the one-program
   phase).
@@ -499,6 +551,35 @@ reaches them.
   under poisoned storage, the four repairs are verified individually, the
   U.S. variants are unchanged, and the corrected reference is re-pinned.
   The deterministic Canadian defects listed in the bug table stay frozen.
+
+  Result, 19 November 2026 (all but the re-pin): eight decks were added to
+  the BC and ON test makefiles: `BCRestart`, `ONRestart`, `ONFocused` (two
+  stands; fire, fuel, snag, down-wood, carbon, burn and mortality reports;
+  MCDEFECT; VOLEQNUM), `ONLimit` (5,828 tree records against ON's 6,000),
+  `BCVolume`, and one deck per model repair: `BCVoleqnumInvalid` (47),
+  `BCBiocontrol` (28) and `ONCrnmult` (44). BC multi-stand runs and BC
+  mistletoe were already covered by YSM-SkyRanch. The restart decks found
+  that BC and ON restarted projections diverge from the straight run,
+  deterministically; this is recorded as bug 70 and left frozen. Bugs 22,
+  28, 44 and 47 are repaired and recorded in FOUND_BUGS.
+  `check_canadian_repairs.py` verifies each one individually: the 13 FORMATs
+  print as their F77 originals (all 13 differed before), and on built
+  programs the equation table, the DMBCI echo, DMBCA's application and
+  CRNMULT's species all behave as intended; all four deck checks fail on a
+  pre-repair build. `check_suite.py --reference corrected --with-new-decks`
+  then ran the new decks on the corrected, immediate (`f17ff270`) and
+  working-tree builds. The 22 U.S. variants match both references (22/22).
+  For BC and ON, every difference is attributable to a repair: the three
+  repair decks' outputs, BC's suite status (the bug 28 stop), and bug 22's
+  apostrophe in the snag-list and mortality-report headers of StandStructure
+  and ONFocused. Every other new deck, restart files included, is
+  identical across the three builds. Poisoned-storage repeatability waits for
+  SP05/SP06, since real variants cannot build in that mode yet. Two build
+  defects found on the way are repaired: bug 69 (serial `-j` builds on
+  Windows) and bug 71 (the build helper failing when Windows briefly locks a
+  fresh object). **Still to do:** commit this pass, then pin that commit as
+  the corrected reference in `tests/parity/prepare_builds.py` and the parity
+  guidance.
 
 ## Phase 5. Runtime configuration (still 24 programs)
 

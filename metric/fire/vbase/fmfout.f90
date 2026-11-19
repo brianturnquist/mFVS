@@ -328,7 +328,7 @@ subroutine FMFOUT(IYR, FLAME, FMD, IFIRE, CFTMP)
         315 format (2(/1X,I5))
         316 format (1X,I5,1X,117('-'))
         317 format(1X,I5,33X,'******  FIRE MODEL VERSION 1.0 ******')
-        318 format (1X,I5,43X,'MORTALITY REPORT '&
+        318 format (1X,I5,43X,'MORTALITY REPORT ',&
              &'(BASED ON STOCKABLE AREA)')
         320 format (1X,I5,21X,&
              &'   NUMBER KILLED / NUMBER BEFORE ',&

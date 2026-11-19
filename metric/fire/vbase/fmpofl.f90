@@ -408,7 +408,7 @@ subroutine FMPOFL (IYR, FMD, LNMOUT)
      write (JPOTFL,143) IDPFLM
      130 format (2(/1X,I5))
      131 format (1X,I5,1X,32X,'******  FIRE MODEL VERSION 1.0 ******')
-     132 format (1X,I5,1X,40X,'POTENTIAL FIRE REPORT '&
+     132 format (1X,I5,1X,40X,'POTENTIAL FIRE REPORT ',&
           &'(BASED ON STOCKABLE AREA)')
      44 format (1X,I5,' STAND ID: ',A26,4X,'MGMT ID: ',A4)
      133 format (1X,I5,7X,' FLAME LENGTH  (M)',2X,&

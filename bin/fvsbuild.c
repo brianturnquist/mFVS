@@ -554,7 +554,14 @@ static char *make_temp_dir(const char *parent, const char *prefix)
 static int replace_path(const char *from, const char *to)
 {
 #ifdef FVS_WINDOWS
-  if (MoveFileExA(from, to, MOVEFILE_REPLACE_EXISTING)) return 0;
+  /* A virus scanner or indexer may hold a freshly written file open for a
+     moment, and MoveFileEx then fails with a sharing violation (bug 71).
+     Retry for up to about five seconds before giving up. */
+  int attempt;
+  for (attempt = 0; attempt < 50; attempt++) {
+    if (MoveFileExA(from, to, MOVEFILE_REPLACE_EXISTING)) return 0;
+    Sleep(100);
+  }
   return rename(from, to);
 #else
   return rename(from, to);
