@@ -31,7 +31,8 @@ REFERENCE = "c210536536d81fd9b46dccb9a571f0de1e55e944"
 REFERENCE_NVEL = "38548071d5aa652bb90c7f111f86b427f798a1c9"
 # MOD02: the committed, post-correction source reference. Never apply the
 # original-F77 link/arithmetic accommodations to these already corrected files.
-CORRECTED_REFERENCE = "d31a9ff0d0a51e1f0622d0a9b8d431dd310b54c4"
+# Re-pinned by SP19 (19 November 2026); previously d31a9ff0 (MOD02).
+CORRECTED_REFERENCE = "513a51c53ab74d14cbd5bd0b5aaf257c9a5687e2"
 CORRECTED_REFERENCE_NVEL = "2503c0de71cb07b7d04c4d2edba38a3ff27237fc"
 
 

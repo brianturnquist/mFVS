@@ -186,7 +186,7 @@ a difference a regression (see the next section).
 ## Known bugs and the tasks they affect
 
 No recorded bug needs fixing before Phase 3 or SP01–SP03, and the corrected
-reference at `d31a9ff0` remains valid until SP19's repairs are re-pinned. The
+reference is `513a51c5`, re-pinned by SP19 after its Canadian repairs. The
 following bugs constrain particular tasks and should be checked when a batch
 reaches them.
 
@@ -530,7 +530,7 @@ reaches them.
   `--with-new-decks` (added for SP19) runs the working tree's test folders on
   the references too.
 
-- [ ] **SP19 — Canadian readiness** (moved from the end of the one-program
+- [x] **SP19 — Canadian readiness** (moved from the end of the one-program
   phase).
   Depends on SP03. BC and ON have three standard decks between them
   (StandStructure, YSM-SkyRanch, Hardwood) and no pristine-original
@@ -552,7 +552,7 @@ reaches them.
   U.S. variants are unchanged, and the corrected reference is re-pinned.
   The deterministic Canadian defects listed in the bug table stay frozen.
 
-  Result, 19 November 2026 (all but the re-pin): eight decks were added to
+  Result, 19 November 2026: eight decks were added to
   the BC and ON test makefiles: `BCRestart`, `ONRestart`, `ONFocused` (two
   stands; fire, fuel, snag, down-wood, carbon, burn and mortality reports;
   MCDEFECT; VOLEQNUM), `ONLimit` (5,828 tree records against ON's 6,000),
@@ -577,9 +577,9 @@ reaches them.
   SP05/SP06, since real variants cannot build in that mode yet. Two build
   defects found on the way are repaired: bug 69 (serial `-j` builds on
   Windows) and bug 71 (the build helper failing when Windows briefly locks a
-  fresh object). **Still to do:** commit this pass, then pin that commit as
-  the corrected reference in `tests/parity/prepare_builds.py` and the parity
-  guidance.
+  fresh object). The pass was committed as `513a51c5` and pinned as the
+  corrected reference (NVEL `2503c0de` unchanged) in
+  `tests/parity/prepare_builds.py` and the parity guidance.
 
 ## Phase 5. Runtime configuration (still 24 programs)
 

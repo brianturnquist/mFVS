@@ -75,7 +75,8 @@ python3 -B tests/parity/check_suite.py --reference corrected --cache-dir /privat
 ```
 
 The fixed corrected source is main
-`d31a9ff0d0a51e1f0622d0a9b8d431dd310b54c4`, with NVEL
+`513a51c53ab74d14cbd5bd0b5aaf257c9a5687e2` (Phase 4, re-pinned by SP19 on 19 November 2026; previously
+`d31a9ff0`), with NVEL
 `2503c0de71cb07b7d04c4d2edba38a3ff27237fc`. Both identities are pinned in
 `prepare_builds.py`. The suite also checks HEAD as the immediate pre-change
 commit; `--immediate REV` selects another committed immediate version without
@@ -90,7 +91,11 @@ applies. Identical selected inputs share the existing content cache. Use a
 new cache directory when changing ambient compiler/Make switches; those
 settings are not all represented in the suite's run key.
 
-Phase 1 passed 24/24 against both corrected and immediate `d31a9ff0`, and
+SP19 re-pinned the reference to include the BC/ON repairs for bugs 22, 28,
+44 and 47 and the new Canadian decks; against the previous `d31a9ff0` that
+commit matched the 22 U.S. variants exactly, with every BC/ON difference
+traced to a repair (see the plan). Phase 1 passed 24/24 against both corrected
+and immediate `d31a9ff0`, and
 reproduced the separate original-F77 22/24 result. As a negative control,
 `--immediate 3f456123 --variants bc on` kept the corrected comparison at 2/2
 but rejected both older immediate runs because they precede the selected
