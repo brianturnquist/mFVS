@@ -1,6 +1,7 @@
 ../canada/bc/BCPLOT.f90
 ../common/ESHAP.f90
 ../canada/bc/PRGPRM.f90
+../base/varcfg_mod.f90
 ../common/ARRAYS.f90
 ../common/CALCOM.f90
 ../common/CALDEN.f90

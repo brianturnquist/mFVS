@@ -1,4 +1,5 @@
 ../canada/on/PRGPRM.f90
+../base/varcfg_mod.f90
 ../canada/bc/BCPLOT.f90
 
 ../common/ARRAYS.f90

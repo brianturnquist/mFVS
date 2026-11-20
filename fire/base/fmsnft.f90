@@ -3,6 +3,7 @@
 !========================!
 ! FIRE-BASE $Id$
 subroutine FMSNFT(IFFEFT)
+  use VARCFG_MOD, only: CFG_VARIANTCD
   implicit none
 
   !  SINGLE-STAND VERSION
@@ -30,12 +31,13 @@ subroutine FMSNFT(IFFEFT)
 
   !  SPECIES INDICES COUNTED AS PINE: 4-14 IN SN, 3-7 IN CS. THE CS
   !  RANGE IS PRESERVED DELIBERATELY FROM THE FORMER CS COPY (FMCSFT).
-  integer, parameter :: IPINE1 = merge(3, 4, VARIANTCD .eq. 'CS')
-  integer, parameter :: IPINE2 = merge(7, 14, VARIANTCD .eq. 'CS')
+  integer :: IPINE1,IPINE2
 
   !  ROUTINE BEGINS.
   !  DETERMINE FFE FOREST TYPE (1 OF 9 CATEGORIES) FROM FIA FOR. TYPE
 
+  IPINE1 = merge(3, 4, CFG_VARIANTCD .eq. 'CS')
+  IPINE2 = merge(7, 14, CFG_VARIANTCD .eq. 'CS')
   IFFEFT = 0
   select case (IFORTP)
   case (997, 504, 505, 510, 512, 515, 519, 520)
@@ -45,12 +47,11 @@ subroutine FMSNFT(IFFEFT)
      NPINEBA = 0
      do I = 1,ITRN
         X = FMPROB(I) * DBH(I) * DBH(I) * 0.0054542
-        select case (ISP(I))
-        case (IPINE1:IPINE2) ! pine
+        if (ISP(I).ge.IPINE1 .and. ISP(I).le.IPINE2) then ! pine
            PINEBA = PINEBA + X
-        case default ! non-pine
+        else ! non-pine
            NPINEBA = NPINEBA + X
-        end select
+        end if
      end do
      if ((PINEBA+NPINEBA) .gt.0) then
         if ((PINEBA/(PINEBA+NPINEBA)) .le.0.50) then

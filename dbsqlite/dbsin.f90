@@ -3,6 +3,7 @@
 !======================!
 ! DBSQLITE $Id$
 subroutine DBSIN (KEYWRD,ARRAY,ISDSP,SDLO,SDHI,LNOTBK,LKECHO)
+  use VARCFG_MOD, only: CFG_LMETRICVAR
   implicit none
 
   !     OPTION PROCESSOR FOR DATA BASE CONNECTIVITY
@@ -23,7 +24,6 @@ subroutine DBSIN (KEYWRD,ARRAY,ISDSP,SDLO,SDHI,LNOTBK,LKECHO)
   ! Variables
   integer :: KWCNT,KWUSED,STRLEN,IDT,ISDSP,iRet
   parameter (KWCNT = 43)
-  parameter (KWUSED = MERGE(39,KWCNT,LMETRICVAR))
   integer,parameter :: MxMsg = 100
   character(LEN = MxMsg) :: Msg
   character(len=8) :: TABLEME(KWCNT)
@@ -65,6 +65,7 @@ subroutine DBSIN (KEYWRD,ARRAY,ISDSP,SDLO,SDHI,LNOTBK,LKECHO)
 
   !     **********          EXECUTION BEGINS          **********
 
+  KWUSED = MERGE(39,KWCNT,CFG_LMETRICVAR)
   10 continue
   call KEYRDR (IREAD,JOSTND,.false.,KEYWRD,LNOTBK,&
        &ARRAY,IRECNT,KODE,KARD,LFLAG,LKECHO)

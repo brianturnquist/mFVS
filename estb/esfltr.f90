@@ -3,6 +3,7 @@
 !===================!
 ! ESTB $Id$
 subroutine ESFLTR
+  use VARCFG_MOD, only: CFG_VARIANTCD
   implicit none
 
   !      CALLED AFTER CRATET TO COLLECT INVENTORY INFORMATION FOR
@@ -26,14 +27,14 @@ subroutine ESFLTR
   integer :: IHOLD
   real    :: PIX,D,ZPROB,CHEK,HEIGHT
   logical :: LTPAINV
-  parameter (LTPAINV = VARIANTCD.eq.'AK'.or.VARIANTCD.eq.'CI'.or.&
-       &VARIANTCD.eq.'EM'.or.VARIANTCD.eq.'IE'.or.VARIANTCD.eq.'KT')
   equivalence (WK5,IDENWK),(WK6,IPLOT)
 
   !     ONLY THE FORMER ESTB VERSION OF THIS ROUTINE (AK, CI, EM, IE, KT)
   !     TALLIED TPAAINV. THE FORMER STRP VERSION LEFT IT UNTOUCHED, AND IT
   !     IS SAVED IN RESTART FILES, SO KEEP THAT DISTINCTION.
 
+  LTPAINV = CFG_VARIANTCD.eq.'AK'.or.CFG_VARIANTCD.eq.'CI'.or.&
+       &CFG_VARIANTCD.eq.'EM'.or.CFG_VARIANTCD.eq.'IE'.or.CFG_VARIANTCD.eq.'KT'
   do I = 1,MAXPLT
      BAAINV(I) = 0.0
      if (LTPAINV) TPAAINV(I) = 0.0

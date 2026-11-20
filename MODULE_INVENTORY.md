@@ -141,7 +141,7 @@ each block batch must resolve member-level resets before moving declarations.
 | MOD20 other extensions | EMCOM, FFCOM, TWIGCOM |
 | MOD24 separate RNG streams | RANCOM, ESRNCM, DMRNCM, RRANN |
 | ORGANON boundary/shared adapters | ORGANON, GGCOM, INFO, SITEFPRM |
-| SP04 configuration owner (formerly MOD16) | METRIC |
+| SP07 with the RDBLK1 BLOCK DATA (deferred from SP04's owner, VARCFG_MOD) | METRIC |
 
 PRGPRM, FMPARM and declaration-only parameter definitions form the configuration
 layer. Preserve compiled VARIANTCD/LMETRICVAR and every native value/kind/bound;
@@ -240,20 +240,24 @@ includes differ by variant: `PRGPRM` (24 versions), `FMBIOGRP` (3) and
 per-variant: BLKDAT ×24, FMCBLK ×21, CUBRDS ×20, RDBLK1 ×15 and ESBLKD ×2.
 
 Every statement that names one of these inputs, or the runtime `VARACD`,
-has one kind and a use (4,729 statements outside `PRGPRM`):
+has one kind and a use (4,715 statements outside `PRGPRM` after SP04;
+4,729 at SP01):
 
 | Kind | Statements | Uses |
 |---|---:|---|
 | Active extent | 2,059 | loop bounds (MAXSP 976, MAXTRE 97, MAXPLT 17, NSPSPE 26), call arguments (MAXSP 467, MAXTRE 37), bound checks, array sections, other expressions, and the dead-record start `MAXTP1` (56) |
-| Identity test | 1,374 | `VARIANTCD` 510 compile-time tests plus 11 in parameter expressions; `LMETRICVAR` 349 plus 5; `VARACD` 477 runtime tests, 20 assignments, 2 declarations |
+| Identity test | 1,360 | `VARIANTCD` 510 compile-time tests and 1 declaration (the VARCFG_MOD copy); `LMETRICVAR` 349 and 1; `VARACD` 477 runtime tests, 20 assignments, 2 declarations. SP04 removed the 11 `VARIANTCD` and 5 `LMETRICVAR` parameter expressions |
 | Storage dimension | 978 | declarations (MAXSP 686, MAXTRE 230, MAXPLT 42, NSPSPE 10, MXFRCDS 2) and 8 size parameter expressions |
 | Initializer | 318 | DATA using MAXSP (278, plus 38 with literal repeat counts), NSPSPE (1) and `VARACD` (1) |
 
 Flags mark the restart serializers (`pg/putstd.f90`, `pg/getstd.f90`: MAXSP
 210, MAXPLT 12, MAXTRE 4 statements) and the API adapters (MAXSP 31, MAXTRE 4,
-MAXPLT 1). The `VARIANTCD` parameter expressions are in `vbase/dgf.f90`,
+MAXPLT 1). The `VARIANTCD` parameter expressions that were in `vbase/dgf.f90`,
 `estb/esaddt.f90`, `estb/esfltr.f90`, `fire/base/fmcba.f90`,
-`fire/base/fmsnft.f90` and `vbase/crown_pn.f90`.
+`fire/base/fmsnft.f90` and `vbase/crown_pn.f90`, and the `LMETRICVAR` ones in
+`base/evldx.f90`, `base/stats.f90` and `dbsqlite/dbsin.f90`, now read the
+runtime copies in VARCFG_MOD (`base/varcfg_mod.f90`, SP04); the inventory
+test requires that none return.
 
 Link-time selection: of the files not linked by every variant, 709 hold
 alternate implementations of a colliding name, 10 are extension stubs

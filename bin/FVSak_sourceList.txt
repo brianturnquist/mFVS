@@ -3,6 +3,7 @@
 
 ../ak/common/CRCOEF.f90
 ../ak/common/PRGPRM.f90
+../base/varcfg_mod.f90
 ../common/ESCOMN.f90
 
 ../common/ARRAYS.f90

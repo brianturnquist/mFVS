@@ -3,6 +3,7 @@
 !====================================!
 ! BASE $Id$
 subroutine STATS
+  use VARCFG_MOD, only: CFG_LMETRICVAR
   implicit none
 
   !  THIS ROUTINE COMPUTES STATISTICS THAT DESCRIBE THE INPUT
@@ -29,7 +30,7 @@ subroutine STATS
   include 'METRIC.f90'
 
   ! Variables
-  integer,parameter :: NSTAT = MERGE(4,6,LMETRICVAR)
+  integer :: NSTAT
   character(len=19) :: LABELS(6),LABIMP(6),LABMET(4)
   character(len=4) :: SP(MAXSP)
   character(len=4) :: SPECCD(MAXSP)
@@ -61,6 +62,7 @@ subroutine STATS
   !  IF THERE ARE NO TREE RECORDS, OR STATS OPTION WAS NOT REQUESTED,
   !  RETURN.
 
+  NSTAT = MERGE(4,6,CFG_LMETRICVAR)
   if (.not.LSTATS.or.ITRN.eq.0) return
 
   !  INITIALIZE.

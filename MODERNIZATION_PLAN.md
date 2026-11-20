@@ -583,7 +583,7 @@ reaches them.
 
 ## Phase 5. Runtime configuration (still 24 programs)
 
-- [ ] **SP04 — Make variant identity a runtime value** (supersedes MOD16).
+- [x] **SP04 — Make variant identity a runtime value** (supersedes MOD16).
   Depends on SP19. Add a configuration owner module, set before anything
   reads it: earlier than GRINIT and earlier than `filopn`, which already reads
   `LMETRICVAR`. Initially each program copies its `PRGPRM` constants into it,
@@ -601,6 +601,44 @@ reaches them.
   retired by this task. Its requirement survives: routines that may run
   before GRINIT must read identity from the configuration owner, never from
   runtime `VARACD`.
+
+  Result, 20 November 2026: the owner is VARCFG_MOD (`base/varcfg_mod.f90`,
+  added to all 24 manifests after `PRGPRM`). It includes the variant's
+  `PRGPRM` and holds `CFG_VARIANTCD` and `CFG_LMETRICVAR`, initialized from
+  `VARIANTCD` and `LMETRICVAR` when the program is loaded, so they are set
+  before GRINIT, `filopn` and the library entry points. The inventory's
+  list of six files was incomplete: there were 11 `VARIANTCD` and 5
+  `LMETRICVAR` parameter statements in nine files, the extra three being
+  `base/evldx.f90` (the BC/ON SPMCDBH, DBHDIST and SUMSTAT limits),
+  `base/stats.f90` (`NSTAT`) and `dbsqlite/dbsin.f90` (`KWUSED`). Each
+  became a local variable assigned from the owner at its routine's first
+  executable statement; the dependent constants `KRWGS`, `KWO` (DGFPAC) and
+  `KHWEL` (DGFTU) moved with it. Two uses were constant contexts: ESADDT's
+  `case (IDF)` is now `case default` testing `ISP(I).eq.IDF` (3 or 5,
+  disjoint from the other case values), and FMSNFT's
+  `case (IPINE1:IPINE2)` is the equivalent inclusive range test. FMCBA,
+  CROWN and DBSIN have ENTRY points; none of them reads a converted value,
+  so the assignment at the top of the main entry suffices. The
+  configuration report now has no `VARIANTCD`/`LMETRICVAR` parameter
+  expression (4,715 sites; 1,360 identity tests), and the inventory test
+  asserts that set is empty.
+
+  The full suite passes **24/24** against corrected `513a51c5` and **24/24**
+  against immediate `b7431731` (Windows, Rtools 4.5 gfortran 14.3.0; fresh
+  cache). The source-list check, the inventory tests and
+  `check_build_support.py` pass, and `git diff --check` is clean. The
+  original-F77 comparison was not rerun: no arithmetic changed. Coverage
+  limit: the suite does not report which of the edited branches its decks
+  reach (ESADDT's add-trees output and FMSNFT's SN/CS forest-type path in
+  particular); their equivalence rests on the review above.
+
+  Two items are deferred rather than done. The METRIC selector `LMTRIC`
+  is COMMON storage initialized only by the `rd/rdblk1bc.f90` BLOCK DATA;
+  moving it now would mean a second copy or an early BLOCK DATA change, so
+  it moves with SP07's conversion of that unit. `VARACD` is unchanged:
+  GRINIT still sets it from `VARIANTCD`, which equals `CFG_VARIANTCD`, so
+  nothing printed or stored differs, and moving it is COMMON-ownership work
+  for MOD23.
 
 - [ ] **SP05 — Separate species storage from the active species count.**
   Introduce the active count, defaulting to the variant's native `MAXSP`. Move

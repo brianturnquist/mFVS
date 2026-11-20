@@ -3,6 +3,7 @@
 !============================================!
 ! PN, WC, OP $Id$
 subroutine CROWN
+  use VARCFG_MOD, only: CFG_VARIANTCD
   implicit none
 
   !  THIS SUBROUTINE IS USED TO DUB MISSING CROWN RATIOS AND
@@ -54,7 +55,7 @@ subroutine CROWN
   !  THE COEFFICIENT BANKS CONCATENATE PN/OP'S 17 AND WC'S 16 NATIVE ROWS.
   !  THE CONSTANT OFFSET SELECTS WC'S ROWS WITHOUT CHANGING THEIR VALUES.
 
-  integer, parameter :: IBANK = merge(17, 0, VARIANTCD .eq. 'WC')
+  integer :: IBANK
 
   data MYACTS/81/
 
@@ -73,6 +74,7 @@ subroutine CROWN
   !               33=PY, 34=DG, 35=HT, 36=CH, 37=WI, 38=  , 39=OT
 
   ! Check whether debugging is enabled
+  IBANK = merge(17, 0, CFG_VARIANTCD .eq. 'WC')
   call DBCHK (DEBUG,'CROWN',5,ICYC)
 
   if (DEBUG) write(JOSTND,3)ICYC

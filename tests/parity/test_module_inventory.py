@@ -93,12 +93,11 @@ class ModuleInventoryChecks(unittest.TestCase):
         self.assertTrue(all(site["kind"] in kinds and site["use"] for site in self.configuration["sites"]))
         self.assertLessEqual({"PRGPRM.F90", "DGCONS_ENTRY.F90"}, set(self.configuration["per_variant_includes"]))
         self.assertLessEqual({"MAXSP", "MAXTRE", "VARIANTCD", "LMETRICVAR"}, set(self.configuration["parameters"]))
-        # The constant-expression identity tests SP04 must convert (update
-        # this to an empty set when SP04 completes).
+        # SP04 converted every constant-expression identity test to runtime
+        # values in VARCFG_MOD (base/varcfg_mod.f90): none may remain.
         constant = {s["source"] for s in self.configuration["sites"]
-                    if s["name"] == "VARIANTCD" and s["use"] == "parameter expression"}
-        self.assertEqual(constant, {"vbase/dgf.f90", "estb/esaddt.f90", "estb/esfltr.f90", "fire/base/fmcba.f90",
-                                    "fire/base/fmsnft.f90", "vbase/crown_pn.f90"})
+                    if s["name"] in ("VARIANTCD", "LMETRICVAR") and s["use"] == "parameter expression"}
+        self.assertEqual(constant, set())
 
     def test_collision_families_are_consistent(self) -> None:
         # SP02: no name is defined twice for one variant, proposed names are

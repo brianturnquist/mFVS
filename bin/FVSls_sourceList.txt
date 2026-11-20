@@ -2,6 +2,7 @@
 ../fiavbc/nvb_region_check.f90
 
 ../ls/common/PRGPRM.f90
+../base/varcfg_mod.f90
 
 ../common/ARRAYS.f90
 ../common/CALCOM.f90

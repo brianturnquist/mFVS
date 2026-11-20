@@ -3,6 +3,7 @@
 !========================================!
 ! VBASE $Id$
 subroutine DGF(DIAM)
+  use VARCFG_MOD, only: CFG_VARIANTCD
   implicit none
 
   !  THIS SUBROUTINE COMPUTES THE VALUE OF DDS (CHANGE IN SQUARED
@@ -170,10 +171,8 @@ contains
     !             EQUATION (THIS DATA IS ACTUALLY USED BY **DGDRIV** FOR
     !             CALIBRATION).
 
-    integer, parameter :: IB = merge(1, merge(2, 3, VARIANTCD.eq.'OP'.or.VARIANTCD.eq.'PN'),&
-         &VARIANTCD.eq.'CA'.or.VARIANTCD.eq.'OC')
+    integer :: IB, KRWGS, KWO
     integer, parameter :: KRWGSB(3) = (/12,20,19/), KWOB(3) = (/0,19,18/)
-    integer, parameter :: KRWGS = KRWGSB(IB), KWO = KWOB(IB)
 
     ! Variables
     integer :: ISPC,I1,I2,JSPC,I3,I,IPCCF,IWHO,JFOR,KSP,IDSQ,J,K
@@ -648,6 +647,10 @@ contains
          &0.000395, 4*0.0, 0.001193, 2*0.0, -0.003130, 0.0, 0.0/
 
 
+    IB = merge(1, merge(2, 3, CFG_VARIANTCD.eq.'OP'.or.CFG_VARIANTCD.eq.'PN'),&
+         &CFG_VARIANTCD.eq.'CA'.or.CFG_VARIANTCD.eq.'OC')
+    KRWGS = KRWGSB(IB)
+    KWO = KWOB(IB)
     if (LCONS) go to 1000
 
     !  CHECK FOR DEBUG.
@@ -935,8 +938,7 @@ contains
     !             IN **DGCONS**.
 
     logical :: LCONS
-    integer, parameter :: IB = merge(1, 2, VARIANTCD.eq.'TT')
-    integer, parameter :: KHWEL = merge(16, 20, VARIANTCD.eq.'TT')
+    integer :: IB, KHWEL
     logical :: DEBUG
     integer :: ICLS,MAPHAB,ISI,ISC,ISPC,I1,I2,KSI,I3,I,LSI,ISIC,ISIC2,J,K
     real    :: BA100,CONSPP,DGLDS,DGBALS,DGCRS,DGCRS2,DGDSQS,SI,D,CR
@@ -1504,6 +1506,8 @@ contains
          &0.0,       0.0, -0.199592,       0.0/
 
 
+    IB = merge(1, 2, CFG_VARIANTCD.eq.'TT')
+    KHWEL = merge(16, 20, CFG_VARIANTCD.eq.'TT')
     if (LCONS) go to 1000
 
     ! Check whether debugging is enabled
@@ -1930,7 +1934,7 @@ contains
     !             IN **DGCONS**.
 
     logical :: LCONS
-    integer, parameter :: IB = merge(1, 2, VARIANTCD.eq.'IE')
+    integer :: IB
     logical :: DEBUG
     integer :: I,I1,I2,I3,ISIC,ICLS,ISPC,LSI,IPCCF,JDTYPE,J,K,L
     real    :: YOUNG,OLD,BA100,CONSPP,DGLDS,DGBALS,DGCRS,DGCRS2,DGDSQS
@@ -2525,6 +2529,7 @@ contains
          &0./
 
 
+    IB = merge(1, 2, CFG_VARIANTCD.eq.'IE')
     if (LCONS) go to 1000
 
     ! Check whether debugging is enabled
@@ -3791,7 +3796,7 @@ contains
     !  10-CS-11132425-258 WITH MICHIGAN TECHNOLOGICAL UNIVERSITY, OCTOBER 2012.
 
     logical :: LCONS
-    integer, parameter :: IB = merge(1, 2, VARIANTCD.eq.'CS')
+    integer :: IB
 
     !  DEFINITIONS OF LOCAL VARIABLES.
 
@@ -4345,6 +4350,7 @@ contains
          &589.0,  589.0,  589.0, 1422.0, 1422.0,&
          &1422.0, 1028.0,  589.0/
 
+    IB = merge(1, 2, CFG_VARIANTCD.eq.'CS')
     if (LCONS) go to 1000
 
     !  CHECK FOR DEBUG.

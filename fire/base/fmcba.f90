@@ -3,6 +3,7 @@
 !=======================!
 ! FIRE-IE, KT, BC $Id$
 subroutine FMCBA (IYR,ISWTCH)
+  use VARCFG_MOD, only: CFG_VARIANTCD
   implicit none
 
   !     SINGLE-STAND VERSION
@@ -62,8 +63,7 @@ subroutine FMCBA (IYR,ISWTCH)
   !  THE ORIGINAL NATIVE COLUMN WITHOUT COPYING OR CHANGING ITS VALUES.
 
   integer :: IBSP,IBSZ
-  integer, parameter :: IBANK = merge(0, merge(23,34,VARIANTCD.eq.'KT'), &
-       &VARIANTCD.eq.'IE')
+  integer :: IBANK
 
   !     CLASSIFICATION OF HABITATS TO BE DRY GRASSY (IDRYB=1),
   !     DRY SHRUBBY (IDRYB=2), OR OTHER (IDRYB=0)
@@ -332,6 +332,8 @@ subroutine FMCBA (IYR,ISWTCH)
 
   !  CHECK FOR DEBUG.
 
+  IBANK = merge(0, merge(23,34,CFG_VARIANTCD.eq.'KT'), &
+       &CFG_VARIANTCD.eq.'IE')
   call DBCHK (DEBUG,'FMCBA',5,ICYC)
   if (DEBUG) write(JOSTND,7) ICYC
   7 format(' ENTERING FMCBA CYCLE = ',I2)
