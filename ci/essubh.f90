@@ -45,7 +45,7 @@ subroutine ESSUBH (I,HHT,EMSQR,DILATE,DELAY,ELEV,IHTSER,&
   !     BY SPECIES AND H.T. GROUP
   !     H.T.GROUP--> WET DF  DRY D-FIR  GRAND F   WRC/WH     SAF
 
-  data UHAB/&
+  data UHAB(:,1:MAXSP_NATIVE)/&
        &0.0,      0.0,      0.0,      0.0,       0.0,&
        &-0.01541, -0.03814,  0.11409,  0.35334,       0.0,&
        &-0.21858, -0.03354,  0.22756,  0.51988,       0.0,&
@@ -69,7 +69,7 @@ subroutine ESSUBH (I,HHT,EMSQR,DILATE,DELAY,ELEV,IHTSER,&
   !     UPRE HOLDS COEFFICIENTS FOR SUBSEQUENT HEIGHTS BY PREP/SPECIES
   !     SITE PREP--> NONE      MECH       BURN      ROAD
 
-  data UPRE/&
+  data UPRE(:,1:MAXSP_NATIVE)/&
        &0.0,      0.0,      0.0,      0.0,&
        &0.0, -0.11310, -0.06246, 0.009632,&
        &0.0,  0.06961,  0.19508,  0.17952,&
@@ -93,7 +93,7 @@ subroutine ESSUBH (I,HHT,EMSQR,DILATE,DELAY,ELEV,IHTSER,&
   !     UPHY HOLDS COEF'S FOR SUBS HEIGHTS BY PHYS & H.T. GROUP
   !     PHYS.POS-->  BOTTOM    LOWER      MID      UPPER   RIDGE
 
-  data UPHY/&
+  data UPHY(:,1:MAXSP_NATIVE)/&
        &-0.18731, -0.48682, -0.32160, -0.16113,      0.0,&
        &0.0,      0.0,      0.0,      0.0,      0.0,&
        &-0.27801, -0.20433, -0.12317, -0.26736,      0.0,&

@@ -3,6 +3,7 @@
 !======================================!
 ! WS $Id$
 subroutine HTGF
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !   THIS SUBROUTINE COMPUTES THE PREDICTED PERIODIC HEIGHT
@@ -121,7 +122,7 @@ subroutine HTGF
 
   !    GS AND RW USE NEW REALTIONSHIP FROM CASTLE 2019.
 
-  data MXHTG1/&
+  data MXHTG1(1:MAXSP_NATIVE)/&
        &5.4918,   5.4191,   5.4283,   5.4918,   5.2011,&
        &5.4916,   5.4283,   5.4916,       0.,       0.,&
        &5.4918,       0.,   5.4283,       0.,       0.,&
@@ -132,7 +133,7 @@ subroutine HTGF
        &5.2011,   5.2011,   5.2011,   5.2011,   4.6570,&
        &0.,   5.4916,   4.6570/
 
-  data MXHTG2/&
+  data MXHTG2(1:MAXSP_NATIVE)/&
        &-12.6438,  -8.8274,  -9.1641, -12.6438,  -7.7610,&
        &-9.5992,  -9.1641,  -9.5992,       0.,       0.,&
        &-12.6438,       0.,  -9.1641,       0.,       0.,&
@@ -143,7 +144,7 @@ subroutine HTGF
        &-7.7610,  -7.7610,  -7.7610,  -7.7610, -21.9333,&
        &0.,  -9.5992, -21.9333/
 
-  data HGDG2/&
+  data HGDG2(1:MAXSP_NATIVE)/&
        &0.,       0.,       0.,       0.,       0.,&
        &2.9620,       0.,   3.7974,       0.,       0.,&
        &0.,       0.,       0.,       0.,       0.,&
@@ -154,7 +155,7 @@ subroutine HTGF
        &0.,       0.,       0.,       0.,       0.,&
        &0.,   2.9620,       0./
 
-  data HGRDG2/&
+  data HGRDG2(1:MAXSP_NATIVE)/&
        &10.1890,  15.3820,   8.7587,  10.1890,   6.5757,&
        &0.,   8.7587,       0.,       0.,       0.,&
        &10.1890,       0.,   8.7587,       0.,       0.,&
@@ -165,7 +166,7 @@ subroutine HTGF
        &6.5757,   6.5757,   6.5757,   6.5757,   6.5757,&
        &0.,       0.,   6.5757/
 
-  data HGBAI2/&
+  data HGBAI2(1:MAXSP_NATIVE)/&
        &0.,  -0.0694,       0.,       0.,       0.,&
        &0.,       0.,       0.,       0.,       0.,&
        &0.,       0.,       0.,       0.,       0.,&
@@ -176,7 +177,7 @@ subroutine HTGF
        &0.,       0.,       0.,       0.,       0.,&
        &0.,       0.,       0./
 
-  data HGBA2/&
+  data HGBA2(1:MAXSP_NATIVE)/&
        &0.,  -0.0285,       0.,       0.,   0.0080,&
        &0.,       0.,       0.,       0.,       0.,&
        &0.,       0.,       0.,       0.,       0.,&
@@ -187,7 +188,7 @@ subroutine HTGF
        &0.0080,   0.0080,   0.0080,   0.0080,   0.0080,&
        &0.,       0.,   0.0080/
 
-  data HGLBA2/&
+  data HGLBA2(1:MAXSP_NATIVE)/&
        &1.2845,   6.1190,   1.2324,   1.2845,       0.,&
        &0.,   1.2324,   1.4843,       0.,       0.,&
        &1.2845,       0.,   1.2324,       0.,       0.,&
@@ -198,7 +199,7 @@ subroutine HTGF
        &0.,       0.,       0.,       0.,       0.,&
        &0.,       0.,       0./
 
-  data HGBLT2/&
+  data HGBLT2(1:MAXSP_NATIVE)/&
        &0.,       0.,       0.,       0.,  -0.0079,&
        &0.,       0.,  -0.0142,       0.,       0.,&
        &0.,       0.,       0.,       0.,       0.,&
@@ -209,7 +210,7 @@ subroutine HTGF
        &-0.0079,  -0.0079,  -0.0079,  -0.0079,  -0.0079,&
        &0.,       0.,  -0.0079/
 
-  data HGBAD2/&
+  data HGBAD2(1:MAXSP_NATIVE)/&
        &0.,       0.,  -0.0399,       0.,       0.,&
        &0.,  -0.0399,       0.,       0.,       0.,&
        &0.,       0.,  -0.0399,       0.,       0.,&
@@ -220,7 +221,7 @@ subroutine HTGF
        &0.,       0.,       0.,       0.,       0.,&
        &0.,       0.,       0./
 
-  data HGCR2/&
+  data HGCR2(1:MAXSP_NATIVE)/&
        &0.,       0.,   0.0363,       0.,       0.,&
        &0.,   0.0363,       0.,       0.,       0.,&
        &0.,       0.,   0.0363,       0.,       0.,&
@@ -231,7 +232,7 @@ subroutine HTGF
        &0.,       0.,       0.,       0.,       0.,&
        &0.,       0.,       0./
 
-  data HGDSQ/&
+  data HGDSQ(1:MAXSP_NATIVE)/&
        &-0.0098,       0.,  -0.0098,  -0.0098,       0.,&
        &-0.0082,  -0.0098,  -0.0086,       0.,       0.,&
        &-0.0098,       0.,  -0.0098,       0.,       0.,&
@@ -256,7 +257,7 @@ subroutine HTGF
   if (DEBUG) write(JOSTND,3)ICYC
   3 format(' ENTERING SUBROUTINE HTGF  CYCLE =',I5)
   if (DEBUG)write(JOSTND,*) 'IN HTGF AT BEGINNING,HTCON=',&
-       &HTCON,'RMAI=',RMAI,'ELEV=',ELEV
+       &HTCON(1:CFG_MAXSP),'RMAI=',RMAI,'ELEV=',ELEV
   SCALE = FINT/YR
   ISMALL = 0
   ALBA = 0.0
@@ -266,11 +267,11 @@ subroutine HTGF
 
   call MULTS (2,IY(ICYC),XHMULT)
   if (DEBUG)write(JOSTND,*)'HTGF- IY(ICYC),XHMULT= ',&
-       &IY(ICYC), XHMULT
+       &IY(ICYC), XHMULT(1:CFG_MAXSP)
 
   !   BEGIN SPECIES LOOP:
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      I1 = ISCT(ISPC,1)
      if (I1.eq.0) go to 40
      I2 = ISCT(ISPC,2)
@@ -953,7 +954,7 @@ subroutine HTGF
   !  TERM, AND HGHC CONTAINS SPECIES DEPENDENT INTERCEPTS.  HABITAT
   !  TYPE IS INDEXED BY ITYPE (SEE /PLOT/ COMMON AREA).
 
-  data HGLAT2/&
+  data HGLAT2(:,1:MAXSP_NATIVE)/&
        &-14.053,-14.053,-14.053,-14.053,-14.053,&
        &-39.027,-39.027,-39.027,-39.027,-39.027,&
        &-12.246,-10.685,-10.685,-10.685,-10.685,&
@@ -998,7 +999,7 @@ subroutine HTGF
        &-0.268, -0.268, -0.268,  3.097, -0.268,&
        &-3.831,  1.711, -3.831, -2.898, -3.831/
 
-  data HGEL2/&
+  data HGEL2(1:MAXSP_NATIVE)/&
        &0.,       0.,  -0.0453,       0.,       0.,&
        &0.,  -0.0453,       0.,       0.,       0.,&
        &0.,       0.,  -0.0453,       0.,       0.,&
@@ -1009,7 +1010,7 @@ subroutine HTGF
        &0.,       0.,       0.,       0.,       0.,&
        &0.,       0.,       0./
 
-  data HGELQ2/&
+  data HGELQ2(1:MAXSP_NATIVE)/&
        &0.,       0.,       0.,       0.,  -0.0007,&
        &0.,       0.,       0.,       0.,       0.,&
        &0.,       0.,       0.,       0.,       0.,&
@@ -1020,7 +1021,7 @@ subroutine HTGF
        &-0.0007,  -0.0007,  -0.0007,  -0.0007,  -0.0007,&
        &0.,       0.,  -0.0007/
 
-  data HGSL2/&
+  data HGSL2(1:MAXSP_NATIVE)/&
        &0.,       0.,   3.2180,       0.,       0.,&
        &0.,   3.2180,       0.,       0.,       0.,&
        &0.,       0.,   3.2180,       0.,       0.,&
@@ -1031,7 +1032,7 @@ subroutine HTGF
        &0.,       0.,       0.,       0.,       0.,&
        &0.,       0.,       0./
 
-  data HGSI/&
+  data HGSI(1:MAXSP_NATIVE)/&
        &0.0881,   0.0974,   0.0713,   0.0881,   0.0643,&
        &0.0687,   0.0713,   0.0598,       0.,       0.,&
        &0.0881,       0.,   0.0713,       0.,       0.,&
@@ -1051,7 +1052,7 @@ subroutine HTGF
   if (ITLAT .eq.38.) ILAT = 4
   if (ITLAT .ge.39.) ILAT = 5
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      select case (ISPC)
 
         !  SPECIES USING EQUATIONS FROM THE UT VARIANT (21=GB)

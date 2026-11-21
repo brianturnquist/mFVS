@@ -39,6 +39,7 @@ subroutine MISINT
   !    Added arrays for height growth impacts.
   !    Impact values must be supplied by MistHMod keyword.
 
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !.... Parameter statements.
@@ -65,7 +66,7 @@ subroutine MISINT
 
   !.... Species character representations
 
-  data (ACSP(I),I = 1,MAXSP)&
+  data (ACSP(I),I = 1,MAXSP_NATIVE)&
        &/'PC','IC','RC','WF','RF','SH','DF','WH','MH','WB',&
        &'KP','LP','CP','LM','JP','SP','WP','PP','MP','GP',&
        &'WJ','BR','GS','PY','OS','LO','CY','BL','EO','WO',&
@@ -74,7 +75,7 @@ subroutine MISINT
 
   !.... Species affected by mistletoe
 
-  data (AFIT(I),I = 1,MAXSP)&
+  data (AFIT(I),I = 1,MAXSP_NATIVE)&
        &/0,   0,   0,   1,   1,   1,   1,   1,   1,   1,&
        &1,   1,   0,   1,   1,   1,   1,   1,   0,   0,&
        &0,   0,   0,   0,   0,   0,   0,   0,   0,   0,&
@@ -131,7 +132,7 @@ subroutine MISINT
        &1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,&
        &1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0/
 
-  data ((ADGP(I,J),J = 1,7),I = 41,MAXSP)&
+  data ((ADGP(I,J),J = 1,7),I = 41,MAXSP_NATIVE)&
        &/1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,&
        &1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,&
        &1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,&
@@ -209,7 +210,7 @@ subroutine MISINT
        &1.0,1.0,1.0,1.0,1.0,1.0,1.0,&
        &1.0,1.0,1.0,1.0,1.0,1.0,1.0/
 
-  data ((ADGP(I,J),J = 1,7),I = 41,MAXSP)&
+  data ((ADGP(I,J),J = 1,7),I = 41,MAXSP_NATIVE)&
        &/1.0,1.0,1.0,1.0,1.0,1.0,1.0,&
        &1.0,1.0,1.0,1.0,1.0,1.0,1.0,&
        &1.0,1.0,1.0,1.0,1.0,1.0,1.0,&
@@ -271,7 +272,7 @@ subroutine MISINT
        &0.0,      0.0,      0.0,&
        &0.0,      0.0,      0.0/
 
-  data ((APMC(I,J),J = 1,3),I = 41,MAXSP)&
+  data ((APMC(I,J),J = 1,3),I = 41,MAXSP_NATIVE)&
        &/0.0,      0.0,      0.0,&
        &0.0,      0.0,      0.0,&
        &0.0,      0.0,      0.0,&
@@ -292,7 +293,7 @@ subroutine MISINT
 
   !.... Mistletoe model initializations.
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      MISFIT(I) = AFIT(I)
      CSPARR(I) = ACSP(I)
      do J = 1,7

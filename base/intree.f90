@@ -3,6 +3,7 @@
 !=============================!
 ! BASE $Id$
 subroutine INTREE (RECORD,IRDPLV,ISDSP,SDLO,SDHI,LKECHO)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     IRDPLV= 0 IF PLOT SPECIFIC SITE VARIABLES ARE NOT BEING READ,
@@ -261,7 +262,7 @@ subroutine INTREE (RECORD,IRDPLV,ISDSP,SDLO,SDHI,LKECHO)
      !  CHECK FOR VALID SPECIES CODE AND SET OUTPUT DATA BASE
      !  TABLE FORMAT ARRAY JSPIN BASED ON INPUT SPECIES CODE FORMAT
 
-     do ISPI = 1,MAXSP
+     do ISPI = 1,CFG_MAXSP
         if (CSPI.eq.JSP(ISPI)) then
            JSPIN(ISPI) = 1
            if (JSPINDEF.le.0)JSPINDEF = 1
@@ -424,7 +425,7 @@ subroutine INTREE (RECORD,IRDPLV,ISDSP,SDLO,SDHI,LKECHO)
   do IUP = 1,8
      call UPCASE(CSPI(IUP:IUP))
   end do
-  do ISPI = 1,MAXSP
+  do ISPI = 1,CFG_MAXSP
      if (CSPI.eq.JSP(ISPI)) then
         JSPIN(ISPI) = 1
         if (JSPINDEF.le.0)JSPINDEF = 1

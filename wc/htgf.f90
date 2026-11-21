@@ -3,6 +3,7 @@
 !======================================!
 ! WC $Id$
 subroutine HTGF
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE COMPUTES THE PREDICTED PERIODIC HEIGHT
@@ -81,7 +82,7 @@ subroutine HTGF
   !      19     WH            VTOL            39     OT            INTM
   !      20     MH            VTOL
 
-  data RHR    / 16.0,  16.0,  16.0,  20.0,  16.0,&
+  data RHR(1:MAXSP_NATIVE)    / 16.0,  16.0,  16.0,  20.0,  16.0,&
        &16.0,  15.0,  16.0,  20.0,  16.0,&
        &12.0,  13.0,  15.0,  15.0,  13.0,&
        &15.0,  20.0,  20.0,  20.0,  20.0,&
@@ -89,7 +90,7 @@ subroutine HTGF
        &12.0,  12.0,  15.0,  13.0,  12.0,&
        &15.0,  12.0,  20.0,  20.0,  12.0,&
        &13.0,  12.0,  15.0,  15.0/
-  data RHYXS /  0.15,  0.15,  0.15,  0.20,  0.15,&
+  data RHYXS(1:MAXSP_NATIVE) /  0.15,  0.15,  0.15,  0.20,  0.15,&
        &0.15,  0.10,  0.15,  0.20,  0.15,&
        &0.01,  0.05,  0.10,  0.15,  0.05,&
        &0.10,  0.20,  0.20,  0.20,  0.20,&
@@ -98,7 +99,7 @@ subroutine HTGF
        &0.10,  0.01,  0.20,  0.20,  0.01,&
        &0.05,  0.01,  0.10,  0.10/
   data RHM   /  MAXSP*1.10/
-  data RHB   / -1.20, -1.20, -1.20, -1.10, -1.20,&
+  data RHB(1:MAXSP_NATIVE)   / -1.20, -1.20, -1.20, -1.10, -1.20,&
        &-1.20, -1.45, -1.20, -1.10, -1.20,&
        &-1.60, -1.60, -1.45, -1.45, -1.60,&
        &-1.45, -1.10, -1.10, -1.10, -1.10,&
@@ -113,18 +114,18 @@ subroutine HTGF
   3 format(' ENTERING SUBROUTINE HTGF CYCLE =',I5)
 
   if (DEBUG)write(JOSTND,*) 'IN HTGF AT BEGINNING,HTCON=',&
-       &HTCON,'RMAI=',RMAI,'ELEV=',ELEV
+       &HTCON(1:CFG_MAXSP),'RMAI=',RMAI,'ELEV=',ELEV
   SCALE = FINT/YR
 
   !  GET THE HEIGHT GROWTH MULTIPLIERS.
 
   call MULTS (2,IY(ICYC),XHMULT)
   if (DEBUG)write(JOSTND,*)'HTGF- IY(ICYC),XHMULT= ',&
-       &IY(ICYC), XHMULT
+       &IY(ICYC), XHMULT(1:CFG_MAXSP)
 
   !   BEGIN SPECIES LOOP:
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      I1 = ISCT(ISPC,1)
      if (I1.eq.0) go to 40
      I2 = ISCT(ISPC,2)
@@ -455,7 +456,7 @@ subroutine HTGF
 
   !  LOAD OVERALL INTERCEPT FOR EACH SPECIES.
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      HTCON(ISPC) = 0.0
      if (LHCOR2.and. HCOR2(ISPC).gt.0.0) HTCON(ISPC) = &
           &HTCON(ISPC)+ALOG(HCOR2(ISPC))

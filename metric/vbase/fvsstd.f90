@@ -4,6 +4,7 @@
 ! METRIC-VBASE $Id$
 subroutine FVSSTD (IWHO)
   use FVSSTDREC_MOD, only: FVSSTDREC
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     CREATE A FILE FOR FVSTAND POST-PROCESSOR INPUT.
@@ -168,7 +169,7 @@ subroutine FVSSTD (IWHO)
 
      !  PROCESS TREELIST
 
-     do ISPC = 1,MAXSP
+     do ISPC = 1,CFG_MAXSP
         I1 = ISCT(ISPC,1)
         if (I1.eq.0) go to 60
         I2 = ISCT(ISPC,2)

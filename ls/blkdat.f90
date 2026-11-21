@@ -30,7 +30,7 @@ block data BLKDAT
   !  SPECIES SPECIFIC BARK RATIOS.  FROM RAILE, G.K. 1982. ESTIMATING
   !  STUMP VOLUME. RES. PAP. NC-224, 4 P.
 
-  data BKRAT/5*.91,2*.95,3*.94,.95,3*.91,2*.94,.93,3*.94,3*.93,&
+  data BKRAT(1:MAXSP_NATIVE)/5*.91,2*.95,3*.94,.95,3*.91,2*.94,.93,3*.94,3*.93,&
        &.94,.92,3*.94,.92,4*.91,3*.92,3*.94,3*.92,6*.94,&
        &20*.92/
 
@@ -49,7 +49,7 @@ block data BLKDAT
   !   HHTMAX, IFORST, OCURHT, AND OCURNF HAVE ALL BEEN SET TO ONE
   !   VALUE FOR THE LS VARIANT.
 
-  data XMIN/&
+  data XMIN(1:MAXSP_NATIVE)/&
        &0.33, 0.33, 0.25, 0.25, 0.33, 0.25, 0.25, 0.33, 0.25, 0.50,&
        &0.33, 0.25, 0.25, 0.33, 0.33, 0.42, 0.42, 0.42, 1.00, 0.42,&
        &0.33, 0.33, 0.50, 0.42, 0.33, 0.25, 0.25, 0.25, 0.42, 0.33,&
@@ -58,7 +58,7 @@ block data BLKDAT
        &0.25, 2.10, 0.42, 0.50, 0.25, 0.25, 0.25, 0.42, 0.33, 0.58,&
        &0.33, 2.10, 0.33, 4.70, 1.00, 2.10, 0.50, 2.10/
 
-  data HHTMAX/&
+  data HHTMAX(1:MAXSP_NATIVE)/&
        &14., 20., 18., 18., 20., 18., 18., 20., 16., 24.,&
        &16., 16., 16., 16., 18., 24., 24., 18., 20., 26.,&
        &16., 12., 20., 22., 16., 16., 16., 14., 24., 16.,&
@@ -86,7 +86,7 @@ block data BLKDAT
 
   !  COMMON STATEMENT FOR PLOT VARIABLES.
 
-  data JSP /&
+  data JSP(1:MAXSP_NATIVE) /&
        &'JP ',   'SC ',   'RN ',   'RP ',   'WP ',   'WS ',   'NS ',&
        &'BF ',   'BS ',   'TA ',   'WC ',   'EH ',   'OS ',   'RC ',&
        &'BA ',   'GA ',   'EC ',   'SV ',   'RM ',   'BC ',   'AE ',&
@@ -98,7 +98,7 @@ block data BLKDAT
        &'HT ',   'AP ',   'BG ',   'SY ',   'PR ',   'CC ',   'PL ',&
        &'WI ',   'BL ',   'DM ',   'SS ',   'MA '/
 
-  data FIAJSP /&
+  data FIAJSP(1:MAXSP_NATIVE) /&
        &'105',   '130',   '125',   '125',   '129',   '094',   '091',&
        &'012',   '095',   '071',   '241',   '261',   '299',   '068',&
        &'543',   '544',   '742',   '317',   '316',   '762',   '972',&
@@ -110,7 +110,7 @@ block data BLKDAT
        &'500',   '660',   '693',   '731',   '761',   '763',   '760',&
        &'920',   '922',   '923',   '931',   '935'/
 
-  data PLNJSP /&
+  data PLNJSP(1:MAXSP_NATIVE) /&
        &'PIBA2 ','PISY  ','PIRE  ','PIRE  ','PIST  ','PIGL  ','PIAB  ',&
        &'ABBA  ','PIMA  ','LALA  ','THOC2 ','TSCA  ','2TN   ','JUVI  ',&
        &'FRNI  ','FRPE  ','PODE3 ','ACSA2 ','ACRU  ','PRSE2 ','ULAM  ',&
@@ -124,7 +124,7 @@ block data BLKDAT
 
   data JTYPE /122*0/
 
-  data NSP /'JP1','SC1','RN1','RP1','WP1','WS1','NS1','BF1','BS1',&
+  data NSP(1:MAXSP_NATIVE,:) /'JP1','SC1','RN1','RP1','WP1','WS1','NS1','BF1','BS1',&
        &'TA1','WC1','EH1','OS1','RC1','BA1','GA1','EC1','SV1',&
        &'RM1','BC1','AE1','RL1','RE1','YB1','BW1','SM1','BM1','AB1',&
        &'WA1','WO1','SW1','BR1','CK1','RO1','BO1','NP1','BH1','PH1',&
@@ -220,7 +220,7 @@ block data BLKDAT
   !  SIGMAR ARE THE ERROR TERMS FOR DIAMETER GROWTH.  THESE COEFFICIENTS
   !  ARE THE ROOT MEAN SQUARE ERROR FOR EACH EQUATION.
 
-  data SIGMAR/&
+  data SIGMAR(1:MAXSP_NATIVE)/&
        &0.68835, 0.68835, 0.60636, 0.60636, 0.70830,&
        &0.70822, 0.70822, 0.61382, 0.65838, 0.76397,&
        &0.65362, 0.55220, 0.60636, 0.60928, 0.69442,&
@@ -239,7 +239,7 @@ block data BLKDAT
   !     DATA STATEMENTS FOR VARIABLES IN VARCOM COMMON BLOCK IN THE
   !     FOLLOWING DATA STATEMENTS
 
-  data HT1/&
+  data HT1(1:MAXSP_NATIVE)/&
        &4.5084,   4.5457,   4.5084,   4.5084,   4.6090,   4.5084,&
        &4.5084,   4.5084,   4.5084,   4.5084,   4.5084,   4.5084,&
        &4.0374,   4.4718,   4.6155,   4.6155,   4.9396,   4.5991,&
@@ -253,7 +253,7 @@ block data BLKDAT
        &4.4207,   4.4207,   3.9678,   4.4911,   4.4911,   4.4207,&
        &4.3383,   4.4207/
 
-  data HT2/&
+  data HT2(1:MAXSP_NATIVE)/&
        &-6.0116,  -6.8000,  -6.0116,  -6.0116,  -6.1896,  -6.0116,&
        &-6.0116,  -6.0116,  -6.0116,  -6.0116,  -6.0116,  -6.0116,&
        &-4.2964,  -5.0078,  -6.2945,  -6.2945,  -8.1838,  -6.6706,&

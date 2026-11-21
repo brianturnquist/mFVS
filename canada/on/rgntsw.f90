@@ -3,6 +3,7 @@
 !========================!
 ! CANADA-ON $Id$
 subroutine RGNTSW(LESTB,ITRNIN)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE PREDICTS DIAMETER AND HT GROWTH FOR SOFTWOODS THAT
@@ -85,7 +86,7 @@ subroutine RGNTSW(LESTB,ITRNIN)
   external RANN
 
   ! Data statements
-  data DIAM/2*0.3,0.2,11*0.3,54*0.2,4*0.3/
+  data DIAM(1:MAXSP_NATIVE)/2*0.3,0.2,11*0.3,54*0.2,4*0.3/
   data XMIN / MAXSP*3.15 /, XMAX/ MAXSP*4.72 /
 
   data REGYR  /1.0/ ! Standard regen period is 5 yrs
@@ -216,7 +217,7 @@ subroutine RGNTSW(LESTB,ITRNIN)
      !     PROCESS ALL TREES WITHIN THIS SUBCYCLE IN SPECIES ORDER.  LOAD
      !     SPECIES DEPENDENT CONSTANTS.
 
-     do ISPC = 1,MAXSP ! 16 LOOP
+     do ISPC = 1,CFG_MAXSP ! 16 LOOP
 
         I1 = ISCT(ISPC,1)
         if (I1.eq.0) goto 16
@@ -294,7 +295,7 @@ subroutine RGNTSW(LESTB,ITRNIN)
   !     AFTER LAST SUBCYCLE, COMPUTE ACTUAL HEIGHT INCREMENT FOR FULL CYCLE BY
   !     SUBTRACTION; CONVERT BACK TO LOG SCALE TO ADD IN RANDOM ERROR.
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
 
      I1 = ISCT(ISPC,1)
      if (I1.eq.0) goto 30

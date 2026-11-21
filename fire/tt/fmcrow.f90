@@ -89,7 +89,7 @@ subroutine FMCROW
   !    17 = OTHER SOFTWOODS          whitebark pine   14
   !    18 = OTHER HARDWOODS          eastern cottonwood       17
 
-  data ISPMAP /&
+  data ISPMAP(1:MAXSP_NATIVE) /&
        &14, 11,  3, 12, 18, 41, 11, 18,  1, 13,&
        &16, 16,  5,  5, 17, 41, 14, 17/
 

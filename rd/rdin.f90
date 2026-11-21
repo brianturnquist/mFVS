@@ -3,6 +3,7 @@
 !===============!
 ! RD $Id$
 subroutine RDIN(PASKEY,ARRAY,LNOTBK,LKECHO)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  Purpose :
@@ -856,7 +857,7 @@ subroutine RDIN(PASKEY,ARRAY,LNOTBK,LKECHO)
 
   !.... NOW, CHECK WHETHER ONLY ONE VALUE TO BE CHANGED, OR ALL
 
-  if (ISPC .ge.1.and. ISPC .le. MAXSP) then
+  if (ISPC .ge.1.and. ISPC .le. CFG_MAXSP) then
 
      !....    ONLY ONE TREE SPECIES VALUE TO BE CHANGED
      !....    (FOR ONE OR MORE RR TYPES)
@@ -872,10 +873,10 @@ subroutine RDIN(PASKEY,ARRAY,LNOTBK,LKECHO)
 
      !         READ (IREAD,606) (HABFAC(IRTSPC(KSP),IRMIN,IHB),KSP=1,MAXSP)
      !  606    FORMAT (23F5.2)
-     read (IREAD,*) (HABFAC(IRTSPC(KSP),IRMIN,IHB),KSP = 1,MAXSP)
+     read (IREAD,*) (HABFAC(IRTSPC(KSP),IRMIN,IHB),KSP = 1,CFG_MAXSP)
 
      do IDI = IRMIN+1,IRMAX
-        do KSP = 1,MAXSP
+        do KSP = 1,CFG_MAXSP
            HABFAC(IRTSPC(KSP),IDI,IHB) = &
                 &HABFAC(IRTSPC(KSP),IRMIN,IHB)
            671 continue
@@ -912,7 +913,7 @@ subroutine RDIN(PASKEY,ARRAY,LNOTBK,LKECHO)
      if (LKECHO)write(JOSTND,680) DISTYP(IDI)
      if (LKECHO)write(JOSTND,681)
 
-     do KSP = 1,MAXSP
+     do KSP = 1,CFG_MAXSP
         if (LKECHO)write(JOSTND,631) RRJSP(IRTSPC(KSP)),&
              &HABFAC(IRTSPC(KSP),IDI,1)
         630 continue
@@ -934,7 +935,7 @@ subroutine RDIN(PASKEY,ARRAY,LNOTBK,LKECHO)
      if (LKECHO)write(JOSTND,680) DISTYP(IDI)
      if (LKECHO)write(JOSTND,681)
 
-     do KSP = 1,MAXSP
+     do KSP = 1,CFG_MAXSP
         if (LKECHO)write(JOSTND,631) RRJSP(IRTSPC(KSP)),&
              &HABFAC(IRTSPC(KSP),IDI,2)
         642 continue
@@ -996,7 +997,7 @@ subroutine RDIN(PASKEY,ARRAY,LNOTBK,LKECHO)
 
   !.... NOW, CHECK WHETHER ONLY ONE VALUE TO BE CHANGED, OR ALL
 
-  if (ISPC .ge.1.and. ISPC .le. MAXSP) then
+  if (ISPC .ge.1.and. ISPC .le. CFG_MAXSP) then
 
      !....    ONLY ONE VALUE TO BE CHANGED
 
@@ -1016,15 +1017,15 @@ subroutine RDIN(PASKEY,ARRAY,LNOTBK,LKECHO)
 
      if (IRGEN(9) .eq.3000) then
         !            READ (IREAD,711) (PNINF(IRTSPC(KSP),IRMIN),KSP=1,MAXSP)
-        read (IREAD,*) (PNINF(IRTSPC(KSP),IRMIN),KSP = 1,MAXSP)
+        read (IREAD,*) (PNINF(IRTSPC(KSP),IRMIN),KSP = 1,CFG_MAXSP)
      else
         !            READ (IREAD,711) (SSSFAC(IRTSPC(KSP),IRMIN),KSP=1,MAXSP)
-        read (IREAD,*) (SSSFAC(IRTSPC(KSP),IRMIN),KSP = 1,MAXSP)
+        read (IREAD,*) (SSSFAC(IRTSPC(KSP),IRMIN),KSP = 1,CFG_MAXSP)
      end if
      !  711    FORMAT (23F5.2)
 
      do IDI = IRMIN,IRMAX
-        do KSP = 1,MAXSP
+        do KSP = 1,CFG_MAXSP
            if (IDI .gt. IRMIN) then
               if (IRGEN(9) .eq.3000) then
                  PNINF(IRTSPC(KSP),IDI) = PNINF(IRTSPC(KSP),IRMIN)
@@ -1062,7 +1063,7 @@ subroutine RDIN(PASKEY,ARRAY,LNOTBK,LKECHO)
      if (LKECHO)write(JOSTND,780) DISTYP(IDI)
      if (LKECHO)write(JOSTND,781)
 
-     do KSP = 1,MAXSP
+     do KSP = 1,CFG_MAXSP
         if (LKECHO)write(JOSTND,725)&
              &RRJSP(IRTSPC(KSP)),PNINF(IRTSPC(KSP),IDI)
         724 continue
@@ -1084,7 +1085,7 @@ subroutine RDIN(PASKEY,ARRAY,LNOTBK,LKECHO)
      if (LKECHO)write(JOSTND,780) DISTYP(IDI)
      if (LKECHO)write(JOSTND,781)
 
-     do KSP = 1,MAXSP
+     do KSP = 1,CFG_MAXSP
         TT = PNINF(IRTSPC(KSP),IDI) * SSSFAC(IRTSPC(KSP),IDI)
         if (LKECHO)write(JOSTND,725) RRJSP(IRTSPC(KSP)), TT
         730 continue
@@ -1295,7 +1296,7 @@ subroutine RDIN(PASKEY,ARRAY,LNOTBK,LKECHO)
   !.... IF THERE MAY BE TOO MANY BARK BEETLE EVENTS SCHEDULED THEN
   !.... PRINT A WARNING MESSAGE THAT SOME BARK BEETLES MAY NOT BE DOME
 
-  if (IDOBB .gt.3*MAXSP) then
+  if (IDOBB .gt.3*CFG_MAXSP) then
      write(JOSTND,919)
      919 format(/T12,'***** WARNING, TOO MANY BARK BEETLE EVENTS HAVE',&
           &' BEEN SCHEDULED.'/T12,'IF ALL OF THEM ARE ACTIVE IN',&
@@ -1463,7 +1464,7 @@ subroutine RDIN(PASKEY,ARRAY,LNOTBK,LKECHO)
 
   !.... CHECK WHETHER ONLY ONE VALUE TO BE CHANGED, OR ALL
 
-  if (ISPC .ge.1.and. ISPC .le. MAXSP) then
+  if (ISPC .ge.1.and. ISPC .le. CFG_MAXSP) then
 
      !....    ONLY ONE VALUE TO BE CHANGED
 
@@ -1478,10 +1479,10 @@ subroutine RDIN(PASKEY,ARRAY,LNOTBK,LKECHO)
 
      !         READ (IREAD,1321) (PKILLS(IRTSPC(KSP),IRMIN),KSP=1,MAXSP)
      ! 1321    FORMAT (23F5.2)
-     read (IREAD,*) (PKILLS(IRTSPC(KSP),IRMIN),KSP = 1,MAXSP)
+     read (IREAD,*) (PKILLS(IRTSPC(KSP),IRMIN),KSP = 1,CFG_MAXSP)
 
      do IDI = IRMIN+1,IRMAX
-        do KSP = 1,MAXSP
+        do KSP = 1,CFG_MAXSP
            PKILLS(IRTSPC(KSP),IDI) = PKILLS(IRTSPC(KSP),IRMIN)
            1355 continue
         end do
@@ -1508,7 +1509,7 @@ subroutine RDIN(PASKEY,ARRAY,LNOTBK,LKECHO)
      if (LKECHO)write(JOSTND,1365) DISTYP(IDI)
      if (LKECHO)write(JOSTND,1366)
 
-     do KSP = 1,MAXSP
+     do KSP = 1,CFG_MAXSP
         if (LKECHO)write(JOSTND,1335) RRJSP(IRTSPC(KSP)),&
              &PKILLS(IRTSPC(KSP),IDI)
         1334 continue
@@ -1575,7 +1576,7 @@ subroutine RDIN(PASKEY,ARRAY,LNOTBK,LKECHO)
      call SPDECD(2,ISPC,NSP(1,1),JOSTND,IRECNT,KEYWRD,&
           &ARRAY,KARD)
 
-     if (ISPC .ge.1.and. ISPC .le. MAXSP) then
+     if (ISPC .ge.1.and. ISPC .le. CFG_MAXSP) then
 
         !....       VALID SPECIES CODE.
 
@@ -1705,7 +1706,7 @@ subroutine RDIN(PASKEY,ARRAY,LNOTBK,LKECHO)
      call SPDECD(2,ISPC,NSP(1,1),JOSTND,IRECNT,KEYWRD,&
           &ARRAY,KARD)
 
-     if (ISPC .ge.1.and. ISPC .le. MAXSP) then
+     if (ISPC .ge.1.and. ISPC .le. CFG_MAXSP) then
 
         !....       VALID SPECIES CODE.
 
@@ -1803,7 +1804,7 @@ subroutine RDIN(PASKEY,ARRAY,LNOTBK,LKECHO)
      call SPDECD(2,ISPC,NSP(1,1),JOSTND,IRECNT,KEYWRD,&
           &ARRAY,KARD)
 
-     if (ISPC .ge.1.and. ISPC .le. MAXSP) then
+     if (ISPC .ge.1.and. ISPC .le. CFG_MAXSP) then
 
         !....       VALID SPECIES CODE.
 
@@ -1967,7 +1968,7 @@ subroutine RDIN(PASKEY,ARRAY,LNOTBK,LKECHO)
   call SPDECD(1,ISPC,NSP(1,1),JOSTND,IRECNT,KEYWRD,&
        &ARRAY,KARD)
 
-  if (ISPC .lt.1.or. ISPC .gt. MAXSP) then
+  if (ISPC .lt.1.or. ISPC .gt. CFG_MAXSP) then
 
      !....    INVALID SPECIES CODE.
 
@@ -2273,7 +2274,7 @@ subroutine RDIN(PASKEY,ARRAY,LNOTBK,LKECHO)
   call SPDECD(1,ISPC,NSP(1,1),JOSTND,IRECNT,KEYWRD,&
        &ARRAY,KARD)
 
-  if (ISPC .ge.1.and. ISPC .le. MAXSP) then
+  if (ISPC .ge.1.and. ISPC .le. CFG_MAXSP) then
 
      !....    ONLY ONE SPECIES TO BE CHANGED.
 
@@ -2288,10 +2289,10 @@ subroutine RDIN(PASKEY,ARRAY,LNOTBK,LKECHO)
 
      !         READ (IREAD,2921) (PCOLO(IRTSPC(KSP),IRMIN), KSP=1,MAXSP)
      ! 2921    FORMAT (23F5.2)
-     read (IREAD,*) (PCOLO(IRTSPC(KSP),IRMIN), KSP = 1,MAXSP)
+     read (IREAD,*) (PCOLO(IRTSPC(KSP),IRMIN), KSP = 1,CFG_MAXSP)
 
      do IDI = IRMIN+1,IRMAX
-        do KSP = 1,MAXSP
+        do KSP = 1,CFG_MAXSP
            PCOLO(IRTSPC(KSP),IDI) = PCOLO(IRTSPC(KSP),IRMIN)
            2966 continue
         end do
@@ -2311,7 +2312,7 @@ subroutine RDIN(PASKEY,ARRAY,LNOTBK,LKECHO)
   do IDI = IRMIN,IRMAX
      if (LKECHO)write(JOSTND,2971) DISTYP(IDI)
      if (LKECHO)write(JOSTND,2972)
-     do KSP = 1,MAXSP
+     do KSP = 1,CFG_MAXSP
         if (LKECHO)write(JOSTND,2935) RRJSP(IRTSPC(KSP)),&
              &PCOLO(IRTSPC(KSP),IDI)
         2934 continue
@@ -2452,7 +2453,7 @@ subroutine RDIN(PASKEY,ARRAY,LNOTBK,LKECHO)
      call SPDECD(2,ISPC,NSP(1,1),JOSTND,IRECNT,KEYWRD,&
           &ARRAY,KARD)
 
-     if (ISPC .ge.1.and. ISPC .le. MAXSP) then
+     if (ISPC .ge.1.and. ISPC .le. CFG_MAXSP) then
 
         !....       VALID SPECIES CODE.
 
@@ -2814,7 +2815,7 @@ subroutine RDIN(PASKEY,ARRAY,LNOTBK,LKECHO)
      call SPDECD(1,ISPC,NSP(1,1),JOSTND,IRECNT,KEYWRD,&
           &ARRAY,KARD)
 
-     if (ISPC .ge.1.and. ISPC .le. MAXSP) then
+     if (ISPC .ge.1.and. ISPC .le. CFG_MAXSP) then
 
         !....       Change only one species
 
@@ -2842,9 +2843,9 @@ subroutine RDIN(PASKEY,ARRAY,LNOTBK,LKECHO)
 
         !            READ(IREAD,3963) (IHST(KSP), KSP=1,MAXSP)
         ! 3963       FORMAT(23I5)
-        read(IREAD,*) (IHST(KSP), KSP = 1,MAXSP)
+        read(IREAD,*) (IHST(KSP), KSP = 1,CFG_MAXSP)
 
-        do KSP = 1,MAXSP
+        do KSP = 1,CFG_MAXSP
            IDI = IHST(KSP)
 
            if (IDI .lt.0.or. IDI .gt. ITOTRR) then
@@ -2885,7 +2886,7 @@ subroutine RDIN(PASKEY,ARRAY,LNOTBK,LKECHO)
   if (LKECHO)write(JOSTND,3972)
   if (LKECHO)write(JOSTND,3973)
 
-  do KSP = 1,MAXSP
+  do KSP = 1,CFG_MAXSP
      if (MAXRR .lt.3) then
         if (LKECHO)write(JOSTND,3975) RRJSP(IRTSPC(KSP)),&
              &DISTYP(IDITYP(IRTSPC(KSP)))

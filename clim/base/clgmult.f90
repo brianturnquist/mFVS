@@ -3,6 +3,7 @@
 !=========================!
 ! CLIM-BASE $Id$
 subroutine CLGMULT(TREEMULT)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     CLIMATE EXTENSION -- COMUTES TREE-LEVEL GROWTH MULTIPLIER
@@ -38,7 +39,7 @@ subroutine CLGMULT(TREEMULT)
         I = IFIX(PRMS(1))
         if (I.eq.0) then
            CLGROWMULT = PRMS(2)
-        else if (I.gt.0.and. I.le.MAXSP) then
+        else if (I.gt.0.and. I.le.CFG_MAXSP) then
            CLGROWMULT(I) = PRMS(2)
         end if
      end do
@@ -105,7 +106,7 @@ subroutine CLGMULT(TREEMULT)
        &' SMI_INVYR=',4F10.4,'PSITE_INVYR,NOW,XGSITE=',3F10.4)
 
   VSCORE = 1.0
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      I2 = INDXSPECIES(I)
      if (I2.gt.0) then
         VSCORE(I) = ALGSLP (THISYR,FLOAT(YEARS),ATTRS(1,I2),NYEARS)
@@ -226,7 +227,7 @@ subroutine CLGMULT(TREEMULT)
           &' PS=',F8.3,' XRELGR=',F8.3,' TREEMULT=',F8.3)
   end do
   ! Compute SPSITGM for reporting only (this is a vector operation).
-  SPSITGM = XGSITE**CLGROWMULT
+  SPSITGM(1:CFG_MAXSP) = XGSITE**CLGROWMULT(1:CFG_MAXSP)
 
   !     CREATE THE REPORTED AVERAGE SCORE.
 
@@ -237,7 +238,7 @@ subroutine CLGMULT(TREEMULT)
      SPWTS(I1) = SPWTS(I1)+XWT
      SPGMULT(I1) = SPGMULT(I1)+(TREEMULT(I)*XWT)
   end do
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (SPWTS(I).gt.0.) then
         SPGMULT(I) = SPGMULT(I)/SPWTS(I)
      else
@@ -246,7 +247,7 @@ subroutine CLGMULT(TREEMULT)
   end do
 
   if (DEBUG) then
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         write (JOSTND,20) I,JSP(I),SPVIAB(I),&
              &SPSITGM(I),SPGMULT(I),SPWTS(I)
         20 format ('IN CLGMULT, I=',I5,' SP=',A2,' SPVIAB=',F7.3,&

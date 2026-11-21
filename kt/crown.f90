@@ -3,6 +3,7 @@
 !============================================!
 ! KT $Id$
 subroutine CROWN
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE IS USED TO DUB MISSING CROWN RATIOS AND COMPUTE CROWN
@@ -56,7 +57,7 @@ subroutine CROWN
 
   ! Data statements
   data MYACTS/81/
-  data PARM/&
+  data PARM(1:MAXSP_NATIVE,:)/&
        &0.0,-0.00204,0.0,-0.00183,3*0.0,-0.00203,-0.00190,-0.002165,&
        &-0.00264,&
        &4*0.0,-0.000001902,6*0.0,&
@@ -88,7 +89,7 @@ subroutine CROWN
        &13*2,3,4*4,5,6,6,7,6,1,8,1,9,2*10,6,&
        &2,2,4,3*1,5,6,3*1,8,7,3*9,3*3,11*1,&
        &12*1,4*2,3,3,4,3*1,5,1,6,5*1/
-  data CRHAB/&
+  data CRHAB(:,1:MAXSP_NATIVE)/&
        &0.8884, 0.7309, 0.9347, 0.9888, 0.9945, 1.1126, 1.0263, 7*0.0,&
        &0.06533, 0.03441, 0.2307, 0.1661, -0.1253, -0.05018, 0.11005,&
        &0.08113, 0.1782, 0.03919, 0.2107, 3*0.0,&
@@ -165,7 +166,7 @@ subroutine CROWN
            15 continue
         end do
      else if (ISPCC .eq.0) then
-        do ISPCC = 1,MAXSP
+        do ISPCC = 1,CFG_MAXSP
            if (PRM(2) .ge.0.0)CRNMLT(ISPCC) = PRM(2)
            if (PRM(3) .gt.0.0)DLOW(ISPCC) = PRM(3)
            if (PRM(4) .gt.0.0)DHI(ISPCC) = PRM(4)
@@ -182,7 +183,7 @@ subroutine CROWN
   end do
   if (DEBUG)write(JOSTND,*)' PRM2= ',PRM
   25 continue
-  if (DEBUG)write(JOSTND,9024)ICYC,CRNMLT
+  if (DEBUG)write(JOSTND,9024)ICYC,CRNMLT(1:CFG_MAXSP)
   9024 format(/' IN CROWN 9024 ICYC,CRNMLT= ',&
        &I5/((1X,11F6.2)/))
 
@@ -202,7 +203,7 @@ subroutine CROWN
 
   !  ENTER THE LOOP FOR SPECIES DEPENDENT VARIABLES
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      I1 = ISCT(ISPC,1)
      if (I1.eq.0)goto 70
      I2 = ISCT(ISPC,2)
@@ -405,7 +406,7 @@ subroutine CROWN
   !  INTERCEPTS BY HABITAT TYPE BY SPECIES, AND MAPCR MAPS HABITAT TYPE
   !  ONTO HABITAT CLASS FOR EACH SPECIES.
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      ICRHAB = MAPHAB(ITYPE,ISPC)
      CRCON(ISPC) = CRHAB(ICRHAB,ISPC)
      80 continue

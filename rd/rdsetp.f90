@@ -3,6 +3,7 @@
 !=================!
 ! RD $Id$
 subroutine RDSETP
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  SUBROUTINE FOR CALCULATING VALUES OF ROOT DISEASE VARIABLES
@@ -496,7 +497,7 @@ subroutine RDSETP
 
   IDI = MAXRR
 
-  do KSP = 1,MAXSP
+  do KSP = 1,CFG_MAXSP
      if (MAXRR .lt.3) IDI = IDITYP(IRTSPC(KSP))
 
      !     Modification (RNH, MAR98).  If MAXRR < 3 then annosus disease.

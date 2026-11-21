@@ -77,7 +77,7 @@ subroutine FMCROW
   !    17 = OTHER SOFTWOODS          Ponderosa pine   13
   !    18 = OTHER HARDWOODS          quaking aspen           41
 
-  data ISPMAP / 15,  8,  3,  4, 24, 16, 11, 18,  1, 13,&
+  data ISPMAP(1:MAXSP_NATIVE) / 15,  8,  3,  4, 24, 16, 11, 18,  1, 13,&
        &14, 11,  7,  8, 41, 17, 13, 41/
 
   !     CHECK FOR DEBUG

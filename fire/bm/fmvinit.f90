@@ -3,6 +3,7 @@
 !=======================!
 ! FIRE-BM $Id$
 subroutine FMVINIT
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  Purpose:
@@ -126,7 +127,7 @@ subroutine FMVINIT
   NZERO = 0.01
   LIMBRK = 0.01
   HTXSFT = 1.0
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      PSOFT(I) = 0.0
   end do
 
@@ -181,7 +182,7 @@ subroutine FMVINIT
 
   !     DECAYX() MULTIPLIER = 999.0; INITIALLY HARD SNAGS NEVER BECOME SOFT
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
 
      select case (I)
 

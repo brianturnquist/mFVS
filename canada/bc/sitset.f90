@@ -3,6 +3,7 @@
 !=====================================!
 ! CANADA-BC $Id$
 subroutine SITSET
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE IS USED TO SET SIMULATION CONTROLLING VALUES
@@ -252,7 +253,7 @@ subroutine SITSET
           &'HAS BEEN CHANGED BY KEYWORD TO:', F6.1, ' SQ M/HA.')
   end if
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (SDIDEF(I).le.0.) SDIDEF(I) = BAMAX/(0.5454154*(PMSDIU/100.))
      10 continue
   end do
@@ -260,12 +261,12 @@ subroutine SITSET
   do I = 1,15
      J = (I-1)*10 + 1
      JJ = J+9
-     if (JJ.gt.MAXSP)JJ = MAXSP
+     if (JJ.gt.CFG_MAXSP)JJ = CFG_MAXSP
      write(JOSTND,90)(NSP(K,1)(1:2),K = J,JJ)
      90 format(/' SPECIES ',5X,10(A2,6X))
      write(JOSTND,91)(SDIDEF(K)/ACRtoHA,K = J,JJ )
      91 format(' SDI MAX ',   10F8.0)
-     if (JJ .eq. MAXSP)go to 93
+     if (JJ .eq. CFG_MAXSP)go to 93
      92 continue
   end do
   93 continue
@@ -278,7 +279,7 @@ subroutine SITSET
   !  **GRINIT**.  IF THEY HAVE A DIFFERENT VALUE NOW, THEY WERE CHANGED
   !  BY KEYWORD IN INITRE. ONLY CHANGE THOSE NOT SET BY KEYWORD.
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      if (METHB(ISPC).eq.999)METHB(ISPC) = 6
      if (METHC(ISPC).eq.999)METHC(ISPC) = 6
      50 continue
@@ -297,7 +298,7 @@ subroutine SITSET
   ! VOLEQ unassigned; it also never sets the eleventh character. Start from
   ! BC's own default, as set in GRINIT, so a code reset by an invalid
   ! VOLEQNUM returns to that default instead of undefined bytes.
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      read(FIAJSP(ISPC),'(I4)')IFIASP
      if (((METHC(ISPC).eq.6).or.(METHC(ISPC).eq.9)).and.&
           &(VEQNNC(ISPC).eq.'           ')) then
@@ -317,14 +318,14 @@ subroutine SITSET
 
   if (LFIA) then
      call FIAHEAD(JOSTND)
-     write(JOSTND,211) (NSP(I,1)(1:2),FIAJSP(I),I = 1,MAXSP)
+     write(JOSTND,211) (NSP(I,1)(1:2),FIAJSP(I),I = 1,CFG_MAXSP)
      211 format ((T12,8(A3,'=',A6,:,'; '),A,'=',A6))
   end if
 
   !  WRITE VOLUME EQUATION NUMBER TABLE
 
   call VOLEQHEAD(JOSTND)
-  write(JOSTND,230)(NSP(J,1)(1:2),VEQNNC(J),VEQNNB(J),J = 1,MAXSP)
+  write(JOSTND,230)(NSP(J,1)(1:2),VEQNNC(J),VEQNNB(J),J = 1,CFG_MAXSP)
   230 format(4(2X,A2,4X,A10,1X,A10))
 
   return

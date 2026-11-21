@@ -27,7 +27,7 @@ block data BLKDAT
   ! Variables
   integer :: I,J
 
-  data BKRAT/2*.95,3*.93,4*.91,4*.95,11*.93,3*.95,.91,4*.95,8*.93,&
+  data BKRAT(1:MAXSP_NATIVE)/2*.95,3*.93,4*.91,4*.95,11*.93,3*.95,.91,4*.95,8*.93,&
        &.95,6*.93,3*.91,34*.93,12*.95/
 
   data COR2 /MAXSP*1./, HCOR2 /MAXSP*1./,RCOR2/MAXSP*1.0/
@@ -45,7 +45,7 @@ block data BLKDAT
   !   HHTMAX, IFORST, OCURHT, AND OCURNF HAVE ALL BEEN SET TO ONE
   !   VALUE FOR THE LS VARIANT.
 
-  data XMIN/&
+  data XMIN(1:MAXSP_NATIVE)/&
        &0.33, 2.10, 0.25, 0.42, 0.25, 0.25, 0.33, 0.33, 0.33, 0.33,&
        &3.59, 0.33, 0.33, 0.33, 0.33, 0.33, 0.33, 0.33, 0.33, 0.33,&
        &0.33, 0.33, 0.33, 0.25, 0.33, 0.42, 0.50, 0.42, 1.00, 0.33,&
@@ -57,7 +57,7 @@ block data BLKDAT
        &0.33, 0.33, 4.70, 1.00, 0.33, 0.42, 2.10, 0.25, 0.25, 0.50,&
        &0.25, 0.33, 0.42, 2.10, 0.42, 0.33/
 
-  data HHTMAX/&
+  data HHTMAX(1:MAXSP_NATIVE)/&
        &16., 27., 14., 14., 14., 16., 20., 20., 18., 16.,&
        &20., 20., 16., 14., 14., 14., 18., 14., 14., 14.,&
        &14., 14., 14., 14., 18., 28., 20., 24., 20., 16.,&
@@ -82,15 +82,15 @@ block data BLKDAT
 
   !     OCURHT ZEROES OUT PROBABILITIES WHICH CANNOT OCCUR BY DEFINITION.
 
-  data ((OCURHT(I,J),I = 1,16),J = 1,MAXSP)/1536*1.0/
+  data ((OCURHT(I,J),I = 1,16),J = 1,MAXSP_NATIVE)/1536*1.0/
 
   !     OCURNF ZEROES OUT PROBABILITIES ON NATIONAL FORESTS BY SPECIES.
 
-  data ((OCURNF(I,J),I = 1,20),J = 1,MAXSP)/1920*1.0/
+  data ((OCURNF(I,J),I = 1,20),J = 1,MAXSP_NATIVE)/1920*1.0/
 
   !  COMMON STATEMENT FOR PLOT VARIABLES.
 
-  data JSP /&
+  data JSP(1:MAXSP_NATIVE) /&
        &'RC ',   'JU ',   'SP ',   'VP ',   'LP ',   'OS ',   'WP ',&
        &'WN ',   'BN ',   'TL ',   'TS ',   'WT ',   'BG ',   '   ',&
        &'SH ',   'SL ',   'MH ',   'PH ',   'HI ',   'WH ',   'BH ',&
@@ -106,7 +106,7 @@ block data BLKDAT
        &'OH ',   'AH ',   'RD ',   'DW ',   'HT ',   'KC ',   'OO ',&
        &'CT ',   'MV ',   'MB ',   'HH ',   'SD '/
 
-  data FIAJSP /&
+  data FIAJSP(1:MAXSP_NATIVE) /&
        &'068',   '057',   '110',   '132',   '131',   '299',   '129',&
        &'602',   '601',   '690',   '694',   '691',   '693',   '   ',&
        &'407',   '405',   '409',   '403',   '400',   '401',   '402',&
@@ -122,7 +122,7 @@ block data BLKDAT
        &'998',   '391',   '471',   '491',   '500',   '571',   '641',&
        &'651',   '653',   '680',   '701',   '711'/
 
-  data PLNJSP /&
+  data PLNJSP(1:MAXSP_NATIVE) /&
        &'JUVI  ','JUNIP ','PIEC2 ','PIVI2 ','PITA  ','2TN   ','PIST  ',&
        &'JUNI  ','JUCI  ','NYSSA ','NYBI  ','NYAQ2 ','NYSY  ','      ',&
        &'CAOV2 ','CALA21','CAAL27','CAGL8 ','CARYA ','CAAQ2 ','CACO15',&
@@ -140,7 +140,7 @@ block data BLKDAT
 
   data JTYPE /122*0/
 
-  data NSP /'RC1','JU1','SP1','VP1','LP1','OS1','WP1','WN1','BN1',&
+  data NSP(1:MAXSP_NATIVE,:) /'RC1','JU1','SP1','VP1','LP1','OS1','WP1','WN1','BN1',&
        &'TL1','TS1','WT1','BG1','__1','SH1','SL1','MH1','PH1','HI1',&
        &'WH1','BH1','PE1','BI1','AB1','BA1','PA1','UA1','EC1','RM1','BE1'&
        &,'SV1','BC1','AE1','SG1','HK1','WE1','EL1','SI1','RL1','RE1',&
@@ -272,7 +272,7 @@ block data BLKDAT
   !  SIGMAR ARE THE ERROR TERMS FOR DIAMETER GROWTH.  THESE COEFFICIENTS
   !  ARE THE ROOT MEAN SQUARE ERROR FOR EACH EQUATION.
 
-  data SIGMAR/&
+  data SIGMAR(1:MAXSP_NATIVE)/&
        &0.60928, 0.60928, 0.63787, 0.73192, 0.73192,&
        &0.63965, 0.63965, 0.74594, 0.74594, 0.66815,&
        &0.66815, 0.66815, 0.66815, 0.64614, 0.64614,&
@@ -297,7 +297,7 @@ block data BLKDAT
   !     DATA STATEMENTS FOR VARIABLES IN VARCOM COMMON BLOCK IN THE
   !     FOLLOWING DATA STATEMENTS, DF IS USED FOR OT, AND WF FOR RC
 
-  data HT1/&
+  data HT1(1:MAXSP_NATIVE)/&
        &4.4718,   4.0374,   4.6271,   4.4718,   4.6897,   4.0374,&
        &4.6090,   4.5018,   4.5018,   4.3802,   4.4334,   4.4330,&
        &4.3802,   4.5128,   4.5128,   4.5128,   4.5128,   4.5128,&
@@ -315,7 +315,7 @@ block data BLKDAT
        &4.4207,   4.0322,   3.7512,   3.7301,   4.4207,   4.4772,&
        &4.0322,   4.6067,   4.3609,   3.9613,   4.0322,   4.1352/
 
-  data HT2/&
+  data HT2(1:MAXSP_NATIVE)/&
        &-5.0078,  -4.2964,  -6.4095,  -5.0078,  -6.8801,  -4.2964,&
        &-6.1896,  -5.6123,  -5.6123,  -4.7903,  -4.5709,  -4.5383,&
        &-4.7903,  -4.9918,  -4.9918,  -4.9918,  -4.9918,  -4.9918,&

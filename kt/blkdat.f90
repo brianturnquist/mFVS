@@ -41,7 +41,7 @@ block data BLKDAT
 
   !  TYPE DECLARATIONS AND COMMON STATEMENT FOR CONTROL VARIABLES.
 
-  data  BKRAT/0.964,0.851,0.867,0.915,0.934,0.950,0.969,0.956,&
+  data  BKRAT(1:MAXSP_NATIVE)/0.964,0.851,0.867,0.915,0.934,0.950,0.969,0.956,&
        &0.937,0.890,0.934/
 
   data COR2 /MAXSP*1./, HCOR2 /MAXSP*1./,RCOR2/MAXSP*1.0/
@@ -56,11 +56,11 @@ block data BLKDAT
 
   !  COMMON STATEMENT FOR ESCOMN VARIABLE
 
-  data XMIN/1.0, 1.0, 1.0, 0.5, 0.5, 0.5, 1.0, 0.5, 0.5, 1.0, 0.5/
+  data XMIN(1:MAXSP_NATIVE)/1.0, 1.0, 1.0, 0.5, 0.5, 0.5, 1.0, 0.5, 0.5, 1.0, 0.5/
   data DBHMID/1.0,3.0,5.0,7.0,9.0,12.0,16.0,20.0,24.0,28.0/,&
        &ISPSPE/NSPSPE*12/,BNORML/3*1.0,1.046,1.093,1.139,1.186,1.232,&
        &1.278,1.325,1.371,1.418,1.464,1.510,1.557,1.603,1.649,1.696,&
-       &1.742,1.789/,HHTMAX/23.0,27.0,2*21.0,22.0,20.0,24.0,&
+       &1.742,1.789/,HHTMAX(1:MAXSP_NATIVE)/23.0,27.0,2*21.0,22.0,20.0,24.0,&
        &2*18.0,17.0,22.0/,&
        &IFORCD/103,104,105,106,621,110,113,114,116,117,&
        &118,109,111,112,412,402,108,102,115,  0/,&
@@ -116,15 +116,15 @@ block data BLKDAT
   !    10 = PONDEROSA PINE (PP)            PINUS PONDEROSA
   !    11 = OTHER (OT)  grown as MOUNTAIN HEMLOCK   TSUGA MERTENSIANA
 
-  data JSP /&
+  data JSP(1:MAXSP_NATIVE) /&
        &'WP ',   'WL ',   'DF ',   'GF ',   'WH ',   'RC ',   'LP ',&
        &'ES ',   'AF ',   'PP ',   'OT '/
 
-  data FIAJSP /&
+  data FIAJSP(1:MAXSP_NATIVE) /&
        &'119',   '073',   '202',   '017',   '263',   '242',   '108',&
        &'093',   '019',   '122',   '999'/
 
-  data PLNJSP /&
+  data PLNJSP(1:MAXSP_NATIVE) /&
        &'PIMO3 ','LAOC  ','PSME  ','ABGR  ','TSHE  ','THPL  ','PICO  ',&
        &'PIEN  ','ABLA  ','PIPO  ','2TREE '/
 
@@ -139,7 +139,7 @@ block data BLKDAT
        &820,830,840,850,860,870,890,900,910,920,&
        &925,930,940,950,999,27*0 /
 
-  data NSP /'WP1','WL1','DF1','GF1','WH1','RC1','LP1','ES1','AF1',&
+  data NSP(1:MAXSP_NATIVE,:) /'WP1','WL1','DF1','GF1','WH1','RC1','LP1','ES1','AF1',&
        &'PP1','OT1','WP2','WL2','DF2','GF2','WH2','RC2','LP2','ES2',&
        &'AF2','PP2','OT2',&
        &'WP3','WL3','DF3','GF3','WH3','RC3','LP3','ES3','AF3','PP3','OT3'&
@@ -147,17 +147,17 @@ block data BLKDAT
 
   !   COMMON STATEMENT FOR COEFFS VARIABLES
 
-  data HT1/&
+  data HT1(1:MAXSP_NATIVE)/&
        &5.186772,5.054504,4.876799,5.063864,4.927262,4.881348,&
        &4.777827,5.079578,4.930150,5.019903,4.77951/
-  data HT2/&
+  data HT2(1:MAXSP_NATIVE)/&
        &-10.421897,-8.618720,-9.146701,-9.892393,-8.727470,-9.628555,&
        &-6.336417,-10.201550,-8.825197,-12.014787,-9.31743/
 
   !  RESIDUAL ERROR ESTIMATES WERE MULTIPLIED BY 0.75 TO APPROXIMATE
   !  CORRECTION FOR MEASUREMENT ERROR; 5/10/91--WRW.
 
-  data SIGMAR/&
+  data SIGMAR(1:MAXSP_NATIVE)/&
        &0.4099,  0.4263,  0.4149,  0.4069,  0.3989,  0.4003,&
        &0.3861,  0.4171,  0.4249,  0.3891,  0.3433/
 

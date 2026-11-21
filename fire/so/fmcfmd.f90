@@ -3,6 +3,7 @@
 !======================!
 ! FIRE-SO $Id$
 subroutine FMCFMD (IYR, FMD)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     SINGLE-STAND VERSION
@@ -253,7 +254,7 @@ subroutine FMCFMD (IYR, FMD)
 
      call SOSPDM(DBH,FMPROB,ISP,ITRN,WD)
 
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
 
         if (WD(I) .gt.0.0) then
 
@@ -667,6 +668,7 @@ end
   !     WDOM = WEIGHTED DOMINANT CATEGORY [ RETURNED ]
 
 subroutine SOSPDM(D,P,SP,N,WDOM)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! Common blocks
@@ -686,7 +688,7 @@ subroutine SOSPDM(D,P,SP,N,WDOM)
   !/
   !     ZERO BINS TO WEIGHTED DOMINANT CATEGORY AND COMPLEXITY INDEX
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      WDOM(I) = 0.0
   end do
 
@@ -700,7 +702,7 @@ subroutine SOSPDM(D,P,SP,N,WDOM)
 
      !     ZERO BINS TO HOLD BA-BASED WEIGHTS FOR THE SPECIES CATEGORIES
 
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         XBA(I) = 0.0
      end do
 
@@ -712,7 +714,7 @@ subroutine SOSPDM(D,P,SP,N,WDOM)
      end do
 
      BASP = 7 ! LP IS DEFAULT FOR NO BA
-     do K = 1,MAXSP
+     do K = 1,CFG_MAXSP
         if (XBA(K) .gt. XBA(BASP)) BASP = K
      end do
 
@@ -721,7 +723,7 @@ subroutine SOSPDM(D,P,SP,N,WDOM)
 
   call RANNPUT(SAVESO)
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      WDOM(I) = WDOM(I)/real(PASS)
   end do
 

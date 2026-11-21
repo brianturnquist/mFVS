@@ -38,6 +38,7 @@ subroutine MISINT
   !    Added arrays for height growth impacts.
   !    Impact values must be supplied by MistHMod keyword.
 
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !.... Parameter statements.
@@ -64,7 +65,7 @@ subroutine MISINT
 
   !.... Species character representations
   !....
-  data (ACSP(I),I = 1,MAXSP)&
+  data (ACSP(I),I = 1,MAXSP_NATIVE)&
        !....    1    2    3    4    5    6    7    8    9    10   11
        &/'WP','SP','DF','WF','MH','IC','LP','ES','SH','PP','WJ',&
        !....    12   13   14   15   16   17   18   19   20   21   22
@@ -74,7 +75,7 @@ subroutine MISINT
 
   !.... Species affected by mistletoe
 
-  data (AFIT(I),I = 1,MAXSP)&
+  data (AFIT(I),I = 1,MAXSP_NATIVE)&
        &/  1,   1,   1,   1,   1,   0,   1,   0,   1,   1,   0,&
        &1,   1,   1,   1,   1,   1,   0,   1,   0,   0,   0,&
        &0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0/
@@ -84,7 +85,7 @@ subroutine MISINT
   !....    Interim Dwarf Mistletoe Impact Modeling System
   !....    Users Guide and Reference Manual, February, 1993
 
-  data ((ADGP(I,J),J = 1,7),I = 1,MAXSP)&
+  data ((ADGP(I,J),J = 1,7),I = 1,MAXSP_NATIVE)&
        &/1.0,1.0,1.0,1.0,.94,.80,.59,& ! WP 1
        &1.0,1.0,1.0,1.0,.94,.80,.59,& ! SP 2
        &1.0,.98,.97,.85,.80,.52,.44,& ! DF 3
@@ -137,7 +138,7 @@ subroutine MISINT
   !.... when appropriat default values are developed, they will be
   !.... set here.
 
-  data ((AHGP(I,J),J = 1,7),I = 1,MAXSP)&
+  data ((AHGP(I,J),J = 1,7),I = 1,MAXSP_NATIVE)&
        &/1.0,1.0,1.0,1.0,1.0,1.0,1.0,& ! WP 1
        &1.0,1.0,1.0,1.0,1.0,1.0,1.0,& ! SP 2
        &1.0,1.0,1.0,1.0,1.0,1.0,1.0,& ! DF 3
@@ -174,7 +175,7 @@ subroutine MISINT
 
   !.... Mortality coefficients
 
-  data ((APMC(I,J),J = 1,3),I = 1,MAXSP)&
+  data ((APMC(I,J),J = 1,3),I = 1,MAXSP_NATIVE)&
        &/0.00112,  0.02170, -0.00171,& ! WP 1
        &0.00112,  0.02170, -0.00171,& ! SP 2
        &0.01319, -0.01627,  0.00822,& ! DF 3
@@ -218,7 +219,7 @@ subroutine MISINT
 
   !.... Mistletoe model initializations.
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      MISFIT(I) = AFIT(I)
      CSPARR(I) = ACSP(I)
      do J = 1,7

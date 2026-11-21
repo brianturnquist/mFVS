@@ -61,7 +61,7 @@ block data RDBLK1
   !....     LM  LL  PI  JU  PY  AS  CO  MM  PB  OH  OS
   !....
 
-  data IRTSPC /&
+  data IRTSPC(1:MAXSP_NATIVE) /&
        &1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 22,&
        &23, 36, 33, 26, 38, 19, 24, 30, 30, 18, 17/
 

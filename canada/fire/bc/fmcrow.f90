@@ -71,7 +71,7 @@ subroutine FMCROW
   !    14 = OTHER CONIFER (OC)       FD                3
   !    15 = OTHER HARDWOOD (OH)      EP               41
 
-  data ISPMAP /15, 8, 3, 4, 6, 7,11,18, 1,13,&
+  data ISPMAP(1:MAXSP_NATIVE) /15, 8, 3, 4, 6, 7,11,18, 1,13,&
        &43,41,17, 3,41/
 
   !     CHECK FOR DEBUG.

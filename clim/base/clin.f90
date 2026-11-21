@@ -3,6 +3,7 @@
 !======================!
 ! CLIM-BASE $Id$
 subroutine CLIN (DEBUG,LKECHO)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     CLIMATE EXTENSION
@@ -243,7 +244,7 @@ subroutine CLIN (DEBUG,LKECHO)
           &.and. IDEmapdd5.gt.0) exit
   end do
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      do I1 = 1,NATTRS
         if (TRIM(PLNJSP(I)).eq.TRIM(ATTR_LABELS(I1))) then
            INDXSPECIES(I) = I1
@@ -263,7 +264,7 @@ subroutine CLIN (DEBUG,LKECHO)
              &IDEmtwm.eq.I .or. IDEmtcm.eq.I .or. IDEdd5.eq.I  .or.&
              &IDEdd0.eq.I .or. IDEmapdd5.eq.I.or.IDEsdi.eq.I )&
              &CHTMP(I2:) = ' *USED*'
-        do I1 = 1,MAXSP
+        do I1 = 1,CFG_MAXSP
            if (TRIM(PLNJSP(I1)).eq.TRIM(ATTR_LABELS(I))) then
               write (CHTMP(I2:),'(I3,"=",A)') I1,JSP(I1)
               exit
@@ -300,14 +301,14 @@ subroutine CLIN (DEBUG,LKECHO)
         end do
      end do
      I2 = 0
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         if (INDXSPECIES(I).eq.0) I2 = I2+1
      end do
      if (I2.gt.0) then
         write (JOSTND,2935)
         2935 format (/,'********   CLIMATE WARNING: ',&
              &'SPECIES WITHOUT ATTRIBUTES:')
-        do I = 1,MAXSP
+        do I = 1,CFG_MAXSP
            if (INDXSPECIES(I).eq.0) write (JOSTND,294)&
                 &I,JSP(I),PLNJSP(I)
            294 format (T12,'FVS INDEX=',I3,', ALPHA CODE=',A3,&
@@ -365,7 +366,7 @@ subroutine CLIN (DEBUG,LKECHO)
      call SPDECD (2,I,NSP(1,1),JOSTND,IRECNT,KEYWRD,&
           &ARRAY,KARD)
      if (.not.LNOTBK(1)) then ! YEAR/CYCLE NOT SPECIFIED
-        if (I.gt.0.and. I.le.MAXSP) then
+        if (I.gt.0.and. I.le.CFG_MAXSP) then
            if (LNOTBK(3)) CLMRTMLT1(I) = ARRAY(3)
            if (LNOTBK(4)) CLMRTMLT2(I) = ARRAY(4)
            if (LKECHO)write(JOSTND,310) KEYWRD,I,JSP(I),CLMRTMLT1(I),&
@@ -373,15 +374,15 @@ subroutine CLIN (DEBUG,LKECHO)
            310 format (/A8,'   CLIMATE-CAUSED MORTALITY MULTIPLIERS',&
                 &' FOR SPECIES ',I3,'=',A,' ARE ',2F12.4)
         else if (I.eq.0) then
-           if (LNOTBK(3)) CLMRTMLT1 = ARRAY(3)
-           if (LNOTBK(4)) CLMRTMLT2 = ARRAY(4)
+           if (LNOTBK(3)) CLMRTMLT1(1:CFG_MAXSP) = ARRAY(3)
+           if (LNOTBK(4)) CLMRTMLT2(1:CFG_MAXSP) = ARRAY(4)
            if (LKECHO)write(JOSTND,315) KEYWRD,CLMRTMLT1(1),&
                 &CLMRTMLT2(1)
            315 format (/A8,'   CLIMATE-CAUSED MORTALITY MULTIPLIERS',&
                 &' FOR ALL SPECIES ARE',2F12.4)
         end if
      else
-        if (I.gt.0.and. I.le.MAXSP) then
+        if (I.gt.0.and. I.le.CFG_MAXSP) then
            PRMS(1) = I
         else
            PRMS(1) = 0
@@ -410,7 +411,7 @@ subroutine CLIN (DEBUG,LKECHO)
         if (LNOTBK(3)) AESNTREES = ARRAY(3)
      end if
      if (LNOTBK(4)) NESPECIES = IFIX(ARRAY(4))
-     if (NESPECIES.gt.MAXSP) NESPECIES = MAXSP
+     if (NESPECIES.gt.CFG_MAXSP) NESPECIES = CFG_MAXSP
      LAESTB = .true.
      if (LMETRICVAR) then
         if (LKECHO)write(JOSTND,9410) KEYWRD,AESTOCK,AESNTREES,NESPECIES
@@ -491,19 +492,19 @@ subroutine CLIN (DEBUG,LKECHO)
      call SPDECD (2,I,NSP(1,1),JOSTND,IRECNT,KEYWRD,&
           &ARRAY,KARD)
      if (.not.LNOTBK(1)) then
-        if (I.gt.0.and. I.le.MAXSP) then
+        if (I.gt.0.and. I.le.CFG_MAXSP) then
            if (LNOTBK(3)) CLGROWMULT(I) = ARRAY(3)
            if (LKECHO)write(JOSTND,510) KEYWRD,I,JSP(I),CLGROWMULT(I)
            510 format (/A8,'   CLIMATE-CAUSED GROWTH MULTIPLIER',&
                 &' FOR SPECIES ',I3,'=',A,' IS ',F12.4)
         else if (I.eq.0) then
-           if (LNOTBK(3)) CLGROWMULT = ARRAY(3)
+           if (LNOTBK(3)) CLGROWMULT(1:CFG_MAXSP) = ARRAY(3)
            if (LKECHO)write(JOSTND,515) KEYWRD,CLGROWMULT(1)
            515 format (/A8,'   CLIMATE-CAUSED GROWTH MULTIPLIER',&
                 &' FOR ALL SPECIES IS',F12.4)
         end if
      else
-        if (I.gt.0.and. I.le.MAXSP) then
+        if (I.gt.0.and. I.le.CFG_MAXSP) then
            PRMS(1) = I
         else
            PRMS(1) = 0

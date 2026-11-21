@@ -29,7 +29,7 @@ block data BLKDAT
 
   !  SPECIES SPECIFIC BARK RATIOS
 
-  data  BKRAT/.9349,.9349,.956,4*.9324,.920,.920,.890,.964,&
+  data  BKRAT(1:MAXSP_NATIVE)/.9349,.9349,.956,4*.9324,.920,.920,.890,.964,&
        &4*.950,2*.934,8*.964,.950,3*.920,3*.948,2*.948,&
        &5*.900,.950,5*.900,3*.900,5*.900,.940,5*.910,4*.900,&
        &3*.880,2*.900,2*.900,27*.900,11*.900/
@@ -49,7 +49,7 @@ block data BLKDAT
   !   HHTMAX, IFORST, OCURHT, AND OCURNF HAVE ALL BEEN SET TO ONE
   !   VALUE FOR THE NE VARIANT.
 
-  data XMIN/&
+  data XMIN(1:MAXSP_NATIVE)/&
        &.33, .50, .25, .25, .25, .25, .25, .25, .33, .25,&
        &.42, .33, .33, .33, .33, .25, .25, .25, .33, .25,&
        &.25, .42, .25, .33, .25, 1.0, .25, .25, .42, .42,&
@@ -61,7 +61,7 @@ block data BLKDAT
        &.42, .42, .42, .33, .33, .33, .33, .58, .25, .58,&
        &1.0, .50, .33, .33, .33, .33, .33, .33, .33, .25,&
        &1.0, .42, .42, .25, .25, .42, .33, .33/
-  data HHTMAX/&
+  data HHTMAX(1:MAXSP_NATIVE)/&
        &20., 24., 18., 16., 18., 16., 16., 18., 20., 14.,&
        &14., 16., 16., 16., 16., 16., 16., 16., 14., 14.,&
        &16., 18., 12., 20., 16., 20., 16., 16., 18., 22.,&
@@ -86,15 +86,15 @@ block data BLKDAT
 
   !     OCURHT ZEROES OUT PROBABILITIES WHICH CANNOT OCCUR BY DEFINITION.
 
-  data ((OCURHT(I,J),I = 1,16),J = 1,MAXSP)/1728*1.0/
+  data ((OCURHT(I,J),I = 1,16),J = 1,MAXSP_NATIVE)/1728*1.0/
 
   !     OCURNF ZEROES OUT PROBABILITIES ON NATIONAL FORESTS BY SPECIES.
 
-  data ((OCURNF(I,J),I = 1,20),J = 1,MAXSP)/2160*1.0/
+  data ((OCURNF(I,J),I = 1,20),J = 1,MAXSP_NATIVE)/2160*1.0/
 
   ! COMMON STATEMENT FOR PLOT VARIABLES.
 
-  data JSP /&
+  data JSP(1:MAXSP_NATIVE) /&
        &'BF ',   'TA ',   'WS ',   'RS ',   'NS ',   'BS ',   'PI ',&
        &'RN ',   'WP ',   'LP ',   'VP ',   'WC ',   'AW ',   'RC ',&
        &'JU ',   'EH ',   'HM ',   'OP ',   'JP ',   'SP ',   'TM ',&
@@ -112,7 +112,7 @@ block data BLKDAT
        &'BE ',   'ST ',   'AI ',   'SE ',   'AH ',   'DW ',   'HT ',&
        &'HH ',   'PL ',   'PR '/
 
-  data FIAJSP /&
+  data FIAJSP(1:MAXSP_NATIVE) /&
        &'012',   '071',   '094',   '097',   '091',   '095',   '090',&
        &'125',   '129',   '131',   '132',   '241',   '043',   '068',&
        &'057',   '261',   '260',   '100',   '105',   '110',   '123',&
@@ -130,7 +130,7 @@ block data BLKDAT
        &'313',   '315',   '341',   '356',   '391',   '491',   '500',&
        &'701',   '760',   '761'/
 
-  data PLNJSP /&
+  data PLNJSP(1:MAXSP_NATIVE) /&
        &'ABBA  ','LALA  ','PIGL  ','PIRU  ','PIAB  ','PIMA  ','PICEA ',&
        &'PIRE  ','PIST  ','PITA  ','PIVI2 ','THOC2 ','CHTH2 ','JUVI  ',&
        &'JUNIP ','TSCA  ','TSUGA ','PINUS ','PIBA2 ','PIEC2 ','PIPU5 ',&
@@ -152,7 +152,7 @@ block data BLKDAT
        &470,510,520,530,540,550,570,610,620,640,&
        &660,670,680,690,710,720,730,830,850,999,92*0 /
 
-  data NSP /'BF1','TA1','WS1','RS1','NS1','BS1','PI1','RN1','WP1',&
+  data NSP(1:MAXSP_NATIVE,:) /'BF1','TA1','WS1','RS1','NS1','BS1','PI1','RN1','WP1',&
        &'LP1','VP1','WC1','AW1','RC1','JU1','EH1','HM1','OP1','JP1',&
        &'SP1','TM1','PP1','PD1','SC1','OS1','RM1','SM1','BM1','SV1',&
        &'YB1','SB1','RB1','PB1','GB1','HI1','PH1','SL1','SH1','MH1',&
@@ -303,7 +303,7 @@ block data BLKDAT
   !  ERROR BY SPECIES IN THE CS-TWIGS PUBLICATIONS, AND EXPANDING
   !  THE NE-TWIGS ANNUAL VALUES BY THAT FACTOR.
 
-  data SIGMAR/.016,.025,.025,4*.022,.058,.071,.053,.036,4*.019,&
+  data SIGMAR(1:MAXSP_NATIVE)/.016,.025,.025,4*.022,.058,.071,.053,.036,4*.019,&
        &2*.025,8*.036,.112,3*.093,3*.102,2*.074,5*.029,.054,5*.063,&
        &3*.189,5*.070,.075,5*.066,4*.091,3*.069,2*.153,2*.108,&
        &27*.040,11*.027/

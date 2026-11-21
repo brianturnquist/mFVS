@@ -63,7 +63,7 @@ block data RDBLK1
   !....              WB, WL, DF, LM, LL, RM, LP, ES, AF, PP,
   !....              GA, AS, CW, BA, PW, NC, PB, OS, OH
 
-  data IRTSPC /22,  2,  3, 23, 36, 26,  7,  8,  9, 10,&
+  data IRTSPC(1:MAXSP_NATIVE) /22,  2,  3, 23, 36, 26,  7,  8,  9, 10,&
        &18, 19, 24, 24, 24, 24, 18, 17, 18/
 
   data DICLAS /0.0, 5.0, 12.0, 24.0/

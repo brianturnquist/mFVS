@@ -3,6 +3,7 @@
 !=======================================!
 ! BASE $Id$
 subroutine SDICHK
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE CHECKS TO SEE IF THE INITIAL STAND SDI
@@ -78,7 +79,7 @@ subroutine SDICHK
   9030 format(1H ,'IN SDICHK 9030',4F10.2)
   CONST = EXP(ALOG(TEMTPA + 1.) + 1.605*ALOG(TEMD0)) / PMSDIU
   TEM2 = CONST * .02483133
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      SDIDEF(I) = TEM2
      194 continue
   end do

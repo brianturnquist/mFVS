@@ -3,6 +3,7 @@
 !=====================================!
 ! LS $Id$
 subroutine SITSET
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! THIS SUBROUTINE LOADS THE SITELG ARRAY WITH A SITE INDEX FOR EACH
@@ -28,7 +29,7 @@ subroutine SITSET
 
   !  LOAD SDI MAXIMUM VALUES
 
-  data SDICON /&
+  data SDICON(1:MAXSP_NATIVE) /&
        &356., 408., 505., 505., 529., 412., 412., 655., 500., 387.,&
        &771., 510., 354., 354., 423., 414., 648., 590., 421., 384.,&
        &282., 227., 282., 369., 526., 371., 371., 364., 408., 361.,&
@@ -36,7 +37,7 @@ subroutine SITSET
        &562., 384., 466., 283., 283., 283., 304., 343., 257., 344.,&
        &243., 243., 375., 243., 420., 257., 463., 422., 430., 499.,&
        &463., 463., 463., 447., 447., 447., 492., 338./
-  data ((SICOEF1(I,J),I = 1,MAXSP),J = 1,MAXSP)/&
+  data ((SICOEF1(I,J),I = 1,MAXSP_NATIVE),J = 1,MAXSP_NATIVE)/&
        &2*.000,2*-.083,35*.000,3*-4.661,-11.774,25*.000,&
        &2*.000,2*-.083,35*.000,3*-4.661,-11.774,25*.000,&
        &2*.081,2*.0,3.926,2*14.453,11*.0,2*13.601,19*.0,3*-20.194,26*.0,&
@@ -134,7 +135,7 @@ subroutine SITSET
        &68*.0,&
        &68*.0,&
        &68*.0/
-  data ((SICOEF2(I,J),I = 1,MAXSP),J = 1,MAXSP)/&
+  data ((SICOEF2(I,J),I = 1,MAXSP_NATIVE),J = 1,MAXSP_NATIVE)/&
        &2*.0,2*1.028,35*.0,3*1.063,1.308,25*.0,&
        &2*.0,2*1.028,35*.0,3*1.063,1.308,25*.0,&
        &2*.973,2*.0,.959,2*.792,11*.0,2*.761,19*.0,3*1.247,26*.00,&
@@ -259,7 +260,7 @@ subroutine SITSET
   !  COEFFICIENTS IN THE PARAMETER FILE.  WHEN COEFFICIENTS ARE NOT
   !  AVAILABLE FOR A SPECIES, THAT SPECIES' SITE WILL BE ZERO.
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (SITEAR(I) .le..0001) SITEAR(I) = SICOEF1(ISISP,I)&
           &+ SICOEF2(ISISP,I)*SITEAR(ISISP)
      5 continue
@@ -270,7 +271,7 @@ subroutine SITSET
   !  WILL BE LEFT AS ZERO.
 
   if (SITEAR(41) .gt..0001) then
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         if (SITEAR(I) .le..0001) SITEAR(I) = SICOEF1(41,I)&
              &+ SICOEF2(41,I)*SITEAR(41)
         10 continue
@@ -279,7 +280,7 @@ subroutine SITSET
 
   !  NOW SET ALL UNSET SPECIES SITES TO THE STAND SITE INDEX
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (SITEAR(I) .lt..0001) SITEAR(I) = SITEAR(ISISP)
      if (SDIDEF(I) .le.0.) then
         if (BAMAX .gt.0.) then
@@ -293,7 +294,7 @@ subroutine SITSET
 
   !  LOAD VOLUME DEFAULT MERCH. SPECS.
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      if (DBHMIN(ISPC).le.0.) then !SET **DBHMIN** DEFAULT
         if (ISPC.le.14) then !SOFTWOODS
            DBHMIN(ISPC) = 5.
@@ -392,7 +393,7 @@ subroutine SITSET
   METHB8 = 0
   METHC8 = 0
   if (LFIANVB) call NVB_REGION_CHECK
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      read(FIAJSP(ISPC),'(I4)')IFIASP
      VOLEQ = '           '
      if (((METHC(ISPC).eq.6).or.(METHC(ISPC).eq.9).or.&
@@ -434,12 +435,12 @@ subroutine SITSET
   do I = 1,15
      J = (I-1)*10 + 1
      JJ = J+9
-     if (JJ.gt.MAXSP)JJ = MAXSP
+     if (JJ.gt.CFG_MAXSP)JJ = CFG_MAXSP
      write(JOSTND,90)(NSP(K,1)(1:2),K = J,JJ)
      90 format(/'SPECIES ',5X,10(A2,6X))
      write(JOSTND,91)(NINT(SDIDEF(K)),K = J,JJ )
      91 format('SDI MAX ',   10I8.0)
-     if (JJ .eq. MAXSP)go to 93
+     if (JJ .eq. CFG_MAXSP)go to 93
      92 continue
   end do
   93 continue
@@ -448,16 +449,16 @@ subroutine SITSET
 
   if (LFIA) then
      call FIAHEAD(JOSTND)
-     write(JOSTND,211) (NSP(I,1)(1:2),FIAJSP(I),I = 1,MAXSP)
+     write(JOSTND,211) (NSP(I,1)(1:2),FIAJSP(I),I = 1,CFG_MAXSP)
      211 format ((T12,8(A3,'=',A6,:,'; '),A,'=',A6))
   end if
 
   !  WRITE VOLUME EQUATION NUMBER TABLE
 
-  if ((METHC8.ne.MAXSP).and.(METHB8.ne.MAXSP))&
+  if ((METHC8.ne.CFG_MAXSP).and.(METHB8.ne.CFG_MAXSP))&
        &call VOLEQHEAD(JOSTND)
-  if ((METHC8.ne.MAXSP).and.(METHB8.ne.MAXSP))&
-       &write(JOSTND,230)(NSP(J,1)(1:2),VEQNNC(J),VEQNNB(J),J = 1,MAXSP)
+  if ((METHC8.ne.CFG_MAXSP).and.(METHB8.ne.CFG_MAXSP))&
+       &write(JOSTND,230)(NSP(J,1)(1:2),VEQNNC(J),VEQNNB(J),J = 1,CFG_MAXSP)
   230 format(4(2X,A2,4X,A11,1X,A10,1X))
   return
 end

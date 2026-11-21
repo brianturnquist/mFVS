@@ -3,6 +3,7 @@
 !======================================!
 ! CA $Id$
 subroutine HTGF
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE COMPUTES THE PREDICTED PERIODIC HEIGHT
@@ -45,11 +46,11 @@ subroutine HTGF
 
   call MULTS (2,IY(ICYC),XHMULT)
   if (DEBUG)write(JOSTND,*)'HTGF- IY(ICYC),XHMULT= ',&
-       &IY(ICYC), XHMULT
+       &IY(ICYC), XHMULT(1:CFG_MAXSP)
 
   !   BEGIN SPECIES LOOP:
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      I1 = ISCT(ISPC,1)
      if (I1.eq.0) go to 40
      I2 = ISCT(ISPC,2)
@@ -278,7 +279,7 @@ subroutine HTGF
 
   !  LOAD OVERALL INTERCEPT FOR EACH SPECIES.
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      HTCON(ISPC) = 0.0
      if (LHCOR2.and. HCOR2(ISPC).gt.0.0) HTCON(ISPC) = &
           &HTCON(ISPC)+ALOG(HCOR2(ISPC))

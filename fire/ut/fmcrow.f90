@@ -78,7 +78,7 @@ subroutine FMCROW
   !    23 = OTHER SOFTWOODS          whitebark pine   14
   !    24 = OTHER HARDWOODS          Gambel oak       22
 
-  data ISPMAP /&
+  data ISPMAP(1:MAXSP_NATIVE) /&
        &14, 11,  3,  4, 18, 41, 11, 18,  1, 13,&
        &12, 16, 22, 12, 16, 16,  9, 17, 17, 41,&
        &5, 50, 14, 22/

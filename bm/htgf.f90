@@ -3,6 +3,7 @@
 !======================================!
 ! BM $Id$
 subroutine HTGF
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE COMPUTES THE PREDICTED PERIODIC HEIGHT
@@ -58,12 +59,12 @@ subroutine HTGF
   !  OS USES BM PP BARK COEFFICIENT
   !  OH USES SO OH (ORIGINALLY FROM WC VARIANT)
 
-  data AASM/    1.5,    2.0,     0.4,   2.1,    0.0,&
+  data AASM(1:MAXSP_NATIVE)/    1.5,    2.0,     0.4,   2.1,    0.0,&
        &0.,    1.5,     1.5,   1.5,    1.3,&
        &0.,     0.,      0.,    0.,     0.,&
        &0.,    1.3,      0./
 
-  data BASM/  0.003, 0.0026, 0.0080,    0.0,    0.0,&
+  data BASM(1:MAXSP_NATIVE)/  0.003, 0.0026, 0.0080,    0.0,    0.0,&
        &0.,    0.0,    0.0,    0.0,  0.002,&
        &0.,     0.,     0.,     0.,     0.,&
        &0.,  0.002,     0./
@@ -99,22 +100,22 @@ subroutine HTGF
   !      10     PP            INTL                 9
   !      17     OS (USE PP)   INTL                 9
 
-  data RHR    / 15.0,  12.0,  15.0,  20.0,  20.0,&
+  data RHR(1:MAXSP_NATIVE)    / 15.0,  12.0,  15.0,  20.0,  20.0,&
        &0.0,  12.0,  16.0,  16.0,  13.0,&
        &0.0,   0.0,  20.0,  16.0,   0.0,&
        &12.0,  13.0,  15.0/
 
-  data RHYXS  / 0.10,  0.01,  0.10,  0.20,  0.20,&
+  data RHYXS(1:MAXSP_NATIVE)  / 0.10,  0.01,  0.10,  0.20,  0.20,&
        &0.0,  0.01,  0.15,  0.15,  0.05,&
        &0.0,   0.0,  0.20,  0.15,   0.0,&
        &0.01,  0.05,  0.10/
 
-  data RHM    / 1.10,  1.10,  1.10,  1.10,  1.10,&
+  data RHM(1:MAXSP_NATIVE)    / 1.10,  1.10,  1.10,  1.10,  1.10,&
        &0.0,  1.10,  1.10,  1.10,  1.10,&
        &0.0,   0.0,  1.10,  1.10,   0.0,&
        &1.10,  1.10,  1.10/
 
-  data RHB    /-1.45, -1.60, -1.45, -1.10, -1.10,&
+  data RHB(1:MAXSP_NATIVE)    /-1.45, -1.60, -1.45, -1.10, -1.10,&
        &0.0, -1.60, -1.20, -1.20, -1.60,&
        &0.0,   0.0, -1.10, -1.20,   0.0,&
        &-1.60, -1.60, -1.45/
@@ -150,7 +151,7 @@ subroutine HTGF
   if (DEBUG) write(JOSTND,3) ICYC
   3 format(' ENTERING SUBROUTINE HTGF  CYCLE =',I5)
   if (DEBUG)write(JOSTND,*) 'IN HTGF AT BEGINNING,HTCON=',&
-       &HTCON,'RMAI=',RMAI,'ELEV=',ELEV
+       &HTCON(1:CFG_MAXSP),'RMAI=',RMAI,'ELEV=',ELEV
 
   SCALE = FINT/YR
 
@@ -158,11 +159,11 @@ subroutine HTGF
 
   call MULTS (2,IY(ICYC),XHMULT)
   if (DEBUG)write(JOSTND,*)'HTGF- IY(ICYC),XHMULT= ',&
-       &IY(ICYC), XHMULT
+       &IY(ICYC), XHMULT(1:CFG_MAXSP)
 
   !   BEGIN SPECIES LOOP.
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
 
      !  GET THE APPROPRIATE SITE INDEX RANGE VALUES FOR THIS SPECIES.
 
@@ -574,7 +575,7 @@ subroutine HTGF
 
   !  LOAD OVERALL INTERCEPT FOR EACH SPECIES.
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      HTCON(ISPC) = 0.0
      if (LHCOR2.and. HCOR2(ISPC).gt.0.0) HTCON(ISPC) = &
           &HTCON(ISPC)+ALOG(HCOR2(ISPC))

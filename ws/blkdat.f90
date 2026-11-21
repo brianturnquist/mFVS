@@ -109,7 +109,7 @@ block data BLKDAT
 
   ! COMMON STATEMENT FOR ESCOMN VARIABLES
 
-  data XMIN/&
+  data XMIN(1:MAXSP_NATIVE)/&
        &2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 1.0, 1.0,&
        &2.0, 1.0, 2.0, 1.0, 1.0, 1.0, 1.0, 2.0, 1.0, 1.0,&
        &0.5, 2.0, 2.0, 2.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0,&
@@ -123,7 +123,7 @@ block data BLKDAT
   data BNORML/3*1.0,1.046,1.093,1.139,1.186,1.232,1.278,1.325,&
        &1.371,1.418,1.464,1.510,1.557,1.603,1.649,1.696,1.742,1.789/
 
-  data HHTMAX/&
+  data HHTMAX(1:MAXSP_NATIVE)/&
        &27.0, 21.0, 21.0, 22.0, 20.0, 18.0, 18.0, 17.0, 20.0, 20.0,&
        &27.0, 20.0, 21.0, 20.0, 20.0, 20.0, 20.0, 17.0, 20.0, 20.0,&
        &9.0, 21.0, 22.0, 27.0, 20.0, 20.0, 20.0, 24.0, 24.0, 24.0,&
@@ -141,17 +141,17 @@ block data BLKDAT
   !      AS SHOWN IN TABLE 3, PG 6, GTR INT-279) WHICH DOES NOT PERTAIN
   !      TO THE WS VARIANT)
 
-  data ((OCURHT(I,J),I = 1,16),J = 1,MAXSP)/ 688*0.0 /
+  data ((OCURHT(I,J),I = 1,16),J = 1,MAXSP_NATIVE)/ 688*0.0 /
 
   !     OCURNF ZEROES OUT PROBABILITIES ON NATIONAL FORESTS BY SPECIES.
   !     (DIMENSIONED 20,MAXSP WITH THE 20 BEING 20 FOREST CODES SHOWN
   !      IN ARRAY IFORCD ABOVE AND MAPPED AS SHOWN IN ARRAY IFORST)
 
-  data ((OCURNF(I,J),I = 1,20),J = 1,MAXSP)/ 860*0.0 /
+  data ((OCURNF(I,J),I = 1,20),J = 1,MAXSP_NATIVE)/ 860*0.0 /
 
   ! COMMON STATEMENT FOR PLOT VARIABLES.
 
-  data JSP /&
+  data JSP(1:MAXSP_NATIVE) /&
        &'SP ',   'DF ',   'WF ',   'GS ',   'IC ',&
        &'JP ',   'RF ',   'PP ',   'LP ',   'WB ',&
        &'WP ',   'PM ',   'SF ',   'KP ',   'FP ',&
@@ -162,7 +162,7 @@ block data BLKDAT
        &'AS ',   'CL ',   'MA ',   'DG ',   'BM ',&
        &'MC ',   'OS ',   'OH '/
 
-  data FIAJSP /&
+  data FIAJSP(1:MAXSP_NATIVE) /&
        &'117',   '202',   '015',   '212',   '081',&
        &'116',   '020',   '122',   '108',   '101',&
        &'119',   '133',   '011',   '103',   '104',&
@@ -173,7 +173,7 @@ block data BLKDAT
        &'746',   '981',   '361',   '492',   '312',&
        &'475',   '299',   '998'/
 
-  data PLNJSP /&
+  data PLNJSP(1:MAXSP_NATIVE) /&
        &'PILA  ','PSME  ','ABCO  ','SEGI2 ','CADE27',&
        &'PIJE  ','ABMA  ','PIPO  ','PICO  ','PIAL  ',&
        &'PIMO3 ','PIMO  ','ABAM  ','PIAT  ','PIBA  ',&
@@ -188,7 +188,7 @@ block data BLKDAT
        &470,510,520,530,540,550,570,610,620,640,&
        &660,670,680,690,710,720,730,830,850,999,92*0 /
 
-  data NSP /&
+  data NSP(1:MAXSP_NATIVE,:) /&
        &'SP1','DF1','WF1','GS1','IC1','JP1','RF1','PP1','LP1','WB1',&
        &'WP1','PM1','SF1','KP1','FP1','CP1','LM1','MP1','GP1','WE1',&
        &'GB1','BD1','RW1','MH1','WJ1','UJ1','CJ1','LO1','CY1','BL1',&
@@ -205,7 +205,7 @@ block data BLKDAT
        &'BO3','VO3','IO3','TO3','GC3','AS3','CL3','MA3','DG3','BM3',&
        &'MC3','OS3','OH3'/
 
-  data SIGMAR/&
+  data SIGMAR(1:MAXSP_NATIVE)/&
        &0.347,  0.407,  0.347, 0.6178,  0.433,&
        &0.289, 0.4182,  0.371, 0.4169, 0.4169,&
        &0.347, 0.4392,  0.347, 0.4392, 0.4392,&
@@ -218,7 +218,7 @@ block data BLKDAT
 
   !   COMMON STATEMENT FOR COEFFS VARIABLES
 
-  data HT1/&
+  data HT1(1:MAXSP_NATIVE)/&
        &4.86039, 4.86039, 4.86039, 5.3401, 4.86039,&
        &4.86039, 4.86039, 4.86039,  4.8358,  4.8358,&
        &4.86039,  4.6843, 4.86039,  4.6843,  4.6843,&
@@ -229,7 +229,7 @@ block data BLKDAT
        &4.80420, 4.80420, 4.80420, 4.80420, 4.80420,&
        &5.1520, 4.86039, 4.80420/
 
-  data HT2/&
+  data HT2(1:MAXSP_NATIVE)/&
        &-9.32795, -9.32795, -9.32795, -15.9354, -9.32795,&
        &-9.32795, -9.32795, -9.32795,  -9.2077,  -9.2077,&
        &-9.32795,  -6.5516, -9.32795,  -6.5516,  -6.5516,&

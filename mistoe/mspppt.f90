@@ -66,6 +66,8 @@ subroutine MSPPPT (WK3, IPNT, ILIMIT)
   !  06-JUN-15  Lance R. David (FMSC)
   !     Corrected write of MISCYC array, only 1 dimension being processed.
 
+  use VARCFG_MOD, only: CFG_MAXSP
+  use PUTGETSP_MOD, only: BFWRSP
   implicit none
 
   !.... Parameter statements for numeric variable processing.
@@ -118,32 +120,33 @@ subroutine MSPPPT (WK3, IPNT, ILIMIT)
   !.... Put the arrays.
   !.... Note that MISCYC, PRFMST, PMCSP, and DGPDMR are 2-d arrays.
 
-  call IFWRIT (WK3, IPNT, ILIMIT, MISFIT, MAXSP, 2)
+  call IFWRIT (WK3, IPNT, ILIMIT, MISFIT, CFG_MAXSP, 2)
   call IFWRIT (WK3, IPNT, ILIMIT, IMIST,  ITRN,  2)
   call IFWRIT (WK3, IPNT, ILIMIT, IDMSOUT, 4, 2)
   call IFWRIT (WK3, IPNT, ILIMIT, ISVSP4,  4, 2)
   call IFWRIT (WK3, IPNT, ILIMIT, DMPLT, MAXPLT, 2)
 
   call LFWRIT (WK3, IPNT, ILIMIT, MISCYC, MAXCYC*2, 2)
-  call LFWRIT (WK3, IPNT, ILIMIT, MISTBL, MAXSP, 2)
+  call LFWRIT (WK3, IPNT, ILIMIT, MISTBL, CFG_MAXSP, 2)
 
-  call BFWRIT (WK3, IPNT, ILIMIT, YPLMLT, MAXSP, 2)
-  call BFWRIT (WK3, IPNT, ILIMIT, YNGMLT, MAXSP, 2)
+  call BFWRIT (WK3, IPNT, ILIMIT, YPLMLT, CFG_MAXSP, 2)
+  call BFWRIT (WK3, IPNT, ILIMIT, YNGMLT, CFG_MAXSP, 2)
 
-  call BFWRIT (WK3, IPNT, ILIMIT, PRFMST, MAXSP*6, 2)
+  call BFWRSP (WK3,IPNT,ILIMIT,PRFMST,6,2)
 
-  call BFWRIT (WK3, IPNT, ILIMIT, PMCSP, MAXSP*3, 2)
+  call BFWRSP (WK3,IPNT,ILIMIT,PMCSP,3,2)
 
   call BFWRIT (WK3, IPNT, ILIMIT, DMMTPA, ITRN, 2)
-  call BFWRIT (WK3, IPNT, ILIMIT, DMMMLT, MAXSP, 2)
+  call BFWRIT (WK3, IPNT, ILIMIT, DMMMLT, CFG_MAXSP, 2)
 
-  call BFWRIT (WK3, IPNT, ILIMIT, DGPDMR, MAXSP*7, 2)
-  call BFWRIT (WK3, IPNT, ILIMIT, HGPDMR, MAXSP*7, 2)
+  call BFWRSP (WK3,IPNT,ILIMIT,DGPDMR,7,2)
+  call BFWRSP (WK3,IPNT,ILIMIT,HGPDMR,7,2)
 
   return
 end
 
 subroutine MSCHPUT (CBUFF, IPNT, LNCBUF)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  **MSCHPUT--MS  DATE OF LAST REVISION:  07/10/15
@@ -169,7 +172,7 @@ subroutine MSCHPUT (CBUFF, IPNT, LNCBUF)
 
   !      write(*,*) 'in MSCHPUT:', IPNT
 
-  do J = 1,MAXSP
+  do J = 1,CFG_MAXSP
      do I = 1,2
         call CHWRIT(CBUFF,IPNT,LNCBUF,CSPARR(J)(I:I),2)
         101 continue

@@ -3,6 +3,7 @@
 !=================!
 ! RD $Id$
 subroutine RDOWIN
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  Purpose :
@@ -84,7 +85,7 @@ subroutine RDOWIN
 
   ILEND = 0
   IIEND = 0
-  do ISPI = 1,MAXSP
+  do ISPI = 1,CFG_MAXSP
      do IK = 1,4
         WINDSP(ISPI,IK) = 0.0
         21 continue
@@ -92,7 +93,7 @@ subroutine RDOWIN
      22 continue
   end do
 
-  do ISPI = 1,MAXSP
+  do ISPI = 1,CFG_MAXSP
      STEMSL(ISPI) = 0
      STEMSI(ISPI) = 0
      ROCRL(ISPI) = 0
@@ -164,7 +165,7 @@ subroutine RDOWIN
   TSTEMS = 0.0
   TBPROB = 0.0
 
-  do ISPI = 1,MAXSP
+  do ISPI = 1,CFG_MAXSP
      WINDSP(ISPI,3) = STEMSL(ISPI) + STEMSI(ISPI)
      TSTEMS = TSTEMS + WINDSP(ISPI,3)
      WINDSP(ISPI,3) = WINDSP(ISPI,3) * ROWIBP(IRTSPC(ISPI),2)
@@ -184,7 +185,7 @@ subroutine RDOWIN
 
   if ((WINDN / SAREA) .ge. THRESH) goto 38
 
-  do ISPI = 1,MAXSP
+  do ISPI = 1,CFG_MAXSP
      do IK = 1,4
         WINDSP(ISPI,IK) = 0.0
         36 continue
@@ -200,7 +201,7 @@ subroutine RDOWIN
 
   !.... Allocate to species.
 
-  do ISPI = 1,MAXSP
+  do ISPI = 1,CFG_MAXSP
      WINDSP(ISPI,3) = WINDN * (WINDSP(ISPI,3) / TBPROB)
      if (ROCRL(ISPI) .eq.0.and. ROCRI(ISPI) .eq.0) goto 40
      WINDSP(ISPI,1) = WINDSP(ISPI,3) * (ROCRL(ISPI) / (ROCRL(ISPI)&

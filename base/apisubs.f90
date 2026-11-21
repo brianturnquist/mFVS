@@ -16,6 +16,7 @@
 
 subroutine fvsDimSizes(ntrees,ncycles,nplots,maxtrees,maxspecies, &
      & maxplots,maxcycles)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
   ! Common blocks
   include "PRGPRM.f90"
@@ -36,7 +37,7 @@ subroutine fvsDimSizes(ntrees,ncycles,nplots,maxtrees,maxspecies, &
   ncycles = NCYC
   nplots = IPTINV
   maxtrees = MAXTRE
-  maxspecies = MAXSP
+  maxspecies = CFG_MAXSP
   maxplots = MAXPLT
   maxcycles = MAXCYC
   return
@@ -258,6 +259,7 @@ end subroutine fvsTreeAttr
 subroutine fvsSpeciesAttrC(namei,nch,actioni,attr,rtnCode) &
      & bind(c, name = "fvsSpeciesAttrC")
   use iso_c_binding
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     C-callable version of fvsSpeciesAttr where namei and actioni are
@@ -268,7 +270,7 @@ subroutine fvsSpeciesAttrC(namei,nch,actioni,attr,rtnCode) &
 
   ! Variables
   integer(c_int),bind(c) :: nch,rtnCode
-  real(c_double),dimension(MAXSP),bind(c) :: attr
+  real(c_double),dimension(CFG_MAXSP),bind(c) :: attr
   character(c_char),dimension(10),bind(c) :: namei,actioni
   character(len=10) :: name
   character(len=4) :: action
@@ -290,6 +292,7 @@ end subroutine fvsSpeciesAttrC
 #endif
 
 subroutine fvsSpeciesAttr(name,nch,action,attr,rtnCode)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     set and/or gets the named species attributes
@@ -313,7 +316,7 @@ subroutine fvsSpeciesAttr(name,nch,action,attr,rtnCode)
 
   ! Variables
   integer :: nch,rtnCode
-  real(kind = 8)      :: attr(MAXSP)
+  real(kind = 8)      :: attr(CFG_MAXSP)
   character(len=10) :: name
   character(len=4)  :: action
 
@@ -328,78 +331,78 @@ subroutine fvsSpeciesAttr(name,nch,action,attr,rtnCode)
   rtnCode = 0
   select case(name)
   case ("spccf")
-     if (action=="get") attr = reldsp
-     if (action=="set") reldsp = real(attr,4)
+     if (action=="get") attr = reldsp(1:CFG_MAXSP)
+     if (action=="set") reldsp(1:CFG_MAXSP) = real(attr,4)
   case ("spsiteindx")
-     if (action=="get") attr = sitear
-     if (action=="set") sitear = real(attr,4)
+     if (action=="get") attr = sitear(1:CFG_MAXSP)
+     if (action=="set") sitear(1:CFG_MAXSP) = real(attr,4)
   case ("spsdi")
-     if (action=="get") attr = sdidef
-     if (action=="set") sdidef = real(attr,4)
+     if (action=="get") attr = sdidef(1:CFG_MAXSP)
+     if (action=="set") sdidef(1:CFG_MAXSP) = real(attr,4)
 
      !     volume calculation-related vectors
 
   case ("bfmind")
-     if (action=="get") attr = bfmind
-     if (action=="set") bfmind = real(attr,4)
+     if (action=="get") attr = bfmind(1:CFG_MAXSP)
+     if (action=="set") bfmind(1:CFG_MAXSP) = real(attr,4)
   case ("bftopd")
-     if (action=="get") attr = bftopd
-     if (action=="set") bftopd = real(attr,4)
+     if (action=="get") attr = bftopd(1:CFG_MAXSP)
+     if (action=="set") bftopd(1:CFG_MAXSP) = real(attr,4)
   case ("bfstmp")
-     if (action=="get") attr = bfstmp
-     if (action=="set") bfstmp = real(attr,4)
+     if (action=="get") attr = bfstmp(1:CFG_MAXSP)
+     if (action=="set") bfstmp(1:CFG_MAXSP) = real(attr,4)
   case ("frmcls")
-     if (action=="get") attr = frmcls
-     if (action=="set") frmcls = real(attr,4)
+     if (action=="get") attr = frmcls(1:CFG_MAXSP)
+     if (action=="set") frmcls(1:CFG_MAXSP) = real(attr,4)
   case ("bfmeth")
-     if (action=="get") attr = methb
-     if (action=="set") methb = int(attr,4)
+     if (action=="get") attr = methb(1:CFG_MAXSP)
+     if (action=="set") methb(1:CFG_MAXSP) = int(attr,4)
   case ("mcmind")
-     if (action=="get") attr = dbhmin
-     if (action=="set") dbhmin = real(attr,4)
+     if (action=="get") attr = dbhmin(1:CFG_MAXSP)
+     if (action=="set") dbhmin(1:CFG_MAXSP) = real(attr,4)
   case ("mctopd")
-     if (action=="get") attr = topd
-     if (action=="set") topd = real(attr,4)
+     if (action=="get") attr = topd(1:CFG_MAXSP)
+     if (action=="set") topd(1:CFG_MAXSP) = real(attr,4)
   case ("mcstmp")
-     if (action=="get") attr = stmp
-     if (action=="set") stmp = real(attr,4)
+     if (action=="get") attr = stmp(1:CFG_MAXSP)
+     if (action=="set") stmp(1:CFG_MAXSP) = real(attr,4)
   case ("mcmeth")
-     if (action=="get") attr = methc
-     if (action=="set") methc = int(attr,4)
+     if (action=="get") attr = methc(1:CFG_MAXSP)
+     if (action=="set") methc(1:CFG_MAXSP) = int(attr,4)
   case ("baimult")
-     if (action=="get") attr = xdmult
-     if (action=="set") xdmult = real(attr,4)
+     if (action=="get") attr = xdmult(1:CFG_MAXSP)
+     if (action=="set") xdmult(1:CFG_MAXSP) = real(attr,4)
   case ("htgmult")
-     if (action=="get") attr = xhmult
-     if (action=="set") xhmult = real(attr,4)
+     if (action=="get") attr = xhmult(1:CFG_MAXSP)
+     if (action=="set") xhmult(1:CFG_MAXSP) = real(attr,4)
   case ("mortmult")
-     if (action=="get") attr = xmmult
-     if (action=="set") xmmult = real(attr,4)
+     if (action=="get") attr = xmmult(1:CFG_MAXSP)
+     if (action=="set") xmmult(1:CFG_MAXSP) = real(attr,4)
   case ("mortdia1")
-     if (action=="get") attr = xmdia1
-     if (action=="set") xmdia1 = real(attr,4)
+     if (action=="get") attr = xmdia1(1:CFG_MAXSP)
+     if (action=="set") xmdia1(1:CFG_MAXSP) = real(attr,4)
   case ("mortdia2")
-     if (action=="get") attr = xmdia2
-     if (action=="set") xmdia2 = real(attr,4)
+     if (action=="get") attr = xmdia2(1:CFG_MAXSP)
+     if (action=="set") xmdia2(1:CFG_MAXSP) = real(attr,4)
   case ("regdmult")
-     if (action=="get") attr = xrdmlt
-     if (action=="set") xrdmlt = real(attr,4)
+     if (action=="get") attr = xrdmlt(1:CFG_MAXSP)
+     if (action=="set") xrdmlt(1:CFG_MAXSP) = real(attr,4)
   case ("reghmult")
-     if (action=="get") attr = xrhmlt
-     if (action=="set") xrhmlt = real(attr,4)
+     if (action=="get") attr = xrhmlt(1:CFG_MAXSP)
+     if (action=="set") xrhmlt(1:CFG_MAXSP) = real(attr,4)
      !     values from TREESZCP keyword
   case ("maxdbh")
-     if (action=="get") attr = sizcap(:MAXSP,1)
-     if (action=="set") sizcap(:MAXSP,1) = real(attr,4)
+     if (action=="get") attr = sizcap(:CFG_MAXSP,1)
+     if (action=="set") sizcap(:CFG_MAXSP,1) = real(attr,4)
   case ("minmort")
-     if (action=="get") attr = sizcap(:MAXSP,2)
-     if (action=="set") sizcap(:MAXSP,2) = real(attr,4)
+     if (action=="get") attr = sizcap(:CFG_MAXSP,2)
+     if (action=="set") sizcap(:CFG_MAXSP,2) = real(attr,4)
   case ("maxdbhcd")
-     if (action=="get") attr = sizcap(:MAXSP,3)
-     if (action=="set") sizcap(:MAXSP,3) = real(attr,4)
+     if (action=="get") attr = sizcap(:CFG_MAXSP,3)
+     if (action=="set") sizcap(:CFG_MAXSP,3) = real(attr,4)
   case ("maxht")
-     if (action=="get") attr = sizcap(:MAXSP,4)
-     if (action=="set") sizcap(:MAXSP,4) = real(attr,4)
+     if (action=="get") attr = sizcap(:CFG_MAXSP,4)
+     if (action=="set") sizcap(:CFG_MAXSP,4) = real(attr,4)
 
   case default
      rtnCode = 1
@@ -945,6 +948,7 @@ end subroutine fvsAddTrees
 
 subroutine fvsSpeciesCode(fvs_code,fia_code,plant_code, &
      & indx,nchfvs,nchfia,nchplant,rtnCode)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     rtnCode = 0 when all is OK
@@ -966,7 +970,7 @@ subroutine fvsSpeciesCode(fvs_code,fia_code,plant_code, &
   character(len=4) :: fia_code
   character(len=6) :: plant_code
 
-  if (indx == 0 .or. indx > MAXSP) then
+  if (indx == 0 .or. indx > CFG_MAXSP) then
      nchfvs = 0
      nchfia = 0
      nchplant = 0
@@ -987,6 +991,7 @@ end subroutine fvsSpeciesCode
 subroutine fvsSpeciesCodeC(fvs_code,fia_code,plant_code,indx) &
      & bind(c, name = "fvsSpeciesCodeC")
   use iso_c_binding
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     rtnCode = 0 when all is OK
@@ -1003,7 +1008,7 @@ subroutine fvsSpeciesCodeC(fvs_code,fia_code,plant_code,indx) &
   character(c_char),dimension(5),bind(c) :: fvs_code
   character(c_char),dimension(5),bind(c) :: fia_code
   character(c_char),dimension(7),bind(c) :: plant_code
-  if (indx == 0 .or. indx > MAXSP) then
+  if (indx == 0 .or. indx > CFG_MAXSP) then
      fvs_code(1) = char(0)
      fia_code(1) = char(0)
      plant_code(1) = char(0)
@@ -1628,6 +1633,7 @@ end subroutine fvsFFEAttrsC
 #endif
 
 subroutine fvsFFEAttrs(name,nch,action,nobjs,attr,rtnCode)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     set and/or gets the named FFE variables
@@ -1670,58 +1676,58 @@ subroutine fvsFFEAttrs(name,nch,action,nobjs,attr,rtnCode)
   select case(name)
 
   case ("fallyrs0")
-     if (nobjs /= MAXSP) then
+     if (nobjs /= CFG_MAXSP) then
         attr = 0
         rtnCode = 3
         return
      end if
-     if (action=="get") attr = TFALL(1:MAXSP,0)
-     if (action=="set") TFALL(1:MAXSP,0) = real(attr,4)
+     if (action=="get") attr = TFALL(1:CFG_MAXSP,0)
+     if (action=="set") TFALL(1:CFG_MAXSP,0) = real(attr,4)
 
   case ("fallyrs1")
-     if (nobjs /= MAXSP) then
+     if (nobjs /= CFG_MAXSP) then
         attr = 0
         rtnCode = 3
         return
      end if
-     if (action=="get") attr = TFALL(1:MAXSP,1)
-     if (action=="set") TFALL(1:MAXSP,1) = real(attr,4)
+     if (action=="get") attr = TFALL(1:CFG_MAXSP,1)
+     if (action=="set") TFALL(1:CFG_MAXSP,1) = real(attr,4)
 
   case ("fallyrs2")
-     if (nobjs /= MAXSP) then
+     if (nobjs /= CFG_MAXSP) then
         attr = 0
         rtnCode = 3
         return
      end if
-     if (action=="get") attr = TFALL(1:MAXSP,2)
-     if (action=="set") TFALL(1:MAXSP,2) = real(attr,4)
+     if (action=="get") attr = TFALL(1:CFG_MAXSP,2)
+     if (action=="set") TFALL(1:CFG_MAXSP,2) = real(attr,4)
 
   case ("fallyrs3")
-     if (nobjs /= MAXSP) then
+     if (nobjs /= CFG_MAXSP) then
         attr = 0
         rtnCode = 3
         return
      end if
-     if (action=="get") attr = TFALL(1:MAXSP,3)
-     if (action=="set") TFALL(1:MAXSP,3) = real(attr,4)
+     if (action=="get") attr = TFALL(1:CFG_MAXSP,3)
+     if (action=="set") TFALL(1:CFG_MAXSP,3) = real(attr,4)
 
   case ("fallyrs4")
-     if (nobjs /= MAXSP) then
+     if (nobjs /= CFG_MAXSP) then
         attr = 0
         rtnCode = 3
         return
      end if
-     if (action=="get") attr = TFALL(:MAXSP,4)
-     if (action=="set") TFALL(:MAXSP,4) = real(attr,4)
+     if (action=="get") attr = TFALL(:CFG_MAXSP,4)
+     if (action=="set") TFALL(:CFG_MAXSP,4) = real(attr,4)
 
   case ("fallyrs5")
-     if (nobjs /= MAXSP) then
+     if (nobjs /= CFG_MAXSP) then
         attr = 0
         rtnCode = 3
         return
      end if
-     if (action=="get") attr = TFALL(:MAXSP,5)
-     if (action=="set") TFALL(:MAXSP,5) = real(attr,4)
+     if (action=="get") attr = TFALL(:CFG_MAXSP,5)
+     if (action=="set") TFALL(:CFG_MAXSP,5) = real(attr,4)
 
   case default
      rtnCode = 1

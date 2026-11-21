@@ -3,6 +3,7 @@
 !==========================!
 ! CLIM-BASE $Id$
 subroutine CLMAXDEN (SDIDEF,XMAX)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     CLIMATE EXTENSION
@@ -47,7 +48,7 @@ subroutine CLMAXDEN (SDIDEF,XMAX)
 
   !     IF ALL OF THE SPECIES ARE NOT BEING MODELED, THEN RETURN.
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (INDXSPECIES(I).gt.0) goto 15
   end do
   return
@@ -62,7 +63,7 @@ subroutine CLMAXDEN (SDIDEF,XMAX)
 
   MAXFIRST = 0
   MAXCURR = 0
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
 
      if (INDXSPECIES(I).gt.0) then
         I2 = INDXSPECIES(I)

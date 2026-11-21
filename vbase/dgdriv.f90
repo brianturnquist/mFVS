@@ -3,6 +3,7 @@
 !===========================================!
 ! VBASE $Id$
 subroutine DGDRIV
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE SERVES TWO PURPOSES:
@@ -607,17 +608,17 @@ subroutine DGDRIV
 
   if (VARACD.eq.'AK') then
      if (DEBUG) then
-        write(JOSTND,9022)'SIGMA',SIGMA
-        write(JOSTND,9022)'XDMULT',XDMULT
-        write(JOSTND,9022)'BKRAT',BKRAT
-        write(JOSTND,9022)'COR',COR
+        write(JOSTND,9022)'SIGMA',SIGMA(1:CFG_MAXSP)
+        write(JOSTND,9022)'XDMULT',XDMULT(1:CFG_MAXSP)
+        write(JOSTND,9022)'BKRAT',BKRAT(1:CFG_MAXSP)
+        write(JOSTND,9022)'COR',COR(1:CFG_MAXSP)
      end if
      9022 format('IN DGDRIV - ',A6,/23(F11.5))
   else if (VARACD.eq.'CI'.or.VARACD.eq.'EM'.or.VARACD.eq.'IE'.or.&
       &VARACD.eq.'BC') then
-     if (DEBUG) write(JOSTND,9002) SIGMA,XDMULT,COR
+     if (DEBUG) write(JOSTND,9002) SIGMA(1:CFG_MAXSP),XDMULT(1:CFG_MAXSP),COR(1:CFG_MAXSP)
   else
-     if (DEBUG) write(JOSTND,9002) SIGMA,XDMULT,BKRAT,COR
+     if (DEBUG) write(JOSTND,9002) SIGMA(1:CFG_MAXSP),XDMULT(1:CFG_MAXSP),BKRAT(1:CFG_MAXSP),COR(1:CFG_MAXSP)
   end if
   9002 format(/11(F11.5))
   if (VARIANTCD.eq.'BC') then
@@ -629,9 +630,9 @@ subroutine DGDRIV
      if (DEBUG) write(JOSTND,*)'IN DGDRIV - SFINT= ',SFINT
   end if
   if (VARACD.eq.'LS') then
-     if (DEBUG) write(JOSTND,*)'IN DGDRIVE ISPC LOOP MAXSP=',MAXSP
+     if (DEBUG) write(JOSTND,*)'IN DGDRIVE ISPC LOOP MAXSP=',CFG_MAXSP
   end if
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
 
      !  ONLY THESE SPECIES APPLY THE ORIGINAL ONE-THIRD GROWTH LIMIT.
      !  THE LIMIT ITSELF IS SHARED; THE TRIPLE INDICES BELOW ARE NOT.
@@ -1024,14 +1025,14 @@ subroutine DGDRIV
   !  BEGIN PROCESSING TREE LIST IN SPECIES ORDER.
 
   115 continue
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      STDRAT(I) = 1.0
      CORTEM(I) = 1.0
      WCI(I) = 0.0
      NUMCAL(I) = 0
      150 continue
   end do
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      CORNEW = 1.0
      SIGMA(ISPC) = SIGMAR(ISPC)
      I1 = ISCT(ISPC,1)
@@ -1540,15 +1541,15 @@ subroutine DGDRIV
 
   if (JOCALB .gt.0) then
      KOUT = 0
-     do K = 1,MAXSP
+     do K = 1,CFG_MAXSP
         if (CORTEM(K).ne.1.0.or. NUMCAL(K).ge.FNMIN) then
-           SPEC = NSP(MAXSP,1)(1:2)
+           SPEC = NSP(CFG_MAXSP,1)(1:2)
            if (VARACD.eq.'CR') then
               ISPEC = 2
            else
-              ISPEC = MAXSP
+              ISPEC = CFG_MAXSP
            end if
-           do KK = 1,MAXSP
+           do KK = 1,CFG_MAXSP
               if (K .ne. IREF(KK)) go to 203
               ISPEC = KK
               SPEC = NSP(KK,1)(1:2)

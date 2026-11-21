@@ -3,6 +3,7 @@
 !=====================!
 ! FIRE-AK $Id$
 subroutine FMCBA (IYR,ISWTCH)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     SINGLE-STAND VERSION
@@ -69,7 +70,7 @@ subroutine FMCBA (IYR,ISWTCH)
   !     INITIAL LIVE FUEL LOADING FOR 'ESTABLISHED' STANDS WITH 60% COVER
   !     (TAKEN FROM PN-FFE)
   !                  herbs, shrubs
-  data FULIVE /&
+  data FULIVE(:,1:MAXSP_NATIVE) /&
        &0.15, 0.10,& !  1 = pacific silver fir  3 = Pacific silver fir
        &0.15, 0.10,& !  2 = subalpine fir       9 = subalpine fir
        &0.20, 0.20,& !  3 = alaska-cedar        6 = Alaska cedar
@@ -97,7 +98,7 @@ subroutine FMCBA (IYR,ISWTCH)
   !     INITIAL LIVE FUEL LOADING FOR 'INTIALIZING STANDS WITH 10% COVER
   !     (TAKEN FROM PN-FFE)
   !                  herbs, shrubs
-  data FULIVI /&
+  data FULIVI(:,1:MAXSP_NATIVE) /&
        &0.30, 2.00,& !  1 = pacific silver fir  3 = Pacific silver fir
        &0.30, 2.00,& !  2 = subalpine fir       9 = subalpine fir
        &0.40, 2.00,& !  3 = alaska-cedar        6 = Alaska cedar
@@ -175,7 +176,7 @@ subroutine FMCBA (IYR,ISWTCH)
      BAMOST = 0.0
      TOTCRA = 0.0
 
-     do KSP = 1,MAXSP
+     do KSP = 1,CFG_MAXSP
         FMTBA(KSP) = 0.0
      end do
 
@@ -206,14 +207,14 @@ subroutine FMCBA (IYR,ISWTCH)
 
      !       CALCULATE TOTAL COVER TYPE
 
-     do KSP = 1,MAXSP
+     do KSP = 1,CFG_MAXSP
         TOTBA = TOTBA + FMTBA(KSP)
      end do
 
      !       DETERMINE WHICH SPECIES HAS THE MOST BASAL AREA
      !       COVTYP    - FFE-WIDE DOMINANT
 
-     call RDPSRT(MAXSP,FMTBA,ICT,.true.)
+     call RDPSRT(CFG_MAXSP,FMTBA,ICT,.true.)
      if (FMTBA(ICT(1)) .gt.0.001) COVTYP = ICT(1)
 
      !       Use the crown width information to determine the percent cover
@@ -408,7 +409,7 @@ subroutine FMCBA (IYR,ISWTCH)
 
      do ISZ = 1,MXFLCL
         if (TOTBA .gt.0.0) then
-           do KSP = 1,MAXSP
+           do KSP = 1,CFG_MAXSP
               if (FMTBA(KSP) .gt.0.0) then
                  do J = 1,2
                     PRCL = FMTBA(KSP) / TOTBA

@@ -3,6 +3,7 @@
 !======================!
 ! FIRE-CI $Id$
 subroutine FMCFMD (IYR, FMD)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     SINGLE-STAND VERSION
@@ -123,7 +124,7 @@ subroutine FMCFMD (IYR, FMD)
 
   STNDBA = 0.0
   PRLONG = 0.0
-  do I = 1, MAXSP
+  do I = 1, CFG_MAXSP
      STNDBA = STNDBA + FMTBA(I)
      select case (I)
      case (1,10)

@@ -3,6 +3,7 @@
 !============================!
 ! VBASE $Id$
 subroutine MORTS
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE COMPUTES PERIODIC MORTALITY RATES FOR EACH TREE
@@ -201,7 +202,7 @@ contains
     SUMDR10 = 0.
     DR0 = 0.
     DR10 = 0.
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (I1.le.0)go to 20
        I2 = ISCT(ISPC,2)
@@ -522,7 +523,7 @@ contains
     !  START LOOP TO ESTIMATE SDI BASED MORTALITY RATE.
     !  TREES ARE PROCESSED ONE AT A TIME WITHIN A SPECIES.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (I1.le.0) go to 50
        I2 = ISCT(ISPC,2)
@@ -1030,7 +1031,7 @@ contains
     !  START LOOP TO ESTIMATE MORTALITY RATE.  TREES ARE PROCESSED
     !  ONE AT A TIME WITHIN A SPECIES.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (I1.le.0) go to 50
        I2 = ISCT(ISPC,2)
@@ -1333,7 +1334,7 @@ contains
     !  START LOOP TO ESTIMATE MORTALITY RATE.  TREES ARE PROCESSED
     !  ONE AT A TIME WITHIN A SPECIES.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (I1.le.0) go to 50
        I2 = ISCT(ISPC,2)
@@ -1991,7 +1992,7 @@ contains
        XMDIA2(ISPCC) = PRM(4)
        goto 9
        2 continue
-       do ISPCC = 1,MAXSP
+       do ISPCC = 1,CFG_MAXSP
           XMMULT(ISPCC) = PRM(2)
           XMDIA1(ISPCC) = PRM(3)
           XMDIA2(ISPCC) = PRM(4)
@@ -2082,7 +2083,7 @@ contains
     !  START LOOP TO ESTIMATE MORTALITY RATE.  TREES ARE PROCESSED
     !  ONE AT A TIME WITHIN A SPECIES.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
 
        I1 = ISCT(ISPC,1)
        if (I1.le.0) go to 50
@@ -2314,7 +2315,7 @@ contains
 
        IPT = IPDG(ITYPE,IFOR)
        POTEN = POT(IPT)
-       do ISPC = 1,MAXSP
+       do ISPC = 1,CFG_MAXSP
           if (LLTDGOK(ISPC)) then
              GMULT_C(1,ISPC) = .90/(POTEN*V2SEICOR(ISPC))
              REIN_C(1,ISPC) = &
@@ -2327,7 +2328,7 @@ contains
 
        IPT2 = IPDG2(ITYPE,IFOR)
        POTEN = POT(IPT2)
-       do ISPC = 1,MAXSP
+       do ISPC = 1,CFG_MAXSP
           if (LLTDGOK(ISPC)) then
              GMULT_C(2,ISPC) = 2.50/(POTEN*V2SEICOR(ISPC))
              REIN_C(2,ISPC) = &
@@ -2355,14 +2356,14 @@ contains
        !       CAN BE FOUND, TRY ".../all" AND LOOP ONE MORE TIME BEFORE
        !       GIVING UP ON A MATCH.
        MORT%PrettyName = BEC%PrettyName
-       do I = 1,MAXSP
+       do I = 1,CFG_MAXSP
           IPOS(I) = 0
        end do
-       do I = 1,MAXSP
+       do I = 1,CFG_MAXSP
           IPAS = 0
           PAT = BEC%PrettyName
           7 do J = 1, P_MD
-             do K = 1,MAXSP
+             do K = 1,CFG_MAXSP
                 if (LMRT(J)%SPP(K) .eq.0) exit
                 if (LMRT(J)%SPP(K) .eq. I) then
                    do M = 1, P_SS
@@ -2384,7 +2385,7 @@ contains
        8 end do
 
        !       COPY COEFFICIENTS INTO MORT STRUCTURE
-       do I = 1,MAXSP
+       do I = 1,CFG_MAXSP
           MORT%FIT(I) = .false.
           J = IPOS(I)
           if (J .gt.0) then
@@ -2644,7 +2645,7 @@ contains
     DR0 = 0.0
     DR10 = 0.0
     SUMBA = 0.0
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        BASP(ISPC) = 0.0
        I1 = ISCT(ISPC,1)
        if (I1.le.0)go to 20
@@ -2683,7 +2684,7 @@ contains
 
     INDX_BA = 1
     TEM = BASP(1)
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        if (BASP(ISPC).gt. TEM) then
           INDX_BA = ISPC
           TEM = BASP(ISPC)
@@ -2964,7 +2965,7 @@ contains
     !  START LOOP TO ESTIMATE SDI BASED MORTALITY RATE.
     !  TREES ARE PROCESSED ONE AT A TIME WITHIN A SPECIES.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (I1.le.0) go to 50
        I2 = ISCT(ISPC,2)
@@ -3317,7 +3318,7 @@ contains
        call OPDONE(I,IY(ICYC))
        ISPCC = IFIX(PRM(1))
        if (ISPCC .eq.0) then
-          do ISPCC = 1,MAXSP
+          do ISPCC = 1,CFG_MAXSP
              XMMULT(ISPCC) = PRM(2)
              XMDIA1(ISPCC) = PRM(3)
              XMDIA2(ISPCC) = PRM(4)

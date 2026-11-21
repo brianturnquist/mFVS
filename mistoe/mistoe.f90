@@ -136,6 +136,7 @@ subroutine MISTOE
   !        Removed local declaration of DMFLAG, variable is now in common.
   !        Also removed it as argument in call to MISINF.
 
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !.... Parameter statements.
@@ -194,7 +195,7 @@ subroutine MISTOE
 
   DMFLAG = .false.
 
-  do ISPC = 1, MAXSP
+  do ISPC = 1, CFG_MAXSP
      do IPLT = 1, MAXPLT
         DMTALL(ISPC,IPLT) = 0.0
         SPPDMI(ISPC,IPLT) = 0.0
@@ -226,7 +227,7 @@ subroutine MISTOE
 
            !....          Otherwise defaults to all species.
 
-           do ISPC = 1,MAXSP
+           do ISPC = 1,CFG_MAXSP
               YPLMLT(ISPC) = PRM(2)*MISFIT(ISPC)
               YNGMLT(ISPC) = PRM(3)*MISFIT(ISPC)
               125 continue
@@ -238,7 +239,7 @@ subroutine MISTOE
 
   !.... Top of species loop.
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      I1 = ISCT(ISPC,1)
 
      !....    If there are no trees of this species, skip out.

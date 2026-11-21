@@ -3,6 +3,7 @@
 !=======================!
 ! VORGANON $Id$
 subroutine ORGTAB
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !    WRITES TABLE OF FVS-ORGANON PARAMETER SETTINGS.
@@ -265,7 +266,7 @@ subroutine ORGTAB
      511 format(/T42,'----- CUBIC FEET -----  ----- BOARD FEET -----',&
           &/T32,'SPECIES    MIN       TOP   STUMP     MIN     TOP   STUMP',&
           &/T35,'CODE    DBH       DIB      HT     DBH     DIB      HT')
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         write(JOSTND,512)JSP(I),DBHMIN(I),TOPD(I),STMP(I),BFMIND(I),&
              &BFTOPD(I),BFSTMP(I)
         512 format(T37,A2,':',F6.1,2X,5F8.1)

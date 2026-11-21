@@ -3,6 +3,7 @@
 !======================!
 ! FIRE-NC $Id$
 subroutine FMCFMD (IYR, FMD)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     SINGLE-STAND VERSION
@@ -214,12 +215,12 @@ subroutine FMCFMD (IYR, FMD)
   !     COMPUTE TOTAL STAND BASAL AREA AND PERCENTAGE IN EACH SPECIES
 
   STNDBA = 0.0
-  do I = 1, MAXSP
+  do I = 1, CFG_MAXSP
      BAPCT(I) = 0.0
      STNDBA = STNDBA + FMTBA(I)
   end do
   if (STNDBA .gt.0.001) then
-     do I = 1, MAXSP
+     do I = 1, CFG_MAXSP
         BAPCT(I) = 100.0 * (FMTBA(I)/STNDBA)
      end do
   end if

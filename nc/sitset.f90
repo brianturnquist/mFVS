@@ -3,6 +3,7 @@
 !=====================================!
 ! NC $Id$
 subroutine SITSET
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! THIS SUBROUTINE LOADS THE SITEAR ARRAY WITH A SITE INDEX FOR EACH
@@ -36,10 +37,10 @@ subroutine SITSET
 
   !  DATA STATEMENTS
 
-  data C5/365.,561.,570.,800.,515.,576.,406.,785.,1000.,365.,785.,&
+  data C5(1:MAXSP_NATIVE)/365.,561.,570.,800.,515.,576.,406.,785.,1000.,365.,785.,&
        &1052/
 
-  data C6/624.,647.,547.,759.,588.,706.,382.,759.,800.,571.,759.,&
+  data C6(1:MAXSP_NATIVE)/624.,647.,547.,759.,588.,706.,382.,759.,800.,571.,759.,&
        &1052/
 
   data FORMAX/850./
@@ -52,7 +53,7 @@ subroutine SITSET
   NTOHI = 0
   NSISET = 0
   NSDSET = 0
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (SITEAR(I) .gt.0.) NSISET = NSISET+1
      if (SDIDEF(I) .gt.0.) NSDSET = NSDSET+1
      5 continue
@@ -129,10 +130,10 @@ subroutine SITSET
 
   ! SI IS A VECTOR X MAXSP GIVING EQUIVALENT SITES FOR EACH SPECIES
 
-  if (DEBUG) write(JOSTND,9003)ISISP,SITEAR(ISISP),SIAGE
+  if (DEBUG) write(JOSTND,9003)ISISP,SITEAR(ISISP),SIAGE(1:CFG_MAXSP)
   9003 format('MAIN REF SPECIES ',I5,' SITE INDEX ',F10.1/&
        &5X,12F6.1)
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      AG = SIAGE(ISPC)
      SINDX = SITEAR(ISISP)
 
@@ -143,7 +144,7 @@ subroutine SITSET
 
   ! IF SITEAR() HAS NOT BEEN SET WITH SITECODE THEN CALCULATE VALUE HERE.
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (SITEAR(I) .eq.0.0) SITEAR(I) = SI(I)
      35 continue
   end do
@@ -152,7 +153,7 @@ subroutine SITSET
 
   K = ISISP
   if (SDIDEF(K) .le.0.) K = JSISP
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (SDIDEF(I) .gt.0.0) go to 40
      if (BAMAX .gt.0.) then
         SDIDEF(I) = BAMAX/(0.5454154*(PMSDIU/100.))
@@ -171,12 +172,12 @@ subroutine SITSET
   do I = 1,15
      J = (I-1)*10 + 1
      JJ = J+9
-     if (JJ.gt.MAXSP)JJ = MAXSP
+     if (JJ.gt.CFG_MAXSP)JJ = CFG_MAXSP
      write(JOSTND,90)(NSP(K,1)(1:2),K = J,JJ)
      90 format(/'SPECIES ',5X,10(A2,6X))
      write(JOSTND,91)(NINT(SDIDEF(K)),K = J,JJ )
      91 format('SDI MAX ',   10I8.0)
-     if (JJ .eq. MAXSP)go to 93
+     if (JJ .eq. CFG_MAXSP)go to 93
      92 continue
   end do
   93 continue
@@ -190,7 +191,7 @@ subroutine SITSET
 
   select case(IFOR)
   case(4)
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         if (DBHMIN(I) .le.0.) DBHMIN(I) = 9.0
         if (TOPD(I) .le.0.) TOPD(I) = 4.5
         if (BFMIND(I) .le.0.0) BFMIND(I) = 9.0
@@ -199,7 +200,7 @@ subroutine SITSET
         if (SCFTOPD(I) .le.0.0) SCFTOPD(I) = 4.5
      end do
   case(5,7)
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         if (DBHMIN(I) .le.0.) DBHMIN(I) = 9.0
         if (TOPD(I) .le.0.) TOPD(I) = 5.0
         if (BFMIND(I) .le.0.0) BFMIND(I) = 9.0
@@ -208,7 +209,7 @@ subroutine SITSET
         if (SCFTOPD(I) .le.0.0) SCFTOPD(I) = 5.0
      end do
   case default
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         if (DBHMIN(I) .le.0.) DBHMIN(I) = 9.0
         if (TOPD(I) .le.0.) TOPD(I) = 6.0
         if (BFMIND(I) .le.0.0) BFMIND(I) = 9.0
@@ -226,7 +227,7 @@ subroutine SITSET
   !  VARIANT ARE IN REGION 5. SIMPSON & HOOPA USE R5 EQUATIONS.
   !  BLM (IFOR=7) USE NATCRS WITH BLM EQNS
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      if (IFOR.eq.4.or. IFOR.eq.7) then
         if (METHB(ISPC).eq.999)METHB(ISPC) = 6
         if (METHC(ISPC).eq.999)METHC(ISPC) = 6
@@ -259,7 +260,7 @@ subroutine SITSET
   end if
 
   if (LFIANVB) call NVB_REGION_CHECK
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      read(FIAJSP(ISPC),'(I4)')IFIASP
      VOLEQ = '           '
      if (((METHC(ISPC).eq.6).or.(METHC(ISPC).eq.9)).and.&
@@ -283,14 +284,14 @@ subroutine SITSET
 
   if (LFIA) then
      call FIAHEAD(JOSTND)
-     write(JOSTND,211) (NSP(I,1)(1:2),FIAJSP(I),I = 1,MAXSP)
+     write(JOSTND,211) (NSP(I,1)(1:2),FIAJSP(I),I = 1,CFG_MAXSP)
      211 format ((T12,8(A3,'=',A6,:,'; '),A,'=',A6))
   end if
 
   !  WRITE VOLUME EQUATION NUMBER TABLE
 
   call VOLEQHEAD(JOSTND)
-  write(JOSTND,230)(NSP(J,1)(1:2),VEQNNC(J),VEQNNB(J),J = 1,MAXSP)
+  write(JOSTND,230)(NSP(J,1)(1:2),VEQNNC(J),VEQNNB(J),J = 1,CFG_MAXSP)
   230 format(4(2X,A2,4X,A11,1X,A10,1X))
 
   return

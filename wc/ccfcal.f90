@@ -80,7 +80,7 @@ subroutine CCFCAL(ISPC,D,H,JCR,P,LTHIN,CCFT,CRWDTH,MODE)
 
   !  DATA STATEMENTS
 
-  data INDCCF/&
+  data INDCCF(1:MAXSP_NATIVE)/&
        &3*4,13,2*9,13,2*6,14,15,10,2*1,10,2*3,6,2*12,&
        &8,2*2,8,16,3*8,6, 6,2*15,7*8/
   data RD1/&

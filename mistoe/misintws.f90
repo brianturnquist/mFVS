@@ -3,6 +3,7 @@
 !=======================!
 ! MISTOE $Id$
 subroutine MISINT
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  Purpose:
@@ -125,7 +126,7 @@ subroutine MISINT
 
   !  Species character representations
 
-  data (ACSP(I),I = 1,MAXSP)/&
+  data (ACSP(I),I = 1,MAXSP_NATIVE)/&
        &'SP', 'DF', 'WF', 'GS', 'IC', 'JP', 'RF', 'PP', 'LP', 'WB',&
        &'WP', 'PM', 'SF', 'KP', 'FP', 'CP', 'LM', 'MP', 'GP', 'WE',&
        &'GB', 'BD', 'RW', 'MH', 'WJ', 'UJ', 'CJ', 'LO', 'CY', 'BL',&
@@ -134,7 +135,7 @@ subroutine MISINT
 
   !  Species affected by mistletoe
 
-  data (AFIT(I),I = 1,MAXSP)/&
+  data (AFIT(I),I = 1,MAXSP_NATIVE)/&
        &1,    1,    1,    0,    0,    1,    1,    1,    1,    1,&
        &1,    1,    1,    1,    1,    1,    1,    1,    1,    1,&
        &1,    1,    0,    1,    0,    0,    0,    0,    0,    0,&
@@ -191,7 +192,7 @@ subroutine MISINT
        &1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,& ! 39 (DG)
        &1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0/ ! 40 (BM)
 
-  data ((ADGP(I,J),J = 1,7),I = 41,MAXSP)/&
+  data ((ADGP(I,J),J = 1,7),I = 41,MAXSP_NATIVE)/&
        &1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,& ! 41 (MC)
        &1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,& ! 42 (OS)
        &1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0/ ! 43 (OH)
@@ -263,7 +264,7 @@ subroutine MISINT
        &1.0,1.0,1.0,1.0,1.0,1.0,1.0,& ! 39 (DG)
        &1.0,1.0,1.0,1.0,1.0,1.0,1.0/ ! 40 (BM)
 
-  data ((ADGP(I,J),J = 1,7),I = 41,MAXSP)/&
+  data ((ADGP(I,J),J = 1,7),I = 41,MAXSP_NATIVE)/&
        &1.0,1.0,1.0,1.0,1.0,1.0,1.0,& ! 41 (MC)
        &1.0,1.0,1.0,1.0,1.0,1.0,1.0,& ! 42 (OS)
        &1.0,1.0,1.0,1.0,1.0,1.0,1.0/ ! 43 (OH)
@@ -318,7 +319,7 @@ subroutine MISINT
        &0.0,       0.0,       0.0,& ! 39 (DG)
        &0.0,       0.0,       0.0/ ! 40 (BM)
 
-  data ((APMC(I,J),J = 1,3),I = 41,MAXSP)/&
+  data ((APMC(I,J),J = 1,3),I = 41,MAXSP_NATIVE)/&
        &0.0,       0.0,       0.0,& ! 41 (MC)
        &0.0,       0.0,       0.0,& ! 42 (OS)
        &0.0,       0.0,       0.0/ ! 43 (OH)
@@ -331,7 +332,7 @@ subroutine MISINT
 
   !  Mistletoe model initializations.
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      MISFIT(I) = AFIT(I)
      CSPARR(I) = ACSP(I)
      do J = 1,7

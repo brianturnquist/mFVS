@@ -38,7 +38,7 @@ block data BLKDAT
 
   ! COMMON STATEMENT FOR ESCOMN VARIABLE
 
-  data XMIN/&
+  data XMIN(1:MAXSP_NATIVE)/&
        &0.50, 2.08, 0.50, 1.00, 1.32, 2.51, 0.50, 2.53, 2.75, 0.50,&
        &5.05, 0.50, 4.70, 0.50, 1.33, 1.33, 0.66, 2.40, 1.35, 1.35,&
        &2.03, 0.50, 0.50, 0.50, 0.50, 2.08, 0.51, 0.63, 2.08, 2.08,&
@@ -57,7 +57,7 @@ block data BLKDAT
        &,BNORML/3*1.0,1.046,1.093,1.139,1.186,1.232,&
        &1.278,1.325,1.371,1.418,1.464,1.510,1.557,1.603,1.649,1.696,&
        &1.742,1.789/,&
-       &HHTMAX/23.0,27.0,2*21.0,22.0,20.0,24.0,&
+       &HHTMAX(1:MAXSP_NATIVE)/23.0,27.0,2*21.0,22.0,20.0,24.0,&
        &2*18.0,17.0,22.0,&
        &9*20.0,&
        &10*20.0,&
@@ -83,7 +83,7 @@ block data BLKDAT
 
   !     COMMON STATEMENT FOR PLOT VARIABLES.
 
-  data JSP /&
+  data JSP(1:MAXSP_NATIVE) /&
        &'FR ',   'JU ',   'PI ',   'PU ',   'SP ',   'SA ',   'SR ',&
        &'LL ',   'TM ',   'PP ',   'PD ',   'WP ',   'LP ',   'VP ',&
        &'BY ',   'PC ',   'HM ',   'FM ',   'BE ',   'RM ',   'SV ',&
@@ -98,7 +98,7 @@ block data BLKDAT
        &'BO ',   'LO ',   'BK ',   'WI ',   'SS ',   'BD ',   'EL ',&
        &'WE ',   'AE ',   'RL ',   'OS ',   'OH ',   'OT '/
 
-  data FIAJSP /&
+  data FIAJSP(1:MAXSP_NATIVE) /&
        &'010',   '057',   '090',   '107',   '110',   '111',   '115',&
        &'121',   '123',   '126',   '128',   '129',   '131',   '132',&
        &'221',   '222',   '260',   '311',   '313',   '316',   '317',&
@@ -113,7 +113,7 @@ block data BLKDAT
        &'837',   '838',   '901',   '920',   '931',   '950',   '970',&
        &'971',   '972',   '975',   '299',   '998',   '999'/
 
-  data PLNJSP /&
+  data PLNJSP(1:MAXSP_NATIVE) /&
        &'ABIES ','JUNIP ','PICEA ','PICL  ','PIEC2 ','PIEL  ','PIGL2 ',&
        &'PIPA2 ','PIPU5 ','PIRI  ','PISE  ','PIST  ','PITA  ','PIVI2 ',&
        &'TADI2 ','TAAS  ','TSUGA ','ACBA3 ','ACNE2 ','ACRU  ','ACSA2 ',&
@@ -271,7 +271,7 @@ block data BLKDAT
   !  RESIDUAL ERROR ESTIMATES WERE MULTIPLIED BY 0.75 TO APPROXIMATE
   !  CORRECTION FOR MEASUREMENT ERROR; 5/10/91--WRW.
 
-  data SIGMAR/&
+  data SIGMAR(1:MAXSP_NATIVE)/&
        &0.451100,   0.529700,   0.451100,   0.542800,   0.498700,&
        &0.525100,   0.436700,   0.441000,   0.469300,   0.552500,&
        &0.592100,   0.493700,   0.468700,   0.469300,   0.551100,&

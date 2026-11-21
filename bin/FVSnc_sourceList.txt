@@ -394,6 +394,7 @@
 ../pg/fmppget.f90
 ../pg/fmppput.f90
 ../pg/getstd.f90
+../pg/putgetsp_mod.f90
 ../pg/putgetsubs.f90
 ../pg/putstd.f90
 ../pg/stash.f90

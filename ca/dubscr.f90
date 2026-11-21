@@ -32,7 +32,7 @@ subroutine DUBSCR(ISPC,D,H,PRD,QMDPLT,CR,TPCT,TPCCF)
   real    :: HDR
   real    :: RDANUW
 
-  data IMAP/3*3, 3*1, 2, 2*3, 11*4, 6, 1, 7, 2*4, 24*5, 7/
+  data IMAP(1:MAXSP_NATIVE)/3*3, 3*1, 2, 2*3, 11*4, 6, 1, 7, 2*4, 24*5, 7/
 
   data BCR0/&
        &8.042774, 8.477025, 7.558538, 6.489813, 5.000000, 9.000000,&

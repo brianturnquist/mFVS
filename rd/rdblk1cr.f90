@@ -82,7 +82,7 @@ block data RDBLK1
   !.... FVS Central Rockies Species list for all model types:
   !....               1   2   3   4   5   6   7   8   9  10  11  12  -- FVS index
   !....              AF  CB  DF  GF  WF  MH  RC  WL  BC  LM  LP  PI  -- FVS species
-  data IRTSPC / 9, 21,  3,  4, 13, 11,  6,  2, 33, 23,  7, 33,&
+  data IRTSPC(1:MAXSP_NATIVE) / 9, 21,  3,  4, 13, 11,  6,  2, 33, 23,  7, 33,&
        !....              13  14  15  16  17  18  19  20  21  22  23  24  -- FVS index
        !....              PP  WB  SW  UJ  BS  ES  WS  AS  NC  PW  GO  AW  -- FVS species
        &10, 22,  1, 26, 20,  8, 25, 19, 24, 24, 18, 29,&

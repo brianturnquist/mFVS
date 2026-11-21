@@ -15,7 +15,7 @@ subroutine ESXCSH (HTMAX,HTMIN,TIME,II,DRAW,HHT)
   real    :: HHT,DRAW,TIME,HTMIN,HTMAX,CLASS,XUPPR,XX
   integer :: II,ITIME
 
-  data SHIFT/4.0,4.0,4*2.0,4.0,2.0,2.0,4.0,2.0,&
+  data SHIFT(1:MAXSP_NATIVE)/4.0,4.0,4*2.0,4.0,2.0,2.0,4.0,2.0,&
        &12*0.0/
 
   !     COEFFICIENTS FOR ARRAYS BB AND CC PREDICT TREE HEIGHT 'CLASS'
@@ -26,7 +26,7 @@ subroutine ESXCSH (HTMAX,HTMIN,TIME,II,DRAW,HHT)
   !        3        1.0            1.4    ETC.
   !     PLOT AGE(YRS): 3 THRU 7  8 THRU 12  13 THRU 20
 
-  data BB/      2.121455,  5.060402,   5.979549,&
+  data BB(:,1:MAXSP_NATIVE)/      2.121455,  5.060402,   5.979549,&
        &6.643726, 11.422982,  19.618871,&
        &3.816083,  8.161474,  10.987699,&
        &3.089571,  5.830185,  10.105748,&
@@ -43,7 +43,7 @@ subroutine ESXCSH (HTMAX,HTMIN,TIME,II,DRAW,HHT)
        &24*0.,&
        &3.347712,  6.806825,  13.553455/
 
-  data CC/       .745850,   .782170,    .842171,&
+  data CC(:,1:MAXSP_NATIVE)/       .745850,   .782170,    .842171,&
        &.902909,  1.166155,   1.306380,&
        &.996732,   .845413,    .948037,&
        &.800681,   .832278,    .954081,&

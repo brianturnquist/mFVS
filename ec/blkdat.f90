@@ -88,7 +88,7 @@ block data BLKDAT
 
   !     TYPE DECLARATIONS AND COMMON STATEMENT FOR CONTROL VARIABLES.
 
-  data BKRAT/&
+  data BKRAT(1:MAXSP_NATIVE)/&
        &0.,    0.,    0.,    0.,    0.,&
        &0.,    0.,    0.,    0.,    0.,&
        &0.,    0.,    0.,    0.,    0.,&
@@ -109,7 +109,7 @@ block data BLKDAT
 
   !   COMMON STATEMENT FOR ESCOMN VARIABLE
 
-  data XMIN/&
+  data XMIN(1:MAXSP_NATIVE)/&
        &1.0, 1.0, 1.0, 0.5, 0.5, 0.5, 1.0, 0.5, 0.5, 1.0,&
        &1.0, 0.5, 1.0, 1.0, 1.0, 0.5, 1.5, 1.0, 1.0, 1.0,&
        &1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,&
@@ -122,7 +122,7 @@ block data BLKDAT
   data BNORML/3*1.0,1.046,1.093,1.139,1.186,1.232,1.278,1.325,&
        &1.371,1.418,1.464,1.510,1.557,1.603,1.649,1.696,1.742,1.789/
 
-  data HHTMAX/&
+  data HHTMAX(1:MAXSP_NATIVE)/&
        &23.0, 27.0, 21.0, 21.0, 22.0, 20.0, 24.0, 18.0, 18.0, 17.0,&
        &20.0, 22.0, 20.0, 20.0, 20.0, 20.0, 20.0, 20.0, 20.0, 20.0,&
        &20.0, 50.0, 20.0, 20.0, 20.0, 20.0, 20.0, 20.0, 20.0, 20.0,&
@@ -137,7 +137,7 @@ block data BLKDAT
   !     DIMENSIONED AT (16,MAXSP) WHERE THE FIRST INDEX IS A HABITAT TYPE.
   !     NONE OF THE SPECIES IN THIS VARIANT HAVE NATURAL REGEN.
 
-  data ((OCURHT(I,J),I = 1,16),J = 1,MAXSP)/&
+  data ((OCURHT(I,J),I = 1,16),J = 1,MAXSP_NATIVE)/&
        &16*0.0, 16*0.0, 16*0.0, 16*0.0, 16*0.0,&
        &16*0.0, 16*0.0, 16*0.0, 16*0.0, 16*0.0,&
        &16*0.0, 16*0.0, 16*0.0, 16*0.0, 16*0.0,&
@@ -150,7 +150,7 @@ block data BLKDAT
   !     DIMENSIONED AT (20,MAXSP) WHERE THE FIRST INDEX IS A NATIONAL FOREST.
   !     NONE OF THE SPECIES IN THIS VARIANT HAVE NATURAL REGEN.
 
-  data ((OCURNF(I,J),I = 1,20),J = 1,MAXSP)/&
+  data ((OCURNF(I,J),I = 1,20),J = 1,MAXSP_NATIVE)/&
        &20*0.0, 20*0.0, 20*0.0, 20*0.0, 20*0.0,&
        &20*0.0, 20*0.0, 20*0.0, 20*0.0, 20*0.0,&
        &20*0.0, 20*0.0, 20*0.0, 20*0.0, 20*0.0,&
@@ -161,7 +161,7 @@ block data BLKDAT
 
   !     COMMON STATEMENT FOR PLOT VARIABLES.
 
-  data JSP /&
+  data JSP(1:MAXSP_NATIVE) /&
        &'WP ',   'WL ',   'DF ',   'SF ',   'RC ',&
        &'GF ',   'LP ',   'ES ',   'AF ',   'PP ',&
        &'WH ',   'MH ',   'PY ',   'WB ',   'NF ',&
@@ -175,7 +175,7 @@ block data BLKDAT
   !  DATA FOR VINE MAPLE. HOWEVER, IN THIS VARIANT, FIA CODE 321 IS BEING
   !  ASSOCIATED WITH VINE MAPLE IN THE SPECIES TRANSLATOR.
 
-  data FIAJSP /&
+  data FIAJSP(1:MAXSP_NATIVE) /&
        &'119',   '073',   '202',   '011',   '242',&
        &'017',   '108',   '093',   '019',   '122',&
        &'263',   '264',   '231',   '101',   '022',&
@@ -184,7 +184,7 @@ block data BLKDAT
        &'746',   '747',   '815',   '760',   '920',&
        &'299',   '998'/
 
-  data PLNJSP /&
+  data PLNJSP(1:MAXSP_NATIVE) /&
        &'PIMO3 ','LAOC  ','PSME  ','ABAM  ','THPL  ',&
        &'ABGR  ','PICO  ','PIEN  ','ABLA  ','PIPO  ',&
        &'TSHE  ','TSME  ','TABR2 ','PIAL  ','ABPR  ',&
@@ -197,7 +197,7 @@ block data BLKDAT
        &470,510,520,530,540,550,570,610,620,640,&
        &660,670,680,690,710,720,730,830,850,999,92*0 /
 
-  data NSP /&
+  data NSP(1:MAXSP_NATIVE,:) /&
        &'WP1','WL1','DF1','SF1','RC1','GF1','LP1','ES1','AF1','PP1',&
        &'WH1','MH1','PY1','WB1','NF1','WF1','LL1','YC1','WJ1','BM1',&
        &'VN1','RA1','PB1','GC1','DG1','AS1','CW1','WO1','PL1','WI1',&
@@ -216,7 +216,7 @@ block data BLKDAT
   !   HT1 AND HT2 ARE HEIGHT DUBBING COEFFICIENTS FOR TREES 5.0" DBH
   !   AND LARGER FOR SPECIES USING EQUATIONS FROM WC.
 
-  data HT1/&
+  data HT1(1:MAXSP_NATIVE)/&
        &5.035,    4.961,   4.920,   5.032,   4.896,&
        &5.032,    4.854,   4.948,   4.834,   4.884,&
        &5.298,   3.9715,   5.188,   5.188,   5.327,&
@@ -225,7 +225,7 @@ block data BLKDAT
        &5.152,    5.152,   5.152,   5.152,   5.152,&
        &3.9715,    5.152/
 
-  data HT2/&
+  data HT2(1:MAXSP_NATIVE)/&
        &-10.674,   -8.247,  -9.003, -10.482,  -8.391,&
        &-10.482,   -8.296,  -9.041,  -9.042,  -9.741,&
        &-13.240,  -6.7145, -13.801, -13.801, -15.450,&
@@ -234,7 +234,7 @@ block data BLKDAT
        &-13.576,  -13.576, -13.576, -13.576, -13.576,&
        &-6.7145,  -13.576/
 
-  data SIGMAR/&
+  data SIGMAR(1:MAXSP_NATIVE)/&
        &0.5086,   0.3340,  0.3420,  0.4320,  0.5500,&
        &0.3890,   0.3060,  0.3970,  0.4690,  0.3660,&
        &0.4104,   0.3220,  0.4842,  0.4842,  0.4275,&
@@ -249,7 +249,7 @@ block data BLKDAT
   !   LESS THAN 5.0" DBH FOR SPECIES USING EQUATIONS FROM WC.
   !   DIMENSIONED AT (MAXSP,9)
 
-  data HTT1/&
+  data HTT1(1:MAXSP_NATIVE,:)/&
 
        !   HTT1(ISPC,1) IS USED TO STORE THE CONSTANT COEFFICIENT.
 

@@ -3,6 +3,7 @@
 !==================!
 ! VIE $Id$
 subroutine SPCTRN (SPCIN, ISPC1)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  CALLED FROM INTREE, WHEN THE INPUT SPECIES CODE IS NOT RECOGNIZED.
@@ -1334,11 +1335,11 @@ subroutine SPCTRN (SPCIN, ISPC1)
      case('NC')
         ISPC1 = 11
      case default
-        ISPC1 = MAXSP
+        ISPC1 = CFG_MAXSP
      end select
      go to 300
   end if
-  do J2 = 1,MAXSP
+  do J2 = 1,CFG_MAXSP
      if (SPCOUT(1:2) .eq. NSP(J2,1)(1:2)) then
         ISPC1 = J2
         go to 300
@@ -1352,6 +1353,6 @@ subroutine SPCTRN (SPCIN, ISPC1)
   !  IN THE EVENT THAT EXECUTABLE IS THE OLD 11 SPECIES SORNEC VARIANT
   !  SET ISPC1 EQUAL TO MAXSP
 
-  if (ISPC1.eq.0)ISPC1 = MAXSP
+  if (ISPC1.eq.0)ISPC1 = CFG_MAXSP
   return
 end

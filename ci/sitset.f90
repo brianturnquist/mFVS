@@ -3,6 +3,7 @@
 !=====================================!
 ! CI $Id$
 subroutine SITSET
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE IS USED TO SET SIMULATION CONTROLLING VALUES
@@ -78,7 +79,7 @@ subroutine SITSET
        &190., 120., 140., 156., 120., 210., 140., 160., 214., 130.,&
        &154., 120., 300., 2*130., 200., 100., 75., 2*100., 110.,&
        &3*150./
-  data R4SDI/&
+  data R4SDI(1:MAXSP_NATIVE)/&
        &529.,423.,570.,562.,682.,762.,679.,620.,602.,446.,621.,&
        &576.,562.,272.,501.,409.,452.,409.,452./
 
@@ -97,7 +98,7 @@ subroutine SITSET
   SHISSP = 999.
   call SITERANGE (1,ISISP,SLOSSP,SHISSP)
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (TEM .lt. SLOSSP)TEM = SLOSSP
 
      !  GET THE APPROPRIATE SITE INDEX RANGE VALUES FOR THIS SPECIES.
@@ -119,7 +120,7 @@ subroutine SITSET
   !  NEZ PERCE (IFOR=1) IS A REGION 1 FOREST. ALL OTHERS FORESTS IN THIS
   !  VARIANT ARE IN REGION 4.
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      if (IFOR.eq.1) then
         if (METHB(ISPC).eq.999)METHB(ISPC) = 6
         if (METHC(ISPC).eq.999)METHC(ISPC) = 6
@@ -147,13 +148,13 @@ subroutine SITSET
 
   if (CALCSDI.eq.' ' .and. IFOR .lt.2) LZEIDE = .false.
   if (BAMAX .gt.0.0) then
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         if (SDIDEF(I).le.0.)&
              &SDIDEF(I) = BAMAX/(0.5454154*(PMSDIU/100.))
      end do
   else
      BAMAX = BAMAXA(ICINDX)
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         if (IFOR .lt.2) then
            if (SDIDEF(I).le.0.)&
                 &SDIDEF(I) = BAMAX/(0.5454154*(PMSDIU/100.))
@@ -166,12 +167,12 @@ subroutine SITSET
   do I = 1,15
      J = (I-1)*10 + 1
      JJ = J+9
-     if (JJ.gt.MAXSP)JJ = MAXSP
+     if (JJ.gt.CFG_MAXSP)JJ = CFG_MAXSP
      write(JOSTND,90)(NSP(K,1)(1:2),K = J,JJ)
      90 format(/'SPECIES ',5X,10(A2,6X))
      write(JOSTND,91)(NINT(SDIDEF(K)),K = J,JJ )
      91 format('SDI MAX ',   10I8.0)
-     if (JJ .eq. MAXSP)go to 93
+     if (JJ .eq. CFG_MAXSP)go to 93
      92 continue
   end do
   93 continue
@@ -187,7 +188,7 @@ subroutine SITSET
   VAR = 'CI'
 
   if (LFIANVB) call NVB_REGION_CHECK
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      read(FIAJSP(ISPC),'(I4)')IFIASP
      VOLEQ = '           '
      if (((METHC(ISPC).eq.6).or.(METHC(ISPC).eq.9)).and.&
@@ -210,14 +211,14 @@ subroutine SITSET
 
   if (LFIA) then
      call FIAHEAD(JOSTND)
-     write(JOSTND,211) (NSP(I,1)(1:2),FIAJSP(I),I = 1,MAXSP)
+     write(JOSTND,211) (NSP(I,1)(1:2),FIAJSP(I),I = 1,CFG_MAXSP)
      211 format ((T12,8(A3,'=',A6,:,'; '),A,'=',A6))
   end if
 
   !  WRITE VOLUME EQUATION NUMBER TABLE
 
   call VOLEQHEAD(JOSTND)
-  write(JOSTND,230)(NSP(J,1)(1:2),VEQNNC(J),VEQNNB(J),J = 1,MAXSP)
+  write(JOSTND,230)(NSP(J,1)(1:2),VEQNNC(J),VEQNNB(J),J = 1,CFG_MAXSP)
   230 format(4(2X,A2,4X,A11,1X,A10,1X))
 
   return

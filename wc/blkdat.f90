@@ -39,10 +39,10 @@ block data BLKDAT
 
   ! COMMON STATEMENT FOR ESCOMN VARIABLE
 
-  data XMIN/ 1.0, 2*1.5, 7*1.0, 1.4, 3*1.0, 1.3, 1.5,&
+  data XMIN(1:MAXSP_NATIVE)/ 1.0, 2*1.5, 7*1.0, 1.4, 3*1.0, 1.3, 1.5,&
        &13*1.0, 1.5, 9*1.0/
   data ISPSPE/ 17,21,22,23,24,25,26,27,28,33,34,35,36,37/
-  data HHTMAX/ 21*20.0,50.0,17*20.0 /
+  data HHTMAX(1:MAXSP_NATIVE)/ 21*20.0,50.0,17*20.0 /
   data DBHMID/1.0,3.0,5.0,7.0,9.0,12.0,16.0,20.0,24.0,28.0/,&
        &BNORML/3*1.0,1.046,1.093,1.139,1.186,1.232,1.278,1.325,1.371,&
        &1.418,1.464,1.510,1.557,1.603,1.649,1.696,1.742,1.789/,&
@@ -53,11 +53,11 @@ block data BLKDAT
 
   !     OCURHT ZEROES OUT PROBABILITIES WHICH CANNOT OCCUR BY DEFINITION.
 
-  data ((OCURHT(I,J),I = 1,16),J = 1,MAXSP)/624*0.0/
+  data ((OCURHT(I,J),I = 1,16),J = 1,MAXSP_NATIVE)/624*0.0/
 
   !     OCURNF ZEROES OUT PROBABILITIES ON NATIONAL FORESTS BY SPECIES.
 
-  data ((OCURNF(I,J),I = 1,20),J = 1,MAXSP)/780*0.0/
+  data ((OCURNF(I,J),I = 1,20),J = 1,MAXSP_NATIVE)/780*0.0/
 
   ! COMMON STATEMENT FOR PLOT VARIABLES.
 
@@ -105,7 +105,7 @@ block data BLKDAT
   !    38 =
   !    39 = OTHER (OT)
 
-  data JSP /&
+  data JSP(1:MAXSP_NATIVE) /&
        &'SF ',   'WF ',   'GF ',   'AF ',   'RF ',   '   ',   'NF ',&
        &'YC ',   'IC ',   'ES ',   'LP ',   'JP ',   'SP ',   'WP ',&
        &'PP ',   'DF ',   'RW ',   'RC ',   'WH ',   'MH ',   'BM ',&
@@ -113,7 +113,7 @@ block data BLKDAT
        &'WJ ',   'LL ',   'WB ',   'KP ',   'PY ',   'DG ',   'HT ',&
        &'CH ',   'WI ',   '   ',   'OT '/
 
-  data FIAJSP /&
+  data FIAJSP(1:MAXSP_NATIVE) /&
        &'011',   '015',   '017',   '019',   '020',   '   ',   '022',&
        &'042',   '081',   '093',   '108',   '116',   '117',   '119',&
        &'122',   '202',   '211',   '242',   '263',   '264',   '312',&
@@ -121,7 +121,7 @@ block data BLKDAT
        &'064',   '072',   '101',   '103',   '231',   '492',   '500',&
        &'768',   '920',   '   ',   '999'/
 
-  data PLNJSP /&
+  data PLNJSP(1:MAXSP_NATIVE) /&
        &'ABAM  ','ABCO  ','ABGR  ','ABLA  ','ABMA  ','      ','ABPR  ',&
        &'CANO9 ','CADE27','PIEN  ','PICO  ','PIJE  ','PILA  ','PIMO3 ',&
        &'PIPO  ','PSME  ','SESE3 ','THPL  ','TSHE  ','TSME  ','ACMA3 ',&
@@ -133,7 +133,7 @@ block data BLKDAT
        &470,510,520,530,540,550,570,610,620,640,&
        &660,670,680,690,710,720,730,830,850,999,92*0 /
 
-  data NSP /  'SF1','WF1','GF1','AF1','RF1','__1','NF1','YC1',&
+  data NSP(1:MAXSP_NATIVE,:) /  'SF1','WF1','GF1','AF1','RF1','__1','NF1','YC1',&
        &'IC1','ES1','LP1','JP1','SP1','WP1','PP1','DF1','RW1','RC1',&
        &'WH1','MH1','BM1','RA1','WA1','PB1','GC1','AS1','CW1','WO1','WJ1',&
        &'LL1','WB1','KP1','PY1','DG1','HT1','CH1','WI1','__1','OT1',&
@@ -151,12 +151,12 @@ block data BLKDAT
   !   HT1 AND HT2 ARE HEIGHT DUBBING COEFFICIENTS FOR TREES 5.0" DBH
   !   AND LARGER.
 
-  data HT1/&
+  data HT1(1:MAXSP_NATIVE)/&
        &5.288, 2*5.308, 3*5.313, 5.327, 5.143, 2*5.188, 4.865, 5.333,&
        &2*5.382, 5.333, 5.288, 5.3401, 5.271, 5.298, 5.081, 4.700,&
        &4.886, 7*5.152, 4*5.188, 6*5.152/
 
-  data HT2/&
+  data HT2(1:MAXSP_NATIVE)/&
        &-14.147, 2*-13.624, 3*-15.321, -15.450, -13.497, 2*-13.801,&
        &-9.305, -17.762, 2*-15.866, -17.762, -14.147, -15.9354, -14.996,&
        &-13.240, -13.430, -6.326, -8.792, 7*-13.576, 4*-13.801,&
@@ -165,7 +165,7 @@ block data BLKDAT
   !  SIGMAR VALUES FOR
   !  **REFIT OF WO(28) by GOULD&HARRINGTON ESM 041910
 
-  data SIGMAR/&
+  data SIGMAR(1:MAXSP_NATIVE)/&
        &0.5450, 2*0.4390, 0.3960, 2*0.3102, 0.4275, 0.3931,&
        &2*0.4842, 0.3690, 0.3222, 2*0.5494, 0.3222, 0.4456,&
        &0.6178, 0.4442, 0.4104, 0.3751, 0.5107, 0.7487,&
@@ -175,7 +175,7 @@ block data BLKDAT
   !   HTT1 IS USED TO STORE THE HEIGHT DUBBING COEFFICIENTS FOR TREES
   !   LESS THAN 5.0" DBH.
 
-  data HTT1/&
+  data HTT1(1:MAXSP_NATIVE,:)/&
 
        !   HTT1(ISPC,1) IS USED TO STORE THE CONSTANT COEFFICIENT.
 

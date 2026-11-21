@@ -3,6 +3,7 @@
 !=================!
 ! RD $Id$
 subroutine RDSHRK
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  Purpose :
@@ -73,7 +74,7 @@ subroutine RDSHRK
   TCLAS = 0.0
   IRSP = IDI
 
-  do KSP = 1,MAXSP
+  do KSP = 1,CFG_MAXSP
      if (IDI .lt.3) IRSP = IDITYP(IRTSPC(KSP))
      if ((ISCT(KSP,1) .eq.0) .or. (IRSP .ne. IDI)) goto 800
 

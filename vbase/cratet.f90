@@ -3,6 +3,7 @@
 !=========================================!
 ! VBASE $Id$
 subroutine CRATET
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE IS CALLED PRIOR TO PROJECTION.  IT HAS THE
@@ -456,7 +457,7 @@ subroutine CRATET
      if ( DEBUG ) then
         write(JOSTND,124) ICYC,IMODTY,LORGPREP
      end if
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         KNTOHT(I) = 0
         KNTOCR(I) = 0
      end do
@@ -734,7 +735,7 @@ subroutine CRATET
         if (VARIANTCD.eq.'IE'.or.VARIANTCD.eq.'TT'.or.VARIANTCD.eq.'UT'.or.VARIANTCD.eq.'CI'.or.&
              &VARIANTCD.eq.'BC') then
            write(JOSTND,*)'SITEAR BEFORE = '
-           write(JOSTND,8998) (NSP(J,1)(1:2),SITEAR(J),J = 1,MAXSP)
+           write(JOSTND,8998) (NSP(J,1)(1:2),SITEAR(J),J = 1,CFG_MAXSP)
         end if
         if (VARIANTCD.eq.'OC'.or.VARIANTCD.eq.'OP') then
            do I = 1,18
@@ -750,7 +751,7 @@ subroutine CRATET
   end if
   if (VARIANTCD.eq.'IE'.or.VARIANTCD.eq.'TT'.or.VARIANTCD.eq.'UT'.or.VARIANTCD.eq.'CI'.or.&
        &VARIANTCD.eq.'BC') then
-     do ISPC = 1,MAXSP
+     do ISPC = 1,CFG_MAXSP
         SI = SITEAR(ISPC)
         H = 0.
         if (VARIANTCD.eq.'IE') then
@@ -849,7 +850,7 @@ subroutine CRATET
      end do
      if (DEBUG) then
         write(JOSTND,*)'SITEAR AFTER = '
-        write(JOSTND,8998) (NSP(J,1)(1:2),SITEAR(J),J = 1,MAXSP)
+        write(JOSTND,8998) (NSP(J,1)(1:2),SITEAR(J),J = 1,CFG_MAXSP)
      end if
   end if
   if (VARIANTCD.eq.'SN') then
@@ -859,10 +860,10 @@ subroutine CRATET
      do I = 1,15
         J = (I-1)*10 + 1
         JJ = J+9
-        if (JJ.gt.MAXSP)JJ = MAXSP
+        if (JJ.gt.CFG_MAXSP)JJ = CFG_MAXSP
         write(JOSTND,90)(NSP(K,1)(1:2),K = J,JJ)
         write(JOSTND,91)(SDIDEF(K),K = J,JJ )
-        if (JJ .eq. MAXSP)go to 93
+        if (JJ .eq. CFG_MAXSP)go to 93
         92 continue
      end do
   end if
@@ -913,7 +914,7 @@ subroutine CRATET
   call DGDRIV
   call REGENT(.false.,1)
   1 continue
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (VARIANTCD.eq.'KT') then
         ISPFL(I) = 0
      end if
@@ -1001,7 +1002,7 @@ subroutine CRATET
   if (VARIANTCD.eq.'ON') then
      write(JOSTND,10022) (KOUNT(I), I = 1,NUMSP)
   end if
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      KNT(I) = 0
      KNT2(I) = 0
      10 continue
@@ -1146,7 +1147,7 @@ subroutine CRATET
   !  MAKE SURE THAT ALL THE SPECIES ORDER SORTS AND THE IND2 ARRAY
   !  ARE IN THE PROPER ORDER. FIRST, SAVE THE SPECIES REFERENCES.
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      KNT(I) = IREF(I)
      51 continue
   end do
@@ -1167,7 +1168,7 @@ subroutine CRATET
      if (VARIANTCD.eq.'BC'.or.VARIANTCD.eq.'ON') then
         write(JOSTND,10012)
      end if
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         if (ISCT(I,1).eq.0) go to 55
         J = IREF(I)
         IUSED(J) = NSP(I,1)
@@ -1202,7 +1203,7 @@ subroutine CRATET
 
      !        RESET THE REFERENCES.
 
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         IREF(I) = KNT(I)
         57 continue
      end do
@@ -1213,7 +1214,7 @@ subroutine CRATET
 
   call RDPSRT(ITRN,DBH,IND,.true.)
   60 continue
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      KNT(I) = 0
      65 continue
   end do
@@ -1225,7 +1226,7 @@ subroutine CRATET
   !  IF LHTDRG IS FALSE FOR A GIVEN SPECIES THEN ALL DUBBING IS DONE WITH
   !  DEFAULT VALUES.
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      if (VARIANTCD.eq.'EM'.or.VARIANTCD.eq.'CA'.or.VARIANTCD.eq.'NC'.or.VARIANTCD.eq.'IE'.or.&
           &VARIANTCD.eq.'CS'.or.VARIANTCD.eq.'NE'.or.VARIANTCD.eq.'LS'.or.VARIANTCD.eq.'SN'.or.&
           &VARIANTCD.eq.'TT'.or.VARIANTCD.eq.'UT'.or.VARIANTCD.eq.'BM'.or.VARIANTCD.eq.'WC'.or.&
@@ -3180,7 +3181,7 @@ subroutine CRATET
      write(JOSTND,19006) (KNT2(I),I = 1,NUMSP)
      write(JOSTND,19007) (KNT(I),I = 1,NUMSP)
   end if
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      KNT(I) = 0
      KNT2(I) = 0
      160 continue
@@ -3190,7 +3191,7 @@ subroutine CRATET
      !  ADD THE NUMBER OF MISSING CROWN RATIOS DUBBED BY ORGANON TO THE
      !  NUMBER BEING DUBBED BY FVS.
 
-     do ISPC = 1,MAXSP
+     do ISPC = 1,CFG_MAXSP
         if (IREF(ISPC) .eq.0) cycle
         IPTR = IREF(ISPC)
         KNT2(IPTR) = KNT2(IPTR) + KNTOCR(ISPC)
@@ -3219,7 +3220,7 @@ subroutine CRATET
      !  ADD THE NUMBER OF MISSING CROWN RATIOS DUBBED BY ORGANON TO THE
      !  NUMBER BEING DUBBED BY FVS.
 
-     do ISPC = 1,MAXSP
+     do ISPC = 1,CFG_MAXSP
         if (IREF(ISPC) .eq.0) cycle
         IPTR = IREF(ISPC)
         KNT2(IPTR) = KNT2(IPTR) + KNTOCR(ISPC)
@@ -3280,7 +3281,7 @@ subroutine CRATET
        &VARIANTCD.eq.'WS'.or.VARIANTCD.eq.'CR'.or.VARIANTCD.eq.'CI'.or.VARIANTCD.eq.'KT'.or.&
        &VARIANTCD.eq.'AK'.or.VARIANTCD.eq.'OC'.or.VARIANTCD.eq.'OP'.or.VARIANTCD.eq.'BC'.or.&
        &VARIANTCD.eq.'ON') then
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         KNT2(I) = 0
         10033 continue
      end do
@@ -3414,7 +3415,7 @@ subroutine CRATET
   end if
   if (VARIANTCD.eq.'CA'.or.VARIANTCD.eq.'NC'.or.VARIANTCD.eq.'CS'.or.VARIANTCD.eq.'NE'.or.&
        &VARIANTCD.eq.'LS'.or.VARIANTCD.eq.'SN') then
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         KNT2(I) = 0
         10034 continue
      end do
@@ -3590,7 +3591,7 @@ subroutine CRATET
      call MISCNT(KNT)
   end if
   if (VARIANTCD.eq.'CS'.or.VARIANTCD.eq.'NE'.or.VARIANTCD.eq.'LS'.or.VARIANTCD.eq.'ON') then
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         KNT(I) = 0
         246 continue
      end do

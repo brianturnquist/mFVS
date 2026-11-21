@@ -34,60 +34,66 @@ end TYPE
 !     STRUCTURE FOR THE FITTED MORTALITY MODELS.
 
 TYPE MRT_DESCRIPTION
+   !  NATIVE COEFFICIENT TABLE (SP05): COMPONENTS HAVE THE VARIANT'S OWN
+   !  SPECIES EXTENT, NOT THE SPECIES STORAGE SIZE.
    SEQUENCE
    character (LEN = 15)  :: PrettyName ! BEC to site series
    character (LEN = 1)   :: pad ! stop alignment warning
-   logical             :: FIT(MAXSP) ! TRUE=fitted
-   real                :: CON(MAXSP) ! constant
-   real                :: INVDBH(MAXSP) ! 1./diameter (cm**-1)
-   real                :: DBH(MAXSP) ! diameter (cm)
-   real                :: DBHSQ(MAXSP) ! diameter (cm**2)
-   real                :: RDBH(MAXSP) ! relative diameter (cm/cm)
-   real                :: BAL(MAXSP) ! BAL (m**2/ha)
-   real                :: SQRTBA(MAXSP) ! SQRT((m**2/ha)**0.5)
-   real                :: SPH(MAXSP) ! stems/ha (all trees)
+   logical             :: FIT(MAXSP_NATIVE) ! TRUE=fitted
+   real                :: CON(MAXSP_NATIVE) ! constant
+   real                :: INVDBH(MAXSP_NATIVE) ! 1./diameter (cm**-1)
+   real                :: DBH(MAXSP_NATIVE) ! diameter (cm)
+   real                :: DBHSQ(MAXSP_NATIVE) ! diameter (cm**2)
+   real                :: RDBH(MAXSP_NATIVE) ! relative diameter (cm/cm)
+   real                :: BAL(MAXSP_NATIVE) ! BAL (m**2/ha)
+   real                :: SQRTBA(MAXSP_NATIVE) ! SQRT((m**2/ha)**0.5)
+   real                :: SPH(MAXSP_NATIVE) ! stems/ha (all trees)
 end TYPE
 
 !     STRUCTURE FOR THE FITTED LARGE TREE HEIGHT GROWTH MODELS.
 
 TYPE LTH_DESCRIPTION
+   !  NATIVE COEFFICIENT TABLE (SP05): COMPONENTS HAVE THE VARIANT'S OWN
+   !  SPECIES EXTENT, NOT THE SPECIES STORAGE SIZE.
    SEQUENCE
    character (LEN = 15)  :: PrettyName ! BEC to site series
    character (LEN = 1)   :: pad ! stop alignment warning
-   logical             :: FIT(MAXSP) ! TRUE=fitted
-   real                :: MLT(MAXSP) ! mult (READCORH keywd)
-   real                :: A1(MAXSP) ! species constant
-   real                :: B1(MAXSP) !
-   real                :: B2(MAXSP) !
-   real                :: SI(MAXSP) ! site constant
-   real                :: B3(MAXSP) !
-   real                :: C(MAXSP) !
+   logical             :: FIT(MAXSP_NATIVE) ! TRUE=fitted
+   real                :: MLT(MAXSP_NATIVE) ! mult (READCORH keywd)
+   real                :: A1(MAXSP_NATIVE) ! species constant
+   real                :: B1(MAXSP_NATIVE) !
+   real                :: B2(MAXSP_NATIVE) !
+   real                :: SI(MAXSP_NATIVE) ! site constant
+   real                :: B3(MAXSP_NATIVE) !
+   real                :: C(MAXSP_NATIVE) !
 
-   real                :: CN(MAXSP) ! new structure
-   real                :: CNSI(MAXSP) !
-   real                :: DG(MAXSP) !
-   real                :: DG2(MAXSP) !
-   real                :: DBH1(MAXSP) !
-   real                :: DBH2(MAXSP) !
-   real                :: HT2(MAXSP) !
+   real                :: CN(MAXSP_NATIVE) ! new structure
+   real                :: CNSI(MAXSP_NATIVE) !
+   real                :: DG(MAXSP_NATIVE) !
+   real                :: DG2(MAXSP_NATIVE) !
+   real                :: DBH1(MAXSP_NATIVE) !
+   real                :: DBH2(MAXSP_NATIVE) !
+   real                :: HT2(MAXSP_NATIVE) !
 end TYPE
 
 !     STRUCTURE FOR THE SMALL TREE GROWTH MODELS.
 
 TYPE STG_DESCRIPTION
+   !  NATIVE COEFFICIENT TABLE (SP05): COMPONENTS HAVE THE VARIANT'S OWN
+   !  SPECIES EXTENT, NOT THE SPECIES STORAGE SIZE.
    SEQUENCE
    character (LEN = 15)  :: PrettyName ! BEC to site series
    character (LEN = 1)   :: pad ! stop alignment warning
-   logical             :: FIT(MAXSP) ! TRUE=fitted
-   real                :: CON(MAXSP) ! spp,SI,site constants
-   real                :: LNHT(MAXSP) ! ln(ht) - ln(m)
-   real                :: HT(MAXSP) ! ht - m
-   real                :: CCF(MAXSP) ! ccf
-   real                :: BAL(MAXSP) ! BA larger trees - m**2ha
-   real                :: EXPMLT(MAXSP) ! Mutliplier  !SBS only
-   real                :: HCCFL(MAXSP) ! HT/CCF      !SBS only
-   real                :: CCFSL(MAXSP) ! CCFS/CCFL   !SBS only
-   real                :: SD(MAXSP) ! standard deviation
+   logical             :: FIT(MAXSP_NATIVE) ! TRUE=fitted
+   real                :: CON(MAXSP_NATIVE) ! spp,SI,site constants
+   real                :: LNHT(MAXSP_NATIVE) ! ln(ht) - ln(m)
+   real                :: HT(MAXSP_NATIVE) ! ht - m
+   real                :: CCF(MAXSP_NATIVE) ! ccf
+   real                :: BAL(MAXSP_NATIVE) ! BA larger trees - m**2ha
+   real                :: EXPMLT(MAXSP_NATIVE) ! Mutliplier  !SBS only
+   real                :: HCCFL(MAXSP_NATIVE) ! HT/CCF      !SBS only
+   real                :: CCFSL(MAXSP_NATIVE) ! CCFS/CCFL   !SBS only
+   real                :: SD(MAXSP_NATIVE) ! standard deviation
 end TYPE
 
 TYPE (BEC_DESCRIPTION) BEC

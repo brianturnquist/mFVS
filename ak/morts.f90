@@ -3,6 +3,7 @@
 !============================!
 ! AK $Id$
 subroutine MORTS
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! VWC $Id$
@@ -88,7 +89,7 @@ subroutine MORTS
   data MYACTS/94,97/
 
   !     SURVIVAL INTERCEPT COEFFICIENTS
-  data BM1/ &
+  data BM1(1:MAXSP_NATIVE)/ &
        & 5.106086, 5.106086, 5.334283, 5.129246, 4.585373, &
        & 4.585373, 5.129246, 5.106086, 4.935148, 6.090056, &
        & 5.120483, 5.440943, 4.585373, 2.651991, 2.987803, &
@@ -96,7 +97,7 @@ subroutine MORTS
        & 2.651991, 2.651991, 2.651991/
 
   !     SURVIVAL DBH COEFFICIENTS
-  data BM2/ &
+  data BM2(1:MAXSP_NATIVE)/ &
        & 0.036136, 0.036136, 0.036136, 0.402707, 0.402707, &
        & 0.402707, 0.402707, 0.036136, 0.036136, 0.036136, &
        & 0.036136, 0.036136, 0.402707, 0.402707, 0.402707, &
@@ -104,7 +105,7 @@ subroutine MORTS
        & 0.402207, 0.402207, 0.402207/
 
   !     SURVIVAL DBH^2 COEFFICIENTS
-  data BM3/ &
+  data BM3(1:MAXSP_NATIVE)/ &
        & -0.000634, -0.000634, -0.001034, -0.051774, -0.020537, &
        & -0.020537, -0.051774, -0.000634, -0.000850, -0.000745, &
        & -0.00105,  -0.000942, -0.020537, -0.011288, -0.014038, &
@@ -113,7 +114,7 @@ subroutine MORTS
 
   !     SURVIVAL BAL COEFFICIENTS
   !     NOT USED (ZERO VALUE) FOR SF, AF, YC, SS, LP, RC, WH, MH
-  data BM4/ &
+  data BM4(1:MAXSP_NATIVE)/ &
        & 0.0,       0.0,       0.0,      -0.004365, -0.004414, &
        & -0.004414, -0.004365,  0.0,       0.0,       0.0, &
        & 0.0,       0.0,      -0.004414, -0.002557, -0.005462, &
@@ -123,7 +124,7 @@ subroutine MORTS
   !     SURVIVAL BAL/DBH COEFFICIENTS
   !     NOT USED (ZERO VALUE) FOR TA, WS, LS, BE, OS, AD, RA, PB, AB,
   !     BA, AS, BC, WI, SU, OH
-  data BM5/ &
+  data BM5(1:MAXSP_NATIVE)/ &
        & -0.010747, -0.010747, -0.004540,  0.0,       0.0, &
        & 0.0,       0.0,      -0.010747, -0.008488, -0.005608, &
        & -0.005131, -0.005375,  0.0,       0.0,       0.0, &
@@ -131,7 +132,7 @@ subroutine MORTS
        & 0.0,       0.0,       0.0/
 
   !     MINIMUM DIAMETER USED FOR SURVIVAL CALCULATIONS
-  data DSURV/ &
+  data DSURV(1:MAXSP_NATIVE)/ &
        & 0.50, 0.50, 0.50, 0.10, 0.10, 0.10, 0.10, 0.50, 0.50, 0.50, &
        & 0.50, 0.50, 0.10, 0.10, 0.10, 0.10, 0.10, 0.10, 0.10, 0.10, &
        & 0.10, 0.10, 0.10/
@@ -162,7 +163,7 @@ subroutine MORTS
         XMDIA2(ISPCC) = PRM(4)
         goto 9
         2 continue
-        do ISPCC = 1,MAXSP
+        do ISPCC = 1,CFG_MAXSP
            XMMULT(ISPCC) = PRM(2)
            XMDIA1(ISPCC) = PRM(3)
            XMDIA2(ISPCC) = PRM(4)
@@ -231,7 +232,7 @@ subroutine MORTS
   !  ONE AT A TIME WITHIN A SPECIES.
 
   !  START SPECIES LOOP
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      I1 = ISCT(ISPC,1)
      if (I1.le.0) goto 50
      I2 = ISCT(ISPC,2)

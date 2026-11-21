@@ -3,6 +3,7 @@
 !=================!
 ! CR $Id$
 subroutine CUTSTK
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE CONTAINS ENTRY POINTS FOR CALCULATING STOCKING
@@ -40,7 +41,7 @@ subroutine CUTSTK
 
   !  SET SDI MAXIMUM BY USER ENTERED SDI, OR MODEL TYPE DEFAULT
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (SDIDEF(I) .eq.0.0) go to 210
      TMPMAX = SDIDEF(I)
      go to 220

@@ -3,6 +3,7 @@
 !====================================!
 ! BASE $Id$
 subroutine ECVOLS
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE IS CALLED TWICE PER CYCLE.
@@ -33,7 +34,7 @@ subroutine ECVOLS
   LREMOV = .false.
 
   10 continue
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      CVOLT(I) = 0.0
      CVOLC(I) = 0.0
      CVOLB(I) = 0.0
@@ -56,14 +57,14 @@ subroutine ECVOLS
      if (II .eq. 1) goto 400
      if (IDBH .eq. ICLASS) go to 400
      if (LECBUG)write(JOSTND,8000) JOSUME,LECON,ICLASS,LREMOV, &
-          & (CVOLT(J),CVOLC(J),CVOLB(J),CTREE(J),CBA(J),J = 1,MAXSP)
+          & (CVOLT(J),CVOLC(J),CVOLB(J),CTREE(J),CBA(J),J = 1,CFG_MAXSP)
      8000 format(' IN **ECVOLS** ', &
           & '  JOSUME=',I3,' LECON=',L1,' ICLASS=',I3,' LREMOV=',L1/ &
           & ((1X,F6.1,2X,F6.1,2X,F6.1,2X,F8.2,2X,F6.2/)))
 
      !   ROUND VALUES AND OUTPUT FOR CURRENT DBH CLASS
 
-     do K = 1,MAXSP
+     do K = 1,CFG_MAXSP
         if ( CTREE(K) .le. 0.0) go to 200
         ICVOLT = INT((CVOLT(K)/GROSPC)*10.0 + 0.5)
         ICVOLC = INT((CVOLC(K)/GROSPC)*10.0 + 0.5)
@@ -103,13 +104,13 @@ subroutine ECVOLS
      500 continue
   end do
   if (LECBUG) write(JOSTND,8000) JOSUME,LECON,ICLASS,LREMOV, &
-       & (CVOLT(J),CVOLC(J),CVOLB(J),CTREE(J),CBA(J),J = 1,MAXSP)
+       & (CVOLT(J),CVOLC(J),CVOLB(J),CTREE(J),CBA(J),J = 1,CFG_MAXSP)
 
   !   ROUND AND OUTPUT LAST DBH CLASS
 
   550 continue
-  do K = 1,MAXSP
-     if ( CTREE(K) .le. 0.0  .and.  K .lt. MAXSP ) go to 600
+  do K = 1,CFG_MAXSP
+     if ( CTREE(K) .le. 0.0  .and.  K .lt. CFG_MAXSP ) go to 600
      if ( CTREE(K) .le. 0.0  .and.  ITRN .gt. 0 ) go to 600
      ICVOLT = IFIX((CVOLT(K)/GROSPC)*10.0 + 0.5 )
      ICVOLC = IFIX((CVOLC(K)/GROSPC)*10.0 + 0.5 )

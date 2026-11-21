@@ -31,6 +31,7 @@ subroutine ECCALC(IY, ICYC, JSP, MGMID, NPLT, ITITLE)
   !  NTIMES - the number of times the activity exists within the the range of dates.
   !  ITITLE - STDIDENT title
 
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! Common blocks
@@ -295,7 +296,7 @@ subroutine valueHarvest()
               end if
            end do
            call EVSET4 (EV_HARVCOST, harvCst) !Entry point in EVSET - register harvest cost w/ event monitor
-           do i = 1, MAXSP !Accumulate harvest revenues
+           do i = 1, CFG_MAXSP !Accumulate harvest revenues
               do j = 1, MAX_REV_UNITS
                  do k = 1, hrvRevCnt(i,j) !Loop is diameter-classes for the given species and units-of-measure
                     if (revVolume(i,j,k) > 0.0) then
@@ -678,7 +679,7 @@ subroutine calcEcon()
   !Compute harvested cubic and board foot volumes that were valued, & then output to Event Monitor
   ft3Total = 0.0; bfTotal = 0.0
   if (harvest(TPA) > 0.0.and. (.not. isHarvestPct)) then !Only get volumes that were actually valued
-     do i = 1, MAXSP !Loop over species
+     do i = 1, CFG_MAXSP !Loop over species
         do j = 1, MAX_REV_UNITS !Loop over revenue quantity-units
            do k = 1, hrvRevCnt(i,j) !Loop is diameter-classes for the given species and units-of-measure
               select case (j)
@@ -750,7 +751,7 @@ subroutine calcEcon()
         bfTotal = -1.0; bfValueTotal = -1.0
         outChar = BLANK7
 
-        do i = 1, MAXSP !Loop over species
+        do i = 1, CFG_MAXSP !Loop over species
            do j = 1, MAX_REV_UNITS !Loop over revenue quantity-units
               do k = hrvRevCnt(i,j), 1, -1 !Loop over diameters
                  kk = hrvRevDiaIndx(i,j,k) !Order output by ascending diameters

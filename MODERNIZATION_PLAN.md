@@ -640,13 +640,97 @@ reaches them.
   nothing printed or stored differs, and moving it is COMMON-ownership work
   for MOD23.
 
-- [ ] **SP05 — Separate species storage from the active species count.**
+- [x] **SP05 — Separate species storage from the active species count.**
   Introduce the active count, defaulting to the variant's native `MAXSP`. Move
   loop bounds, array sections, restart extents and API extents to it, in
   batches by subsystem. Remove the `DATA` repeat counts tied to `MAXSP` (bug 4
   applies to `MISINT`). Acceptance per batch: identical results when storage
   equals the active count, and identical results under poisoned storage with
   `MAXSP` = 108.
+
+  Result, 20 November 2026: each `PRGPRM` gains `MAXSP_NATIVE`, the
+  variant's own species count, with the same literal as `MAXSP` (the
+  inventory test checks they agree). `MAXSP` now means storage only. The
+  active count is `CFG_MAXSP` in VARCFG_MOD, `protected` and initialized
+  from `MAXSP_NATIVE`. All 1,735 active-extent statements were moved:
+  1,674 substitutions (loop bounds, bound checks, sections, print and
+  "last species" uses, the root-disease `3*MAXSP` caps, the API's
+  `fvsDimSizes` result), plus 48 restart transfers of species-leading arrays,
+  which now go through the new PUTGETSP_MOD (`pg/putgetsp_mod.f90`). Its
+  helpers move the first `CFG_MAXSP` words of each column in the old order,
+  so the word stream is unchanged when storage equals the active count. The
+  remaining 13 stay on storage deliberately: SSTGHP's own dummy `MAXSP`, the
+  STATS EQUIVALENCE offsets, the metric FMSOUT allocations, FMSCUT's
+  leading dimension and NVEL's local `MAXSP` in `r8init.f90`.
+
+  `DATA` statements: implied-do bounds and native-length lists now use
+  `MAXSP_NATIVE` (177 statements). A further 1,187 objects naming a whole
+  `MAXSP`-shaped array with a native-length value list became the constant
+  section `X(1:MAXSP_NATIVE)` (`:` elsewhere), which keeps element order;
+  these were invisible to the inventory because they never name `MAXSP`.
+  They include the three `FMBIOGRP` includes and the CA/OC/WS `MISINT`
+  blocks, which stay `DATA` as bug 4 requires. Storage-wide fills
+  (`X/MAXSP*v/`, 139 statements) are kept, since they give the same active
+  values at any storage size. `NOFSPE/MAXSP/` in the four `estab` copies,
+  a species count, became `MAXSP_NATIVE`; SP07's routines can make it
+  `CFG_MAXSP`.
+
+  The poisoned runs found storage dependencies that never name `MAXSP`:
+  - `NOFSPE` above.
+  - COMP's sort and percentile over all `3*MAXSP` work entries, now
+    `3*CFG_MAXSP`.
+  - The economics restart's harvest lists, whose capacity `MAX_HARVESTS` is
+    derived from `MAXSP`. ECNPUT and ECNGET now transfer the same formula on
+    `CFG_MAXSP`. Nothing checks that capacity at run time, before or after.
+  - BC's local coefficient types (`BCPLOT.f90`, `becset`, `crown`, `htgf`),
+    whose components are now sized `MAXSP_NATIVE`. Native coefficient
+    tables, not shared storage. VARPUT and VARGET copy them through native
+    sections.
+
+  A scope-aware scan for whole-array uses of `MAXSP`-shaped arrays then
+  sectioned 118 statements to `(1:CFG_MAXSP)`:
+  - the keyword readers (`READCORD`-style `read ... COR2`, `JSP`), which
+    would otherwise read storage-many values;
+  - the IE/EM `RCON`, DGDRIV, BADIST and SDICAL reports;
+  - debug listings;
+  - the climate establishment sums.
+  In both species-attribute API routines, `attr` and their whole-array
+  copies are now `CFG_MAXSP`-sized, so a caller's buffer sized from
+  `fvsDimSizes` is never overrun. Its 55 whole-array scalar fills only write
+  the inactive tail and are left.
+
+  `check_suite.py --poison-storage` now takes optional sizes;
+  `--poison-storage MAXSP` raises only MAXSP (to 108), and leaves
+  `MAXSP_NATIVE`, and so `CFG_MAXSP`, native. The full suite passes **24/24**
+  against corrected `513a51c5` and **24/24** against immediate `fd83cfd6`,
+  both normally and under MAXSP-only poisoned storage. Every output matched,
+  restart files byte for byte included. NE is natively 108, so poisoning
+  does not exercise it. The inventory tests, `check_poison_storage.py`,
+  `check_build_support.py` and `git diff --check` pass. The configuration
+  report now has no MAXSP restart or API flags.
+
+  Coverage limits and decisions:
+  - The work was verified as one change set, not per subsystem. A
+    substitution leaves normal-mode results unchanged by construction, and
+    the poisoned run cannot pass until every subsystem is converted, so
+    per-batch poisoned runs could not show progress.
+  - Poisoning covers COMMON arrays in includes only. Local and SAVE arrays,
+    logical arrays and derived extents (370 listed) are not poisoned.
+  - The 611 whole-array call arguments were not reviewed one by one. Those
+    the decks reach are covered by the poisoned run.
+  - Debug-only paths and the API species routines are not run by the suite.
+    Their changes rest on the scan and review.
+  - The `MXSP1 = MAXSP + 1` totals slots in DBSFMMORT and FMFOUT stay
+    storage-relative. Their reports skip zero rows and passed poisoned.
+  - `NSPSPE` and `MXFRCDS`, extents like `MAXSP` (SP01), are not raised by
+    any mode and were not converted.
+  - The METRIC selector (`LMTRIC`) remains deferred to SP07, as recorded
+    under SP04.
+
+  One environment fault occurred and was repaired by the user's choice:
+  Rtools' `gfortran.exe` disappeared mid-run (14:19). Defender showed no
+  detection. It was restored by copying the prefixed driver in the same
+  folder (same GNU Fortran 14.3.0, so the suite cache stayed valid).
 
 - [ ] **SP06 — Do the same for trees and plots.**
   Give `MAXTRE` an active limit, including the `IREC2..MAXTRE` dead-record

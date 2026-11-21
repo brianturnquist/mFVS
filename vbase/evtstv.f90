@@ -3,6 +3,7 @@
 !====================!
 ! VBASE $Id$
 subroutine EVTSTV (IUSERV)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     CALLED FROM EVMON, LOADS AND MAINTAINS THE TEST VARIABLE TABLES.
@@ -274,7 +275,7 @@ subroutine EVTSTV (IUSERV)
   end if
   call RDCLS2(0,0.,999.,1,CRD,0)
   TSTV1(18) = CRD/GROSPC
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      BCCFSP(I) = RELDSP(I)
      6 continue
   end do
@@ -507,7 +508,7 @@ subroutine EVTSTV (IUSERV)
   TSTV2(37) = (OFOLICARBREM(7)/GROSPC)/2000
   TSTV2(38) = DR016
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      ACCFSP(I) = RELDSP(I)
      16 continue
   end do

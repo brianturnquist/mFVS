@@ -92,7 +92,7 @@ subroutine FMCROW
   !    32 = OTHER SOFTWOODS          Douglas-fir       3
   !    33 = OTHER HARDWOODS          quaking aspen             41
 
-  data ISPMAP /15,15, 3, 4,24,20,11,18, 4,13,&
+  data ISPMAP(1:MAXSP_NATIVE) /15,15, 3, 4,24,20,11,18, 4,13,&
        &16,4,1,4,4,14,8,7,6,7,&
        &23,23,5,41,17,61,17,64,17,41,&
        &41,3,41/

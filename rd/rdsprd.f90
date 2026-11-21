@@ -3,6 +3,7 @@
 !=================!
 ! RD $Id$
 subroutine RDSPRD
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE CALCULATES THE RATE OF SPREAD OF DISEASE CENTER
@@ -243,7 +244,7 @@ subroutine RDSPRD
      NTREES = 0
      IDI = IRRSP
 
-     do KSP = 1,MAXSP
+     do KSP = 1,CFG_MAXSP
         if (IRRSP .lt.3) IDI = IDITYP(IRTSPC(KSP))
 
         !     Modification (RNH, MAR98).  If MAXRR < 3 then annosus disease.

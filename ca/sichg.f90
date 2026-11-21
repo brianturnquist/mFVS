@@ -3,6 +3,7 @@
 !================!
 ! CA $Id$
 subroutine SICHG(ISISP,SSITE,SIAGE)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! Common blocks
@@ -44,7 +45,7 @@ subroutine SICHG(ISISP,SSITE,SIAGE)
   ! 31=BO 32=VO 33=IO 34=BM 35=BU 36=RA 37=MA 38=GC 39=DG 40=FL
   ! 41=WN 42=TO 43=SY 44=AS 45=CW 46=WI 47=CN 48=CL 49=OH 50=RW
 
-  data INDEX/ 3,  3,  3,  3,  5,  5,  3,  3,  5,  6,&
+  data INDEX(1:MAXSP_NATIVE)/ 3,  3,  3,  3,  5,  5,  3,  3,  5,  6,&
        &6,  6,  6,  6,  4,  3,  4,  4,  4,  4,&
        &6,  3,  3,  7,  3,  9,  9,  9,  9,  7,&
        &7,  7,  9, 10,  7, 10,  9,  9,  7,  7,&
@@ -150,7 +151,7 @@ subroutine SICHG(ISISP,SSITE,SIAGE)
   !  SET UP THE ARRAY TO TELL WHETHER YOU NEED TO SLIDE UP OR DOWN THE SIT
   ! LINE TO ADJUST FOR TOTAL AGE OR BREAST HIGH AGE
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      JNDX = INDEX(I)
      if (ISILOC .eq. 'T' .and. REFLOC(JNDX) .eq. 'B')DIFF = -1
      if (ISILOC .eq. REFLOC(JNDX))DIFF = 0

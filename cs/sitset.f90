@@ -3,6 +3,7 @@
 !=====================================!
 ! CS $Id$
 subroutine SITSET
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! THIS SUBROUTINE LOADS THE SITELG ARRAY WITH A SITE INDEX FOR EACH
@@ -27,7 +28,7 @@ subroutine SITSET
 
   !  LOAD SDI MAXIMUM VALUES
 
-  data SDICON /&
+  data SDICON(1:MAXSP_NATIVE) /&
        &354., 354., 490., 499., 480., 354., 529., 283., 283., 430.,&
        &704., 726., 430., 302., 302., 302., 230., 276., 302., 301.,&
        &301., 338., 289., 364., 423., 408., 408., 648., 421., 344.,&
@@ -41,7 +42,7 @@ subroutine SITSET
 
   ! LOAD SITE INDEX COEFF
 
-  data ASITE /&
+  data ASITE(1:MAXSP_NATIVE) /&
        &0,      0,-5.1489,      0,      0,&
        &0,      0,      0,      0,      0,&
        &0,      0,      0,      0,      0,&
@@ -62,7 +63,7 @@ subroutine SITSET
        &0,      0,      0,      0,      0,&
        &0,      0,      0,      0,      0,&
        &0/
-  data BSITE /&
+  data BSITE(1:MAXSP_NATIVE) /&
        &0.8,    0.8,  1.062,   1.25,   1.25,&
        &1.25,   1.35,   1.19,   1.19,   1.15,&
        &1.15,   1.15,   1.15,   1.08,   1.08,&
@@ -102,7 +103,7 @@ subroutine SITSET
 
   !  SET SITE INDEX FOR ALL SPECIES
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (SITEAR(I) .lt..0001) SITEAR(I) = ASITE(I)&
           &+BSITE(I)*(SITEAR(47))
      5 continue
@@ -110,7 +111,7 @@ subroutine SITSET
 
   !  SET SDIDEF VALUES IF NOT SET BY KEYWORD.
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (SDIDEF(I) .le.0.) then
         if (BAMAX .gt.0.) then
            SDIDEF(I) = BAMAX/(0.5454154*(PMSDIU/100.))
@@ -123,7 +124,7 @@ subroutine SITSET
 
   !  LOAD VOLUME DEFAULT MERCH. SPECS.
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      if (DBHMIN(ISPC).le.0.) then !SET **DBHMIN** DEFAULT
         if (ISPC.le.7) then !SOFTWOODS
            DBHMIN(ISPC) = 5.
@@ -233,7 +234,7 @@ subroutine SITSET
   VAR = 'CS'
 
   if (LFIANVB) call NVB_REGION_CHECK
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      read(FIAJSP(ISPC),'(I4)')IFIASP
      VOLEQ = '           '
      if (((METHC(ISPC).eq.6).or.(METHC(ISPC).eq.9).or.&
@@ -270,12 +271,12 @@ subroutine SITSET
   do I = 1,15
      J = (I-1)*10 + 1
      JJ = J+9
-     if (JJ.gt.MAXSP)JJ = MAXSP
+     if (JJ.gt.CFG_MAXSP)JJ = CFG_MAXSP
      write(JOSTND,90)(NSP(K,1)(1:2),K = J,JJ)
      90 format(/'SPECIES ',5X,10(A2,6X))
      write(JOSTND,91)(NINT(SDIDEF(K)),K = J,JJ )
      91 format('SDI MAX ',   10I8.0)
-     if (JJ .eq. MAXSP)go to 93
+     if (JJ .eq. CFG_MAXSP)go to 93
      92 continue
   end do
   93 continue
@@ -284,7 +285,7 @@ subroutine SITSET
 
   if (LFIA) then
      call FIAHEAD(JOSTND)
-     write(JOSTND,211) (NSP(I,1)(1:2),FIAJSP(I),I = 1,MAXSP)
+     write(JOSTND,211) (NSP(I,1)(1:2),FIAJSP(I),I = 1,CFG_MAXSP)
      211 format ((T12,8(A3,'=',A6,:,'; '),A,'=',A6))
   end if
 
@@ -292,7 +293,7 @@ subroutine SITSET
 
   call VOLEQHEAD(JOSTND)
   write(JOSTND,230)(NSP(J,1)(1:2),VEQNNC(J),&
-       &VEQNNB(J),J = 1,MAXSP)
+       &VEQNNB(J),J = 1,CFG_MAXSP)
   230 format(4(2X,A2,4X,A11,1X,A10,1X))
 
   return

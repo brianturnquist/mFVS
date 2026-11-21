@@ -3,6 +3,7 @@
 !===============================!
 ! VBASE $Id$
 subroutine REGENT(LESTB,ITRNIN)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  REGENT COMPUTES SMALL-TREE HEIGHT AND DIAMETER INCREMENTS; REGCON
@@ -215,7 +216,7 @@ contains
     !  ENTER GROWTH PREDICTION LOOP.  PROCESS EACH SPECIES AS A GROUP;
     !  LOAD CONSTANTS FOR NEXT SPECIES.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (I1.eq.0) go to 30
        I2 = ISCT(ISPC,2)
@@ -477,7 +478,7 @@ contains
     !  SMALL TREE HEIGHT CALIBRATION SECTION.
 
     40 continue
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        HCOR(ISPC) = 0.0
        CORTEM(ISPC) = 1.0
        NUMCAL(ISPC) = 0
@@ -490,7 +491,7 @@ contains
     !  BEGIN PROCESSING TREE LIST IN SPECIES ORDER.  DO NOT CALCULATE
     !  CORRECTION TERMS IF THERE ARE NO TREES FOR THIS SPECIES.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        CORNEW = 1.0
        I1 = ISCT(ISPC,1)
        if (I1.eq.0.or..not. LHTCAL(ISPC)) go to 100
@@ -613,7 +614,7 @@ contains
     !  ENTRY POINT FOR LOADING OF REGENERATION GROWTH MODEL
     !  CONSTANTS  THAT REQUIRE ONE-TIME RESOLUTION.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        RHCON(ISPC) = 1.0
        if (LRCOR2.and.RCOR2(ISPC).gt.0.0)&
             &RHCON(ISPC) = RCOR2(ISPC)
@@ -806,7 +807,7 @@ contains
     !  ENTER GROWTH PREDICTION LOOP.  PROCESS EACH SPECIES AS A GROUP;
     !  LOAD CONSTANTS FOR NEXT SPECIES.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (I1.eq.0) go to 30
        I2 = ISCT(ISPC,2)
@@ -1105,7 +1106,7 @@ contains
 
     40 continue
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        HCOR(ISPC) = 0.0
        CORTEM(ISPC) = 1.0
        NUMCAL(ISPC) = 0
@@ -1117,7 +1118,7 @@ contains
     !  BEGIN PROCESSING TREE LIST IN SPECIES ORDER.  DO NOT CALCULATE
     !  CORRECTION TERMS IF THERE ARE NO TREES FOR THIS SPECIES.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        CORNEW = 1.0
        I1 = ISCT(ISPC,1)
        if (I1.eq.0.or..not. LHTCAL(ISPC)) go to 100
@@ -1274,7 +1275,7 @@ contains
     !  THEN ALSO MODIFY THE VALUES IN THE SNDBAL ARRAY IN **HTDBH
 
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        RHCON(ISPC) = 1.0
        if (LRCOR2.and.RCOR2(ISPC).gt.0.0)&
             &RHCON(ISPC) = RCOR2(ISPC)
@@ -1427,7 +1428,7 @@ contains
     !  ENTER GROWTH PREDICTION LOOP.  PROCESS EACH SPECIES AS A GROUP;
     !  LOAD CONSTANTS FOR NEXT SPECIES.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (I1.eq.0) go to 30
        I2 = ISCT(ISPC,2)
@@ -1768,7 +1769,7 @@ contains
     !  SMALL TREE HEIGHT CALIBRATION SECTION.
 
     40 continue
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        HCOR(ISPC) = 0.0
        CORTEM(ISPC) = 1.0
        NUMCAL(ISPC) = 0
@@ -1781,7 +1782,7 @@ contains
     !  BEGIN PROCESSING TREE LIST IN SPECIES ORDER.  DO NOT CALCULATE
     !  CORRECTION TERMS IF THERE ARE NO TREES FOR THIS SPECIES.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        CORNEW = 1.0
        I1 = ISCT(ISPC,1)
        if (I1.eq.0.or..not. LHTCAL(ISPC)) go to 100
@@ -1923,7 +1924,7 @@ contains
     !  ENTRY POINT FOR LOADING OF REGENERATION GROWTH MODEL
     !  CONSTANTS  THAT REQUIRE ONE-TIME RESOLUTION.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        RHCON(ISPC) = 1.0
        if (LRCOR2.and.RCOR2(ISPC).gt.0.0)&
             &RHCON(ISPC) = RCOR2(ISPC)
@@ -2113,7 +2114,7 @@ contains
     !  ENTER GROWTH PREDICTION LOOP.  PROCESS EACH SPECIES AS A GROUP;
     !  LOAD CONSTANTS FOR NEXT SPECIES.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (I1.eq.0) go to 30
        I2 = ISCT(ISPC,2)
@@ -2376,7 +2377,7 @@ contains
     !  SMALL TREE HEIGHT CALIBRATION SECTION.
 
     40 continue
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        HCOR(ISPC) = 0.0
        CORTEM(ISPC) = 1.0
        NUMCAL(ISPC) = 0
@@ -2389,7 +2390,7 @@ contains
     !  BEGIN PROCESSING TREE LIST IN SPECIES ORDER.  DO NOT CALCULATE
     !  CORRECTION TERMS IF THERE ARE NO TREES FOR THIS SPECIES.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        CORNEW = 1.0
        I1 = ISCT(ISPC,1)
        if (I1.eq.0 .or. .not. LHTCAL(ISPC)) go to 100
@@ -2509,7 +2510,7 @@ contains
     !  ENTRY POINT FOR LOADING OF REGENERATION GROWTH MODEL
     !  CONSTANTS  THAT REQUIRE ONE-TIME RESOLUTION.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        RHCON(ISPC) = 1.0
        if (LRCOR2.and.RCOR2(ISPC).gt.0.0) &
             & RHCON(ISPC) = RCOR2(ISPC)
@@ -2707,7 +2708,7 @@ contains
     !  ENTER GROWTH PREDICTION LOOP.  PROCESS EACH SPECIES AS A GROUP;
     !  LOAD CONSTANTS FOR NEXT SPECIES.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
 
        !  GET THE APPROPRIATE SITE INDEX RANGE VALUES FOR THIS SPECIES.
 
@@ -3145,7 +3146,7 @@ contains
     !  SMALL TREE HEIGHT CALIBRATION SECTION.
 
     40 continue
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        HCOR(ISPC) = 0.0
        CORTEM(ISPC) = 1.0
        NUMCAL(ISPC) = 0
@@ -3169,7 +3170,7 @@ contains
     !  BEGIN PROCESSING TREE LIST IN SPECIES ORDER.  DO NOT CALCULATE
     !  CORRECTION TERMS IF THERE ARE NO TREES FOR THIS SPECIES.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
 
        !  GET THE APPROPRIATE SITE INDEX RANGE VALUES FOR THIS SPECIES.
 
@@ -3323,7 +3324,7 @@ contains
     !  ENTRY POINT FOR LOADING OF REGENERATION GROWTH MODEL
     !  CONSTANTS THAT REQUIRE ONE-TIME RESOLUTION.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        RHCON(ISPC) = 1.0
        if (LRCOR2.and.RCOR2(ISPC).gt.0.0)&
             &RHCON(ISPC) = RCOR2(ISPC)
@@ -4605,7 +4606,7 @@ contains
        !  PROCESS ALL TREES WITHIN THIS SUBCYCLE IN SPECIES ORDER.  LOAD
        !  SPECIES DEPENDENT CONSTANTS.
 
-       do ISPC = 1,MAXSP
+       do ISPC = 1,CFG_MAXSP
           I1 = ISCT(ISPC,1)
           if (I1.eq.0) go to 16
           if (.not. LV2ATV .and..not. STG%FIT(ISPC)) goto 16
@@ -4812,7 +4813,7 @@ contains
     !  AFTER LAST SUBCYCLE, COMPUTE ACTUAL HEIGHT INCREMENT FOR FULL CYCLE BY
     !  SUBTRACTION; CONVERT BACK TO LOG SCALE TO ADD IN RANDOM ERROR.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (I1.eq.0) go to 30
        I2 = ISCT(ISPC,2)
@@ -5017,7 +5018,7 @@ contains
     !  SMALL TREE HEIGHT CALIBRATION SECTION.
 
     40 continue
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        HCOR(ISPC) = 0.0
        CORTEM(ISPC) = 1.0
        NUMCAL(ISPC) = 0
@@ -5099,7 +5100,7 @@ contains
     end if
     if (DEBUG) write(JOSTND,*) 'REGENT: After LV2ATV, BEC%Zone'
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
 
        !  BEGIN PROCESSING TREE LIST IN SPECIES ORDER.  DO NOT CALCULATE
        !  CORRECTION TERMS IF THERE ARE NO TREES FOR THIS SPECIES.
@@ -5324,7 +5325,7 @@ contains
     if (LV2ATV) then
        REGCH = RHGL(IGL) +&
             &(RSAB0 + RSAB1*COS(ASPECT) + RSAB2*SIN(ASPECT))*SLOPE
-       do ISPC = 1,MAXSP
+       do ISPC = 1,CFG_MAXSP
           IRHHAB = MAPHAB(ITYPE,ISPC)
           RHCON(ISPC) = REGCH + RHSC(ISPC) + RHHAB(IRHHAB,ISPC)
           if (LRCOR2.and.RCOR2(ISPC).gt.0.0) RHCON(ISPC) = RHCON(ISPC) +&
@@ -5357,19 +5358,19 @@ contains
 
        !       BEGIN SEARCH FOR ONE OF TEMESGEN'S MODELS
 
-       do I = 1,MAXSP
+       do I = 1,CFG_MAXSP
           IPOS(I) = 0
           STG%FIT(I) = .false.
        end do
        PAT2 = BEC%PrettyName
 
-       do I = 1,MAXSP
+       do I = 1,CFG_MAXSP
 
           IPAS = 0
           PAT1 = PAT2
 
           70 do J = 1, P_ZN
-             do K = 1, MAXSP
+             do K = 1, CFG_MAXSP
                 if (ST_COEF(J)%SPP(K) .eq.0) exit
                 if (ST_COEF(J)%SPP(K) .eq. I) then
                    do M = 1, P_ST
@@ -5392,7 +5393,7 @@ contains
 
        71 end do
 
-       do I = 1,MAXSP
+       do I = 1,CFG_MAXSP
           J1 = IPOS(I)
           if (J1.gt.0) then
              STG%FIT(I) = .true.
@@ -5413,7 +5414,7 @@ contains
        !       IF SCALE FACTORS HAVE BEEN INPUT WITH THE READCORR KEYWORD,
        !       INCORPORATE THEM INTO THE OVERALL CONSTANTS.
 
-       do ISPC = 1,MAXSP
+       do ISPC = 1,CFG_MAXSP
           RHCON(ISPC) = 0.0
           if (LRCOR2.and. RCOR2(ISPC) .gt.0.0)&
                &RHCON(ISPC) = ALOG(RCOR2(ISPC))
@@ -5569,7 +5570,7 @@ contains
     !  ENTER GROWTH PREDICTION LOOP.  PROCESS EACH SPECIES AS A GROUP;
     !  LOAD CONSTANTS FOR NEXT SPECIES.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (I1.eq.0) go to 30
        I2 = ISCT(ISPC,2)
@@ -5871,7 +5872,7 @@ contains
 
     40 continue
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        HCOR(ISPC) = 0.0
        CORTEM(ISPC) = 1.0
        NUMCAL(ISPC) = 0
@@ -5883,7 +5884,7 @@ contains
     !  BEGIN PROCESSING TREE LIST IN SPECIES ORDER.  DO NOT CALCULATE
     !  CORRECTION TERMS IF THERE ARE NO TREES FOR THIS SPECIES.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        CORNEW = 1.0
        I1 = ISCT(ISPC,1)
        if (I1.eq.0.or..not. LHTCAL(ISPC)) go to 100
@@ -6033,11 +6034,11 @@ contains
 
     if (JOCALB .gt.0) then
        KOUT = 0
-       do K = 1,MAXSP
+       do K = 1,CFG_MAXSP
           if (CORTEM(K).ne.1.0.or. NUMCAL(K).ge.NCALHT) then
-             SPEC = NSP(MAXSP,1)(1:2)
-             ISPEC = MAXSP
-             do KK = 1,MAXSP
+             SPEC = NSP(CFG_MAXSP,1)(1:2)
+             ISPEC = CFG_MAXSP
+             do KK = 1,CFG_MAXSP
                 if (K .ne. IREF(KK)) go to 203
                 ISPEC = KK
                 SPEC = NSP(KK,1)(1:2)
@@ -6075,7 +6076,7 @@ contains
          &0.1, 0.1, 0.2, 0.1, 0.1, 0.1, 0.1, 0.1,&
          &0.1, 0.4, 0.2, 0.2/
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        RHCON(ISPC) = 1.0
        if (LRCOR2.and.RCOR2(ISPC).gt.0.0)&
             &RHCON(ISPC) = RCOR2(ISPC)
@@ -6552,7 +6553,7 @@ contains
        !  PROCESS ALL TREES WITHIN THIS SUBCYCLE IN SPECIES ORDER.  LOAD
        !  SPECIES DEPENDENT CONSTANTS.
 
-       do ISPC = 1,MAXSP
+       do ISPC = 1,CFG_MAXSP
 
           !  GET THE APPROPRIATE SITE INDEX RANGE VALUES FOR THIS SPECIES.
 
@@ -6882,7 +6883,7 @@ contains
 
     if (DEBUG)write(16,*)'ENTERING DO 30 LOOP'
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (I1.eq.0) go to 30
        I2 = ISCT(ISPC,2)
@@ -7380,7 +7381,7 @@ contains
     !  SMALL TREE HEIGHT CALIBRATION SECTION.
 
     40 continue
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        HCOR(ISPC) = 0.0
        CORTEM(ISPC) = 1.0
        NUMCAL(ISPC) = 0
@@ -7454,7 +7455,7 @@ contains
     !  BEGIN PROCESSING TREE LIST IN SPECIES ORDER.  DO NOT CALCULATE
     !  CORRECTION TERMS IF THERE ARE NO TREES FOR THIS SPECIES.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
 
        !  ASSIGN VARIANT ACCORDING TO SPECIES
 
@@ -7659,7 +7660,7 @@ contains
     !  ENTRY POINT FOR LOADING OF REGENERATION GROWTH MODEL
     !  CONSTANTS  THAT REQUIRE ONE-TIME RESOLUTION.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        RHCON(ISPC) = 1.0
        if (LRCOR2.and. RCOR2(ISPC).gt.0.0) RHCON(ISPC) = RCOR2(ISPC)
        110 continue
@@ -7832,7 +7833,7 @@ contains
     !  ENTER GROWTH PREDICTION LOOP.  PROCESS EACH SPECIES AS A GROUP;
     !  LOAD CONSTANTS FOR NEXT SPECIES.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (I1.eq.0) go to 30
        I2 = ISCT(ISPC,2)
@@ -8092,7 +8093,7 @@ contains
     !  SMALL TREE HEIGHT CALIBRATION SECTION.
 
     40 continue
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        HCOR(ISPC) = 0.0
        CORTEM(ISPC) = 1.0
        NUMCAL(ISPC) = 0
@@ -8112,7 +8113,7 @@ contains
     if (PCTRED .lt.0.01) PCTRED = 0.01
     if (DEBUG)write(JOSTND,9989)AVH,RELDEN,X,PCTRED
     9989 format('IN REGENT AVH,RELDEN,X,PCTRED = ',4F10.4)
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
 
        !  BEGIN PROCESSING TREE LIST IN SPECIES ORDER.  DO NOT CALCULATE
        !  CORRECTION TERMS IF THERE ARE NO TREES FOR THIS SPECIES.
@@ -8255,7 +8256,7 @@ contains
     !  ENTRY POINT FOR LOADING OF REGENERATION GROWTH MODEL
     !  CONSTANTS  THAT REQUIRE ONE-TIME RESOLUTION.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        RHCON(ISPC) = 1.0
        if (LRCOR2.and. RCOR2(ISPC).gt.0.0)&
             &RHCON(ISPC) = RCOR2(ISPC)
@@ -8495,7 +8496,7 @@ contains
     !  ENTER GROWTH PREDICTION LOOP.  PROCESS EACH SPECIES AS A GROUP;
     !  LOAD CONSTANTS FOR NEXT SPECIES.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (I1.eq.0) go to 30
        I2 = ISCT(ISPC,2)
@@ -8801,7 +8802,7 @@ contains
     !  SMALL TREE HEIGHT CALIBRATION SECTION.
 
     40 continue
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        HCOR(ISPC) = 0.0
        CORTEM(ISPC) = 1.0
        NUMCAL(ISPC) = 0
@@ -8825,7 +8826,7 @@ contains
     !  BEGIN PROCESSING TREE LIST IN SPECIES ORDER.  DO NOT CALCULATE
     !  CORRECTION TERMS IF THERE ARE NO TREES FOR THIS SPECIES.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        CORNEW = 1.0
        I1 = ISCT(ISPC,1)
        if (I1.eq.0.or..not. LHTCAL(ISPC)) go to 100
@@ -8929,7 +8930,7 @@ contains
     !  ENTRY POINT FOR LOADING OF REGENERATION GROWTH MODEL
     !  CONSTANTS  THAT REQUIRE ONE-TIME RESOLUTION.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        RHCON(ISPC) = 1.0
        if (LRCOR2.and.RCOR2(ISPC).gt.0.0)&
             &RHCON(ISPC) = RCOR2(ISPC)
@@ -9278,7 +9279,7 @@ contains
        !  PROCESS ALL TREES WITHIN THIS SUBCYCLE IN SPECIES ORDER.  LOAD
        !  SPECIES DEPENDENT CONSTANTS.
 
-       do ISPC = 1,MAXSP
+       do ISPC = 1,CFG_MAXSP
           I1 = ISCT(ISPC,1)
           if (I1.eq.0) go to 16
           I2 = ISCT(ISPC,2)
@@ -9613,7 +9614,7 @@ contains
     !  AFTER LAST SUBCYCLE, COMPUTE ACTUAL HEIGHT INCREMENT FOR FULL CYCLE BY
     !  SUBTRACTION; CONVERT BACK TO LOG SCALE TO ADD IN RANDOM ERROR.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (I1.eq.0) go to 30
        I2 = ISCT(ISPC,2)
@@ -10019,7 +10020,7 @@ contains
     !  SMALL TREE HEIGHT CALIBRATION SECTION.
 
     40 continue
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        HCOR(ISPC) = 0.0
        CORTEM(ISPC) = 1.0
        NUMCAL(ISPC) = 0
@@ -10081,7 +10082,7 @@ contains
     !  BEGIN PROCESSING TREE LIST IN SPECIES ORDER.  DO NOT CALCULATE
     !  CORRECTION TERMS IF THERE ARE NO TREES FOR THIS SPECIES.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
 
        !  ASSIGN VARIANT ACCORDING TO SPECIES
 
@@ -10343,7 +10344,7 @@ contains
     !  HAVE BEEN INPUT WITH THE READCORR KEYWORD, INCORPORATE THEM INTO
     !  THE OVERALL CONSTANTS.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
 
        !  ASSIGN VARIANT ACCORDING TO SPECIES
 
@@ -10737,7 +10738,7 @@ contains
        !  PROCESS ALL TREES WITHIN THIS SUBCYCLE IN SPECIES ORDER.  LOAD
        !  SPECIES DEPENDENT CONSTANTS.
 
-       do ISPC = 1,MAXSP
+       do ISPC = 1,CFG_MAXSP
           I1 = ISCT(ISPC,1)
           if (I1.eq.0) go to 16
           I2 = ISCT(ISPC,2)
@@ -11068,7 +11069,7 @@ contains
     !  AFTER LAST SUBCYCLE, COMPUTE ACTUAL HEIGHT INCREMENT FOR FULL CYCLE BY
     !  SUBTRACTION; CONVERT BACK TO LOG SCALE TO ADD IN RANDOM ERROR.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (I1.eq.0) go to 30
        I2 = ISCT(ISPC,2)
@@ -11431,7 +11432,7 @@ contains
     !  SMALL TREE HEIGHT CALIBRATION SECTION.
 
     40 continue
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        HCOR(ISPC) = 0.0
        CORTEM(ISPC) = 1.0
        NUMCAL(ISPC) = 0
@@ -11493,7 +11494,7 @@ contains
     !  BEGIN PROCESSING TREE LIST IN SPECIES ORDER.  DO NOT CALCULATE
     !  CORRECTION TERMS IF THERE ARE NO TREES FOR THIS SPECIES.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
 
        !  ASSIGN VARIANT ACCORDING TO SPECIES
 
@@ -11788,7 +11789,7 @@ contains
     !  HAVE BEEN INPUT WITH THE READCORR KEYWORD, INCORPORATE THEM INTO
     !  THE OVERALL CONSTANTS.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
 
        !  ASSIGN VARIANT ACCORDING TO SPECIES
 
@@ -12140,7 +12141,7 @@ contains
        !  PROCESS ALL TREES WITHIN THIS SUBCYCLE IN SPECIES ORDER.  LOAD
        !  SPECIES DEPENDENT CONSTANTS.
 
-       do ISPC = 1,MAXSP
+       do ISPC = 1,CFG_MAXSP
           I1 = ISCT(ISPC,1)
           if (I1.eq.0) go to 16
           I2 = ISCT(ISPC,2)
@@ -12285,7 +12286,7 @@ contains
     !  AFTER LAST SUBCYCLE, COMPUTE ACTUAL HEIGHT INCREMENT FOR FULL CYCLE BY
     !  SUBTRACTION; CONVERT BACK TO LOG SCALE TO ADD IN RANDOM ERROR.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (I1.eq.0) go to 30
        I2 = ISCT(ISPC,2)
@@ -12488,7 +12489,7 @@ contains
     !  SMALL TREE HEIGHT CALIBRATION SECTION.
 
     40 continue
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        HCOR(ISPC) = 0.0
        CORTEM(ISPC) = 1.0
        NUMCAL(ISPC) = 0
@@ -12536,7 +12537,7 @@ contains
        49 continue
     end do
     50 continue
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
 
        !  BEGIN PROCESSING TREE LIST IN SPECIES ORDER.  DO NOT CALCULATE
        !  CORRECTION TERMS IF THERE ARE NO TREES FOR THIS SPECIES.
@@ -12792,7 +12793,7 @@ contains
     !  RHCON BY SPECIES.  IF SCALE FACTORS HAVE BEEN INPUT WITH THE
     !  READCORR KEYWORD, INCORPERATE THEM INTO THE OVERALL CONSTANTS.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        IRHHAB = MAPHAB(KKTYPE,ISPC)
        IRHFOR = MAPLOC(KOTFOR,ISPC)
 
@@ -12938,7 +12939,7 @@ contains
 
     !  ENTER GROWTH PREDICTION LOOP.  TREES ARE PROCESSED ONE AT A TIME.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (I1.eq.0) go to 30
        I2 = ISCT(ISPC,2)
@@ -13140,7 +13141,7 @@ contains
     !  SMALL TREE HEIGHT CALIBRATION SECTION.
 
     40 continue
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        HCOR(ISPC) = 0.0
        CORTEM(ISPC) = 1.0
        NUMCAL(ISPC) = 0
@@ -13153,7 +13154,7 @@ contains
     !  BEGIN PROCESSING TREE LIST IN SPECIES ORDER.  DO NOT CALCULATE
     !  CORRECTION TERMS IF THERE ARE NO TREES FOR THIS SPECIES.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        CORNEW = 1.0
        I1 = ISCT(ISPC,1)
        if (I1.eq.0.or..not. LHTCAL(ISPC)) go to 90
@@ -13243,7 +13244,7 @@ contains
     !  ENTRY POINT FOR LOADING OF REGENERATION GROWTH MODEL
     !  CONSTANTS  THAT REQUIRE ONE-TIME RESOLUTION.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        RHCON(ISPC) = 1.0
        if (LRCOR2.and.RCOR2(ISPC).gt.0.0)&
             &RHCON(ISPC) = RCOR2(ISPC)
@@ -13374,7 +13375,7 @@ contains
     !  ENTER GROWTH PREDICTION LOOP.  PROCESS EACH SPECIES AS A GROUP;
     !  LOAD CONSTANTS FOR NEXT SPECIES.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (I1.eq.0) go to 30
        I2 = ISCT(ISPC,2)
@@ -13634,7 +13635,7 @@ contains
 
     40 continue
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        HCOR(ISPC) = 0.0
        CORTEM(ISPC) = 1.0
        NUMCAL(ISPC) = 0
@@ -13646,7 +13647,7 @@ contains
     !  BEGIN PROCESSING TREE LIST IN SPECIES ORDER.  DO NOT CALCULATE
     !  CORRECTION TERMS IF THERE ARE NO TREES FOR THIS SPECIES.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        CORNEW = 1.0
        I1 = ISCT(ISPC,1)
        if (I1.eq.0.or..not. LHTCAL(ISPC)) go to 100
@@ -13773,7 +13774,7 @@ contains
          &0.2,  0.1,  0.1,  0.2,  0.2,  0.1,  0.1,  0.2,  0.2,  0.1,&
          &0.1,  0.1,  0.1,  0.1,  0.1,  0.1,  0.1,  0.3,  0.2,  0.2/
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        RHCON(ISPC) = 1.0
        if (LRCOR2.and.RCOR2(ISPC).gt.0.0)&
             &RHCON(ISPC) = RCOR2(ISPC)
@@ -13995,7 +13996,7 @@ contains
     !  ENTER GROWTH PREDICTION LOOP.  PROCESS EACH SPECIES AS A GROUP;
     !  LOAD CONSTANTS FOR NEXT SPECIES.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
 
        !  GET THE APPROPRIATE SITE INDEX RANGE VALUES FOR THIS SPECIES.
 
@@ -14491,7 +14492,7 @@ contains
     !  SMALL TREE HEIGHT CALIBRATION SECTION.
 
     40 continue
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        HCOR(ISPC) = 0.0
        CORTEM(ISPC) = 1.0
        NUMCAL(ISPC) = 0
@@ -14514,7 +14515,7 @@ contains
     !  BEGIN PROCESSING TREE LIST IN SPECIES ORDER.  DO NOT CALCULATE
     !  CORRECTION TERMS IF THERE ARE NO TREES FOR THIS SPECIES.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
 
        !  GET THE APPROPRIATE SITE INDEX RANGE VALUES FOR THIS SPECIES.
 
@@ -14677,7 +14678,7 @@ contains
     !  ENTRY POINT FOR LOADING OF REGENERATION GROWTH MODEL
     !  CONSTANTS  THAT REQUIRE ONE-TIME RESOLUTION.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        RHCON(ISPC) = 1.0
        if (LRCOR2.and.RCOR2(ISPC).gt.0.0)&
             &RHCON(ISPC) = RCOR2(ISPC)
@@ -15036,7 +15037,7 @@ contains
        !  PROCESS ALL TREES WITHIN THIS SUBCYCLE IN SPECIES ORDER.  LOAD
        !  SPECIES DEPENDENT CONSTANTS.
 
-       do ISPC = 1,MAXSP
+       do ISPC = 1,CFG_MAXSP
 
           !  GET THE APPROPRIATE SITE INDEX RANGE VALUES FOR THIS SPECIES.
 
@@ -15326,7 +15327,7 @@ contains
     !  AFTER LAST SUBCYCLE, COMPUTE ACTUAL HEIGHT INCREMENT FOR FULL CYCLE BY
     !  SUBTRACTION; CONVERT BACK TO LOG SCALE TO ADD IN RANDOM ERROR.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (I1.eq.0) go to 30
        I2 = ISCT(ISPC,2)
@@ -15771,7 +15772,7 @@ contains
     !  SMALL TREE HEIGHT CALIBRATION SECTION.
 
     40 continue
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        HCOR(ISPC) = 0.0
        CORTEM(ISPC) = 1.0
        NUMCAL(ISPC) = 0
@@ -15845,7 +15846,7 @@ contains
     !  BEGIN PROCESSING TREE LIST IN SPECIES ORDER.  DO NOT CALCULATE
     !  CORRECTION TERMS IF THERE ARE NO TREES FOR THIS SPECIES.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
 
        !  GET THE APPROPRIATE SITE INDEX RANGE VALUES FOR THIS SPECIES.
 
@@ -16045,7 +16046,7 @@ contains
     !  ENTRY POINT FOR LOADING OF REGENERATION GROWTH MODEL
     !  CONSTANTS  THAT REQUIRE ONE-TIME RESOLUTION.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        RHCON(ISPC) = 1.0
        if (LRCOR2.and. RCOR2(ISPC).gt.0.0) RHCON(ISPC) = RCOR2(ISPC)
        110 continue
@@ -16200,7 +16201,7 @@ contains
     !  ENTER GROWTH PREDICTION LOOP.  PROCESS EACH SPECIES AS A GROUP;
     !  LOAD CONSTANTS FOR NEXT SPECIES.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
 
        !  GET THE APPROPRIATE SITE INDEX RANGE VALUES FOR THIS SPECIES.
 
@@ -16606,7 +16607,7 @@ contains
     !  SMALL TREE HEIGHT CALIBRATION SECTION.
 
     40 continue
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        HCOR(ISPC) = 0.0
        CORTEM(ISPC) = 1.0
        NUMCAL(ISPC) = 0
@@ -16630,7 +16631,7 @@ contains
     !  BEGIN PROCESSING TREE LIST IN SPECIES ORDER.  DO NOT CALCULATE
     !  CORRECTION TERMS IF THERE ARE NO TREES FOR THIS SPECIES.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
 
        !  GET THE APPROPRIATE SITE INDEX RANGE VALUES FOR THIS SPECIES.
 
@@ -16796,7 +16797,7 @@ contains
     !  ENTRY POINT FOR LOADING OF REGENERATION GROWTH MODEL
     !  CONSTANTS  THAT REQUIRE ONE-TIME RESOLUTION.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        RHCON(ISPC) = 1.0
        if (LRCOR2.and. RCOR2(ISPC).gt.0.0)&
             &RHCON(ISPC) = RCOR2(ISPC)
@@ -17045,7 +17046,7 @@ contains
     !  ENTER GROWTH PREDICTION LOOP.  PROCESS EACH SPECIES AS A GROUP;
     !  LOAD CONSTANTS FOR NEXT SPECIES.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (I1.eq.0) go to 30
        I2 = ISCT(ISPC,2)
@@ -17484,7 +17485,7 @@ contains
     !  SMALL TREE HEIGHT CALIBRATION SECTION.
 
     40 continue
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        HCOR(ISPC) = 0.0
        CORTEM(ISPC) = 1.0
        NUMCAL(ISPC) = 0
@@ -17508,7 +17509,7 @@ contains
     !  BEGIN PROCESSING TREE LIST IN SPECIES ORDER.  DO NOT CALCULATE
     !  CORRECTION TERMS IF THERE ARE NO TREES FOR THIS SPECIES.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        CORNEW = 1.0
        I1 = ISCT(ISPC,1)
        if (I1.eq.0.or..not. LHTCAL(ISPC)) go to 100
@@ -17645,7 +17646,7 @@ contains
     !  ENTRY POINT FOR LOADING OF REGENERATION GROWTH MODEL
     !  CONSTANTS  THAT REQUIRE ONE-TIME RESOLUTION.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        RHCON(ISPC) = 1.0
        if (LRCOR2.and.RCOR2(ISPC).gt.0.0) RHCON(ISPC) = RCOR2(ISPC)
        90 continue
@@ -17734,11 +17735,11 @@ contains
 
     if (JOCALB .gt.0) then
        KOUT = 0
-       do K = 1,MAXSP
+       do K = 1,CFG_MAXSP
           if (CORTEM(K).ne.1.0.or. NUMCAL(K).ge.NCALHT) then
-             SPEC = NSP(MAXSP,1)(1:2)
-             ISPEC = MAXSP
-             do KK = 1,MAXSP
+             SPEC = NSP(CFG_MAXSP,1)(1:2)
+             ISPEC = CFG_MAXSP
+             do KK = 1,CFG_MAXSP
                 if (K .ne. IREF(KK)) go to 203
                 ISPEC = KK
                 SPEC = NSP(KK,1)(1:2)

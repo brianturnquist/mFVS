@@ -2,6 +2,7 @@
 !   Fire-model keyword handlers shared by FMIN   !
 !================================================!
 module FMINKEYS_MOD
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! Shared keyword handlers for the imperial and metric FMIN. Unit-specific
@@ -275,7 +276,7 @@ contains
 
     else
 
-       do JSP = 1,MAXSP
+       do JSP = 1,CFG_MAXSP
           if (LNOTBK(2)) FALLX(JSP) = ARRAY(2)
           if (FALLX(JSP) .lt.0.001) FALLX(JSP) = 0.001
           if (LNOTBK(3)) ALLDWN(JSP) = ARRAY(3)
@@ -381,7 +382,7 @@ contains
        end if
 
     else
-       do JSP = 1,MAXSP
+       do JSP = 1,CFG_MAXSP
           !           DO THE CALCULATIONS FOR INITIALLY HARD SNAGS
           if (LNOTBK(2)) then
              HTX(JSP,1) = (1. - 0.5**(1./YRS50(1))) / HTR1
@@ -463,7 +464,7 @@ contains
        if (DECAYX(JSP) .lt.0.0) DECAYX(JSP) = 0.0
     else
 
-       do JSP = 1,MAXSP
+       do JSP = 1,CFG_MAXSP
           if (LNOTBK(2)) DECAYX(JSP) = ARRAY(2)
           if (DECAYX(JSP) .lt.0.0) DECAYX(JSP) = 0.0
        end do
@@ -565,7 +566,7 @@ contains
     if (JSP .ne.0) then
        DKRCLS(JSP) = IDEC
     else
-       do JSP = 1,MAXSP
+       do JSP = 1,CFG_MAXSP
           DKRCLS(JSP) = IDEC
        end do
        JSP = 1
@@ -809,7 +810,7 @@ contains
           if (PSOFT(JSP) .gt.1.0) PSOFT(JSP) = 1.0
        end if
     else
-       do JSP = 1,MAXSP
+       do JSP = 1,CFG_MAXSP
           if (LNOTBK(2)) PSOFT(JSP) = ARRAY(2)
           if (PSOFT(JSP) .lt.0.0) PSOFT(JSP) = 0.0
           if (PSOFT(JSP) .gt.1.0) PSOFT(JSP) = 1.0

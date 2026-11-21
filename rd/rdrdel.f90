@@ -3,6 +3,7 @@
 !=================!
 ! RD $Id$
 subroutine RDRDEL
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE LOOPS THRU THE TREELIST TO DETERMINE IF
@@ -57,7 +58,7 @@ subroutine RDRDEL
   if (DEBUG)&
        &write (JOSTND,*) 'ENTER RDRDEL:  ICYC=',ICYC,' ITRN=',ITRN
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      SPCNT(I,1) = 0.0
      SPCNT(I,2) = 0.0
      SPCNT(I,3) = 0.0
@@ -75,7 +76,7 @@ subroutine RDRDEL
   end if
 
   IVAC = 0
-  do KSP = 1,MAXSP
+  do KSP = 1,CFG_MAXSP
      I1 = ISCT(KSP,1)
      I2 = ISCT(KSP,2)
      if (ISCT(KSP,1) .eq.0) goto 555

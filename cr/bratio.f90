@@ -33,7 +33,7 @@ function BRATIO(IS,D,H)
   real    :: H,D,BRATIO,TEMD
   real    :: RDANUW
 
-  data IMAP/ 2, 2, 2, 2, 2, 2, 2, 3, 3, 3,&
+  data IMAP(1:MAXSP_NATIVE)/ 2, 2, 2, 2, 2, 2, 2, 3, 3, 3,&
        &3, 1, 1, 3, 2, 1, 3, 3, 3, 2,&
        &3, 3, 3, 3, 3, 3, 3, 2, 1, 1,&
        &1, 1, 1, 1, 1, 1, 1, 3/

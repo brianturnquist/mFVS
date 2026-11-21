@@ -58,6 +58,7 @@ subroutine MISMRT(MFLAG)
   !        This change was provided by Bob Havis (FMSC) to eliminate
   !        LF95 FORTRAN compiler warnings.
 
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !.... Parameter statements.
@@ -116,7 +117,7 @@ subroutine MISMRT(MFLAG)
 
            !....          Otherwise default to all species.
 
-           do ISPC = 1,MAXSP
+           do ISPC = 1,CFG_MAXSP
               DMMMLT(ISPC) = PRM(2)*MISFIT(ISPC)
               100 continue
            end do
@@ -132,7 +133,7 @@ subroutine MISMRT(MFLAG)
   MRTSM2 = 0.0
   MRTSM3 = 0.0
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      I1 = ISCT(ISPC,1)
 
      !....    If there are no trees of this species, skip out.

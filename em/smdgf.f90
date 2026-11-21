@@ -33,12 +33,12 @@ subroutine SMDGF(ISPC,H,CR,RD,SDIAM)
   !  6,10, AND 11 TO MAINTAIN CONSISTENCY WITH **SMHTGF**;
   !  CR IS SCALED 0-100 (WRW--3/26/91).
 
-  data SDHTCR /&
+  data SDHTCR(1:MAXSP_NATIVE) /&
        &0.000231,  0.000231, -0.28654,       0.0,       0.0,      0.0,&
        &-0.41227,   0.04125, -0.15906,  0.000335,       0.0,      0.0,&
        &0.0,       0.0,      0.0,       0.0,       0.0, 0.000231,&
        &0.0/
-  data SDHPCF /&
+  data SDHPCF(1:MAXSP_NATIVE) /&
        &-0.00005,  -0.00005,  0.13469,       0.0,       0.0,      0.0,&
        &0.16944,   0.17486,  0.15323,  -0.00020,       0.0,      0.0,&
        &0.0,       0.0,      0.0,       0.0,       0.0, -0.00005,&
@@ -47,12 +47,12 @@ subroutine SMDGF(ISPC,H,CR,RD,SDIAM)
   !  CROWN RATIO COEFFICIENTS WERE SCALED TO MAINTAIN CONSISTENCY
   !  WITH **SMHTGF**; CR IS SCALED 0-100 (WRW--3/26/91).
 
-  data SDCR /&
+  data SDCR(1:MAXSP_NATIVE) /&
        &0.001711,  0.001711, 0.002736,  0.001711,  0.001711, 0.003191,&
        &0.003191, -0.002371, 0.000000,  0.002621,       0.0,      0.0,&
        &0.0,       0.0,      0.0,       0.0,       0.0, 0.001711,&
        &0.0/
-  data SDHL4 /&
+  data SDHL4(1:MAXSP_NATIVE) /&
        &0.17023,   0.17023,  0.00036,   0.17023,   0.17023, -0.00220,&
        &-0.00220,  -0.00070,  0.00000,   0.15622,       0.0,      0.0,&
        &0.0,       0.0,      0.0,       0.0,       0.0,  0.17023,&

@@ -38,6 +38,7 @@ subroutine MISCPF(PRFCUT)
   !        This change was provided by Bob Havis (FMSC) to eliminate
   !        LF95 FORTRAN compiler warnings.
 
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !.... Parameter statements.
@@ -94,7 +95,7 @@ subroutine MISCPF(PRFCUT)
 
            !....          Otherwise defaults to all species.
 
-           do ISPC = 1,MAXSP
+           do ISPC = 1,CFG_MAXSP
               do IDMR = 1,6
                  PRFMST(ISPC,IDMR) = PRMS(IDMR+1)*MISFIT(ISPC)
                  130 continue
@@ -114,7 +115,7 @@ subroutine MISCPF(PRFCUT)
   if (DEBUG) write(JOSTND,9010) (I, I = 1,6)
   9010 format(' Species/DMR ', 6I10)
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      do IDMR = 1,6
         PRFCUT(ISPC,IDMR) = PRFMST(ISPC,IDMR)
         160 continue

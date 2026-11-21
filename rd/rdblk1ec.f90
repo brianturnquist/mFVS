@@ -49,7 +49,7 @@ block data RDBLK1
 
   !.... The following IRTSPC is for the EC (32 species) variant.
   !....              WP  WL  DF  SF  RC  GF  LP  ES  AF  PP  WH
-  data IRTSPC / 1,  2,  3, 16,  6,  4,  7,  8,  9, 10,  5,&
+  data IRTSPC(1:MAXSP_NATIVE) / 1,  2,  3, 16,  6,  4,  7,  8,  9, 10,  5,&
        !....              MH  PY  WB  NF  WF  LL  YC  WJ  BM  VN  RA
        &11, 38, 22, 39, 13, 36, 34, 26, 40, 40, 40,&
        !....              PB  GC  DG  AS  CW  WO  PL  WI  OS  OH

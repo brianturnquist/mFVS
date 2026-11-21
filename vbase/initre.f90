@@ -11,6 +11,7 @@ subroutine INITRE
        &INKATRTLIST, INKORGANON
   use INITREVOL_MOD, only: INVVOLEQNUM, INVMCFDLN, INVBFFDLN,&
        &INVMCDEFECT, INVBFDEFECT
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! Exit taken by a shared keyword handler (0: next keyword)
@@ -439,7 +440,7 @@ subroutine INITRE
   if (LFIANVB) then
      select case (MRCHLMTS)
      case(0)
-        do ISPC = 1,MAXSP
+        do ISPC = 1,CFG_MAXSP
            read(FIAJSP(ISPC), '(I3)') IFIACODE
            ! Minimum merch for both softwood and hardwood
            if (IFIACODE.gt.0.or.&
@@ -466,7 +467,7 @@ subroutine INITRE
   !   USING KEYWORDS.  THEN DUMP SITE INDEX ARRAY.
 
   call SITSET
-  if (ISISP.gt.0.and. ISISP.le.MAXSP) then
+  if (ISISP.gt.0.and. ISISP.le.CFG_MAXSP) then
      STNDSI = SITEAR(ISISP)
   else
      STNDSI = 0.
@@ -486,7 +487,7 @@ subroutine INITRE
   if (IPSI.gt.0.or. ISISP.gt.0) then
      write(JOSTND,210) TABLE(94)
      210 format(/A8,'   SITE INDEX INFORMATION:')
-     write(JOSTND,211) (NSP(I,1)(1:2),real(NINT(SITEAR(I))),I = 1,MAXSP)
+     write(JOSTND,211) (NSP(I,1)(1:2),real(NINT(SITEAR(I))),I = 1,CFG_MAXSP)
      211 format ((T12,8(A3,'=',F6.0,:,'; '),A,'=',F6.0))
      if (ISISP.gt.0) then
         write(JOSTND,212) NSP(ISISP,1)(1:2),ISISP
@@ -730,7 +731,7 @@ subroutine INITRE
      !     IF (ISPC=0) ALL SPECIES WILL BE CHANGED IN FOLLOWING CODE:
 
   else if (ISPC .eq.0) then
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         LSPCWE(I) = .true.
         CWTDBH(I) = TC
         CWDS0(I) = WK6(1)
@@ -1433,7 +1434,7 @@ subroutine INITRE
      !     IF (IS=0) ALL SPECIES WILL BE CHANGED IN FOLLOWING CODE:
 
   else if (IS .eq.0) then
-     do IS = 1,MAXSP
+     do IS = 1,CFG_MAXSP
         if (LNOTBK(3)) DBHMIN(IS) = ARRAY(3)
         if (LNOTBK(4))TOPD(IS) = ARRAY(4)
         if (LNOTBK(5)) STMP(IS) = ARRAY(5)
@@ -1717,7 +1718,7 @@ subroutine INITRE
      !     IF (IS=0) ALL SPECIES WILL BE CHANGED IN FOLLOWING CODE:
 
   else if (IS .eq.0) then
-     do IS = 1,MAXSP
+     do IS = 1,CFG_MAXSP
         if (LNOTBK(3)) BFMIND(IS) = ARRAY(3)
         if (LNOTBK(4)) BFTOPD(IS) = ARRAY(4)
         if (LNOTBK(5)) BFSTMP(IS) = ARRAY(5)
@@ -1983,13 +1984,13 @@ subroutine INITRE
      go to 10
   end if
   if (IS.eq.0) then
-     if (LKECHO)write(JOSTND,5210) KEYWRD,JSP
+     if (LKECHO)write(JOSTND,5210) KEYWRD,JSP(1:CFG_MAXSP)
      5210 format(/A8,'   PREVIOUS CODES:',&
           &((T32,10('''',A4,''';'),'''',A4,''''))/)
-     read (IREAD,5250,end = 80) JSP
+     read (IREAD,5250,end = 80) JSP(1:CFG_MAXSP)
      5250 format  (20A4)
      IRECNT = IRECNT + 1
-     if (LKECHO)write(JOSTND,5260) JSP
+     if (LKECHO)write(JOSTND,5260) JSP(1:CFG_MAXSP)
      5260 format (T12,'NEW CODES:',&
           &((T32,10('''',A4,''';'),'''',A4,''''))/)
      if (MORDAT) call ERRGRO (.true.,7)
@@ -2037,15 +2038,15 @@ subroutine INITRE
   if (LKECHO)write(JOSTND,5610) KEYWRD
   5610 format (/A8,'   LARGE TREE DIAMETER GROWTH MODELS ',&
        &'ARE MODIFIED WITH CORRECTION TERMS PRIOR TO CALIBRATION.')
-  read (IREAD,5650,end = 80) COR2
+  read (IREAD,5650,end = 80) COR2(1:CFG_MAXSP)
   5650 format (8F10.0)
-  I = MAXSP/8
-  if (MOD(MAXSP,8).gt.0) I = I+1
+  I = CFG_MAXSP/8
+  if (MOD(CFG_MAXSP,8).gt.0) I = I+1
   IRECNT = IRECNT + I
   if (LKECHO)write(JOSTND,5660)
   5660 format (T12,'LARGE TREE DIAMETER GROWTH MODEL ',&
        &'CORRECTION TERMS BY SPECIES:')
-  if (LKECHO)write(JOSTND,5670) (NSP(I,1),COR2(I),I = 1,MAXSP)
+  if (LKECHO)write(JOSTND,5670) (NSP(I,1),COR2(I),I = 1,CFG_MAXSP)
   5670 format((T12,7(A2,' =',F5.2,:,'; '),A2,' =',F5.2))
   go to 10
 
@@ -2230,14 +2231,14 @@ subroutine INITRE
   if (LKECHO)write(JOSTND,6910) KEYWRD
   6910 format (/A8,'   LARGE TREE HEIGHT GROWTH MODELS ',&
        &'ARE MODIFIED WITH CORRECTION TERMS PRIOR TO CALIBRATION.')
-  read (IREAD,5650,end = 80) HCOR2
-  I = MAXSP/8
-  if (MOD(MAXSP,8).gt.0) I = I+1
+  read (IREAD,5650,end = 80) HCOR2(1:CFG_MAXSP)
+  I = CFG_MAXSP/8
+  if (MOD(CFG_MAXSP,8).gt.0) I = I+1
   IRECNT = IRECNT + I
   if (LKECHO)write(JOSTND,6920)
   6920 format (T12,'LARGE TREE HEIGHT GROWTH MODEL ',&
        &'CORRECTION TERMS BY SPECIES:')
-  if (LKECHO)write(JOSTND,5670) (NSP(I,1),HCOR2(I),I = 1,MAXSP)
+  if (LKECHO)write(JOSTND,5670) (NSP(I,1),HCOR2(I),I = 1,CFG_MAXSP)
   go to 10
 
   !  ==========  OPTION NUMBER 68: REUSCORH  ==========================REUSCORH
@@ -2319,14 +2320,14 @@ subroutine INITRE
   if (LKECHO)write(JOSTND,7510) KEYWRD
   7510 format (/A8,'   SMALL TREE HEIGHT GROWTH MODELS ',&
        &'ARE MODIFIED WITH CORRECTION TERMS PRIOR TO CALIBRATION.')
-  read (IREAD,5650,end = 80) RCOR2
-  I = MAXSP/8
-  if (MOD(MAXSP,8).gt.0) I = I+1
+  read (IREAD,5650,end = 80) RCOR2(1:CFG_MAXSP)
+  I = CFG_MAXSP/8
+  if (MOD(CFG_MAXSP,8).gt.0) I = I+1
   IRECNT = IRECNT + I
   if (LKECHO)write(JOSTND,7520)
   7520 format (T12,'SMALL TREE HEIGHT GROWTH MODEL ',&
        &'CORRECTION TERMS BY SPECIES:')
-  if (LKECHO)write(JOSTND,5670) (NSP(I,1),RCOR2(I),I = 1,MAXSP)
+  if (LKECHO)write(JOSTND,5670) (NSP(I,1),RCOR2(I),I = 1,CFG_MAXSP)
   go to 10
 
   !  ==========  OPTION NUMBER 74: REUSCORR  ==========================REUSCORR
@@ -2566,7 +2567,7 @@ subroutine INITRE
         !     IF (IS=0) ALL SPECIES WILL BE CHANGED IN FOLLOWING CODE:
 
      else if (IS .eq.0) then
-        do J = 1,MAXSP
+        do J = 1,CFG_MAXSP
            SDIDEF(J) = ARRAY(2)
            MAXSDI(J) = 1
            9103 continue
@@ -2619,7 +2620,7 @@ subroutine INITRE
            ILEN = ISPGRP(-IS,92)
            if (LKECHO)write(JOSTND,9117) KARD(1)(1:ILEN),IS,ARRAY(7)
         else if (IS .eq.0) then
-           do J = 1,MAXSP
+           do J = 1,CFG_MAXSP
               ISTAGF(J) = INT(ARRAY(7))
               9115 continue
            end do
@@ -2717,7 +2718,7 @@ subroutine INITRE
   else if (IS .eq.0) then
      if (LNOTBK(2)) then
         if (ARRAY(2) .le.5.) go to 9617
-        do K = 1,MAXSP
+        do K = 1,CFG_MAXSP
            SITEAR(K) = ARRAY(2)
            9616 continue
         end do
@@ -3625,7 +3626,7 @@ subroutine INITRE
      !     IF (IS=0) ALL SPECIES WILL BE CHANGED IN FOLLOWING CODE:
 
   else if (IS .eq.0) then
-     do IS = 1,MAXSP
+     do IS = 1,CFG_MAXSP
         if (IDTYPE.eq.0.or. IDTYPE.eq.1) then
            if (LFIANVB) then
               if (I.lt.1) call ERRGRO(.true.,50)
@@ -3960,7 +3961,7 @@ subroutine INITRE
      !     IF (ISPC=0) ALL SPECIES WILL BE CHANGED IN FOLLOWING CODE:
 
   else if (ISPC .eq.0) then
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         SIZCAP(I,1) = CAPDBH
         SIZCAP(I,2) = CAPPRP
         SIZCAP(I,3) = CAPFLG
@@ -5114,7 +5115,7 @@ subroutine INITRE
      CFLA0 = 0
      CFLA1 = 1
      CFDEFT = 0
-     do ISPC = 1,MAXSP
+     do ISPC = 1,CFG_MAXSP
         METHC(ISPC) = 10
         DBHMIN(ISPC) = 0.0
         TOPD(ISPC) = 0.0
@@ -5204,7 +5205,7 @@ subroutine INITRE
      !     IF (IS=0) ALL SPECIES WILL BE CHANGED IN FOLLOWING CODE:
 
   else if (IS .eq.0) then
-     do IS = 1,MAXSP
+     do IS = 1,CFG_MAXSP
         if (LNOTBK(4)) DBHMIN(IS) = ARRAY(4)
         if (LNOTBK(5)) TOPD(IS) = ARRAY(5)
         if (LNOTBK(6)) STMP(IS) = ARRAY(6)

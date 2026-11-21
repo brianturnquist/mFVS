@@ -3,6 +3,7 @@
 !=============================!
 ! BASE $Id$
 subroutine UPDATE
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  UPDATE:
@@ -33,7 +34,7 @@ subroutine UPDATE
      OMORT(I) = 0.0
      5 continue
   end do
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      SPCMO(I,1) = 0.0
      SPCMO(I,2) = 0.0
      SPCMO(I,3) = 0.0
@@ -42,7 +43,7 @@ subroutine UPDATE
 
   !  DO FOR ALL TREES BY SPECIES.
 
-  do IS = 1,MAXSP
+  do IS = 1,CFG_MAXSP
      I1 = ISCT(IS,1)
      if (I1 .eq. 0) go to 100
      I2 = ISCT(IS,2)

@@ -60,7 +60,7 @@ subroutine VOLONT
   !       ISPMPH = SPECIES MAPPING FOR HONER EQUATIONS
   !       ISPMPM = SPECIES MAPPING FOR MOWRASKI CULL EQUATIONS
 
-  data ISPMPZ/& ! Zak
+  data ISPMPZ(1:MAXSP_NATIVE)/& ! Zak
        &3, 3, 2, 2, 1, 5, 4, 6, 4,12,&
        &7,12,12,12,11,11,11, 8, 8,11,&
        &11,11,11,10,11, 8, 8,11,11,11,&
@@ -70,7 +70,7 @@ subroutine VOLONT
        &11,11,11,11,11,11,11,11, 3, 1,&
        &5, 4/
 
-  data ISPMPH/& ! Honer
+  data ISPMPH(1:MAXSP_NATIVE)/& ! Honer
        &3, 4, 2, 2, 1, 5, 7, 9, 6,11,&
        &10, 8, 1,10,18,18,26,13,13,23,&
        &20,22,22,14,21,12,12,17,19,16,&
@@ -80,7 +80,7 @@ subroutine VOLONT
        &23,23,23,12,12,12,12,22, 3, 1,&
        &5, 6/
 
-  data ISPMPM/& ! Mowraski
+  data ISPMPM(1:MAXSP_NATIVE)/& ! Mowraski
        &3, 3, 2, 2, 1, 5, 5, 6, 4, 8,&
        &7, 9, 4, 7,14,14,10,13,14,13,&
        &4,14,14,13,13,12,13,13,13,13,&

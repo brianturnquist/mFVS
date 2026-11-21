@@ -45,6 +45,7 @@ real function MISHGF(ITREE,ISPC)
   !     30-FEB-2010 Lance R. David (FMSC)
   !        Subroutine created.
 
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !.... Parameter statements.
@@ -123,7 +124,7 @@ real function MISHGF(ITREE,ISPC)
               !....             Otherwise new growth modifiers applied to all
               !....             affected species.
 
-              do IKSPC = 1,MAXSP
+              do IKSPC = 1,CFG_MAXSP
                  do IDMR = 2,7
                     if (MISFIT(IKSPC).eq.1) then
                        HGPDMR(IKSPC,IDMR) = PRMS(IDMR)

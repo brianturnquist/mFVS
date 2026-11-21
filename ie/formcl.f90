@@ -30,7 +30,7 @@ subroutine FORMCL(ISPC,IFOR,D,FC)
 
   !  COLVILLE FORM CLASS VALUES
 
-  data COLVFC/&
+  data COLVFC(1:MAXSP_NATIVE,:)/&
        &78., 78., 78., 76., 76., 64., 80., 77., 78., 78., 75.,&
        &81., 75., 78., 56., 56., 56., 77., 76., 70., 70., 70., 75.,&
        &80., 78., 76., 78., 78., 65., 82., 79., 76., 80., 78.,&

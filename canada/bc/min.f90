@@ -84,7 +84,7 @@ subroutine MIN(ISC,AGE,FIZ,DBH,HT,SH,TD,HTRUNC,GROSIMP,TVOLIMP)
   common /VOLMET/ GROS,VLOG,TDL,HLL,DBT,TVOL,BAR,HMERC
 
   data GOL  / 3.0 /
-  data SPTR /  7,10, 1, 4, 3,&
+  data SPTR(1:MAXSP_NATIVE) /  7,10, 1, 4, 3,&
        &2, 8, 5, 4, 9,&
        &14,15,11, 1,14 /
 

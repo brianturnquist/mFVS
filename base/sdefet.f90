@@ -4,6 +4,7 @@
 ! BASE $Id$
 subroutine SDEFET (LNOTBK,ARRAY,KEYWRD, &
      & LOPEVN,IACTK,KARD,IPRMPT)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! Common blocks
@@ -134,7 +135,7 @@ subroutine SDEFET (LNOTBK,ARRAY,KEYWRD, &
 
         if (IS.eq.0) then
            I1 = 1
-           I2 = MAXSP
+           I2 = CFG_MAXSP
         else
            I1 = IS
            I2 = IS

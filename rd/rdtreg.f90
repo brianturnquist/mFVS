@@ -3,6 +3,7 @@
 !=================!
 ! RD $Id$
 subroutine RDTREG
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  Purpose :
@@ -105,7 +106,7 @@ subroutine RDTREG
   if (IY(ICYC) .ne. IRGEN(9)) goto 1000
 
   IDI = MAXRR
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (MAXRR .lt.3) IDI = IDITYP(IRTSPC(I))
      PNINF(IRTSPC(I),IDI) = SSSFAC(IRTSPC(I),IDI) *&
           &PNINF(IRTSPC(I),IDI)

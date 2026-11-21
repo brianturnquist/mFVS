@@ -98,7 +98,7 @@ block data RDBLK1
   !  40  NH    38 = ---
   !  40  NH    39 = OTHER (OT)
 
-  data IRTSPC /    16,     13,      4,      9,     15,&
+  data IRTSPC(1:MAXSP_NATIVE) /    16,     13,      4,      9,     15,&
        &40,     39,     34,     14,      8,&
        &7,     31,     12,      1,     10,&
        &3,     35,      6,      5,     11,&

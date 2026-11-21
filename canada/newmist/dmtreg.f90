@@ -3,6 +3,7 @@
 !=============================!
 ! CANADA-NEWMIST $Id$
 subroutine DMTREG
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! **DMTREG -- NISI  Date of last revision: 12/20/03
@@ -225,7 +226,7 @@ subroutine DMTREG
      ! for DMOPAQ(). This gives a MESH-based value that parallels the
      ! usage of the cubic meter-based DMOPAQ().
 
-     do i = 1,MAXSP
+     do i = 1,CFG_MAXSP
         DMOPAQ(i) = DMOPAQ(i) * DMOPQM
         DMOPQ2(i) = 1.0 - ((1.0 - DMOPAQ(i)) ** MESH)
         DMSURV(i) = 1.0 - DMDETH(i)
@@ -310,7 +311,7 @@ subroutine DMTREG
 
   ! Loop over tree species.
 
-  do j = 1,MAXSP
+  do j = 1,CFG_MAXSP
 
      if (MISFIT(j) .eq.0.or. ISCT(j,1) .eq.0) goto 100
 

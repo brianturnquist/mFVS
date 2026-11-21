@@ -3,6 +3,7 @@
 !====================!
 ! VBASE $Id$
 subroutine STKVAL(S)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     THIS ROUTINE CALCULATES THE STOCKING VALUES FOR EACH
@@ -346,7 +347,7 @@ subroutine STKVAL(S)
 
   !  INITIALIZE VARIABLES
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      SS(I) = 0.0
      5 continue
   end do
@@ -367,7 +368,7 @@ subroutine STKVAL(S)
   !      IF (ICYC.LE.1) THEN
   DMXSTD = 0.0
   DMXSS = 0.0
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      I1 = ISCT(ISPC,1)
      if (I1.gt.0) then
         I2 = ISCT(ISPC,2)
@@ -382,7 +383,7 @@ subroutine STKVAL(S)
      8 continue
   end do
   ! --- STEP 1: ASSIGN INITIAL STOCKING VALUE FOR EACH TREE
-  do ISPC = 1,MAXSP !SPECIES LOOP
+  do ISPC = 1,CFG_MAXSP !SPECIES LOOP
      I1 = ISCT(ISPC,1)
      if (I1.gt.0) then
         I2 = ISCT(ISPC,2)
@@ -420,7 +421,7 @@ subroutine STKVAL(S)
        &TTST51,STKTR1,PROB(1)
 
   ! --- STEP 2: ADJUST INITIAL STOCKING TO REFLECT COMPETITIVE POSITION
-  do ISPC = 1,MAXSP !SPECIES LOOP
+  do ISPC = 1,CFG_MAXSP !SPECIES LOOP
      I1 = ISCT(ISPC,1)
      if (I1.gt.0) then
         I2 = ISCT(ISPC,2)
@@ -472,7 +473,7 @@ subroutine STKVAL(S)
 
   ! --- STEP 3 & 4: DETERMINE 'FUTURE STAND' OR STANDARD VALUES FOR SEEDS/SAPS
   if (TTST52.lt.20.0) then !"FUTURE STAND" VALUES FOR SEEDS/SAPS
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         SS(I) = 0.0
         25 continue
      end do
@@ -480,7 +481,7 @@ subroutine STKVAL(S)
      TOTST5 = 0.0
      TOTST3 = 0.0
      TOTST1 = 0.0
-     do ISPC = 1,MAXSP !SPECIES LOOP
+     do ISPC = 1,CFG_MAXSP !SPECIES LOOP
         I1 = ISCT(ISPC,1)
         if (I1.gt.0) then
            I2 = ISCT(ISPC,2)
@@ -545,14 +546,14 @@ subroutine STKVAL(S)
   if (UG.gt.0.and.GI.gt.0) PRG = MIN(UG/GI,1.0)
   if (UA.gt.0.and.AI.gt.0) PRA = MIN(UA/AI,1.0)
   if (UE.gt.0.and.EI.gt.0) PRE = MIN(UE/EI,1.0)
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      SS(I) = 0.0
   end do
   TOTSTK = 0.0
   TOTST5 = 0.0
   TOTST3 = 0.0
   TOTST1 = 0.0
-  do ISPC = 1,MAXSP !SPECIES LOOP
+  do ISPC = 1,CFG_MAXSP !SPECIES LOOP
      I1 = ISCT(ISPC,1)
      if (I1.gt.0) then
         I2 = ISCT(ISPC,2)
@@ -646,13 +647,13 @@ subroutine STKVAL(S)
   !     IF SPECIES IS IN ITG GROUP THEN ADD INTO STOCKING FOR THE ITG GROUP
   ! Parse each nonblank code once for this call. The final loop retains its
   ! own blank/zero rules; the earlier stocking stages use different defaults.
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      if (FIAJSP(ISPC).ne.'   ') then
         read (FIAJSP(ISPC),'(I4)') IFIAC(ISPC)
      end if
   end do
   do IS = 1,210
-     do ISPC = 1,MAXSP
+     do ISPC = 1,CFG_MAXSP
         if (FIAJSP(ISPC) .eq. '   ')go to 99
         IFIA = IFIAC(ISPC)
         if (TAB3(IFIA,1).eq.IS) then

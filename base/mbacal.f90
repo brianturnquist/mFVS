@@ -3,6 +3,7 @@
 !=============================================!
 ! BASE $Id$
 subroutine MBACAL
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !   THIS SUBROUTINE IDENTIFIES THE SITE SPECIES (IE SPECIES OF
@@ -28,7 +29,7 @@ subroutine MBACAL
 
   if (LSITE) return
   if (ITRN .le. 0 .or. ISISP .gt. 0) return
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      if (ISCT(ISPC,1).eq.0) goto 20
      do II = ISCT(ISPC,1),ISCT(ISPC,2)
         I = IND1(II)
@@ -44,7 +45,7 @@ subroutine MBACAL
   end do
   MDX = 0
   XMAX = 0.
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (XMAX .gt. BARANK(I)) goto 30
      MDX = I
      XMAX = BARANK(I)

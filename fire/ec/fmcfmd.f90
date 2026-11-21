@@ -3,6 +3,7 @@
 !======================!
 ! FIRE-EC $Id$
 subroutine FMCFMD (IYR, FMD)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     SINGLE-STAND VERSION
@@ -186,7 +187,7 @@ subroutine FMCFMD (IYR, FMD)
      CTBA(I) = 0.
   end do
   STNDBA = 0.
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      STNDBA = STNDBA + FMTBA(I)
   end do
 
@@ -237,7 +238,7 @@ subroutine FMCFMD (IYR, FMD)
      end do
 
      LSAFD = .true. ! (3) - SAF LEADING
-     do I = 1, MAXSP
+     do I = 1, CFG_MAXSP
         if (I .ne.9.and. FMTBA(I) .gt. CTBA(SAFCT)) then
            LSAFD = .false.
            goto 11

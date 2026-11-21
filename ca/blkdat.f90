@@ -26,7 +26,7 @@ block data BLKDAT
 
   !     TYPE DECLARATIONS AND COMMON STATEMENT FOR CONTROL VARIABLES.
 
-  data COR2/50*1./, HCOR2/50*1./, RCOR2/50*1.0/, BKRAT/50*1.0/
+  data COR2(1:MAXSP_NATIVE)/50*1./, HCOR2(1:MAXSP_NATIVE)/50*1./, RCOR2(1:MAXSP_NATIVE)/50*1.0/, BKRAT(1:MAXSP_NATIVE)/50*1.0/
 
   data TREFMT /&
        &'(I4,T1,I7,F6.0,I1,A3,F4.1,F3.1,2F3.0,F4.1,I1,3(I2,I2),2I1,I2,2I3,&
@@ -38,7 +38,7 @@ block data BLKDAT
 
   !   COMMON STATEMENT FOR ESCOMN VARIABLE
 
-  data XMIN/ 0.5, 0.5, 0.3, 0.8, 0.8, 0.8, 0.8, 0.3, 0.5, 1.2,&
+  data XMIN(1:MAXSP_NATIVE)/ 0.5, 0.5, 0.3, 0.8, 0.8, 0.8, 0.8, 0.3, 0.5, 1.2,&
        &1.0, 1.0, 1.0, 1.0, 1.0, 0.8, 0.8, 1.0, 0.8, 1.2,&
        &1.0, 0.5, 1.0, 0.3, 0.8, 1.0, 0.5, 1.0, 1.0, 0.8,&
        &1.0, 0.8, 1.0, 0.5, 0.8, 0.8, 0.5, 0.8, 0.5, 0.8,&
@@ -48,7 +48,7 @@ block data BLKDAT
        &35,36,37,38,39,40,41,42,43,44,&
        &45,46,47,48,50/
 
-  data HHTMAX/ 50*20.0 /
+  data HHTMAX(1:MAXSP_NATIVE)/ 50*20.0 /
 
   data DBHMID/1.0,3.0,5.0,7.0,9.0,12.0,16.0,20.0,24.0,28.0/,&
        &BNORML/3*1.0,1.046,1.093,1.139,1.186,1.232,1.278,1.325,1.371,&
@@ -60,11 +60,11 @@ block data BLKDAT
 
   !     OCURHT ZEROES OUT PROBABILITIES WHICH CANNOT OCCUR BY DEFINITION.
 
-  data ((OCURHT(I,J),I = 1,16),J = 1,MAXSP)/800*0.0/
+  data ((OCURHT(I,J),I = 1,16),J = 1,MAXSP_NATIVE)/800*0.0/
 
   !     OCURNF ZEROES OUT PROBABILITIES ON NATIONAL FORESTS BY SPECIES.
 
-  data ((OCURNF(I,J),I = 1,20),J = 1,MAXSP)/1000*0.0/
+  data ((OCURNF(I,J),I = 1,20),J = 1,MAXSP_NATIVE)/1000*0.0/
 
   !     COMMON STATEMENT FOR PLOT VARIABLES.
 
@@ -123,7 +123,7 @@ block data BLKDAT
   !    49 = OTHER HARDWOOD (OH)
   !    50 = REDWOOD (RW)                    SEQUIOA SEMPERVIRENS
 
-  data JSP /&
+  data JSP(1:MAXSP_NATIVE) /&
        &'PC ',   'IC ',   'RC ',   'WF ',   'RF ',   'SH ',   'DF ',&
        &'WH ',   'MH ',   'WB ',   'KP ',   'LP ',   'CP ',   'LM ',&
        &'JP ',   'SP ',   'WP ',   'PP ',   'MP ',   'GP ',   'WJ ',&
@@ -133,7 +133,7 @@ block data BLKDAT
        &'SY ',   'AS ',   'CW ',   'WI ',   'CN ',   'CL ',   'OH ',&
        &'RW '/
 
-  data FIAJSP /&
+  data FIAJSP(1:MAXSP_NATIVE) /&
        &'041',   '081',   '242',   '015',   '020',   '021',   '202',&
        &'263',   '264',   '101',   '103',   '108',   '109',   '113',&
        &'116',   '117',   '119',   '122',   '124',   '127',   '064',&
@@ -143,7 +143,7 @@ block data BLKDAT
        &'730',   '746',   '747',   '920',   '251',   '981',   '998',&
        &'211'/
 
-  data PLNJSP /&
+  data PLNJSP(1:MAXSP_NATIVE) /&
        &'CHLA  ','CADE27','THPL  ','ABCO  ','ABMA  ','ABSH  ','PSME  ',&
        &'TSHE  ','TSME  ','PIAL  ','PIAT  ','PICO  ','PICO3 ','PIFL2 ',&
        &'PIJE  ','PILA  ','PIMO3 ','PIPO  ','PIRA2 ','PISA2 ','JUOC  ',&
@@ -157,19 +157,19 @@ block data BLKDAT
        &470,510,520,530,540,550,570,610,620,640,&
        &660,670,680,690,710,720,730,830,850,999,92*0 /
 
-  data (NSP(I,1),I = 1,MAXSP)/&
+  data (NSP(I,1),I = 1,MAXSP_NATIVE)/&
        &'PC1','IC1','RC1','WF1','RF1','SH1','DF1','WH1','MH1','WB1',&
        &'KP1','LP1','CP1','LM1','JP1','SP1','WP1','PP1','MP1','GP1',&
        &'WJ1','BR1','GS1','PY1','OS1','LO1','CY1','BL1','EO1','WO1',&
        &'BO1','VO1','IO1','BM1','BU1','RA1','MA1','GC1','DG1','FL1',&
        &'WN1','TO1','SY1','AS1','CW1','WI1','CN1','CL1','OH1','RW1'/
-  data (NSP(I,2),I = 1,MAXSP)/&
+  data (NSP(I,2),I = 1,MAXSP_NATIVE)/&
        &'PC2','IC2','RC2','WF2','RF2','SH2','DF2','WH2','MH2','WB2',&
        &'KP2','LP2','CP2','LM2','JP2','SP2','WP2','PP2','MP2','GP2',&
        &'WJ2','BR2','GS2','PY2','OS2','LO2','CY2','BL2','EO2','WO2',&
        &'BO2','VO2','IO2','BM2','BU2','RA2','MA2','GC2','DG2','FL2',&
        &'WN2','TO2','SY2','AS2','CW2','WI2','CN2','CL2','OH2','RW2'/
-  data (NSP(I,3),I = 1,MAXSP)/&
+  data (NSP(I,3),I = 1,MAXSP_NATIVE)/&
        &'PC3','IC3','RC3','WF3','RF3','SH3','DF3','WH3','MH3','WB3',&
        &'KP3','LP3','CP3','LM3','JP3','SP3','WP3','PP3','MP3','GP3',&
        &'WJ3','BR3','GS3','PY3','OS3','LO3','CY3','BL3','EO3','WO3',&
@@ -181,7 +181,7 @@ block data BLKDAT
   !   HT1 AND HT2 ARE HEIGHT DUBBING COEFFICIENTS FOR TREES 5.0" DBH
   !   AND LARGER.
 
-  data HT1/&
+  data HT1(1:MAXSP_NATIVE)/&
        &4.7874,   5.2052,   4.7874,   5.2180,   5.2973,   5.2973,&
        &5.3076,   4.7874,   4.7874,   4.7874,   4.6843,   4.8358,&
        &4.7874,   4.7874,   5.1419,   5.3371,   5.2649,   5.3820,&
@@ -192,7 +192,7 @@ block data BLKDAT
        &4.6618,   4.6618,   4.6618,   4.6618,   4.6618,   4.6618,&
        &4.6618,   5.3401 /
 
-  data HT2/&
+  data HT2(1:MAXSP_NATIVE)/&
        &-7.3170, -20.1443,  -7.3170, -14.8682, -17.2042, -17.2042,&
        &-14.4740,  -7.3170,  -7.3170,  -7.3170,  -6.5516,  -9.2077,&
        &-7.3170,  -7.3170, -19.8143, -19.3151, -15.5907, -20.4097,&
@@ -207,7 +207,7 @@ block data BLKDAT
   !  CORRECTION FOR MEASUREMENT ERROR
   !  GIANT SEQUOIA VALUE (#23) SAME AS REDWOOD (#50)
 
-  data SIGMAR/&
+  data SIGMAR(1:MAXSP_NATIVE)/&
        &0.4936, 0.4936, 0.4936, 0.4391, 0.4112, 0.4112, 0.4791,&
        &0.4687, 0.4687, 0.4169, 0.4392, 0.4169, 0.4392, 0.4392,&
        &0.4458, 0.4687, 0.4745, 0.4458, 0.4458, 0.4392, 0.4392,&
@@ -222,7 +222,7 @@ block data BLKDAT
   !   LOAD ARRAY HTT1(MAXSP,9) WITH SINGLE DATA STATEMENT.
   !   ORDER OF LOAD IS ROWS 1-50, COL 1; ROWS 1-50, COL 2; ROWS 1-50, COL 3...
 
-  data HTT1/ 450*0./
+  data HTT1(1:MAXSP_NATIVE,:)/ 450*0./
 
   data REGNBK/2.999/
 

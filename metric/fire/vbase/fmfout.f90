@@ -4,6 +4,7 @@
 ! METRIC-FIRE-VBASE $Id$
 subroutine FMFOUT(IYR, FLAME, FMD, IFIRE, CFTMP)
   use FMBURNREPORT_MOD, only: FMBURNREPORT
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     SINGLE-STAND VERSION
@@ -286,7 +287,7 @@ subroutine FMFOUT(IYR, FLAME, FMD, IFIRE, CFTMP)
         310 continue
      end do
 
-     do KSP = 1,MAXSP
+     do KSP = 1,CFG_MAXSP
         TOTBAK(MXSP1) = TOTBAK(MXSP1)+TOTBAK(KSP)
         TOTVOLK(MXSP1) = TOTVOLK(MXSP1)+TOTVOLK(KSP)
      end do

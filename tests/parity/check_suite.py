@@ -313,8 +313,9 @@ def main() -> int:
     parser.add_argument("--with-new-decks", action="store_true",
                         help="Run the working tree's tests/FVSxx decks on the references too "
                              "(for decks that the reference commits do not have yet)")
-    parser.add_argument("--poison-storage", action="store_true",
+    parser.add_argument("--poison-storage", nargs="*", metavar="SIZE", choices=sorted(poison_storage.STORAGE),
                         help="Raise working-tree storage sizes and poison inactive COMMON slots (SP03); "
+                             "name sizes to raise only those (e.g. MAXSP for SP05), none for all; "
                              "see poison_storage.py")
     args = parser.parse_args()
     if args.immediate and args.reference != "corrected":
@@ -358,11 +359,15 @@ def main() -> int:
         # Only the working tree runs a chosen configuration or poisoned storage;
         # every reference runs its own per-variant programs.
         mode = None
-        if state == "candidate" and (args.program != DEFAULT_PROGRAM or args.poison_storage):
-            mode = {"program": args.program, "poison": args.poison_storage}
-            if args.poison_storage:
+        poison = None if args.poison_storage is None else (args.poison_storage or sorted(poison_storage.STORAGE))
+        if state == "candidate" and (args.program != DEFAULT_PROGRAM or poison):
+            # The default (all sizes) keeps the SP03 run key; a size subset is part of the key.
+            mode = {"program": args.program,
+                    "poison": (bool(poison) if not poison or poison == sorted(poison_storage.STORAGE)
+                               else poison)}
+            if poison:
                 targets = sorted({program_target(args.program, v)[1][3:5] for v in args.variants})
-                skipped = poison_storage.apply(tree, targets)
+                skipped = poison_storage.apply(tree, targets, {s: poison_storage.STORAGE[s] for s in poison})
                 print(f"  poisoned storage in {len(targets)} variants; not poisoned: "
                       f"{sum(len(s) for s in skipped.values())} logical or derived-extent arrays", flush=True)
         pending = []

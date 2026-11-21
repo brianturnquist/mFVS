@@ -4,6 +4,7 @@
 ! BASE $Id$
 subroutine GRADD (DEBUG,IPMODI,LTMGO,LMPBGO,LDFBGO, &
      & LBWEGO,LCVATV)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     UPDATES TREE DESCRIPTIONS, COMPUTES END-OF-CYCLE SHRUB AND
@@ -252,7 +253,7 @@ subroutine GRADD (DEBUG,IPMODI,LTMGO,LMPBGO,LDFBGO, &
         OLDPCT(ILE) = PCT(ILE)
         130 continue
      end do
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         SPCNT(I,1) = 0.0
         SPCNT(I,2) = 0.0
         SPCNT(I,3) = 0.0

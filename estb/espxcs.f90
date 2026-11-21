@@ -3,6 +3,7 @@
 !==========================================!
 ! ESTB $Id$
 subroutine ESPXCS
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! Common blocks
@@ -106,6 +107,6 @@ subroutine ESPXCS
   !     REMAINING SPECIES USING THE SELECTED VARIANT'S ARRAY DIMENSION:
   !     CI HAS 19 SPECIES, IE HAS 23, AND KT HAS ONLY 11.
 
-  PXCS(11:MAXSP) = 0.0
+  PXCS(11:CFG_MAXSP) = 0.0
   return
 end

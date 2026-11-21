@@ -72,7 +72,7 @@ block data RDBLK1
   !....
   !.... The following IRTSPC is used with variant BM 18 species :
 
-  data IRTSPC / 1,  2,  3,  4, 11, 26,  7,  8,  9,&
+  data IRTSPC(1:MAXSP_NATIVE) / 1,  2,  3,  4, 11, 26,  7,  8,  9,&
        &10, 22, 23, 38, 34, 19, 24, 17, 18/
 
   data DICLAS /0.0, 5.0, 12.0, 24.0/

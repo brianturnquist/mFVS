@@ -3,6 +3,7 @@
 !===================!
 ! ESTB $Id$
 subroutine ESCPRS (ITRGT,DEBUG)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! Common blocks
@@ -35,7 +36,7 @@ subroutine ESCPRS (ITRGT,DEBUG)
 
   !     INITIALIZE SPCNT.
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      SPCNT(I,1) = 0.
      SPCNT(I,2) = 0.
      SPCNT(I,3) = 0.

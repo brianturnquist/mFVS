@@ -4,6 +4,7 @@
 ! VBASE $Id$
 subroutine DGF(DIAM)
   use VARCFG_MOD, only: CFG_VARIANTCD
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE COMPUTES THE VALUE OF DDS (CHANGE IN SQUARED
@@ -661,10 +662,10 @@ contains
 
     !  DEBUG OUTPUT: MODEL COEFFICIENTS.
 
-    if (DEBUG) write(JOSTND,*) 'IN DGF,HTCON=',HTCON,&
+    if (DEBUG) write(JOSTND,*) 'IN DGF,HTCON=',HTCON(1:CFG_MAXSP),&
          &'ELEV=',ELEV,'RELDEN=',RELDEN
     if (DEBUG)&
-         &write(JOSTND,9000) DGCON,DGDSQ
+         &write(JOSTND,9000) DGCON(1:CFG_MAXSP),DGDSQ(1:CFG_MAXSP)
     9000 format(/11(1X,F10.5))
 
     !  CALL SDICAL TO LOAD THE POINT MAX SDI WEIGHTED BY SPECIES ARRAY XMAXPT
@@ -691,7 +692,7 @@ contains
     !  BEGIN SPECIES LOOP.  ASSIGN VARIABLES WHICH ARE SPECIES
     !  DEPENDENT
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (I1.eq.0) go to 20
        I2 = ISCT(ISPC,2)
@@ -836,7 +837,7 @@ contains
     !  OP/PN/WC: CONSTRAIN ELEVATION TERM FOR MODEL 14 TO BE LE 30;
     !  WO USES KINGS SI FOR DF IN DDS EQUATION, SO HAS TO BE TRANSLATED
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        JSPC = MAPSPC(ISPC,IB)
        KSP = JSPC
        if (IB.eq.1) KSP = ISPC
@@ -1517,7 +1518,7 @@ contains
 
     if (DEBUG) write(JOSTND,3)ICYC
     3 format(' ENTERING SUBROUTINE DGF  CYCLE =',I5)
-    if (DEBUG)write(JOSTND,*) ' DGCON= ', DGCON
+    if (DEBUG)write(JOSTND,*) ' DGCON= ', DGCON(1:CFG_MAXSP)
 
     !  SPECIES USING SURROGATE EQUATIONS FROM THE CR VARIANT HAVE SPECIAL
     !  NEEDS: AGE RANGE AND STAGNATION, SHARED WITH CR.
@@ -1540,7 +1541,7 @@ contains
 
     !  BEGIN SPECIES LOOP.  ASSIGN VARIABLES WHICH ARE SPECIES DEPENDENT
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (I1.eq.0) go to 20
        I2 = ISCT(ISPC,2)
@@ -1730,7 +1731,7 @@ contains
 
     !  ENTER LOOP TO LOAD SPECIES DEPENDENT VECTORS.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        if (IB.eq.1) then
           KSI = IGCCFM(ISC,ISPC)
           DGCCF(ISPC) = DGCCFC(KSI,ISPC)
@@ -1894,7 +1895,7 @@ contains
        if (RELSDI .gt.0.85) RELSDI = 0.85
        if (RELSDI .gt.0.7) DSTAG = 3.33333 * (1.0 - RELSDI)
        if (DEBUG)write(JOSTND,*)' STAGNATION EFFECT= ',DSTAG
-       if (DEBUG)write(JOSTND,*)' STAGNATION FLAGS = ',ISTAGF
+       if (DEBUG)write(JOSTND,*)' STAGNATION FLAGS = ',ISTAGF(1:CFG_MAXSP)
     end if
   end subroutine DGFSTG
 
@@ -2543,11 +2544,11 @@ contains
 
     if (DEBUG) then
        if (IB.eq.1) then
-          write(JOSTND,9000) DGCON,DGDSQ,DGLD(1:MAXSP,IB),DGCR(1:MAXSP,IB),&
-               &DGCRSQ(1:MAXSP,IB),DGCCF,DGBAL(1:MAXSP,IB)
+          write(JOSTND,9000) DGCON(1:CFG_MAXSP),DGDSQ(1:CFG_MAXSP),DGLD(1:CFG_MAXSP,IB),DGCR(1:CFG_MAXSP,IB),&
+               &DGCRSQ(1:CFG_MAXSP,IB),DGCCF(1:CFG_MAXSP),DGBAL(1:CFG_MAXSP,IB)
        else
-          write(JOSTND,9002) DGCON,DGDSQ,DGLD(1:MAXSP,IB),DGCR(1:MAXSP,IB),&
-               &DGCRSQ(1:MAXSP,IB),DGCCF,DGBAL(1:MAXSP,IB)
+          write(JOSTND,9002) DGCON(1:CFG_MAXSP),DGDSQ(1:CFG_MAXSP),DGLD(1:CFG_MAXSP,IB),DGCR(1:CFG_MAXSP,IB),&
+               &DGCRSQ(1:CFG_MAXSP,IB),DGCCF(1:CFG_MAXSP),DGBAL(1:CFG_MAXSP,IB)
        end if
     end if
     9000 format(/,' DGCON',/12(1X,F9.5),/11(1X,F9.5),/,' DGDSQ',/12(1X,F9.5&
@@ -2590,7 +2591,7 @@ contains
        ALCCF = 0.0
        if (RELDEN .gt.0.0)ALCCF = ALOG(RELDEN)
     end if
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (I1.eq.0) go to 20
        I2 = ISCT(ISPC,2)
@@ -2756,7 +2757,7 @@ contains
 
     !  ENTER LOOP TO LOAD SPECIES DEPENDENT VECTORS.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
 
        !  PUT SITE INTO ONE OF 5 CLASSES
 
@@ -3194,7 +3195,7 @@ contains
 
     !  BEGIN SPECIES LOOP.  ASSIGN VARIABLES WHICH ARE SPECIES DEPENDENT
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (I1.eq.0) go to 20
        I2 = ISCT(ISPC,2)
@@ -3330,7 +3331,7 @@ contains
 
     !  ENTER LOOP TO LOAD SPECIES DEPENDENT VECTORS.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
 
        !  PUT SITE INTO ONE OF 5 CLASSES
 
@@ -3655,12 +3656,12 @@ contains
     !  DEBUG OUTPUT: MODEL COEFFICIENTS.
 
     if (DEBUG)&
-         &write(JOSTND,9000) DGCON,DGLD,DGCR,DGCRSQ,DGCCF
+         &write(JOSTND,9000) DGCON(1:CFG_MAXSP),DGLD,DGCR,DGCRSQ,DGCCF(1:CFG_MAXSP)
     9000 format(/11(1X,F10.5))
 
     !  BEGIN SPECIES LOOP.  ASSIGN VARIABLES WHICH ARE SPECIES DEPENDENT
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (I1.eq.0) go to 20
        I2 = ISCT(ISPC,2)
@@ -3756,7 +3757,7 @@ contains
 
     !  ENTER LOOP TO LOAD SPECIES DEPENDENT VECTORS.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        ISPHAB = MAPHAB(KKTYPE,ISPC)
        ISPFOR = MAPLOC(KOTFOR,ISPC)
        DGCCF(ISPC) = DGCCFA(ISPC)
@@ -4369,7 +4370,7 @@ contains
     !  COMPUTE BASAL AREA IN TREES >= 5.0" DBH,
     !  AND QMD FOR TREES >= 5.0" DBH
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (I1.le.0)go to 20
        I2 = ISCT(ISPC,2)
@@ -4390,7 +4391,7 @@ contains
 
     !  BEGIN SPECIES LOOP.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (I1.eq.0) go to 200
        I2 = ISCT(ISPC,2)
@@ -4555,7 +4556,7 @@ contains
 
     !  ENTER LOOP TO LOAD SPECIES DEPENDENT VECTORS.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        DGCON(ISPC) = 0.
        ATTEN(ISPC) = OBSERV(ISPC,IB)
        SMCON(ISPC) = 0.
@@ -5012,16 +5013,16 @@ contains
 
     !  DEBUG OUTPUT: MODEL COEFFICIENTS.
 
-    if (DEBUG) write(JOSTND,*) 'IN DGF,HTCON=',HTCON,&
+    if (DEBUG) write(JOSTND,*) 'IN DGF,HTCON=',HTCON(1:CFG_MAXSP),&
          &'ELEV=',ELEV,'RELDEN=',RELDEN
     if (DEBUG)&
-         &write(JOSTND,9000) DGCON,DGDSQ
+         &write(JOSTND,9000) DGCON(1:CFG_MAXSP),DGDSQ(1:CFG_MAXSP)
     9000 format(/11(1X,F10.5))
 
     !  BEGIN SPECIES LOOP.  ASSIGN VARIABLES WHICH ARE SPECIES
     !  DEPENDENT
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (I1.eq.0) go to 20
        I2 = ISCT(ISPC,2)
@@ -5120,7 +5121,7 @@ contains
 
     !  ENTER LOOP TO LOAD SPECIES DEPENDENT VECTORS.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        ISPFOR = MAPLOC(IFOR,ISPC)
        ISPDSQ = MAPDSQ(IFOR,ISPC)
        SASP = &
@@ -5653,9 +5654,9 @@ contains
 
     !  DEBUG OUTPUT: MODEL COEFFICIENTS.
 
-    if (DEBUG) write(JOSTND,*) ' IN DGF,HTCON=',HTCON
+    if (DEBUG) write(JOSTND,*) ' IN DGF,HTCON=',HTCON(1:CFG_MAXSP)
     if (DEBUG)&
-         &write(JOSTND,*) ' DGCON= ', DGCON
+         &write(JOSTND,*) ' DGCON= ', DGCON(1:CFG_MAXSP)
     !     & WRITE(JOSTND,9000) DGCON,DGDSQ,DGLD,DGCR,DGCRSQ,DGCCF,DGBAL
     ! 9000 FORMAT (/,11(1X,F10.5))
 
@@ -5664,7 +5665,7 @@ contains
 
     ALCCF = 0.0
     if (RELDEN .gt.0.0)ALCCF = ALOG(RELDEN)
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (I1.eq.0) go to 20
        I2 = ISCT(ISPC,2)
@@ -5942,7 +5943,7 @@ contains
     ISPHAB = 1
     ISPCCF = 1
     if (DEBUG)write(JOSTND,*)' IFOR= ',IFOR
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        ISPFOR = MAPLOC(IFOR,ISPC)
        ISPDSQ = MAPDSQ(IFOR,ISPC)
        DGCCF(ISPC) = DGCCFA(ISPC)
@@ -6404,10 +6405,10 @@ contains
 
     !  DEBUG OUTPUT: MODEL COEFFICIENTS.
 
-    if (DEBUG)write(JOSTND,*) 'IN DGF,HTCON=',HTCON,&
+    if (DEBUG)write(JOSTND,*) 'IN DGF,HTCON=',HTCON(1:CFG_MAXSP),&
          &'RMAI=',RMAI,'ELEV=',ELEV,'RELDEN=',RELDEN
     if (DEBUG)&
-         &write(JOSTND,9000) DGCON,DGDSQ,DGLD,DGCR,DGCRSQ,DGCCFA
+         &write(JOSTND,9000) DGCON(1:CFG_MAXSP),DGDSQ(1:CFG_MAXSP),DGLD,DGCR,DGCRSQ,DGCCFA
     9000 format(/11(1X,F10.5))
 
     !  ASSIGN VARIABLES WHICH ARE STAND DEPENDENT.
@@ -7061,7 +7062,7 @@ contains
 
     !  DEBUG OUTPUT: MODEL COEFFICIENTS.
 
-    if (DEBUG)write(JOSTND,9000) DGCON
+    if (DEBUG)write(JOSTND,9000) DGCON(1:CFG_MAXSP)
     9000 format(' DGCON =',/,11(1X,F10.5))
 
     !  CALL SDICAL TO LOAD THE POINT MAX SDI WEIGHTED BY SPECIES ARRAY XMAXPT
@@ -7117,14 +7118,14 @@ contains
        DSTAG = 1.0
        if (RELSDI .gt.0.7) DSTAG = 3.33333 * (1.0 - RELSDI)
        if (DEBUG)write(JOSTND,*)' STAGNATION EFFECT= ',DSTAG
-       if (DEBUG)write(JOSTND,*)' STAGNATION FLAGS = ',ISTAGF
+       if (DEBUG)write(JOSTND,*)' STAGNATION FLAGS = ',ISTAGF(1:CFG_MAXSP)
     end if
 
     !  END OF SPECIAL NEEDS SECTION
 
     !  BEGIN SPECIES LOOP.  ASSIGN VARIABLES WHICH ARE SPECIES DEPENDENT
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (I1.eq.0) go to 20
        I2 = ISCT(ISPC,2)
@@ -7344,7 +7345,7 @@ contains
     if (ITLAT .eq.38.) ILAT = 4
     if (ITLAT .ge.39.) ILAT = 5
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        ISPFOR = MAPLOC(IFOR,ISPC)
        TEMEL = ELEV
        if (ISPC.eq.41.and. TEMEL.gt.30)TEMEL = 30.
@@ -7677,10 +7678,10 @@ contains
 
     !  DEBUG OUTPUT: MODEL COEFFICIENTS.
 
-    if (DEBUG)write(JOSTND,*) 'IN DGF,HTCON=',HTCON
+    if (DEBUG)write(JOSTND,*) 'IN DGF,HTCON=',HTCON(1:CFG_MAXSP)
     if (DEBUG)write(JOSTND,*)'RMAI=',RMAI,'ELEV=',ELEV,'RELDEN=',RELDEN
     if (DEBUG) &
-         & write(JOSTND,9000) DGCON,DGDSQ,DGLD,DGLNCR,DGDBAL
+         & write(JOSTND,9000) DGCON(1:CFG_MAXSP),DGDSQ(1:CFG_MAXSP),DGLD,DGLNCR,DGDBAL
     9000 format(/11(1X,F10.5))
 
     !  DIAMETER GROWTH EQUATION
@@ -7741,7 +7742,7 @@ contains
 
     !  BEGIN SPECIES LOOP.  ASSIGN VARIABLES WHICH ARE SPECIES DEPENDENT
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (DEBUG)write(JOSTND,*) &
             & ' TOP OF SPECIES LOOP, ISPC= ',ISPC,' ISCT= ',I1
@@ -7941,7 +7942,7 @@ contains
     call DBCHK (DEBUG,'DGCONS',6,ICYC)
     if (DEBUG)write(JOSTND,*) 'ENTER DGCONS'
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        ATTEN(ISPC) = OBSERV(ISPC)
 
        !  IF READCORD OR REUSCORD WAS SPECIFIED (LDCOR2 IS TRUE) ADD
@@ -8082,7 +8083,7 @@ contains
 
     !  DEBUG OUTPUT: MODEL COEFFICIENTS.
 
-    if (DEBUG) write(JOSTND,*) 'IN DGF,HTCON=',HTCON,&
+    if (DEBUG) write(JOSTND,*) 'IN DGF,HTCON=',HTCON(1:CFG_MAXSP),&
          &'ELEV=',ELEV,'RELDEN=',RELDEN,&
          &' MANAGD= ',MANAGD
 
@@ -8164,7 +8165,7 @@ contains
     !  BEGIN SPECIES LOOP.  ASSIGN VARIABLES WHICH ARE SPECIES
     !  DEPENDENT
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (I1.eq.0) go to 20
        I2 = ISCT(ISPC,2)
@@ -9033,7 +9034,7 @@ contains
 
     !  ENTER LOOP TO LOAD SPECIES DEPENDENT VECTORS.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        ATTEN(ISPC) = OBSERV(ISPC)
 
        !  FORT BRAGG
@@ -9168,7 +9169,7 @@ contains
 
     !  BEGIN SPECIES LOOP.  ASSIGN VARIABLES WHICH ARE SPECIES DEPENDENT
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (I1.eq.0) go to 20
        I2 = ISCT(ISPC,2)
@@ -9251,7 +9252,7 @@ contains
     !  ENTRY POINT FOR LOADING COEFFICIENTS OF THE DIAMETER INCREMENT
     !  MODEL THAT ARE SITE SPECIFIC AND NEED ONLY BE RESOLVED ONCE.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        DGCON(ISPC) = 0.
        ATTEN(ISPC) = 1000.
        SMCON(ISPC) = 0.
@@ -9478,7 +9479,7 @@ contains
     !     WITH IMC=1 ARE PUT IN AN "AGS" SUBGROUP (JI=1); OTHERWISE
     !     INTO A "UGS" SUBGROUP (JI=2). THOSE ASSIGNMENTS ARE ONLY
     !     MEANINGFUL FOR A SUBSET OF COMMERCIAL SPECIES
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        BAMSP(ISPC,1) = 0.
        BAMSP(ISPC,2) = 0.
        I1 = ISCT(ISPC,1)
@@ -9510,7 +9511,7 @@ contains
     LMBLEAD = .false.
     X = 0.
     I = -1
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        Y = BAMSP(ISPC,1) + BAMSP(ISPC,2)
        if (Y .gt. X) then
           X = Y
@@ -9524,7 +9525,7 @@ contains
 
     !     BEGIN SPECIES LOOP.  ASSIGN VARIABLES WHICH ARE SPECIES DEPENDENT
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (I1.eq.0) go to 20
        I2 = ISCT(ISPC,2)
@@ -9733,7 +9734,7 @@ contains
        !       BAM2 IS THE PREDICTED BA CHANGE FOR THE CYCLE BASED ON THE ORIGINAL
        !       MODEL, in FT2/AC
        BAM2 = 0.0
-       do ISPC = 1,MAXSP
+       do ISPC = 1,CFG_MAXSP
           I1 = ISCT(ISPC,1)
           if (I1.eq.0) go to 201
           I2 = ISCT(ISPC,2)
@@ -9759,7 +9760,7 @@ contains
 
        A = 1.0
        BB = BAM3/BAM2
-       do ISPC = 1,MAXSP
+       do ISPC = 1,CFG_MAXSP
           I1 = ISCT(ISPC,1)
           if (I1.eq.0) go to 203
           I2 = ISCT(ISPC,2)
@@ -9783,7 +9784,7 @@ contains
 
     end if ! END OF LHYBRID IF/ENDIF
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (I1.eq.0) go to 303
        I2 = ISCT(ISPC,2)
@@ -9815,7 +9816,7 @@ contains
     !     ENTRY DGCONS
 
     1000 continue
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        if (OSPMAP(ISPC) .gt.0) then
           J = OBSERV(OSPMAP(ISPC))
        else
@@ -9856,7 +9857,7 @@ contains
 
     !  BEGIN SPECIES LOOP.  ASSIGN VARIABLES WHICH ARE SPECIES DEPENDENT
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        SSITE = SITEAR(ISPC)
        I1 = ISCT(ISPC,1)
        if (I1.eq.0) go to 20
@@ -9912,7 +9913,7 @@ contains
     !  OBSERV IS THE NUMBER OF OBSERVATIONS IN THE DIAMETER GROWTH
     !  MODEL BY SPECIES AND SITE CLASS.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        DGCON(ISPC) = 0.
        SMCON(ISPC) = 0.
 
@@ -11759,7 +11760,7 @@ contains
 
     !     BEGIN SPECIES LOOP. ASSIGN VARIABLES WHICH ARE SPECIES DEPENDENT
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
 
        I1 = ISCT(ISPC,1)
        if (I1.eq.0) go to 20
@@ -11931,7 +11932,7 @@ contains
        call SEILTDG (BECADJ,SEICN2,&
             &SEISLP,SEISAS,SEICAS,SEIELV,SEIEL2,SEICCF,LSPPOK)
 
-       do I = 1,MAXSP
+       do I = 1,CFG_MAXSP
           ISPHAB = MAPHAB(ITYPE,I)
           ISPFOR = MAPLOC(IFOR,I)
           ISPDSQ = MAPDSQ(IFOR,I)
@@ -12027,17 +12028,17 @@ contains
 
        !       LOCATE ZONE USING "/all" PATTERN MATCH
 
-       do I = 1,MAXSP
+       do I = 1,CFG_MAXSP
           IPOS(I) = 0
           JPOS(I) = 0
        end do
 
        !       FIND INDEX TO BECZONE COEFFICIENTS -> IPOS()
-       do I = 1,MAXSP
+       do I = 1,CFG_MAXSP
           IPAS = 0
           PAT1 = PAT2
           7 do J = 1,P_ZN
-             do K = 1,MAXSP
+             do K = 1,CFG_MAXSP
                 if (ZNKONST(J)%SPP(K) .eq.0) exit
                 if (ZNKONST(J)%SPP(K) .eq. I) then
                    do M = 1, P_ST
@@ -12062,7 +12063,7 @@ contains
           IPAS = 0
           PAT1 = PAT2
           9 do J = 1,P_SS
-             do K = 1,MAXSP
+             do K = 1,CFG_MAXSP
                 if (SSKONST(J)%SPP(K) .eq.0) exit
                 if (SSKONST(J)%SPP(K) .eq. I) then
                    do M = 1, P_ST
@@ -12084,7 +12085,7 @@ contains
        5 end do
 
        !       BUILD EQUATION EXPRESSIONS
-       do I = 1,MAXSP
+       do I = 1,CFG_MAXSP
           !ccc          LLTDGOK(I) = .FALSE.
           DGCON(I) = 0.0
           IP = IPOS(I)
@@ -12126,7 +12127,7 @@ contains
     !  LN(COR2) TO THE BAI MODEL CONSTANT TERM (DGCON).  COR2 IS
     !  INITIALIZED TO 1.0 IN BLKDATA.
 
-    do I = 1,MAXSP
+    do I = 1,CFG_MAXSP
        if (LDCOR2.and.COR2(I).gt.0.0) DGCON(I) = DGCON(I)&
             &+ ALOG(COR2(I))
     end do
@@ -12448,9 +12449,9 @@ contains
 
     !  DEBUG OUTPUT: MODEL COEFFICIENTS.
 
-    if (DEBUG) write(JOSTND,*) ' IN DGF,HTCON=',HTCON
+    if (DEBUG) write(JOSTND,*) ' IN DGF,HTCON=',HTCON(1:CFG_MAXSP)
     if (DEBUG)&
-         &write(JOSTND,*) ' DGCON= ', DGCON
+         &write(JOSTND,*) ' DGCON= ', DGCON(1:CFG_MAXSP)
     !     IF(DEBUG)
     !    & WRITE(JOSTND,9000) DGCON,DGDSQ,DGLD,DGCR,DGCRSQ,DGPCCF,DGDBAL
     !9000 FORMAT(/,' DGCON',/12(1X,F9.5),/7(1X,F9.5),/,' DGDSQ',/12(1X,F9.5)
@@ -12464,7 +12465,7 @@ contains
 
     ALBA = 0.0
     if (BA.gt.0.0)ALBA = ALOG(BA)
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        I1 = ISCT(ISPC,1)
        if (I1.eq.0) go to 20
        I2 = ISCT(ISPC,2)
@@ -12671,7 +12672,7 @@ contains
 
     !  ENTER LOOP TO LOAD SPECIES DEPENDENT VECTORS.
 
-    do ISPC = 1,MAXSP
+    do ISPC = 1,CFG_MAXSP
        DGCCF(ISPC) = DGCCFA(ISPC)
 
        !  COMPUTE CONSTANT TERM: LARGE TREES >= 10 INCHES.

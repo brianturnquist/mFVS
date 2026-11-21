@@ -3,6 +3,7 @@
 !===============!
 ! RD $Id$
 subroutine RDPR
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  PRODUCES SUMMARY OUTPUT IN TABLE FORM FROM THE ROOT
@@ -189,7 +190,7 @@ subroutine RDPR
 
      if (ITRN .le.0) goto 805
      IDI = IRRSP
-     do KSP = 1,MAXSP
+     do KSP = 1,CFG_MAXSP
         if (IRRSP .lt.3) IDI = IDITYP(IRTSPC(KSP))
         if ((ISCT(KSP,1) .eq.0) .or. (IDI .ne. IRRSP)) goto 800
 

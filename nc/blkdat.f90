@@ -40,14 +40,14 @@ block data BLKDAT
 
   !     DATA STATEMENT FOR ESCOMN
 
-  data XMIN/ 1., 1., 1., .5, 1., .5, .5, 1., .5, 1., 1., 1./
+  data XMIN(1:MAXSP_NATIVE)/ 1., 1., 1., .5, 1., .5, .5, 1., .5, 1., 1., 1./
 
   data DBHMID/1.0,3.0,5.0,7.0,9.0,12.0,16.0,20.0,24.0,28.0/,&
        &ISPSPE/5,7,8,12/,&
        &BNORML/3*1.0,1.046,1.093,1.139,1.186,1.232,&
        &1.278,1.325,1.371,1.418,1.464,1.510,1.557,1.603,1.649,1.696,&
        &1.742,1.789/,&
-       &HHTMAX/ 27., 31., 25., 25., 26., 24., 28., 20.,&
+       &HHTMAX(1:MAXSP_NATIVE)/ 27., 31., 25., 25., 26., 24., 28., 20.,&
        &20., 18., 26., 25./,&
        &IFORCD/103,104,105,106,621,110,113,114,116,117,&
        &118,109,111,112,412,402,108,102,115,  0/,&
@@ -109,15 +109,15 @@ block data BLKDAT
   !    11 = OTHER HARDWOOD (OH)
   !    12 = REDWOOD (RW)                   SEQUIOA SEMPERVIRENS
 
-  data JSP /&
+  data JSP(1:MAXSP_NATIVE) /&
        &'OS ',   'SP ',   'DF ',   'WF ',   'MA ',   'IC ',   'BO ',&
        &'TO ',   'RF ',   'PP ',   'OH ',   'RW '/
 
-  data FIAJSP /&
+  data FIAJSP(1:MAXSP_NATIVE) /&
        &'299',   '117',   '202',   '015',   '361',   '081',   '818',&
        &'631',   '020',   '122',   '998',   '211'/
 
-  data PLNJSP /&
+  data PLNJSP(1:MAXSP_NATIVE) /&
        &'2TN   ','PILA  ','PSME  ','ABCO  ','ARME  ','CADE27','QUKE  ',&
        &'LIDE3 ','ABMA  ','PIPO  ','2TB   ','SESE3 '/
 
@@ -125,7 +125,7 @@ block data BLKDAT
        &470,510,520,530,540,550,570,610,620,640,&
        &660,670,680,690,710,720,730,830,850,999,92*0 /
 
-  data NSP /'OS1','SP1','DF1','WF1','MA1','IC1','BO1','TO1','RF1',&
+  data NSP(1:MAXSP_NATIVE,:) /'OS1','SP1','DF1','WF1','MA1','IC1','BO1','TO1','RF1',&
        &'PP1','OH1','RW1',&
        &'OS2','SP2','DF2','WF2','MA2','IC2','BO2','TO2','RF2',&
        &'PP2','OH2','RW2',&
@@ -134,12 +134,12 @@ block data BLKDAT
 
   !   COMMON STATEMENT FOR COEFFS VARIABLES
 
-  data HT1/&
+  data HT1(1:MAXSP_NATIVE)/&
        &4.78737,4.74961,4.78737,&
        &4.80268,4.73881,4.89619,&
        &4.80420,4.66181,4.83642,&
        &4.23251,4.66181,5.3401/
-  data HT2/&
+  data HT2(1:MAXSP_NATIVE)/&
        &-7.31698,-7.19103,-7.31698,-8.40657,-9.44913,&
        &-12.55873,-9.92422,-8.33117,-7.04795,-8.31711,&
        &-8.33117,-15.9354/
@@ -147,7 +147,7 @@ block data BLKDAT
   !  RESIDUAL ERROR ESTIMATES MULTIPLIED BY 0.75 TO APPROXIMATE
   !  CORRECTION FOR MEASUREMENT ERROR:  6/11/91 WRW.
 
-  data SIGMAR/&
+  data SIGMAR(1:MAXSP_NATIVE)/&
        !    & 0.4400 , 0.3617 , 0.4400 , 0.4400 , 0.4408 , 0.4684,
        !    & 0.4721 , 0.4744 , 0.4182 , 0.2606 , 0.4744 /
        &0.3300,  0.2713,  0.3300,  0.3300,  0.3306,  0.3513,&

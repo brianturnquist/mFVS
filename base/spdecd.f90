@@ -4,6 +4,7 @@
 ! BASE $Id$
 subroutine SPDECD (IPOS,ISP,CNSP,JOSTND,IRECNT, &
      & KEYWRD,ARRAY,KARD)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     DECODE THE SPECIES CODE.
@@ -45,7 +46,7 @@ subroutine SPDECD (IPOS,ISP,CNSP,JOSTND,IRECNT, &
 
   !     IF ISP IS OUT OF RANGE, THEN WE HAVE AN ERROR.
 
-  if (ISP.ge.0 .and. ISP.le.MAXSP) then
+  if (ISP.ge.0 .and. ISP.le.CFG_MAXSP) then
 
      !        IF ISP IS ZERO, THEN THE ALPHA CODE MAY BE PRESENT.
 
@@ -88,7 +89,7 @@ subroutine SPDECD (IPOS,ISP,CNSP,JOSTND,IRECNT, &
               TEMP(2:) = TEMP(1:1)
               TEMP(1:1) = ' '
            end if
-           do I = 1,MAXSP
+           do I = 1,CFG_MAXSP
               if (TEMP(1:2).eq.CNSP(I)(1:2)) then
                  ISP = I
                  goto 50

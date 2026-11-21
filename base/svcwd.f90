@@ -3,6 +3,7 @@
 !================================!
 ! BASE $Id$
 subroutine SVCWD(IYEAR)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     STAND VISUALIZATION GENERATION
@@ -368,10 +369,10 @@ subroutine SVCWD(IYEAR)
      AVGV2T = AVGV2T/TOTBA
   else
      AVGV2T = 0.0
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         AVGV2T = AVGV2T + V2T(I)
      end do
-     AVGV2T = AVGV2T/MAXSP
+     AVGV2T = AVGV2T/CFG_MAXSP
   end if
 
   do IP = 1,3

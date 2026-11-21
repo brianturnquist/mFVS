@@ -3,6 +3,7 @@
 !================!
 ! RD $Id$
 subroutine RDOWI
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  Purpose :
@@ -49,12 +50,12 @@ subroutine RDOWI
   !.... Normalize relative susceptability to windthrow
 
   SUMX = 0.0
-  do ISPI = 1,MAXSP
+  do ISPI = 1,CFG_MAXSP
      SUMX = SUMX + ROWIBP(IRTSPC(ISPI),1)
      10 continue
   end do
 
-  do ISPI = 1,MAXSP
+  do ISPI = 1,CFG_MAXSP
      ROWIBP(IRTSPC(ISPI),2) = ROWIBP(IRTSPC(ISPI),1) / SUMX
      20 continue
   end do

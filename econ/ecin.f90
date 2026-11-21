@@ -22,6 +22,7 @@ subroutine ECIN(IRECNT, IREAD, JOSTND, NSP, ICYC, LKECHO, ISPGRP)
   !  MAXSP  - maximum number of species codes used by a specific variant, from PRGPRM.F77
   !  NSP    - array of species character codes used by a specific variant, includes both species and tree-value-class codes
 
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! Common blocks
@@ -248,7 +249,7 @@ subroutine ECIN(IRECNT, IREAD, JOSTND, NSP, ICYC, LKECHO, ISPGRP)
 
         !          Assign prices to speices, UoM, & DBH or DIB classes
         if (spId == 0) then !Set values for all species not already set
-           allSpecies: do i = 1, MAXSP
+           allSpecies: do i = 1, CFG_MAXSP
               if (hrvRevCnt(i,units) >= MAX_KEYWORDS) then
                  call errMsg(revMaxKeyWds)
                  cycle allSpecies !Try next species in loop
@@ -327,7 +328,7 @@ subroutine ECIN(IRECNT, IREAD, JOSTND, NSP, ICYC, LKECHO, ISPGRP)
         if (spId == -999) cycle readKeyWd !-999 = species not found, error handled by SPDECD
 
         if (spId == 0) then !Set values for all species not already set
-           do i = 1, MAXSP
+           do i = 1, CFG_MAXSP
               if (lbsFt3Amt(i) <= 0.0) then !value not previously set
                  lbsFt3Amt(i) = realFields(1)
                  spId = i !Indicates at least one species was set

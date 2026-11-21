@@ -3,6 +3,7 @@
 !===============================!
 ! BASE $Id$
 subroutine LNKINT
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! Common blocks
@@ -13,7 +14,7 @@ subroutine LNKINT
   integer :: I
 
   NUMSP = 0
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      ISCT(I,1) = 0
      ISCT(I,2) = 0
      IBEGIN(I) = 0

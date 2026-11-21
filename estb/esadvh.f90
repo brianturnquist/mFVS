@@ -20,7 +20,7 @@ subroutine ESADVH (EMSQR,I,HHT,DELAY,ELEV,DILATE,IHTSER,&
   !     CONSTANTS FOR ADVANCE HEIGHTS BY HABITAT TYPE GROUP
   !     HAB.TYPE--> WET DFIR  DRY DFIR  GRANDFIR  WRC/WH   SAF
 
-  data THAB/ 5*0.0,&
+  data THAB(:,1:MAXSP_NATIVE)/ 5*0.0,&
        &5*0.0,&
        &-0.00683,  0.12521, 0.16327,  0.26886,   0.0,&
        &0.0,      0.0,    0.20183,  0.31082,   0.0,&
@@ -35,7 +35,7 @@ subroutine ESADVH (EMSQR,I,HHT,DELAY,ELEV,DILATE,IHTSER,&
   !     CONSTANTS FOR ADVANCE HEIGHTS BY SITE PREP
   !     SITE PREP--> NONE      MECH      BURN      ROAD
 
-  data TPRE/ 4*0.0,&
+  data TPRE(:,1:MAXSP_NATIVE)/ 4*0.0,&
        &4*0.0,&
        &4*0.0,&
        &4*0.0,&
@@ -50,7 +50,7 @@ subroutine ESADVH (EMSQR,I,HHT,DELAY,ELEV,DILATE,IHTSER,&
   !     CONSTANTS FOR ADVANCE HEIGHTS BY PHYSIOGRAPHIC POSITION
   !     PHY.POS--> BOTTOM   LOWER     MID      UPPER   RIDGE
 
-  data TPHY/ 5*0.0,&
+  data TPHY(:,1:MAXSP_NATIVE)/ 5*0.0,&
        &5*0.0,&
        &0.04770, 0.41224, 0.25028, 0.23537,  0.0,&
        &5*0.0,&

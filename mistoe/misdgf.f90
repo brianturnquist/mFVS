@@ -59,6 +59,7 @@ real function MISDGF(ITREE,ISPC)
   !     20-DEC-03
   !        Removed parameter file (misprm.f77)
 
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !.... Parameter statements.
@@ -137,7 +138,7 @@ real function MISDGF(ITREE,ISPC)
               !....             Otherwise new growth modifiers applied to all
               !....             affected species.
 
-              do IKSPC = 1,MAXSP
+              do IKSPC = 1,CFG_MAXSP
                  do IDMR = 2,7
                     if (MISFIT(IKSPC).eq.1) then
                        DGPDMR(IKSPC,IDMR) = PRMS(IDMR)

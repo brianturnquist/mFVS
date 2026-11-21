@@ -53,7 +53,7 @@ subroutine HTDBH (IFOR,ISPC,D,H,MODE)
 
   !  MALHEUR -- use Wallowa-Whitman for mountain hemlock
 
-  data MALHUR /&
+  data MALHUR(1:MAXSP_NATIVE,:) /&
        &140.8498,  188.1500,  476.1213,  846.4856,  150.5836,&
        &0.0, 1901.4963,  211.5595,  437.3897, 1818.1733,&
        &0.0,       0.0,   77.2207,   97.7769,       0.0,&
@@ -72,7 +72,7 @@ subroutine HTDBH (IFOR,ISPC,D,H,MODE)
   !  OCHOCO -- use Wallowa-Whitman for mountain hemlock
   !            use Siskiyou for western white pine
 
-  data OCHOCO /&
+  data OCHOCO(1:MAXSP_NATIVE,:) /&
        &140.8498,  255.4638,  318.7441,  686.4831,  150.5836,&
        &0.0,  228.0877,  738.6208,  128.7188, 1526.6312,&
        &0.0,       0.0,   77.2207,   97.7769,       0.0,&
@@ -90,7 +90,7 @@ subroutine HTDBH (IFOR,ISPC,D,H,MODE)
 
   !  UMATILLA -- use Wallowa-Whitman for mountain hemlock
 
-  data UMATIL /&
+  data UMATIL(1:MAXSP_NATIVE,:) /&
        &140.8498,  186.6635,  219.4816,  297.7143,  150.5836,&
        &0.0,   89.0137,  221.5298,  164.6321,  313.4270,&
        &0.0,       0.0,   77.2207,   97.7769,       0.0,&
@@ -108,7 +108,7 @@ subroutine HTDBH (IFOR,ISPC,D,H,MODE)
 
   !  WALLOWA-WHITMAN
 
-  data WALWIT /&
+  data WALWIT(1:MAXSP_NATIVE,:) /&
        &140.8498,  326.9389,  260.1577,  360.9231,  150.5836,&
        &0.0,  117.1495,  219.4529,  128.7188,  649.6683,&
        &0.0,       0.0,   77.2207,   97.7769,       0.0,&

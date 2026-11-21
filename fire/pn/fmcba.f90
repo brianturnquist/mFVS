@@ -3,6 +3,7 @@
 !=====================!
 ! FIRE-PN $Id$
 subroutine FMCBA (IYR,ISWTCH)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     SINGLE-STAND VERSION
@@ -111,7 +112,7 @@ subroutine FMCBA (IYR,ISWTCH)
   !     INITIAL LIVE FUEL LOADING FOR 'ESTABLISHED' STANDS WITH 60% COVER
 
   !                  herbs, shrubs
-  data FULIVE /&
+  data FULIVE(:,1:MAXSP_NATIVE) /&
        &0.15, 0.10,& ! 1 = Pacific silver fir - use GF
        &0.15, 0.10,& ! 2 = white fir (wf) - use GF
        &0.15, 0.10,& ! 3 = grand fir
@@ -155,7 +156,7 @@ subroutine FMCBA (IYR,ISWTCH)
   !     INITIAL LIVE FUEL LOADING FOR 'INTIALIZING STANDS WITH 10% COVER
 
   !                  herbs, shrubs
-  data FULIVI /&
+  data FULIVI(:,1:MAXSP_NATIVE) /&
        &0.30, 2.00,& ! 1 = Pacific silver fir - use GF
        &0.30, 2.00,& ! 2 = white fir (wf) - use GF
        &0.30, 2.00,& ! 3 = grand fir
@@ -200,7 +201,7 @@ subroutine FMCBA (IYR,ISWTCH)
   !     THIS CAN BE MODIFIED BY THE *FUELINIT** KEYWORD
 
   !     <.25 to1  1-3   3-6 6-12  12-20 20-35 35-50 >50  Lit  Duf
-  data FUINIE /&
+  data FUINIE(:,1:MAXSP_NATIVE) /&
        &1.1, 1.1, 2.2,10.0,10.0, 0.0, 0.0,0.0,0.0,0.6,30.0,& ! 1 = Pacific silver fir
        &0.7, 0.7, 3.0, 7.0, 7.0, 0.0, 0.0,0.0,0.0,0.6,25.0,& ! 2 = white fir (wf) - use GF
        &0.7, 0.7, 3.0, 7.0, 7.0, 0.0, 0.0,0.0,0.0,0.6,25.0,& ! 3 = grand fir
@@ -245,7 +246,7 @@ subroutine FMCBA (IYR,ISWTCH)
   !     THIS CAN BE MODIFIED BY THE *FUELINIT** KEYWORD
 
   !     <.25 to1  1-3  3-6 6-12  12-20 20-35 35-50 >50  Lit  Duf
-  data FUINII /&
+  data FUINII(:,1:MAXSP_NATIVE) /&
        &0.7, 0.7, 1.6, 4.0, 4.0, 0.0, 0.0,0.0,0.0,0.3,12.0,& ! 1 = Pacific silver fir
        &0.5, 0.5, 2.0, 2.8, 2.8, 0.0, 0.0,0.0,0.0,0.3,12.0,& ! 2 = white fir (wf) - use GF
        &0.5, 0.5, 2.0, 2.8, 2.8, 0.0, 0.0,0.0,0.0,0.3,12.0,& ! 3 = grand fir
@@ -374,7 +375,7 @@ subroutine FMCBA (IYR,ISWTCH)
      BAMOST = 0.0
      TOTCRA = 0.0
 
-     do KSP = 1,MAXSP
+     do KSP = 1,CFG_MAXSP
         FMTBA(KSP) = 0.0
      end do
 
@@ -405,7 +406,7 @@ subroutine FMCBA (IYR,ISWTCH)
 
      !       CALCULATE TOTAL COVER TYPE
 
-     do KSP = 1,MAXSP
+     do KSP = 1,CFG_MAXSP
         TOTBA = TOTBA + FMTBA(KSP)
      end do
 
@@ -413,7 +414,7 @@ subroutine FMCBA (IYR,ISWTCH)
      !       COVTYP    - FFE-WIDE DOMINANT
      !       COVCA(2)  - CA-FFE VARIANTS ONLY: PRIMARY & SECONDARY BA
 
-     call RDPSRT(MAXSP,FMTBA,ICT,.true.)
+     call RDPSRT(CFG_MAXSP,FMTBA,ICT,.true.)
      if (FMTBA(ICT(1)) .gt.0.001) COVTYP = ICT(1)
 
      !       Use the crown width information to determine the percent cover
@@ -606,7 +607,7 @@ subroutine FMCBA (IYR,ISWTCH)
 
      do ISZ = 1,MXFLCL
         if (TOTBA .gt.0.0) then
-           do KSP = 1,MAXSP
+           do KSP = 1,CFG_MAXSP
               if (FMTBA(KSP) .gt.0.0) then
                  do J = 1,2
                     PRCL = FMTBA(KSP) / TOTBA

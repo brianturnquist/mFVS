@@ -3,6 +3,7 @@
 !==========================!
 ! FIRE-BASE $Id$
 subroutine FMSVSYNC
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     STAND VISUALIZATION GENERATION
@@ -45,7 +46,7 @@ subroutine FMSVSYNC
   !     CLEAR OUT OUT TEMP LIST
 
   do D = 1,19
-     do S = 1,MAXSP
+     do S = 1,CFG_MAXSP
         CURFMSN(D,S) = 0.
         CURSVSN(D,S) = 0
      end do
@@ -93,7 +94,7 @@ subroutine FMSVSYNC
 
   if (DEBUG) then
 
-     do S = 1,MAXSP
+     do S = 1,CFG_MAXSP
         do D = 2,19
            if (CURFMSN(D,S)+CURSVSN(D,S).gt.0.) then
               write (JOSTND,10) S,D,CURFMSN(D,S),CURSVSN(D,S)

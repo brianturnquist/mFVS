@@ -3,6 +3,7 @@
 !===========================================!
 ! AK $Id$
 subroutine ESPADV (IFT)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     PREDICTS THE PROBABILITY OF ADVANCE SPECIES.
@@ -60,7 +61,7 @@ subroutine ESPADV (IFT)
   real    :: PN,PNFT(MAXSP,14),PNRDA(MAXSP),PBAPER(MAXSP),PNELEV(MAXSP),PNSLO(MAXSP),PNTLAT(MAXSP),B1, &
        & B2,B3,B4,B5,B6,XPRD,BAPER,DENOM,ADJSLO,ADJELV
 
-  data ((PNFT(I,J),I = 1,MAXSP),J = 1,14)/ &
+  data ((PNFT(I,J),I = 1,MAXSP_NATIVE),J = 1,14)/ &
        & 0.0,         0.0,       0.0,       -4.335977, -0.768725, & ! 122 WHITE SPRUCE
        & 0.0,       -13.023483,  0.0,        0.0,       0.0, &
        & 0.0,       -14.636196,  0.0,        0.0,       0.0, &
@@ -131,31 +132,31 @@ subroutine ESPADV (IFT)
        & 0.0,         0.0,       0.0,        0.0,       0.0, &
        & 0.0,         0.0,       0.0,        0.0,       0.0, &
        & 0.0,         0.0,       0.0 /
-  data PNRDA / &
+  data PNRDA(1:MAXSP_NATIVE) / &
        & 0.0,       0.0,      -2.727570,  0.0,        0.774395, &
        & 0.0,       1.660146, -0.838168, -3.839624,  -1.443889, &
        & 1.739987, -0.620028,  0.0,       0.0,        0.851525, &
        & -1.846654,  0.0,      -0.464799, -0.397800,  -0.464799, &
        & 0.0,       0.0,       0.0 /
-  data PBAPER / &
+  data PBAPER(1:MAXSP_NATIVE) / &
        & 0.0,      0.0,      3.266453, 0.0,      2.917051, &
        & 0.0,     19.545809, 0.891633, 2.472698, 1.074455, &
        & 5.056352, 3.062509, 0.0,      0.0,      5.115524, &
        & 0.957204, 0.0,      5.337844, 3.757893, 5.337844, &
        & 0.0,      0.0,      0.0 /
-  data PNELEV / &
+  data PNELEV(1:MAXSP_NATIVE) / &
        & 0.0,      0.0,       0.000346,   0.0,       0.000580, &
        & 0.0,      0.000381, -0.000293,  -0.000699, -0.001340, &
        & -0.000998, 0.000542,  0.0,        0.0,      -0.004470, &
        & -0.000526,  0.0,     -0.000588,  -0.000492, -0.000588, &
        & 0.0,      0.0,       0.0 /
-  data PNSLO / &
+  data PNSLO(1:MAXSP_NATIVE) / &
        & 0.0,       0.0,     -0.003355,  0.0,      -0.020237, &
        & 0.0,      -0.044745, 0.003523, -0.002279,  0.006463, &
        & 0.007062, -0.007500, 0.0,       0.0,      -0.027259, &
        & 0.021042,  0.0,      0.019300,  0.029324,  0.019300, &
        & 0.0,       0.0,      0.0 /
-  data PNTLAT / &
+  data PNTLAT(1:MAXSP_NATIVE) / &
        & 0.0,       0.0,      -0.314786,  0.0,        -0.025084, &
        & 0.0,       0.156958,  0.023200, -0.253624,   -1.427424, &
        & -0.415727,  0.162942,  0.0,       0.0,        -0.707129, &
@@ -183,13 +184,13 @@ subroutine ESPADV (IFT)
   !  BE CALCULATED AND PADV VALUE WILL BE ZERO.
 
   if (IFT .eq. 14) then
-     do J = 1,MAXSP
+     do J = 1,CFG_MAXSP
         PADV(J) = 0.0
      end do
   else
 
      !       CYCLE THROUGH SPECIES TO COMPUTE SPECIES PROBABILITIES
-     do J = 1,MAXSP
+     do J = 1,CFG_MAXSP
         if (OCURFT(J,IFT) .eq. 0.0) then
            PADV(J) = 0.0
         else

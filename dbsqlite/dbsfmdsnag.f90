@@ -4,6 +4,7 @@
 ! DBSQLITE $Id$
 subroutine DBSFMDSNAG(IYEAR,SDBH,SHTH,SHTS,SVLH,SVLS,&
      &SDH,SDS,YRLAST,KODE)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     PURPOSE: TO POPULATE A DATABASE WITH THE DETAILED SNAG REPORT
@@ -176,7 +177,7 @@ subroutine DBSFMDSNAG(IYEAR,SDBH,SHTH,SHTS,SVLH,SVLS,&
   end if
 
   do JYR = 1,YRLAST
-     do IDC = 1,MAXSP
+     do IDC = 1,CFG_MAXSP
         do JCL = 1,6
 
            SDTB = SDH(IDC,JYR,JCL) + SDS(IDC,JYR,JCL)

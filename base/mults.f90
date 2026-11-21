@@ -3,6 +3,7 @@
 !=============================!
 ! BASE $Id$
 subroutine MULTS (KIND,IDT,XMULT)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! Common blocks
@@ -75,7 +76,7 @@ subroutine MULTS (KIND,IDT,XMULT)
            30 continue
         end do
      else if (ISP.eq.0) then
-        do ISP = 1,MAXSP
+        do ISP = 1,CFG_MAXSP
            XMULT(ISP) = PRM(2)
            40 continue
         end do

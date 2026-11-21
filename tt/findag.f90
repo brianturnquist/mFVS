@@ -53,11 +53,11 @@ subroutine FINDAG(I,ISPC,D1,D2,H,SITAGE,SITHT,AGMAX1,HTMAX1,&
 
   !  DATA STATEMENTS
 
-  data AGMAX/&
+  data AGMAX(1:MAXSP_NATIVE)/&
        &0.,   0.,   0.,   0.,   0.,   0.,   0.,   0.,   0.,   0.,&
        &0.,   0., 100.,   0.,   0.,  50.,   0.,   0./
 
-  data HTMAX/&
+  data HTMAX(1:MAXSP_NATIVE)/&
        &0.,   0.,   0.,   0.,   0.,   0.,   0.,   0.,   0.,   0.,&
        &0.,   0., 100.,   0.,   0.,  20.,   0.,   0./
 

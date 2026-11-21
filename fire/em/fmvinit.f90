@@ -3,6 +3,7 @@
 !=======================!
 ! FIRE-EM $Id$
 subroutine FMVINIT
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  Purpose:
@@ -104,7 +105,7 @@ subroutine FMVINIT
   HTXSFT = 2.0
   HTR1 = 0.0228
   HTR2 = 0.01
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      PSOFT(I) = 0.0
   end do
 
@@ -159,7 +160,7 @@ subroutine FMVINIT
   !  THIS IS MORE COMPLICATED THAN NECESSARY, BUT ALLOWS SIZE-DEPENDENT
   !  RATES TO BE ADDED EASILY.
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
 
      select case (I)
 

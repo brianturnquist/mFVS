@@ -3,6 +3,7 @@
 !====================================================!
 ! CA, NC, OC $Id$
 subroutine DUNN (SS)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! THIS SUBROUTINE PROCESSES THE DUNNING CODE INFORMATION THAT WAS
@@ -47,7 +48,7 @@ subroutine DUNN (SS)
 
   !   SET SITE INDEX VALUES BASED ON DUNNING VALUES ENTERED.
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      if (VARIANTCD.eq.'NC') then
         ADJFAC = ADJFACNC(ISPC)
      else

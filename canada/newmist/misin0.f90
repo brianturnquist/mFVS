@@ -3,6 +3,7 @@
 !=============================!
 ! CANADA-NEWMIST $Id$
 subroutine MISIN0
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  **MISIN0--    Date of last revision:  04/01/11
@@ -94,7 +95,7 @@ subroutine MISIN0
   MISCYC(2,I) = .false.
   20 continue
 
-  do 30, I = 1,MAXSP
+  do 30, I = 1,CFG_MAXSP
   do 25, J = 1,6
   PRFMST(I,J) = 0.0
   25 continue

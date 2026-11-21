@@ -2,6 +2,7 @@
 !   fire/base : fmsrecord_mod   !
 !===============================!
 module FMSRECORD_MOD
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
   private
   public :: FMSRECORD
@@ -33,7 +34,7 @@ contains
     ! to a volume-per-hectare factor is a separate scientific decision.
     if (LMETRICVAR) then
       do JYR = 1,YRLAST
-         do IDC = 1,MAXSP
+         do IDC = 1,CFG_MAXSP
             do JCL = 1,6
                TOTDBH(IDC,JYR,JCL) = TOTDBH(IDC,JYR,JCL) * INtoCM
                TOTHTH(IDC,JYR,JCL) = TOTHTH(IDC,JYR,JCL) * FTtoM
@@ -109,7 +110,7 @@ contains
     !     the total heights and dbhs to get the class-averages.
 
     do JYR = 1,YRLAST
-       do IDC = 1,MAXSP
+       do IDC = 1,CFG_MAXSP
           do JCL = 1,6
              TOTN = TOTDH(IDC,JYR,JCL) + TOTDS(IDC,JYR,JCL)
              if (TOTN .eq.0.0) goto 410

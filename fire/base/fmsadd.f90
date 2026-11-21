@@ -3,6 +3,7 @@
 !========================!
 ! FIRE-BASE $Id$
 subroutine FMSADD (YEAR,ITYP)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! PURPOSE:
@@ -89,7 +90,7 @@ subroutine FMSADD (YEAR,ITYP)
      TAKEN(I) = 0
   end do
 
-  do SPCL = 1,MAXSP
+  do SPCL = 1,CFG_MAXSP
      do DBHCL = 1,19
         MIDHT(SPCL,DBHCL) = 0.0
         do HTCL = 1,2
@@ -103,7 +104,7 @@ subroutine FMSADD (YEAR,ITYP)
   !     to be broken into 2 height classes.  (This means those classes that
   !     have a height range of more than 20 feet).
 
-  do SPCL = 1,MAXSP
+  do SPCL = 1,CFG_MAXSP
      do DBHCL = 1,19
 
         if ((DSPDBH(SPCL,DBHCL) .le.0.0) .or.&
@@ -402,7 +403,7 @@ subroutine FMSADD (YEAR,ITYP)
   !     re-set the max- and min-ht arrays so they're ready for the next batch
   !     of snags. (Note that PSOFT is now by species (Feb 2002))
 
-  do SPCL = 1,MAXSP
+  do SPCL = 1,CFG_MAXSP
      do DBHCL = 1,19
         MAXHT(SPCL,DBHCL) = 0.0
         MINHT(SPCL,DBHCL) = 1000.0

@@ -3,6 +3,7 @@
 !=======================================!
 ! BASE $Id$
 subroutine EXMIST
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  Purpose:
@@ -61,7 +62,7 @@ subroutine EXMIST
   !  ENTRY MISCNT
 
   entry MISCNT(MSPCNT)
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      MSPCNT(I) = 0
      100 continue
   end do
@@ -70,7 +71,7 @@ subroutine EXMIST
   !  ENTRY MISCPF
 
   entry MISCPF(PRFCUT)
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      PRFCUT(I) = 0.0
      150 continue
   end do

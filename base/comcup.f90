@@ -3,6 +3,7 @@
 !======================================!
 ! BASE $Id$
 subroutine COMCUP
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     INTERFACE ROUTINE TO COUPLE THE COMPRESSION ROUTINE TO
@@ -139,7 +140,7 @@ subroutine COMCUP
 
      !        INITIALIZE SPCNT.
 
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         SPCNT(I,1) = 0.
         SPCNT(I,2) = 0.
         SPCNT(I,3) = 0.

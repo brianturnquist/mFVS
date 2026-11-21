@@ -3,6 +3,7 @@
 !================!
 ! RD $Id$
 subroutine RDBB4
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  Purpose :
@@ -157,7 +158,7 @@ subroutine RDBB4
      DONE = 1
 
      NUMBB = NUMBB + 1
-     if (NUMBB .gt.3*MAXSP) NUMBB = 3*MAXSP
+     if (NUMBB .gt.3*CFG_MAXSP) NUMBB = 3*CFG_MAXSP
      HOST(NUMBB) = ISPI
      MINDBH(NUMBB) = DBHLIM
      MININF(NUMBB) = RROTEX

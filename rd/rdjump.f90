@@ -3,6 +3,7 @@
 !=================!
 ! RD $Id$
 subroutine RDJUMP
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  Purpose :
@@ -108,7 +109,7 @@ subroutine RDJUMP
   if (ITRN .eq.0) return
 
   IDI = IRRSP
-  do KSP = 1, MAXSP
+  do KSP = 1, CFG_MAXSP
      if (ISCT(KSP,1) .eq.0) goto 500
      if (IRRSP .lt.3) IDI = IDITYP(IRTSPC(KSP))
      if (IDI .ne. IRRSP) goto 500

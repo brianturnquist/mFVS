@@ -3,6 +3,7 @@
 !================!
 ! PG $Id$
 subroutine CHPUT
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     WRITE THE ALL-DATA CHARACTER DATA TO THE DA FILE.
@@ -127,7 +128,7 @@ subroutine CHPUT
      102 continue
   end do
 
-  do J = 1,MAXSP
+  do J = 1,CFG_MAXSP
      do I = 1,11
         call CHWRIT(CBUFF,IPNT,LNCBUF,VEQNNB(J)(I:I),2)
         103 continue
@@ -135,7 +136,7 @@ subroutine CHPUT
      104 continue
   end do
 
-  do J = 1,MAXSP
+  do J = 1,CFG_MAXSP
      do I = 1,11
         call CHWRIT(CBUFF,IPNT,LNCBUF,VEQNNC(J)(I:I),2)
         105 continue

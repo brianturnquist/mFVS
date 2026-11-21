@@ -3,6 +3,7 @@
 !==================!
 ! VBASE $Id$
 subroutine CUTS
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE IS CALLED ONCE PER CYCLE.  IT INITIALIZES THE
@@ -318,7 +319,7 @@ subroutine CUTS
      PRMS(I) = 0.
      10 continue
   end do
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      do J = 1,3
         SPCRT(I,J) = 0.0
         SPCRC(I,J) = 0.0
@@ -1432,7 +1433,7 @@ subroutine CUTS
            1210 continue
         end do
      else if (ISPC.eq.0) then
-        do IS = 1,MAXSP
+        do IS = 1,CFG_MAXSP
            IORDER(IS) = INT(PRMS(2))
            1220 continue
         end do
@@ -1467,7 +1468,7 @@ subroutine CUTS
            end if
         end do
      else if (IFIX(PRMS(1)+.5).eq.0) then
-        do I = 1,MAXSP
+        do I = 1,CFG_MAXSP
            LEAVESP(I) = .false.
         end do
      else

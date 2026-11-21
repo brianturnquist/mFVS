@@ -4,6 +4,7 @@
 ! ESTB $Id$
 subroutine ESFLTR
   use VARCFG_MOD, only: CFG_VARIANTCD
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !      CALLED AFTER CRATET TO COLLECT INVENTORY INFORMATION FOR
@@ -78,7 +79,7 @@ subroutine ESFLTR
      ICHOIS(I) = 0
      60 continue
   end do
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      NULL(I) = 0
      ITALL(I) = 0
      TALL(I) = 0.001
@@ -120,7 +121,7 @@ subroutine ESFLTR
 
      !     STEP 2:  PICK TALLEST TREE OF EACH ADDITIONAL SPECIES.
 
-     do J = 1,MAXSP
+     do J = 1,CFG_MAXSP
         if (NULL(J).eq.1) go to 71
         do I = 1,N
            IDENT = NOTE(I)
@@ -135,7 +136,7 @@ subroutine ESFLTR
         end do
         71 continue
      end do
-     do J = 1,MAXSP
+     do J = 1,CFG_MAXSP
         if (NULL(J).eq.1) go to 80
         KT = ITALL(J)
         if (KT.eq.0) go to 80
@@ -180,7 +181,7 @@ subroutine ESFLTR
         ICHOIS(I) = 0
         185 continue
      end do
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         NULL(I) = 0
         ITALL(I) = 0
         TALL(I) = 0.001

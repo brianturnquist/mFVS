@@ -3,6 +3,7 @@
 !=====================!
 ! FIRE-TT $Id$
 subroutine FMCBA (IYR,ISWTCH)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     SINGLE-STAND VERSION
@@ -83,7 +84,7 @@ subroutine FMCBA (IYR,ISWTCH)
 
   !     herbs, shrubs
 
-  data FULIVE /&
+  data FULIVE(:,1:MAXSP_NATIVE) /&
        &0.2,   0.1,& !1  WB - use LP
        &0.2,   0.1,& !2  LM - use LP
        &0.2,   0.2,& !3  DF
@@ -107,7 +108,7 @@ subroutine FMCBA (IYR,ISWTCH)
 
   !     herbs, shrubs
 
-  data FULIVI /&
+  data FULIVI(:,1:MAXSP_NATIVE) /&
        &0.4,  1.0,& !1  WB - use LP
        &0.4,  1.0,& !2  LM - use LP
        &0.4,  2.0,& !3  DF
@@ -132,7 +133,7 @@ subroutine FMCBA (IYR,ISWTCH)
 
   !     <.25  to1  1-3   3-6 6-12 12-20 20-35 35-50 >50  Lit  Duf
 
-  data FUINIE /&
+  data FUINIE(:,1:MAXSP_NATIVE) /&
        &0.9, 0.9, 1.2,  7.0, 8.0,  0.0, 0.0,  0.0, 0.0, 0.6, 15.0,& !1  WB - use LP
        &0.9, 0.9, 1.2,  7.0, 8.0,  0.0, 0.0,  0.0, 0.0, 0.6, 15.0,& !2  LM - use LP
        &0.9, 0.9, 1.6,  3.5, 3.5,  0.0, 0.0,  0.0, 0.0, 0.6, 10.0,& !3  DF
@@ -157,7 +158,7 @@ subroutine FMCBA (IYR,ISWTCH)
 
   !     <.25  to1  1-3   3-6 6-12 12-20 20-35 35-50 >50  Lit  Duf
 
-  data FUINII /&
+  data FUINII(:,1:MAXSP_NATIVE) /&
        &0.6, 0.7, 0.8,  2.8, 3.2,  0.0, 0.0,  0.0, 0.0, 0.3,  7.0,& !1  WB - use LP
        &0.6, 0.7, 0.8,  2.8, 3.2,  0.0, 0.0,  0.0, 0.0, 0.3,  7.0,& !2  LM - use LP
        &0.5, 0.5, 1.0,  1.4, 1.4,  0.0, 0.0,  0.0, 0.0, 0.3,  5.0,& !3  DF
@@ -253,7 +254,7 @@ subroutine FMCBA (IYR,ISWTCH)
      BAMOST = 0.0
      TOTCRA = 0.0
 
-     do KSP = 1,MAXSP
+     do KSP = 1,CFG_MAXSP
         FMTBA(KSP) = 0.0
      end do
 
@@ -283,7 +284,7 @@ subroutine FMCBA (IYR,ISWTCH)
      !        Determine which species has the most basal area
      !        -> that will be the cover type
 
-     do KSP = 1,MAXSP
+     do KSP = 1,CFG_MAXSP
         if (FMTBA(KSP) .gt. BAMOST) then
            BAMOST = FMTBA(KSP)
            COVTYP = KSP
@@ -447,7 +448,7 @@ subroutine FMCBA (IYR,ISWTCH)
 
      do ISZ = 1,MXFLCL
         if (TOTBA .gt.0.0) then
-           do KSP = 1,MAXSP
+           do KSP = 1,CFG_MAXSP
               if (FMTBA(KSP) .gt.0.0) then
                  do J = 1,2
                     PRCL = FMTBA(KSP) / TOTBA

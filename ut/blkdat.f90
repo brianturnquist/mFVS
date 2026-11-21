@@ -80,14 +80,14 @@ block data BLKDAT
 
   ! COMMON STATEMENT FOR ESCOMN VARIABLE
 
-  data XMIN/1.0, 1.0, 1.0, 0.5, 0.5, 6.0, 1.0, 0.5, 0.5, 1.0,&
+  data XMIN(1:MAXSP_NATIVE)/1.0, 1.0, 1.0, 0.5, 0.5, 6.0, 1.0, 0.5, 0.5, 1.0,&
        &0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 3.0, 3.0, 0.5,&
        &0.5, 3.0, 0.5, 0.5/
   data DBHMID/1.0,3.0,5.0,7.0,9.0,12.0,16.0,20.0,24.0,28.0/,&
        &ISPSPE/6,13,18,19,21,22/,&
        &BNORML/3*1.0,1.046,1.093,1.139,1.186,1.232,1.278,1.325,1.371,&
        &1.418,1.464,1.510,1.557,1.603,1.649,1.696,1.742,1.789/,&
-       &HHTMAX/9.0, 9.0, 10.0, 7.0, 7.0, 16.0, 10.0, 7.0, 7.0, 10.0,&
+       &HHTMAX(1:MAXSP_NATIVE)/9.0, 9.0, 10.0, 7.0, 7.0, 16.0, 10.0, 7.0, 7.0, 10.0,&
        &6.0, 6.0, 10.0, 6.0, 6.0,  6.0,  9.0,16.0,16.0,  6.0,&
        &6.0,16.0,  9.0,10.0/,&
        &IFORCD/401,407,408,410,418,419,  0,  0,  0,  0,&
@@ -109,25 +109,25 @@ block data BLKDAT
 
   ! COMMON STATEMENT FOR PLOT VARIABLES.
 
-  data JSP /&
+  data JSP(1:MAXSP_NATIVE) /&
        &'WB ',   'LM ',   'DF ',   'WF ',   'BS ',   'AS ',   'LP ',&
        &'ES ',   'AF ',   'PP ',   'PI ',   'WJ ',   'GO ',   'PM ',&
        &'RM ',   'UJ ',   'GB ',   'NC ',   'FC ',   'MC ',   'BI ',&
        &'BE ',   'OS ',   'OH '/
 
-  data FIAJSP /&
+  data FIAJSP(1:MAXSP_NATIVE) /&
        &'101',   '113',   '202',   '015',   '096',   '746',   '108',&
        &'093',   '019',   '122',   '106',   '064',   '814',   '133',&
        &'066',   '065',   '142',   '749',   '748',   '475',   '322',&
        &'313',   '299',   '998'/
 
-  data PLNJSP /&
+  data PLNJSP(1:MAXSP_NATIVE) /&
        &'PIAL  ','PIFL2 ','PSME  ','ABCO  ','PIPU  ','POTR5 ','PICO  ',&
        &'PIEN  ','ABLA  ','PIPO  ','PIED  ','JUOC  ','QUGA  ','PIMO  ',&
        &'JUSC2 ','JUOS  ','PILO  ','POAN3 ','POFR2 ','CELE3 ','ACGR3 ',&
        &'ACNE2 ','2TN   ','2TB   '/
 
-  data NSP /'WB1','LM1','DF1','WF1','BS1','AS1','LP1','ES1','AF1',&
+  data NSP(1:MAXSP_NATIVE,:) /'WB1','LM1','DF1','WF1','BS1','AS1','LP1','ES1','AF1',&
        &'PP1','PI1','WJ1','GO1','PM1','RM1','UJ1','GB1','NC1',&
        &'FC1','MC1','BI1','BE1','OS1','OH1',&
        &'WB2','LM2','DF2','WF2','BS2','AS2','LP2','ES2','AF2',&
@@ -140,13 +140,13 @@ block data BLKDAT
 
   ! COMMON STATEMENT FOR COEFFS VARIABLES
 
-  data HT1/&
+  data HT1(1:MAXSP_NATIVE)/&
        &4.1920,  4.1920,  4.5879,  4.3008,   4.5293,&
        &4.4421,  4.3767,  4.5293,  4.4717,   4.6024,&
        &3.2000,  3.2000,  3.2000,  3.2000,   3.2000,&
        &3.2000,  4.1920,  4.4421,  4.4421,   5.1520,&
        &4.7000,  4.4421,  4.2597,  3.2000/
-  data HT2/&
+  data HT2(1:MAXSP_NATIVE)/&
        &-5.1651, -5.1651, -8.9277, -6.8139,  -7.7725,&
        &-6.5405, -6.1281, -7.7725, -6.7387, -11.4693,&
        &-5.0000, -5.0000, -5.0000, -5.0000,  -5.0000,&
@@ -156,14 +156,14 @@ block data BLKDAT
   !  RESIDUAL ERROR ESTIMATES WERE MULTIPLIED BY 0.75 TO APPROXIMATE
   !  CORRECTION FOR MEASUREMENT ERROR; 6/11/91--WRW.
 
-  data SIGMAR/&
+  data SIGMAR(1:MAXSP_NATIVE)/&
        &0.46710, 0.46710, 0.34418, 0.24060, 0.35168,&
        &0.37500, 0.28860, 0.35168, 0.28005, 0.27338,&
        &0.2,     0.2,     0.2,     0.2,     0.2,&
        &0.2,     0.2,     0.2,     0.2,  0.5357,&
        &0.5107,     0.2, 0.46710,     0.2/
 
-  data BREAK/&
+  data BREAK(1:MAXSP_NATIVE)/&
        &3.,   3.,   3.,   3.,   3.,   3.,   3.,   3.,   3.,   3.,&
        &99.,  99.,  99.,  99.,  99.,  99.,  99.,   1.,   1.,  99.,&
        &99.,   1.,   3.,  99./

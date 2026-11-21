@@ -5,6 +5,7 @@
 subroutine DBSTALLY(PRBSTK,NTALLY,CSP,SUMTPA,SUMPCT,BESTTPA,&
      &BESTPCT,AVEHT,PASTPA,PASPCT,IYEAR,WTAVEHT,TOT,TOTTTPAA,&
      &TOTTTPAB,TOTTTPA3)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     PURPOSE: TO POPULATE A DATABASE WITH THE REGENERATION TALLY
@@ -126,7 +127,7 @@ subroutine DBSTALLY(PRBSTK,NTALLY,CSP,SUMTPA,SUMPCT,BESTTPA,&
      CSP2 = "ALL"
      CSP3 = "ALL"
   else
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         if (CSP(1:2) .eq. JSP(I)) then
            CSP1 = JSP(I)
            CSP2 = PLNJSP(I)
@@ -260,7 +261,7 @@ subroutine DBSTALLY(PRBSTK,NTALLY,CSP,SUMTPA,SUMPCT,BESTTPA,&
      CSP2 = "ALL"
      CSP3 = "ALL"
   else
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         if (CSP(1:2) .eq. JSP(I)) then
            CSP1 = JSP(I)
            CSP2 = PLNJSP(I)

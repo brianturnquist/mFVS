@@ -3,6 +3,7 @@
 !=====================!
 ! FIRE-CS $Id$
 subroutine FMCBA (IYR,ISWTCH)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  SINGLE-STAND VERSION
@@ -105,7 +106,7 @@ subroutine FMCBA (IYR,ISWTCH)
 
      BAMOST = 0.0
      TOTCRA = 0.0
-     do KSP = 1,MAXSP
+     do KSP = 1,CFG_MAXSP
         TBA(KSP) = 0.0
      end do
 
@@ -136,7 +137,7 @@ subroutine FMCBA (IYR,ISWTCH)
      !  DETERMINE WHICH SPECIES HAS THE MOST BASAL AREA
      !  -> THAT WILL BE THE COVER TYPE
 
-     do KSP = 1,MAXSP
+     do KSP = 1,CFG_MAXSP
         if (TBA(KSP) .gt. BAMOST) then
            BAMOST = TBA(KSP)
            COVTYP = KSP
@@ -294,7 +295,7 @@ subroutine FMCBA (IYR,ISWTCH)
 
      do ISZ = 1,MXFLCL
         if (TOTBA .gt.0.0) then
-           do KSP = 1,MAXSP
+           do KSP = 1,CFG_MAXSP
               if (TBA(KSP) .gt.0.0) then
                  do J = 1,2
                     PRCL = TBA(KSP) / TOTBA

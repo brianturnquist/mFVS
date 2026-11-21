@@ -6,6 +6,7 @@ subroutine DBS_FIAVBC_CUTLST()
 
   !     PURPOSE: TO OUTPUT THE FIAVBC CUTS LIST DATA TO THE DATABASE
 
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! Common blocks
@@ -131,7 +132,7 @@ subroutine DBS_FIAVBC_CUTLST()
 
   !     SET THE CUTS LIST TYPE FLAG (LET IP BE THE RECORD OUTPUT COUNT).
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      I1 = ISCT(ISPC,1)
      if (I1.ne.0) then
         I2 = ISCT(ISPC,2)

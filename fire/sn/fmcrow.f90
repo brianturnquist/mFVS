@@ -131,7 +131,7 @@ subroutine FMCROW
   !    89 = hardwoods, misc.         comm. hardwoods     44
   !    90 = unknown/not listed       comm. hardwoods     44
 
-  data ISPMAP /8,14, 9, 3, 3, 3, 3, 3, 3, 3,&
+  data ISPMAP(1:MAXSP_NATIVE) /8,14, 9, 3, 3, 3, 3, 3, 3, 3,&
        &3, 5, 3, 3,14,14,12,26,50,19,&
        &18,26,44,24,24,53,39,44,55,44,&
        &56,44,28,16,29,15,16,44,44,44,&

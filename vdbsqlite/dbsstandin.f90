@@ -4,6 +4,7 @@
 ! VDBSQLITE $Id$
 subroutine DBSSTANDIN(SQLSTR,LKECHO)
   use DBSSTANDDESIGN_MOD, only: DBSSTANDDESIGN_READ,DBSSTANDDESIGN
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     PURPOSE: TO POPULATE FVS STAND LEVEL DATA FROM THE DATABASE
@@ -709,7 +710,7 @@ subroutine DBSSTANDIN(SQLSTR,LKECHO)
         end if
      end if
 
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         if (CSITECODE.eq.NSP(I,1)(1:2).or.CSITECODE.eq.PLNJSP(I).or.&
              &CSITECODE.eq.FIAJSP(I)) then
            ISISP = I
@@ -745,7 +746,7 @@ subroutine DBSSTANDIN(SQLSTR,LKECHO)
         CSITECODE = 'ALL'
      else
         if (ISISP.eq.0) then
-           do I = 1,MAXSP
+           do I = 1,CFG_MAXSP
               SITEAR(I) = RSTANDDATA(35)
            end do
            CSITECODE = 'ALL'
@@ -765,7 +766,7 @@ subroutine DBSSTANDIN(SQLSTR,LKECHO)
      if (LKECHO)write(JOSTND,'(T12,''MAX_BA: '',T34,F6.1)') BAMAX
   end if
   if (MaxSDI_LI.ne.NullInt) then
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         SDIDEF(I) = RSTANDDATA(36)
      end do
      if (LKECHO)write(JOSTND,'(T12,''MAX_SDI: '',T34,F6.1)')SDIDEF(1)

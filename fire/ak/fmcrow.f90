@@ -82,7 +82,7 @@ subroutine FMCROW
   !    22   Scouler's willow                 64
   !    23   other hardwoods                  17
 
-  data ISPMAP / 4,  1, 8, 10,  6,  6,  9, 18, 11,  7,&
+  data ISPMAP(1:MAXSP_NATIVE) / 4,  1, 8, 10,  6,  6,  9, 18, 11,  7,&
        &6, 24, 6, 23, 23, 43, 43, 42, 41, 17,&
        &64, 64, 17 /
 

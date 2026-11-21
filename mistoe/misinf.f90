@@ -66,6 +66,7 @@ subroutine MISINF
   !    10-MAR-2008  Lance R. David (FHTET)
   !       DMFLAG removed from argument list because it is now in common.
 
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !.... Parameter statements.
@@ -110,7 +111,7 @@ subroutine MISINF
   !.... subsequent cycles), these values are not in a common block and
   !.... are not initialized in MISINT.
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      NEWPRP(I) = 0.0
      NEWINF(I) = 0.0
      NEWCNT(I) = 0.0
@@ -149,7 +150,7 @@ subroutine MISINF
 
            !....          Otherwise defaults to all species.
 
-           do ISPC = 1,MAXSP
+           do ISPC = 1,CFG_MAXSP
               NEWPRP(ISPC) = PRM(2)*MISFIT(ISPC)
               NEWLEV(ISPC) = INT(PRM(3))*MISFIT(ISPC)
               NEWTYP(ISPC) = INT(PRM(4))*MISFIT(ISPC)
@@ -160,7 +161,7 @@ subroutine MISINF
      end do
   end if
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
 
      !....    Calculate species mistletoe infection totals.
 
@@ -265,7 +266,7 @@ subroutine MISINF
   !.... Initialize a pointer to cycle through DM ratings from 1 to NEWLEV
   !.... for each species.
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      IDMPTR(I) = 1
      170 continue
   end do

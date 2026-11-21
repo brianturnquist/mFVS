@@ -181,6 +181,7 @@ subroutine MISPRT
   !        Variables IMOUT_ moved to MISCOM.(thanks to Don Robinson)
 
   use MISCLASS_MOD, only: MISCLASS
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     Parameter statements.
@@ -269,7 +270,7 @@ subroutine MISPRT
         ISVSP4(I) = 0
      end do
 
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         MISTBL(I) = .false.
      end do
   end if
@@ -295,7 +296,7 @@ subroutine MISPRT
 
   !     SPECIES VARIABLE INITIALIZATIONS.
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      SPTPAM(I) = 0.0
      SPDMR(I) = 0.0
      SPDMI(I) = 0.0
@@ -339,7 +340,7 @@ subroutine MISPRT
   !     Species/DBH class variable initializations.
   !     MAXSP species by 20 DBH classes at 2 inch intervals (see above).
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      do J = 1,20
         SDTPA(I,J) = 0.0
         SDINF(I,J) = 0.0
@@ -359,7 +360,7 @@ subroutine MISPRT
 
   !     Calculate species mistletoe infection totals.
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      I1 = ISCT(ISPC,1)
 
      !        If there are no trees of this species, skip out.
@@ -425,7 +426,7 @@ subroutine MISPRT
 
            PRTTBL = .true.
 
-           do ISPC = I,MAXSP
+           do ISPC = I,CFG_MAXSP
               MISTBL(ISPC) = (MISFIT(ISPC) .eq.1.and.&
                    &ISCT(ISPC,1) .gt.0)
               110 continue
@@ -442,7 +443,7 @@ subroutine MISPRT
   if (.not.LSORT4) then
      LSORT4 = .true.
 
-     do ISPC = 1,MAXSP
+     do ISPC = 1,CFG_MAXSP
 
         !           Loop and save top 4 most infected species (based on SPTPAI).
         !           The species numbers are saved in ISVSP4 and sorted by
@@ -538,7 +539,7 @@ subroutine MISPRT
   !     total infected by DMR class for each species using all trees
   !     and infected-only trees.
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      do IDCLAS = 1,20
         if (SDTPA(ISPC,IDCLAS) .ne.0) SDDMR(ISPC,IDCLAS) = &
              &SDSUM(ISPC,IDCLAS) / SDTPA(ISPC,IDCLAS)
@@ -568,7 +569,7 @@ subroutine MISPRT
 
   !     Do species specific calculations.
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
 
      !        Calculate species average mistletoe ratings and infection
      !        levels using all trees and infected-only trees.
@@ -771,7 +772,7 @@ subroutine MISPRT
         write(IMOUT4,615) IDMSOUT(4)
      end if
 
-     do ISPC = 1,MAXSP
+     do ISPC = 1,CFG_MAXSP
 
         !         CHECK IF THIS PARTICULAR SPECIES WAS REQUESTED AND
         !         THE SPECIES HAS MISTLETOE INFECTIONS.

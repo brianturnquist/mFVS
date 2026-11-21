@@ -3,6 +3,7 @@
 !================================================!
 ! BASE $Id$
 subroutine VOLKEY(DEBUG)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE PROCESSES THE KEYWORDS USED TO MODIFY VOLUME
@@ -73,7 +74,7 @@ subroutine VOLKEY(DEBUG)
            9906 continue
         end do
      else if (ISPC .eq. 0) then
-        do J = 1,MAXSP
+        do J = 1,CFG_MAXSP
            BFMIND(J) = PRMS(2)
            BFTOPD(J) = PRMS(3)
            BFSTMP(J) = PRMS(4)
@@ -114,7 +115,7 @@ subroutine VOLKEY(DEBUG)
            9916 continue
         end do
      else if (ISPC .eq. 0) then
-        do J = 1,MAXSP
+        do J = 1,CFG_MAXSP
            DBHMIN(J) = PRMS(2)
            TOPD(J) = PRMS(3)
            STMP(J) = PRMS(4)
@@ -160,7 +161,7 @@ subroutine VOLKEY(DEBUG)
            9926 continue
         end do
      else if (ISPC .eq. 0) then
-        do J = 1,MAXSP
+        do J = 1,CFG_MAXSP
            BFDEFT(2,J) = PRMS(2)
            BFDEFT(3,J) = PRMS(3)
            BFDEFT(4,J) = PRMS(4)
@@ -207,7 +208,7 @@ subroutine VOLKEY(DEBUG)
            9936 continue
         end do
      else if (ISPC .eq. 0) then
-        do J = 1,MAXSP
+        do J = 1,CFG_MAXSP
            CFDEFT(2,J) = PRMS(2)
            CFDEFT(3,J) = PRMS(3)
            CFDEFT(4,J) = PRMS(4)
@@ -233,7 +234,7 @@ subroutine VOLKEY(DEBUG)
 
   9960 continue
   if (DEBUG) write(JOSTND,9970) (BFMIND(I),BFTOPD(I),BFSTMP(I), &
-       & I,I = 1,MAXSP)
+       & I,I = 1,CFG_MAXSP)
   9970 format(' BFMIND=',F10.2,' BFTOPD=',F10.2,' BFSTMP=', &
        & F10.2,' SPECIES=',I3)
 

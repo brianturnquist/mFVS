@@ -26,14 +26,14 @@ subroutine FORMCL(ISPC,IFOR,D,FC)
 
   !  SISKIYOU  FORM CLASS VALUES
 
-  data SISKFC/&
+  data SISKFC(1:MAXSP_NATIVE,:)/&
        &91., 96., 90., 98., 98., 89., 98., 91., 92., 93., 95., 82.,&
        &84., 91., 86., 90., 88., 89., 98., 91., 83., 89., 86., 82.,&
        &79., 85., 81., 86., 84., 77., 98., 82., 80., 83., 78., 79.,&
        &78., 83., 80., 85., 81., 73., 98., 80., 80., 81., 76., 78.,&
        &78., 82., 80., 85., 80., 72., 98., 79., 79., 80., 75., 78./
 
-  data BLM712/&
+  data BLM712(1:MAXSP_NATIVE)/&
        &74., 76., 76., 78., 72., 66., 72., 74., 78., 80., 70., 75./
 
   !  FOR REGION 6 FORESTS, LOAD THE FORM CLASS USING TABLE VALUES.

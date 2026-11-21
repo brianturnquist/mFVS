@@ -2,6 +2,7 @@
 !   Volume-equation keyword handlers shared by INITRE   !
 !=======================================================!
 module INITREVOL_MOD
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! Volume handlers shared by the US, ON and BC INITRE. The US copy's FIA
@@ -300,7 +301,7 @@ contains
 
     else if (IS.eq.0) then
        if (LNOTBK(2)) then
-          do I = 1,MAXSP
+          do I = 1,CFG_MAXSP
              VEQNNC(I) = KARD(2)
           end do
 
@@ -349,7 +350,7 @@ contains
           end if
 
           if (ISPEC.ne.8888) then
-             do I = 1,MAXSP
+             do I = 1,CFG_MAXSP
                 VEQNNC(I) = '           '
              end do
              write(JOSTND,13006)KEYWRD
@@ -358,7 +359,7 @@ contains
           end if
        end if
        if (LNOTBK(3)) then
-          do I = 1,MAXSP
+          do I = 1,CFG_MAXSP
              VEQNNB(I) = KARD(3)
           end do
 
@@ -407,7 +408,7 @@ contains
           end if
 
           if (ISPEC.ne.8888) then
-             do I = 1,MAXSP
+             do I = 1,CFG_MAXSP
                 VEQNNB(I) = '           '
              end do
              if (LNOTBK(2))KEYWRD = '        '
@@ -768,7 +769,7 @@ contains
        !     IF (IS=0) ALL SPECIES WILL BE CHANGED IN FOLLOWING CODE:
 
     else if (IS .eq.0) then
-       do IS = 1,MAXSP
+       do IS = 1,CFG_MAXSP
           if (LNOTBK(3)) CFDEFT(2,IS) = ARRAY(3)
           if (LNOTBK(4)) CFDEFT(3,IS) = ARRAY(4)
           if (LNOTBK(5)) CFDEFT(4,IS) = ARRAY(5)
@@ -1029,7 +1030,7 @@ contains
        !     IF (IS=0) ALL SPECIES WILL BE CHANGED IN FOLLOWING CODE:
 
     else if (IS .eq.0) then
-       do IS = 1,MAXSP
+       do IS = 1,CFG_MAXSP
           if (LNOTBK(3)) BFDEFT(2,IS) = ARRAY(3)
           if (LNOTBK(4)) BFDEFT(3,IS) = ARRAY(4)
           if (LNOTBK(5)) BFDEFT(4,IS) = ARRAY(5)

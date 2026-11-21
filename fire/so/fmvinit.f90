@@ -3,6 +3,7 @@
 !=======================!
 ! FIRE-SO $Id$
 subroutine FMVINIT
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  Purpose:
@@ -201,7 +202,7 @@ subroutine FMVINIT
 
   !     NOW CONVERT V2T SO THAT IT WILL TAKE THE CUFT INTO TONS.
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      V2T(I) = V2T(I) / 2000.0
   end do
 
@@ -213,7 +214,7 @@ subroutine FMVINIT
   HTXSFT = 1.0
   HTR1 = 0.03406
   HTR2 = 0.01
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      PSOFT(I) = 0.0
   end do
 
@@ -222,7 +223,7 @@ subroutine FMVINIT
   !     IN SO-FFE VARIANT DECAY SNAG DEFAULTS ARE ASSIGNED IN CYCLE 1
   !     IN **FMCBA**
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      ALLDWN(I) = -1.0
      DECAYX(I) = -1.0
      FALLX(I) = -1.0

@@ -3,6 +3,7 @@
 !=================!
 ! RD $Id$
 subroutine RDINIT
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  Purpose :
@@ -637,7 +638,7 @@ subroutine RDINIT
      3900 continue
   end do
 
-  do I = 1, (ITOTRR + MAXSP)
+  do I = 1, (ITOTRR + CFG_MAXSP)
      PRINF(I) = 0.0
      PRPTOT(I) = 0.0
      4000 continue
@@ -651,7 +652,7 @@ subroutine RDINIT
      4200 continue
   end do
 
-  do I = 1, MAXSP
+  do I = 1, CFG_MAXSP
      ROCRI(I) = 0.0
      ROCRL(I) = 0.0
      RROBNK(I) = 0.0
@@ -675,7 +676,7 @@ subroutine RDINIT
   end do
 
   do J = 1, 4
-     do I = 1, MAXSP
+     do I = 1, CFG_MAXSP
         WINDSP(I,J) = 0.0
         4600 continue
      end do
@@ -688,7 +689,7 @@ subroutine RDINIT
      4800 continue
   end do
 
-  do I = 1, (3 * MAXSP)
+  do I = 1, (3 * CFG_MAXSP)
      HOST(I) = 0
      IIRATE(I) = 0
      IURATE(I) = 0

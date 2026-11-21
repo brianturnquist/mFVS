@@ -3,6 +3,7 @@
 !=====================================!
 ! IE $Id$
 subroutine SITSET
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE IS USED TO SET SIMULATION CONTROLLING VALUES
@@ -39,7 +40,7 @@ subroutine SITSET
        &290.,330.,380.,440.,500.,500.,390.,390.,440.,180.,&
        &290.,400.,350.,390.,260.,300.,220.,220.,160.,300./
 
-  data MAPSIT/&
+  data MAPSIT(:,1:MAXSP_NATIVE)/&
        &330*0,&
        &30*0,& !WB
        &25,29,35,35,32,34,35,32,27,39,37,32,36,41,41,41,& !LM
@@ -68,7 +69,7 @@ subroutine SITSET
   !  ASSIGN SITE INDEX BY SPECIES AND HABITAT TYPE
 
   if (ISISP.eq.0)ISISP = MAPSS(ITYPE)
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      if (SITEAR(ISPC).eq.0.)SITEAR(ISPC) = MAPSIT(ITYPE,ISPC)
      5 continue
   end do
@@ -76,7 +77,7 @@ subroutine SITSET
   !  SET SDIDEF AND BAMAX VALUES WHICH HAVE NOT BEEN SET BY KEYWORD.
 
   if (BAMAX.le.0) BAMAX = BAMAXA(ITYPE)
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (SDIDEF(I).le.0.) SDIDEF(I) = BAMAX/(0.5454154*(PMSDIU/100.))
      10 continue
   end do
@@ -84,12 +85,12 @@ subroutine SITSET
   do I = 1,15
      J = (I-1)*10 + 1
      JJ = J+9
-     if (JJ.gt.MAXSP)JJ = MAXSP
+     if (JJ.gt.CFG_MAXSP)JJ = CFG_MAXSP
      write(JOSTND,90)(NSP(K,1)(1:2),K = J,JJ)
      90 format(/'SPECIES ',5X,10(A2,6X))
      write(JOSTND,91)(NINT(SDIDEF(K)),K = J,JJ )
      91 format('SDI MAX ',   10I8.0)
-     if (JJ .eq. MAXSP)go to 93
+     if (JJ .eq. CFG_MAXSP)go to 93
      92 continue
   end do
   93 continue
@@ -101,7 +102,7 @@ subroutine SITSET
   !  COLVILLE  (IFOR=5) IS A REGION 6 FOREST. ALL OTHERS FORESTS IN THIS
   !  VARIANT ARE IN REGION 1.
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      if (IFOR.eq.5) then
         if (METHB(ISPC).eq.999)METHB(ISPC) = 6
         if (METHC(ISPC).eq.999)METHC(ISPC) = 6
@@ -123,7 +124,7 @@ subroutine SITSET
   VAR = 'IE'
 
   if (LFIANVB) call NVB_REGION_CHECK
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      read(FIAJSP(ISPC),'(I4)')IFIASP
      VOLEQ = '           '
      if (((METHC(ISPC).eq.6).or.(METHC(ISPC).eq.9)).and.&
@@ -147,14 +148,14 @@ subroutine SITSET
 
   if (LFIA) then
      call FIAHEAD(JOSTND)
-     write(JOSTND,211) (NSP(I,1)(1:2),FIAJSP(I),I = 1,MAXSP)
+     write(JOSTND,211) (NSP(I,1)(1:2),FIAJSP(I),I = 1,CFG_MAXSP)
      211 format ((T12,8(A3,'=',A6,:,'; '),A,'=',A6))
   end if
 
   !  WRITE VOLUME EQUATION NUMBER TABLE
 
   call VOLEQHEAD(JOSTND)
-  write(JOSTND,230)(NSP(J,1)(1:2),VEQNNC(J),VEQNNB(J),J = 1,MAXSP)
+  write(JOSTND,230)(NSP(J,1)(1:2),VEQNNC(J),VEQNNB(J),J = 1,CFG_MAXSP)
   230 format(4(2X,A2,4X,A11,1X,A10,1X))
 
   return

@@ -24,7 +24,7 @@ block data CUBRDS
   !  COEFFICIENTS FOR CUBIC FOOT VOLUME FOR TREES THAT ARE SMALLER THAN
   !  THE TRANSITION SIZE. 1 ROW PER SPECIES, EACH ROW HAS 7 COEFFS.
 
-  data CFVEQS/ &
+  data CFVEQS(:,1:MAXSP_NATIVE)/ &
        & 0.0,      0.0,     0.0,     0.0,     0.0,     0.0,    0.0, &
        & 0.0,      0.0,     0.0,     0.0,     0.0,     0.0,    0.0, &
        & 0.0,      0.0,     0.0,     0.0,     0.0,     0.0,    0.0, &
@@ -52,7 +52,7 @@ block data CUBRDS
   !  COEFFICIENTS FOR CUBIC FOOT VOLUME FOR TREES THAT ARE LARGER THAN
   !  THE TRANSITION SIZE. 1 ROW PER SPECIES, EACH ROW HAS 7 COEFFS.
 
-  data CFVEQL/ &
+  data CFVEQL(:,1:MAXSP_NATIVE)/ &
        & 0.0,      0.0,     0.0,     0.0,     0.0,     0.0,    0.0, &
        & 0.0,      0.0,     0.0,     0.0,     0.0,     0.0,    0.0, &
        & 0.0,      0.0,     0.0,     0.0,     0.0,     0.0,    0.0, &
@@ -80,20 +80,20 @@ block data CUBRDS
   !  FLAG IDENTIFYING THE SIZE TRANSITION VARIABLE; 0=D, 1=D2H
   !  1 PER SPECIES.
 
-  data ICTRAN/0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, &
+  data ICTRAN(1:MAXSP_NATIVE)/0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, &
        & 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0/
 
   !  TRANSITION SIZE.  TREES OF LARGER SIZE (D OR D2H) WILL COEFFICIENTS
   !  FOR LARGER SIZE TREES.  1 PER SPECIES.
 
-  data CTRAN/ &
+  data CTRAN(1:MAXSP_NATIVE)/ &
        & 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, &
        & 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0/
 
   !  COEFFICIENTS FOR BOARD FOOT VOLUME FOR TREES THAT ARE SMALLER THAN
   !  THE TRANSITION SIZE. 1 ROW PER SPECIES, 7 COEFFS PER ROW.
 
-  data BFVEQS/ &
+  data BFVEQS(:,1:MAXSP_NATIVE)/ &
        & 0.0,      0.0,     0.0,     0.0,     0.0,     0.0,    0.0, &
        & 0.0,      0.0,     0.0,     0.0,     0.0,     0.0,    0.0, &
        & 0.0,      0.0,     0.0,     0.0,     0.0,     0.0,    0.0, &
@@ -121,7 +121,7 @@ block data CUBRDS
   !  COEFFICIENTS FOR BOARD FOOT VOLUME FOR TREES THAT ARE LARGER THAN
   !  THE TRANSITION SIZE. 1 ROW PER SPECIES, 7 COEFFS PER ROW.
 
-  data BFVEQL/ &
+  data BFVEQL(:,1:MAXSP_NATIVE)/ &
        & 0.0,      0.0,     0.0,     0.0,     0.0,     0.0,    0.0, &
        & 0.0,      0.0,     0.0,     0.0,     0.0,     0.0,    0.0, &
        & 0.0,      0.0,     0.0,     0.0,     0.0,     0.0,    0.0, &
@@ -149,14 +149,14 @@ block data CUBRDS
   !  FLAG IDENTIFYING THE SIZE TRANSITION VARIABLE; 0=D, 1=D2H
   !  1 PER SPECIES.
 
-  data IBTRAN/ &
+  data IBTRAN(1:MAXSP_NATIVE)/ &
        & 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, &
        & 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0/
 
   !  TRANSITION SIZE.  TREES OF LARGER SIZE (D OR D2H) WILL USE
   !  COEFFICIENTS FOR LARGER SIZE TREES.  1 PER SPECIES.
 
-  data BTRAN/ &
+  data BTRAN(1:MAXSP_NATIVE)/ &
        & 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, &
        & 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0/
 

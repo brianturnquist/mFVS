@@ -84,7 +84,7 @@ subroutine VARMRT(TOKILL,DEBUG,SUMKIL,DQ10)
 
   !     MAP EACH SPECIES TO ONE OF 18 FITTED EQUATIONS
   !     ITM = INDIVIDUAL TREE MORTALITY
-  data ITM_MAP /&
+  data ITM_MAP(1:MAXSP_NATIVE) /&
        &5, 4, 3, 4, 1, 7, 8,11, 9, 5,& ! 10
        &9,11, 3, 9,18,18,17,13,13,15,&
        &13,13,13,16,13,12,13,14,18,16,& ! 30

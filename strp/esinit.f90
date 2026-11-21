@@ -3,6 +3,7 @@
 !===================!
 ! STRP $Id$
 subroutine ESINIT
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     CALLED FROM INITRE, ONLY ONCE, TO INITIALIZE REGEN. MODEL.
@@ -21,7 +22,7 @@ subroutine ESINIT
   character(len=255) :: CNAME
   equivalence (NSTK,SUMPRB)
   logical :: LTEMP,LKECHO
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      HTADJ(I) = 0.0
      XESMLT(I) = 1.0
      10 continue

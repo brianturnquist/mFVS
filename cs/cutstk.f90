@@ -32,7 +32,7 @@ subroutine CUTSTK
   !  SPECIES GROUP 4 - NORTHERN HARDWOOD
   !  SPECIES GROUP 5 - NORTHERN HARDWOODS  50-100% BASSWOOD
 
-  data JJSP/5*1,2*2,2*3,18*4,3,3*4,3,8*4,3,5,4*4,21*3,10*4,19*3/
+  data JJSP(1:MAXSP_NATIVE)/5*1,2*2,2*3,18*4,3,3*4,3,8*4,3,5,4*4,21*3,10*4,19*3/
 
   ! Check whether debugging is enabled
   call DBCHK (DEBUG,'CUTSTK',6,ICYC)

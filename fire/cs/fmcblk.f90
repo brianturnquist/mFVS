@@ -26,7 +26,7 @@ block data FMCBLK
   !       9=HARD MAPLE/OAK/HICKORY/BEECH
   !      10=WOODLAND JUNIPER/OAK/MESQUITE
 
-  data BIOGRP/&
+  data BIOGRP(1:MAXSP_NATIVE)/&
        &1, 1, 4, 4, 4,&
        &4, 4, 8, 8, 8,& ! 10
        &8, 8, 8, 9, 9,&

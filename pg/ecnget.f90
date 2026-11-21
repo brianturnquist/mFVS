@@ -3,6 +3,8 @@
 !=================!
 ! PG $Id$
 subroutine ECNGET (WK3,IPNT,ILIMIT)
+  use VARCFG_MOD, only: CFG_MAXSP
+  use PUTGETSP_MOD, only: BFRDSP,IFRDSP,LFRDSP
   implicit none
 
   !     STORE THE ECONOMIC DATA FOR A GIVEN STAND.
@@ -19,13 +21,18 @@ subroutine ECNGET (WK3,IPNT,ILIMIT)
   integer :: MXL,MXI,MXR
 
   parameter (MXL = 6,MXI = 20,MXR = 14)
-  integer :: ILIMIT,IPNT,I
+  integer :: ILIMIT,IPNT,I,NHRVSP
   logical :: LOGICS(MXL)
   real    :: WK3 (MAXTRE)
   integer :: INTS (MXI)
   real    :: REALS (MXR)
 
   !  GET THE INTEGER SCALARS.
+
+  !  THE HARVEST-REVENUE LISTS HOLD MAX_HARVESTS ENTRIES, A CAPACITY DERIVED
+  !  FROM THE SPECIES STORAGE. THE RESTART TRANSFERS THE SAME CAPACITY
+  !  DERIVED FROM THE ACTIVE SPECIES COUNT (SP05); THE LISTS FILL FROM 1.
+  NHRVSP = INT(0.5 * (MAXCYC * CFG_MAXSP + 1))
 
   call IFREAD (WK3, IPNT, ILIMIT, INTS, MXI, 2)
   annCostCnt = INTS( 1)
@@ -55,9 +62,8 @@ subroutine ECNGET (WK3,IPNT,ILIMIT)
   call IFREAD (WK3,IPNT,ILIMIT, varHrvUnits, MAX_KEYWORDS,        2)
   call IFREAD (WK3,IPNT,ILIMIT, varPctUnits, MAX_KEYWORDS,        2)
   call IFREAD (WK3,IPNT,ILIMIT, plntCostUnits, MAX_PLANT_COSTS,   2)
-  call IFREAD (WK3,IPNT,ILIMIT, hrvRevCnt,MAXSP*MAX_REV_UNITS,    2)
-  call IFREAD (WK3,IPNT,ILIMIT, hrvRevDiaIndx,MAXSP*&
-       &MAX_REV_UNITS*MAX_KEYWORDS,                        2)
+  call IFRDSP (WK3,IPNT,ILIMIT,hrvRevCnt,MAX_REV_UNITS,2)
+  call IFRDSP (WK3,IPNT,ILIMIT,hrvRevDiaIndx,MAX_REV_UNITS*MAX_KEYWORDS,2)
   call IFREAD (WK3,IPNT,ILIMIT, burnCostDur, MAX_RATES,           2)
   call IFREAD (WK3,IPNT,ILIMIT, mechCostDur, MAX_RATES,           2)
   call IFREAD (WK3,IPNT,ILIMIT, annCostDur,&
@@ -74,15 +80,14 @@ subroutine ECNGET (WK3,IPNT,ILIMIT)
        &MAX_KEYWORDS*MAX_RATES,                            2)
   call IFREAD (WK3,IPNT,ILIMIT, plntCostDur,&
        &MAX_PLANT_COSTS*MAX_RATES,                         2)
-  call IFREAD (WK3,IPNT,ILIMIT,hrvRevDur,MAXSP*&
-       &MAX_REV_UNITS*MAX_KEYWORDS*MAX_RATES,              2)
+  call IFRDSP (WK3,IPNT,ILIMIT,hrvRevDur,MAX_REV_UNITS*MAX_KEYWORDS*MAX_RATES,2)
   call IFREAD (WK3,IPNT,ILIMIT, hrvCstKeywd, MAX_COSTS,           2)
   call IFREAD (WK3,IPNT,ILIMIT, hrvCstTime,  MAX_COSTS,           2)
   call IFREAD (WK3,IPNT,ILIMIT, hrvCstTyp,   MAX_COSTS,           2)
-  call IFREAD (WK3,IPNT,ILIMIT, hrvRvnKeywd, MAX_HARVESTS,        2)
-  call IFREAD (WK3,IPNT,ILIMIT, hrvRvnSp,    MAX_HARVESTS,        2)
-  call IFREAD (WK3,IPNT,ILIMIT, hrvRvnTime,  MAX_HARVESTS,        2)
-  call IFREAD (WK3,IPNT,ILIMIT, hrvRvnUnits, MAX_HARVESTS,        2)
+  call IFREAD (WK3,IPNT,ILIMIT, hrvRvnKeywd, NHRVSP,              2)
+  call IFREAD (WK3,IPNT,ILIMIT, hrvRvnSp,    NHRVSP,              2)
+  call IFREAD (WK3,IPNT,ILIMIT, hrvRvnTime,  NHRVSP,              2)
+  call IFREAD (WK3,IPNT,ILIMIT, hrvRvnUnits, NHRVSP,              2)
 
   !  GET THE LOGICAL SCALARS.
 
@@ -96,7 +101,7 @@ subroutine ECNGET (WK3,IPNT,ILIMIT)
 
   !  LOGICAL ARRAYS
 
-  call LFREAD (WK3,IPNT,ILIMIT,hasRevAmt,MAXSP*MAX_REV_UNITS,     2)
+  call LFRDSP (WK3,IPNT,ILIMIT,hasRevAmt,MAX_REV_UNITS,2)
 
   !  GET THE REAL SCALARS.
 
@@ -121,7 +126,7 @@ subroutine ECNGET (WK3,IPNT,ILIMIT)
   call BFREAD (WK3,IPNT,ILIMIT, hrvCostBf, MAX_KEYWORDS,          2)
   call BFREAD (WK3,IPNT,ILIMIT, hrvCostFt3, MAX_KEYWORDS,         2)
   call BFREAD (WK3,IPNT,ILIMIT, hrvCostTpa, MAX_KEYWORDS,         2)
-  call BFREAD (WK3,IPNT,ILIMIT,lbsFt3Amt,MAXSP,                   2)
+  call BFREAD (WK3,IPNT,ILIMIT,lbsFt3Amt,CFG_MAXSP,                   2)
   do I = TPA,FT3_100
      call BFREAD (WK3,IPNT,ILIMIT,harvest(I),1,                      2)
   end do
@@ -154,22 +159,18 @@ subroutine ECNGET (WK3,IPNT,ILIMIT)
   call BFREAD (WK3,IPNT,ILIMIT,plntCostRate,MAX_PLANT_COSTS*&
        &MAX_RATES, 2)
 
-  call BFREAD (WK3,IPNT,ILIMIT,hrvRevPrice,MAXSP*MAX_REV_UNITS*&
-       &MAX_KEYWORDS,                                      2)
-  call BFREAD (WK3,IPNT,ILIMIT,hrvRevDia,MAXSP*MAX_REV_UNITS*&
-       &MAX_KEYWORDS,                                      2)
-  call BFREAD (WK3,IPNT,ILIMIT,revVolume,MAXSP*MAX_REV_UNITS*&
-       &MAX_KEYWORDS,                                      2)
+  call BFRDSP (WK3,IPNT,ILIMIT,hrvRevPrice,MAX_REV_UNITS*MAX_KEYWORDS,2)
+  call BFRDSP (WK3,IPNT,ILIMIT,hrvRevDia,MAX_REV_UNITS*MAX_KEYWORDS,2)
+  call BFRDSP (WK3,IPNT,ILIMIT,revVolume,MAX_REV_UNITS*MAX_KEYWORDS,2)
 
-  call BFREAD (WK3,IPNT,ILIMIT,hrvRevRate,MAXSP*MAX_REV_UNITS*&
-       &MAX_KEYWORDS*MAX_RATES,                            2)
+  call BFRDSP (WK3,IPNT,ILIMIT,hrvRevRate,MAX_REV_UNITS*MAX_KEYWORDS*MAX_RATES,2)
 
   call BFREAD (WK3,IPNT,ILIMIT,logBfVol,ITRN*MAX_LOGS,         2)
   call BFREAD (WK3,IPNT,ILIMIT,logDibBf, ITRN*MAX_LOGS,        2)
   call BFREAD (WK3,IPNT,ILIMIT,logFt3Vol,ITRN*MAX_LOGS,        2)
   call BFREAD (WK3,IPNT,ILIMIT,logDibFt3,ITRN*MAX_LOGS,        2)
   call BFREAD (WK3,IPNT,ILIMIT,hrvCstAmt,    MAX_COSTS,        2)
-  call BFREAD (WK3,IPNT,ILIMIT,hrvRvnAmt,    MAX_HARVESTS,     2)
+  call BFREAD (WK3,IPNT,ILIMIT,hrvRvnAmt,    NHRVSP,           2)
   call BFREAD (WK3,IPNT,ILIMIT,undiscCost,   MAX_YEARS,        2)
   call BFREAD (WK3,IPNT,ILIMIT,undiscRev,    MAX_YEARS,        2)
   return

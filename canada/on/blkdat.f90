@@ -30,7 +30,7 @@ block data BLKDAT
   !  SPECIES SPECIFIC BARK RATIOS.  FROM RAILE, G.K. 1982. ESTIMATING
   !  STUMP VOLUME. RES. PAP. NC-224, 4 P.
 
-  data BKRAT/5*.91,2*.95,3*.94,.95,3*.91,2*.94,.93,3*.94,3*.93,&
+  data BKRAT(1:MAXSP_NATIVE)/5*.91,2*.95,3*.94,.95,3*.91,2*.94,.93,3*.94,3*.93,&
        &.94,.92,3*.94,.92,4*.91,3*.92,3*.94,3*.92,6*.94,&
        &20*.92,2*.91,.95,.94/
 
@@ -48,7 +48,7 @@ block data BLKDAT
   !   HHTMAX, IFORST, OCURHT, AND OCURNF HAVE ALL BEEN SET TO ONE
   !   VALUE FOR THE LS & ON VARIANTS
 
-  data XMIN/&
+  data XMIN(1:MAXSP_NATIVE)/&
        &0.33, 0.33, 0.25, 0.25, 0.33, 0.25, 0.25, 0.33, 0.25, 0.50,&
        &0.33, 0.25, 0.25, 0.33, 0.33, 0.42, 0.42, 0.42, 1.00, 0.42,&
        &0.33, 0.33, 0.50, 0.42, 0.33, 0.25, 0.25, 0.25, 0.42, 0.33,&
@@ -58,7 +58,7 @@ block data BLKDAT
        &0.33, 2.10, 0.33, 4.70, 1.00, 2.10, 0.50, 2.10, 0.33, 0.33,&
        &0.25, 0.25/
 
-  data HHTMAX/&
+  data HHTMAX(1:MAXSP_NATIVE)/&
        &14., 20., 18., 18., 20., 18., 18., 20., 16., 24.,&
        &16., 16., 16., 16., 18., 24., 24., 18., 20., 26.,&
        &16., 12., 20., 22., 16., 16., 16., 14., 24., 16.,&
@@ -98,7 +98,7 @@ block data BLKDAT
 
   !     ONTARIO SPECIES CODES.
   !        ADD IN THE FOUR NEW PLANTATION SPECIES
-  data JSP     /'PJ ','PS ','RN ','RP ','PW ','SW ','SN ','BF ',& ! 8
+  data JSP(1:MAXSP_NATIVE)     /'PJ ','PS ','RN ','RP ','PW ','SW ','SN ','BF ',& ! 8
        &'SB ','TA ','CE ','HE ','SO ','CR ','AB ','AR ','CW ','MV ',& !18
        &'MR ','CB ','EW ','ES ','ER ','BY ','BD ','MH ','MB ','BE ',& !28
        &'AW ','OW ','OP ','OB ','OC ','OR ','BO ','PN ','HB ','HP ',& !38
@@ -107,7 +107,7 @@ block data BLKDAT
        &'GB ','SY ','CP ','CC ','PL ','WI ','WI ','WI ','SS ','AM ',& !68
        &'JP ','WP ','SP ','BP '/ !72
 
-  data FIAJSP /&
+  data FIAJSP(1:MAXSP_NATIVE) /&
        &'105',   '130',   '125',   '125',   '129',   '094',   '091',&
        &'012',   '095',   '071',   '241',   '261',   '298',   '068',&
        &'543',   '544',   '742',   '317',   '316',   '762',   '972',&
@@ -120,7 +120,7 @@ block data BLKDAT
        &'920',   '922',   '923',   '931',   '935',   '105',   '129',&
        &'094',   '095'/
 
-  data PLNJSP /&
+  data PLNJSP(1:MAXSP_NATIVE) /&
        &'PIBA2 ','PISY  ','PIRE  ','PIRE  ','PIST  ','PIGL  ','PIAB  ',&
        &'ABBA  ','PIMA  ','LALA  ','THOC2 ','TSCA  ','2TE   ','JUVI  ',&
        &'FRNI  ','FRPE  ','PODE3 ','ACSA2 ','ACRU  ','PRSE2 ','ULAM  ',&
@@ -157,7 +157,7 @@ block data BLKDAT
   !    &  'NC3','BE3','ST3','MM3','AH3','AC3','HB3','DW3','HT3','AP3',
   !    &  'BG3','SY3','PR3','CC3','PL3','WI3','BL3','DM3','SS3','MA3'/
 
-  data NSP /'PJ1','PS1','RN1','RP1','PW1','SW1','SN1','BF1','SB1',&
+  data NSP(1:MAXSP_NATIVE,:) /'PJ1','PS1','RN1','RP1','PW1','SW1','SN1','BF1','SB1',&
        &'TA1','CE1','HE1','SO1','CR1','AB1','AR1','CW1','MV1',&
        &'MR1','CB1','EW1','ES1','ER1','BY1','BD1','MH1','MB1','BE1',&
        &'AW1','OW1','OP1','OB1','OC1','OR1','BO1','PN1','HB1','HP1',&
@@ -260,7 +260,7 @@ block data BLKDAT
   !  SIGMAR ARE THE ERROR TERMS FOR DIAMETER GROWTH.  THESE COEFFICIENTS
   !  ARE THE ROOT MEAN SQUARE ERROR FOR EACH SPECIES.
 
-  data SIGMAR/2*.205,2*.270,.161,2*.197,.149,.080,.108,.128,.118,&
+  data SIGMAR(1:MAXSP_NATIVE)/2*.205,2*.270,.161,2*.197,.149,.080,.108,.128,.118,&
        &2*.205,2*.145,4*.178,3*.234,.128,.201,3*.240,.186,&
        &4*.105,.130,2*.114,3*.140,.153,2*.211,.156,25*.23,&
        &.205,.161,.197,.080/
@@ -268,7 +268,7 @@ block data BLKDAT
   !     DATA STATEMENTS FOR VARIABLES IN VARCOM COMMON BLOCK IN THE
   !     FOLLOWING DATA STATEMENTS, DF IS USED FOR OT, AND WF FOR RC
 
-  data HT1/&
+  data HT1(1:MAXSP_NATIVE)/&
        &4.5084,   4.5457,   4.5084,   4.5084,   4.6090,   4.5084,&
        &4.5084,   4.5084,   4.5084,   4.5084,   4.5084,   4.5084,&
        &4.0374,   4.4718,   4.6155,   4.6155,   4.9396,   4.5991,&
@@ -282,7 +282,7 @@ block data BLKDAT
        &4.4207,   4.4207,   3.9678,   4.4911,   4.4911,   4.4207,&
        &4.3383,   4.4207,   4.5084,   4.6090,   4.5084,   4.5084/
 
-  data HT2/&
+  data HT2(1:MAXSP_NATIVE)/&
        &-6.0116,  -6.8000,  -6.0116,  -6.0116,  -6.1896,  -6.0116,&
        &-6.0116,  -6.0116,  -6.0116,  -6.0116,  -6.0116,  -6.0116,&
        &-4.2964,  -5.0078,  -6.2945,  -6.2945,  -8.1838,  -6.6706,&

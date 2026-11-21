@@ -30,7 +30,7 @@ subroutine FORMCL(ISPC,IFOR,D,FC)
 
   !  DESCHUTES FORM CLASS VALUES
 
-  data DESHFC/&
+  data DESHFC(1:MAXSP_NATIVE,:)/&
        &80., 78., 80., 80., 78., 65., 82., 82., 80., 76.,&
        &60., 80., 80., 82., 80., 80., 80., 69., 78., 56.,&
        &70., 76., 76., 77., 76., 76., 70., 77., 75., 77.,&
@@ -58,7 +58,7 @@ subroutine FORMCL(ISPC,IFOR,D,FC)
 
   !  FREMONT FORM CLASS VALUES
 
-  data FREMFC /&
+  data FREMFC(1:MAXSP_NATIVE,:) /&
        &83., 70., 66., 68., 64., 64., 83., 77., 66., 70.,&
        &34., 76., 78., 82., 80., 83., 78., 69., 76., 56.,&
        &70., 76., 76., 77., 76., 76., 70., 77., 75., 77.,&
@@ -86,7 +86,7 @@ subroutine FORMCL(ISPC,IFOR,D,FC)
 
   !  WINEMA FORM CLASS VALUES
 
-  data WINEFC/&
+  data WINEFC(1:MAXSP_NATIVE,:)/&
        &78., 72., 78., 76., 75., 62., 83., 80., 76., 73.,&
        &60., 76., 81., 82., 80., 81., 78., 69., 76., 56.,&
        &70., 76., 76., 77., 76., 76., 70., 77., 75., 77.,&

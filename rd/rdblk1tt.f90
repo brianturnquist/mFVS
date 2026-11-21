@@ -89,7 +89,7 @@ block data RDBLK1
   !.... The following IRTSPC is for the TT 18 species variant.
   !....              1   2   3   4   5   6   7   8   9   10  -- FVS index
   !....              WB  LM  DF  PM  BS  AS  LP  ES  AF  PP  -- FVS species
-  data IRTSPC /22, 23, 3,  33, 20, 19, 7,  8,  9,  10,&
+  data IRTSPC(1:MAXSP_NATIVE) /22, 23, 3,  33, 20, 19, 7,  8,  9,  10,&
        !....              11  12  13  14  15  16  17  18          -- FVS index
        !....              UJ  RM  BI  MM  NC  MC  OS  OH          -- FVS species
        &26, 26, 40, 40, 24, 40, 17, 18 /

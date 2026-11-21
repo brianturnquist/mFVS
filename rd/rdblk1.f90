@@ -50,7 +50,7 @@ block data RDBLK1
   !.... The following IRTSPC is the base root disease model IRTSPC
   !.... It is used for variants : NI, CI, and KT
 
-  data IRTSPC / 1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 30/
+  data IRTSPC(1:MAXSP_NATIVE) / 1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 30/
 
   data DICLAS /0.0, 5.0, 12.0, 24.0/
   data DSFAC  /1.0, 0.75/

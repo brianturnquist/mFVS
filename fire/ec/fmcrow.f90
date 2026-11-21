@@ -86,7 +86,7 @@ subroutine FMCROW
   !    31 = OTHER SOFTWOODS          mountain hemlock 24
   !    32 = OTHER HARDWOODS          quaking aspen            41
 
-  data ISPMAP /&
+  data ISPMAP(1:MAXSP_NATIVE) /&
        &15,  8,  3,  4,  7,  4, 11, 18,  1, 13,&
        &6, 24,  7, 14,  4,  4,  1,  8, 16,  5,&
        &5, 23, 43, 17, 56, 41, 17, 17, 61, 64,&

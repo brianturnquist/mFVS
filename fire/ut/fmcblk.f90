@@ -42,7 +42,7 @@ block data FMCBLK
   ! BI USES BM (BIGLEAF MAPLE) EQUATIONS FROM SO
   ! OS USES OT (OTHER SP.) EQUATIONS FROM UT
 
-  data BIOGRP/&
+  data BIOGRP(1:MAXSP_NATIVE)/&
        &4, 4, 2, 3, 5, 6, 4, 5, 3, 4,&
        &4,10,10, 4,10,10, 4, 6, 6,10,&
        &7, 6, 4,10/

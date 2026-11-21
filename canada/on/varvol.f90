@@ -68,7 +68,7 @@ RECURSIVE subroutine VARVOL
 
   !     DEFINE SPECIES DATA ARRAYS
   !     DEFINE WHICH VOLUME EQUATION EACH SPECIES WILL USE.
-  data ONEQ/&
+  data ONEQ(1:MAXSP_NATIVE)/&
        &'ZAK','HON','ZAK','ZAK','ZAK','ZAK','ZAK','ZAK','ZAK','ZAK',&
        &'ZAK','HON','ZAK','ZAK','ZAK','ZAK','ZAK','ZAK','ZAK','HON',&
        &'HON','HON','HON','ZAK','HON','ZAK','ZAK','HON','HON','HON',&

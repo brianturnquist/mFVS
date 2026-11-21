@@ -84,6 +84,7 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
   !                was removed along with inclusion of common ARRAYS.F77.
 
   use MISTPRT_MOD, only: MISTPRT
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !.... Parameter statements.
@@ -195,7 +196,7 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
 
   !.... Check for valid species code.
 
-  if (ISPL.ge.0.and.ISPL.le.MAXSP) then
+  if (ISPL.ge.0.and.ISPL.le.CFG_MAXSP) then
 
      !....    Check for valid multipliers.
 
@@ -219,7 +220,7 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
           &'; DMR Decrease Multiplier=',F6.2)
   else
      call KEYDMP(JOSTND,IRECNT,KEYWRD,ARRAY,KARD)
-     write(JOSTND,8000) ISPL,MAXSP
+     write(JOSTND,8000) ISPL,CFG_MAXSP
      call ERRGRO(.true.,4)
   end if
   go to 50
@@ -245,9 +246,9 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
 
   !.... Check for invalid species code.
 
-  if (ISPL.lt.0.or.ISPL.gt.MAXSP) then
+  if (ISPL.lt.0.or.ISPL.gt.CFG_MAXSP) then
      call KEYDMP(JOSTND,IRECNT,KEYWRD,ARRAY,KARD)
-     write(JOSTND,8000) ISPL,MAXSP
+     write(JOSTND,8000) ISPL,CFG_MAXSP
      call ERRGRO(.true.,4)
 
      !.... Process height growth modification proportions from
@@ -305,9 +306,9 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
 
   !.... Check for invalid species code.
 
-  if (ISPL.lt.0.or.ISPL.gt.MAXSP) then
+  if (ISPL.lt.0.or.ISPL.gt.CFG_MAXSP) then
      call KEYDMP(JOSTND,IRECNT,KEYWRD,ARRAY,KARD)
-     write(JOSTND,8000) ISPL,MAXSP
+     write(JOSTND,8000) ISPL,CFG_MAXSP
      call ERRGRO(.true.,4)
 
      !.... Process preferences from supplemental record
@@ -354,7 +355,7 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
 
   !.... Check for valid species code.
 
-  if (ISPL.ge.0.and.ISPL.le.MAXSP) then
+  if (ISPL.ge.0.and.ISPL.le.CFG_MAXSP) then
 
      !....    Check for valid multipliers.
 
@@ -372,7 +373,7 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
           &I3,'); Mortality Multiplier=',F6.2)
   else
      call KEYDMP(JOSTND,IRECNT,KEYWRD,ARRAY,KARD)
-     write(JOSTND,8000) ISPL,MAXSP
+     write(JOSTND,8000) ISPL,CFG_MAXSP
      call ERRGRO(.true.,4)
   end if
   go to 50
@@ -412,9 +413,9 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
 
   !.... Check for invalid species code.
 
-  if (ISPL.lt.0.or.ISPL.gt.MAXSP) then
+  if (ISPL.lt.0.or.ISPL.gt.CFG_MAXSP) then
      call KEYDMP(JOSTND,IRECNT,KEYWRD,ARRAY,KARD)
-     write(JOSTND,8000) ISPL,MAXSP
+     write(JOSTND,8000) ISPL,CFG_MAXSP
      call ERRGRO(.true.,4)
 
      !.... Process growth modification proportions from supplemental record
@@ -487,9 +488,9 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
 
   !.... Check for valid species code.
 
-  if (ISPL.lt.0.or.ISPL.gt.MAXSP) then
+  if (ISPL.lt.0.or.ISPL.gt.CFG_MAXSP) then
      call KEYDMP(JOSTND,IRECNT,KEYWRD,ARRAY,KARD)
-     write(JOSTND,8000) ISPL,MAXSP
+     write(JOSTND,8000) ISPL,CFG_MAXSP
      call ERRGRO(.true.,4)
 
      !.... Check for invalid proportion to be infected.
@@ -547,7 +548,7 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
 
   !.... Check for valid species code.
 
-  if (ISPL.ge.0.and.ISPL.le.MAXSP) then
+  if (ISPL.ge.0.and.ISPL.le.CFG_MAXSP) then
 
      !....    Insert activity into schedule.
 
@@ -558,7 +559,7 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
           &I3,')')
   else
      call KEYDMP(JOSTND,IRECNT,KEYWRD,ARRAY,KARD)
-     write(JOSTND,8000) ISPL,MAXSP
+     write(JOSTND,8000) ISPL,CFG_MAXSP
      call ERRGRO(.true.,4)
   end if
   go to 50

@@ -55,7 +55,7 @@ Options:
 | `--workers N`, `--jobs N` | Variants built at once, and compiler processes per build (default 4 and 4). |
 | `--with-new-decks` | Run the working tree's `tests/FVSxx` folders on the references too. Use it when a change adds or edits decks the reference commits do not have; otherwise their outputs appear only in the working tree. |
 | `--program TEMPLATE` | Run each variant's decks against another program configuration of the working tree, `{variant}` substituted (default `FVS{variant}`). The first word is built with `make WORD.setup` and the test makefile is pointed at the command. Until SP15/SP16 add a combined target, it must be one of the `FVSxx` programs. |
-| `--poison-storage` | Raise the working tree's storage sizes and poison inactive COMMON slots (see below). Real variants need SP05/SP06 first. |
+| `--poison-storage [SIZE ...]` | Raise the working tree's storage sizes and poison inactive COMMON slots (see below). Naming sizes raises only those: `--poison-storage MAXSP` is SP05's species check. With no size, all three are raised, which needs SP06 as well. |
 
 Results are cached in `--cache-dir` by the content of each variant's source
 list, selected files, test folder and compiler version. The original is built
@@ -208,9 +208,18 @@ covered, and restarted runs are not re-poisoned.
 `check_poison_storage.py` proves the mechanism on a planted fixture compiled
 with the makefile's trap flags: code within the active extent gives the
 unpoisoned output, a real read of an inactive species slot stops with a
-floating-point exception and an integer read changes the output. Real
-variants will not build in this mode until SP05 removes the MAXSP-shaped
-DATA statements and SP05/SP06 move loops to active extents.
+floating-point exception and an integer read changes the output.
+
+Since SP05 the species check runs on real variants:
+
+```sh
+python3 -B tests/parity/check_suite.py --reference corrected --poison-storage MAXSP --cache-dir /private/tmp/mfvs-corrected
+```
+
+It raises only MAXSP (to 108), leaves `MAXSP_NATIVE` and so the active count
+`CFG_MAXSP` at each variant's own value, and compares every output, restart
+files included, with the unpoisoned references. Raising all three sizes
+waits for SP06's tree and plot extents.
 
 ## Canadian decks and repairs (SP19)
 

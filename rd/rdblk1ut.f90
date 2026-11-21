@@ -97,7 +97,7 @@ block data RDBLK1
   !.... The following IRTSPC is for the UT 24 species variant.
   !....              1   2   3   4   5   6   7   8   9   10  11  12  -- FVS index
   !....              WB  LM  DF  WF  BS  AS  LP  ES  AF  PP  PI  WJ  -- FVS species
-  data IRTSPC /22, 23, 3,  13, 20, 19, 7,  8,  9,  10, 33, 26,&
+  data IRTSPC(1:MAXSP_NATIVE) /22, 23, 3,  13, 20, 19, 7,  8,  9,  10, 33, 26,&
        !....              13  14  15  16  17  18  19  20  21  22  23  24  -- FVS index
        !....              GO  PM  RM  UJ  GB  NC  FC  MC  BI  BE  OS  OH  -- FVS species
        &18, 33, 26, 26, 33, 24, 24, 40, 40, 40, 17, 18 /

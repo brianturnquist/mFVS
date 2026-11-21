@@ -3,6 +3,7 @@
 !=====================================!
 ! EM $Id$
 subroutine SITSET
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! THIS SUBROUTINE LOADS THE SITEAR ARRAY WITH A SITE INDEX FOR EACH
@@ -103,7 +104,7 @@ subroutine SITSET
   ! 50YR BASE = 1.0096 + .6279*100YR BASE
 
   if (ISISP.eq.0)ISISP = MAPSS(ITYPE)
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (SITEAR(I) .eq.0.0) then !IF SPECIES SI NOT SET
         if (I .eq.4.or. I.eq.5) then
            SITEAR(I) = MAPSIT(ITYPE,1)
@@ -139,7 +140,7 @@ subroutine SITSET
 
   ISDI = 5
   if (IEMTYP .gt.0) ISDI = MAPSDI(IEMTYP)
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (SDIDEF(I) .gt.0.0) go to 40
      if (BAMAX .gt.0.) then
         SDIDEF(I) = BAMAX/(0.5454154*(PMSDIU/100.))
@@ -153,12 +154,12 @@ subroutine SITSET
   do I = 1,15
      J = (I-1)*10 + 1
      JJ = J+9
-     if (JJ.gt.MAXSP)JJ = MAXSP
+     if (JJ.gt.CFG_MAXSP)JJ = CFG_MAXSP
      write(JOSTND,90)(NSP(K,1)(1:2),K = J,JJ)
      90 format(/'SPECIES ',5X,10(A2,6X))
      write(JOSTND,91)(NINT(SDIDEF(K)),K = J,JJ )
      91 format('SDI MAX ',   10I8.0)
-     if (JJ .eq. MAXSP)go to 93
+     if (JJ .eq. CFG_MAXSP)go to 93
      92 continue
   end do
   93 continue
@@ -167,7 +168,7 @@ subroutine SITSET
   !  **GRINIT**.  IF THEY HAVE A DIFFERENT VALUE NOW, THEY WERE CHANGED
   !  BY KEYWORD IN INITRE. ONLY CHANGE THOSE NOT SET BY KEYWORD.
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      if (METHB(ISPC).eq.999)METHB(ISPC) = 6
      if (METHC(ISPC).eq.999)METHC(ISPC) = 6
      50 continue
@@ -184,7 +185,7 @@ subroutine SITSET
   VAR = 'EM'
 
   if (LFIANVB) call NVB_REGION_CHECK
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      read(FIAJSP(ISPC),'(I4)')IFIASP
      VOLEQ = '           '
      if (((METHC(ISPC).eq.6).or.(METHC(ISPC).eq.9)).and.&
@@ -208,14 +209,14 @@ subroutine SITSET
 
   if (LFIA) then
      call FIAHEAD(JOSTND)
-     write(JOSTND,211) (NSP(I,1)(1:2),FIAJSP(I),I = 1,MAXSP)
+     write(JOSTND,211) (NSP(I,1)(1:2),FIAJSP(I),I = 1,CFG_MAXSP)
      211 format ((T12,8(A3,'=',A6,:,'; '),A,'=',A6))
   end if
 
   !  WRITE VOLUME EQUATION NUMBER TABLE
 
   call VOLEQHEAD(JOSTND)
-  write(JOSTND,230)(NSP(J,1)(1:2),VEQNNC(J),VEQNNB(J),J = 1,MAXSP)
+  write(JOSTND,230)(NSP(J,1)(1:2),VEQNNC(J),VEQNNB(J),J = 1,CFG_MAXSP)
   230 format(4(2X,A2,4X,A11,1X,A10,1X))
 
   return

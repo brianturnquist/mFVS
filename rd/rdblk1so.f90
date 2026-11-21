@@ -49,7 +49,7 @@ block data RDBLK1
 
   !.... The following IRTSPC is for the SO 33 species variant.
 
-  data IRTSPC /&
+  data IRTSPC(1:MAXSP_NATIVE) /&
        !....     1    2    3    4    5    6    7    8    9   10   11   -- SO index
        !....    WP   SP   DF   WF   MH   IC   LP   ES   SH   PP   JU   -- SO specie
        &1,  12,   3,  13,  11,  14,   7,   8,  15,  10,  26,& !-- RD index

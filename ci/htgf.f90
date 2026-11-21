@@ -3,6 +3,7 @@
 !======================================!
 ! CI $Id$
 subroutine HTGF
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE COMPUTES THE PREDICTED PERIODIC HEIGHT
@@ -93,7 +94,7 @@ subroutine HTGF
 
   !  DATA STATEMENTS
 
-  data HGLD/&
+  data HGLD(1:MAXSP_NATIVE)/&
        &-.04935,  -.3899,  -.4574, -.09775,  -.1555,&
        &-.1219,  -.2454,  -.5720,  -.1997,  -.5657,&
        &0.0,     0.0,     0.0,      0.,      0.,&
@@ -134,7 +135,7 @@ subroutine HTGF
 
   !   BEGIN SPECIES LOOP:
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      I1 = ISCT(ISPC,1)
      if (I1.eq.0) go to 40
      I2 = ISCT(ISPC,2)
@@ -528,7 +529,7 @@ subroutine HTGF
        &2*-13.358E-05,7*-3.809E-05,2*-3.715E-05,-2.607E-05,-5.200E-05,&
        &-1.605E-05,4*-3.631E-05,2*-2.607E-05,-13.358E-05,2*-2.607E-05,&
        &3*-4.460E-05,4*-13.358E-05/
-  data  HGSC/&
+  data  HGSC(1:MAXSP_NATIVE)/&
        &-.5342,  .1433,  .1641, -.6458, -.6959,&
        &-.9941, -.6004,  .2089, -.5478,  .7316,&
        &0.0,    0.0,    0.0,    0.0,    0.0,&
@@ -542,7 +543,7 @@ subroutine HTGF
 
   !  LOAD OVERALL INTERCEPT FOR EACH SPECIES.
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
 
      select case (ISPC)
 

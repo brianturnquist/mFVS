@@ -3,6 +3,7 @@
 !=======================!
 ! FIRE-VUT $Id$
 subroutine FMCFMD (IYR, FMD)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  SINGLE-STAND VERSION
@@ -397,7 +398,7 @@ subroutine FMCFMD (IYR, FMD)
      if (FWIND .le.7.0) then
         EQWT(8) = 1.0
      else
-        IS = MAXSP
+        IS = CFG_MAXSP
         if (VARACD .eq. 'UT') IS = 13
         if ((VARACD.ne.'UT') .and. (VARACD.ne.'TT')) IS = 23
         if (CTBA(OBCT) .eq.0) then
@@ -424,7 +425,7 @@ subroutine FMCFMD (IYR, FMD)
               !  CENTRAL ROCKIES VARIANT
 
            else if (VARACD .eq. 'CR') then
-              do J = 1,MAXSP
+              do J = 1,CFG_MAXSP
                  I1 = ISCT(J,1)
                  if (I1.eq.0) go to 59
                  I2 = ISCT(J,2)
@@ -787,7 +788,7 @@ subroutine FMCFMD (IYR, FMD)
      if (VARACD .eq. 'TT') then
         LPPDOM = .true.
         J = 10
-        do I = 1, MAXSP
+        do I = 1, CFG_MAXSP
            if ((I .ne. J) .and. (FMTBA(I) .gt. FMTBA(J))) then
               LPPDOM = .false.
            end if
@@ -799,7 +800,7 @@ subroutine FMCFMD (IYR, FMD)
         else
            J = 13
         end if
-        do I = 1, MAXSP
+        do I = 1, CFG_MAXSP
            if ((I .ne. J) .and. (FMTBA(I) .gt. FMTBA(J))) then
               LPPDOM = .false.
            end if

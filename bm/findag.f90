@@ -54,16 +54,16 @@ subroutine FINDAG(I,ISPC,D1,D2,H,SITAGE,SITHT,AGMAX1,HTMAX1,&
   !  OS USES BM PP BARK COEFFICIENT
   !  OH USES SO OH (ORIGINALLY FROM WC VARIANT)
 
-  data AGMAX/&
+  data AGMAX(1:MAXSP_NATIVE)/&
        &200., 110., 180., 130., 250., 900., 140., 150., 150., 200.,&
        &400., 400., 200., 200., 100., 100., 200., 100./
 
-  data AHMAX/&
+  data AHMAX(1:MAXSP_NATIVE)/&
        &2.3,     12.86,   -2.86,     21.29,     52.27,       80.,&
        &2.3,       20.,   45.27,     -5.00,       85.,       85.,&
        &50.,      100.,     75.,      125.,     -5.00,      100./
 
-  data BHMAX/&
+  data BHMAX(1:MAXSP_NATIVE)/&
        &2.39,      1.32,    1.54,      1.24,      1.14,        0.,&
        &1.75,       1.1,    1.24,      1.30,        0.,        0.,&
        &0.,        0.,      0.,        0.,      1.30,        0./

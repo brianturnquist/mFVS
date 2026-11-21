@@ -3,6 +3,7 @@
 !======================================!
 ! CANADA-BC $Id$
 subroutine HTGF
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE COMPUTES THE PREDICTED PERIODIC HEIGHT INCREMENT FOR
@@ -60,7 +61,7 @@ subroutine HTGF
   dimension     HGLD(MAXSP),HGHC(8),HGLDD(8),HGSC(MAXSP),HGH2(8),&
        &MAPHAB(30)
 
-  data HGLD/&
+  data HGLD(1:MAXSP_NATIVE)/&
        &-.04935,-.3899,-.4574,-.09775,-.1555,-.1219,&
        &-.2454, -.5720,-.1997,-.5657, -.1219,-.1219,&
        &-.1219,-.4574,-.1219/
@@ -69,7 +70,9 @@ subroutine HTGF
   !     LOCAL HEIGHT-GROWTH DATA STRUCTURE FOR EACH SITE SERIES.
 
   TYPE LTHG_STR
-     integer            :: SPP(MAXSP) ! SPECIES CODE
+     !  NATIVE COEFFICIENT TABLE (SP05): COMPONENTS HAVE THE VARIANT'S OWN
+     !  SPECIES EXTENT, NOT THE SPECIES STORAGE SIZE.
+     integer            :: SPP(MAXSP_NATIVE) ! SPECIES CODE
      character (LEN = 15) :: PRETTYNAME(P_SS) ! BEC/SITE SERIES
      real               :: SI ! SI - Old model
      real               :: B3 ! B3
@@ -89,7 +92,7 @@ subroutine HTGF
   !     SPECIES-SPECIFIC LARGE TREE COEFFICIENTS:
   !     A1, B1, B2
 
-  data ((LTSP(I,J), J = 1,3), I = 1,MAXSP) /&
+  data ((LTSP(I,J), J = 1,3), I = 1,MAXSP_NATIVE) /&
        &4.1060,   0.0,      0.0,& ! PW - 1
        &2.2341,  -0.0532,  -0.00222,& ! LW - 2
        &2.6937,  -0.2034,  -0.00387,& ! FD - 3
@@ -1558,7 +1561,7 @@ subroutine HTGF
 
   !   BEGIN SPECIES LOOP:
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      I1 = ISCT(ISPC,1)
      if (I1.eq.0) go to 40
      I2 = ISCT(ISPC,2)
@@ -1679,7 +1682,7 @@ subroutine HTGF
   data  HGH2 /&
        &-13.358E-05, -3.809E-05, -3.715E-05, -2.607E-05, -5.200E-05,&
        &-1.605E-05, -3.631E-05, -4.460E-05/
-  data  HGSC /&
+  data  HGSC(1:MAXSP_NATIVE) /&
        &-.5342,.1433,.1641,-.6458,-.6959,-.9941,-.6004,.2089,&
        &-.5478,.7316,-.9941,-.9941,-.9941,.1641,-.9941 /
 
@@ -1711,17 +1714,17 @@ subroutine HTGF
      !     GIVING UP ON A MATCH.
 
      LTH%PrettyName = BEC%PrettyName
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         IPOS(I) = 0
      end do
 
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
 
         IPAS = 0
         PAT = BEC%PrettyName
 
         7 do J = 1,P_MD
-           do K = 1,MAXSP
+           do K = 1,CFG_MAXSP
               if (LTHG(J)%SPP(K) .eq.0) exit
               if (LTHG(J)%SPP(K) .eq. I) then
                  do M = 1,P_SS
@@ -1745,7 +1748,7 @@ subroutine HTGF
 
      !     COPY COEFFICIENTS INTO LTHG STRUCTURE
 
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
 
         LTH%FIT(I) = .false.
         J = IPOS(I)
@@ -1775,7 +1778,7 @@ subroutine HTGF
 
   if (LV2ATV) then
 
-     do ISPC = 1,MAXSP
+     do ISPC = 1,CFG_MAXSP
         HTCON(ISPC) = HGHCH + HGSC(ISPC)
         if (LHCOR2.and. HCOR2(ISPC).gt.0.0)&
              &HTCON(ISPC) = HTCON(ISPC) + ALOG(HCOR2(ISPC))
@@ -1783,7 +1786,7 @@ subroutine HTGF
 
   else
 
-     do ISPC = 1,MAXSP
+     do ISPC = 1,CFG_MAXSP
         LTH%MLT(ISPC) = 1.0
         if (LTH%FIT(ISPC)) then
            if (LHCOR2.and. HCOR2(ISPC).gt.0.0)&
@@ -1806,7 +1809,7 @@ subroutine HTGF
 
   if (LV2HTCP) then
      LV2HTCP = .false.
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         XHT1B(I) = HT1(I)
         XHT2B(I) = HT2(I)
      end do
@@ -1814,14 +1817,14 @@ subroutine HTGF
 
   !     COPY TEMPORARY VALUES FROM ARCHIVE
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      XHT1(I) = XHT1B(I)
      XHT2(I) = XHT2B(I)
   end do
 
   !     SEARCH FOR MATCHES AND REPLACE IF FOUND
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
 
      if (I.eq.1) then ! western white pine - PW
         if (INDEX(BEC%Zone,'ICH') .gt.0) then
@@ -2037,14 +2040,14 @@ subroutine HTGF
 
   !     COPY TEMPORARY TO PERMANENT ARRAYS
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      HT1(I) = XHT1(I)
      HT2(I) = XHT2(I)
   end do
 
   !     SET FLAG FOR WHETHER METRIC DUB IS USED, OR NOT
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if ((HT1(I) .ne. XHT1B(I)) .or.&
           &(HT2(I) .ne. XHT2B(I))) then
         LMHTDUB(I) = .true.

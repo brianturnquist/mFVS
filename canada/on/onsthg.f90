@@ -43,7 +43,7 @@ subroutine ONSTHG(HTG, ISPC, D, HT, SI, BAL)
 
   !     MAPPING OF FVS SPECIES INTO ONTARIO GROWTH SPECIES.
 
-  data OSPMAP/&
+  data OSPMAP(1:MAXSP_NATIVE)/&
        &5,  5,  3,  4,  1,  7,  8, 12,  9, 14,& !10
        &13, 11, 28, 28, 26, 26, 25, 27, 16, 23,& !20
        &26, 26, 26, 17, 26, 15, 27, 21, 26, 26,& !30

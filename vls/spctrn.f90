@@ -3,6 +3,7 @@
 !==================!
 ! VLS $Id$
 subroutine SPCTRN (SPCIN, ISPC1)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  CALLED FROM INTREE, WHEN THE INPUT SPECIES CODE IS NOT RECONGIZED.
@@ -851,7 +852,7 @@ subroutine SPCTRN (SPCIN, ISPC1)
      if (VAR.eq.'SN') ISPC1 = 90
      go to 300
   end if
-  do J2 = 1,MAXSP
+  do J2 = 1,CFG_MAXSP
      if (SPCOUT(1:2).eq.NSP(J2,1)(1:2)) then
         ISPC1 = J2
         go to 300

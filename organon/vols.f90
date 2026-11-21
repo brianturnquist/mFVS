@@ -3,6 +3,7 @@
 !====================!
 ! ORGANON $Id$
 subroutine VOLS
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE CALCULATES TREE VOLUMES TO THREE MERCHANTABILITY
@@ -83,7 +84,7 @@ subroutine VOLS
      end do
   end do
   if (ITRN.le.0) goto 2
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      do J = 1,3
         SPCCC(I,J) = 0.0
         SPCAC(I,J) = 0.0
@@ -101,7 +102,7 @@ subroutine VOLS
   !  EQUATIONS.
 
   call VOLKEY (DEBUG)
-  do J = 1,MAXSP
+  do J = 1,CFG_MAXSP
      if (BFMIND(J).lt.2.0) BFMIND(J) = 2.0
      if (BFTOPD(J).lt.2.0) BFTOPD(J) = 2.0
   end do

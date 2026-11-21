@@ -3,6 +3,7 @@
 !============================================!
 ! CANADA-BC $Id$
 subroutine CROWN
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE IS USED TO DUB MISSING CROWN RATIOS AND COMPUTE CROWN
@@ -48,21 +49,23 @@ subroutine CROWN
 
   TYPE CR_STR
      character (LEN = 4)  :: ZONE ! BEC zone
-     integer            :: SEQ(MAXSP) ! species list
-     integer            :: OBSERV(MAXSP) ! observations
-     real               :: CON(MAXSP) ! INTERCEPT
-     real               :: HTDBH(MAXSP) ! HT/DBH
-     real               :: HT(MAXSP) ! HT (M)
-     real               :: DBH2(MAXSP) ! DBH**2 (CM**2)
-     real               :: BAL(MAXSP) ! BAL (M**2/HA)
-     real               :: LNCCF(MAXSP) ! LN(CCF)
-     real               :: EL(MAXSP) ! ELEVATION (HECTAMETRES)
-     real               :: EL2(MAXSP) ! ELEVATION**2 (HM**2)
-     real               :: SLP(MAXSP) ! SLOPE (0-1)
-     real               :: SLP2(MAXSP) ! SLOPE**2
-     real               :: SASP(MAXSP) ! SIN-ASPECT: SLP*SIN(ASP)
-     real               :: CASP(MAXSP) ! COS-ASPECT: SLP*COS(ASP)
-     real               :: SEE(MAXSP) ! STD ERR EST
+     !  NATIVE COEFFICIENT TABLE: COMPONENTS HAVE THE VARIANT'S OWN SPECIES
+     !  EXTENT (SP05), NOT THE SPECIES STORAGE SIZE.
+     integer            :: SEQ(MAXSP_NATIVE) ! species list
+     integer            :: OBSERV(MAXSP_NATIVE) ! observations
+     real               :: CON(MAXSP_NATIVE) ! INTERCEPT
+     real               :: HTDBH(MAXSP_NATIVE) ! HT/DBH
+     real               :: HT(MAXSP_NATIVE) ! HT (M)
+     real               :: DBH2(MAXSP_NATIVE) ! DBH**2 (CM**2)
+     real               :: BAL(MAXSP_NATIVE) ! BAL (M**2/HA)
+     real               :: LNCCF(MAXSP_NATIVE) ! LN(CCF)
+     real               :: EL(MAXSP_NATIVE) ! ELEVATION (HECTAMETRES)
+     real               :: EL2(MAXSP_NATIVE) ! ELEVATION**2 (HM**2)
+     real               :: SLP(MAXSP_NATIVE) ! SLOPE (0-1)
+     real               :: SLP2(MAXSP_NATIVE) ! SLOPE**2
+     real               :: SASP(MAXSP_NATIVE) ! SIN-ASPECT: SLP*SIN(ASP)
+     real               :: CASP(MAXSP_NATIVE) ! COS-ASPECT: SLP*COS(ASP)
+     real               :: SEE(MAXSP_NATIVE) ! STD ERR EST
   end TYPE
 
   external RANN
@@ -87,7 +90,7 @@ subroutine CROWN
   real    :: PCR,DCR,XCR,BACHLO !,CRLN,CRMAX
 
   !     THESE USE NI-OTHER (11) FOR 12,13,15, AND NI-FD (3) FOR 14
-  data PARM/&
+  data PARM(1:MAXSP_NATIVE,:)/&
        &0.0,-0.00204,0.0,-0.00183,3*0.0,-0.00203,-0.00190,-0.002165,&
        &-0.00264,&
        &2*-0.00264,0.0,-0.00264,&
@@ -140,7 +143,7 @@ subroutine CROWN
        &7*2,3,2,4,4,5,6,3*7,8,8,4,1,10,9,10,1,11,4*1,2,& !OC=FD
        &12*1,4*2,3,3,4,3*1,5,1,6,5*1/ !OH
 
-  data CRHAB/&
+  data CRHAB(:,1:MAXSP_NATIVE)/&
        &0.8884, 0.7309, 0.9347, 0.9888, 0.9945, 1.1126, 1.0263, 7*0.0,&
        &0.06533, 0.03441, 0.2307, 0.1661, -0.1253, -0.05018, 0.11005,&
        &0.08113, 0.1782, 0.03919, 0.2107, 3*0.0,&
@@ -320,7 +323,7 @@ subroutine CROWN
            21 continue
         end do
      else if (ISPCC .eq.0) then
-        do ISPCC = 1,MAXSP
+        do ISPCC = 1,CFG_MAXSP
            if (PRM(2) .ge.0.0)CRNMLT(ISPCC) = PRM(2)
            if (PRM(3) .gt.0.0)DLOW(ISPCC) = PRM(3)
            if (PRM(4) .gt.0.0)DHI(ISPCC) = PRM(4)
@@ -336,7 +339,7 @@ subroutine CROWN
      24 continue
   end do
   25 continue
-  if (DEBUG)write(JOSTND,9024)ICYC,CRNMLT
+  if (DEBUG)write(JOSTND,9024)ICYC,CRNMLT(1:CFG_MAXSP)
   9024 format(/' IN CROWN 9024 ICYC,CRNMLT= ',&
        &I5/((1X,11F6.2)/))
 
@@ -356,7 +359,7 @@ subroutine CROWN
 
   !  ENTER THE LOOP FOR SPECIES DEPENDENT VARIABLES
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      I1 = ISCT(ISPC,1)
      if (I1.eq.0) go to 70
      I2 = ISCT(ISPC,2)
@@ -653,7 +656,7 @@ subroutine CROWN
   data DHI    /MAXSP*99.0/
 
   if (LV2ATV) then
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         ICRHAB = MAPHAB(ITYPE,I)
         CRCON(I) = CRHAB(ICRHAB,I)
         CRSD(I) = 6.35 ! copied from GED comment
@@ -683,7 +686,7 @@ subroutine CROWN
      !       ZERO ALL COEFFS THEN ASSIGN SITE EFFECTS TO CRCON AND ALL
      !       OTHER COEFFS.
 
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         CRCON(I) = 0.0
         CRHTDBH(I) = 0.0
         CRHT(I) = 0.0
@@ -693,9 +696,9 @@ subroutine CROWN
         CRSD(I) = 0.0
      end do
 
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         J = CRKONST(IZN)%SEQ(I)
-        if (J .lt.1.or. J .gt. MAXSP) go to 7
+        if (J .lt.1.or. J .gt. CFG_MAXSP) go to 7
 
         !         FOR SOME SPECIES IN THE SBS, WE NEED TO CHANGE THE ZONE
         !           FOR THE PARAMETERS TO BE USED.

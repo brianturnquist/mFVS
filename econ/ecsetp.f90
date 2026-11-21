@@ -15,6 +15,7 @@ subroutine ECSETP(IY)
   !  KODE   - return code, where: 0 implies no errors, 1 implies the referenced activity could not be found.
   !  MAXSP  - maximum number of species codes used by a specific variant, from PRGPRM.F77.
 
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! Common blocks
@@ -39,7 +40,7 @@ subroutine ECSETP(IY)
   end if
 
   !    Load sorted indexes to harvest revenue array values, in descending order of DIB or DBH
-  do i = 1, MAXSP
+  do i = 1, CFG_MAXSP
      do j = 1, MAX_REV_UNITS
         if (hrvRevCnt(i,j) > 0) then
            !**               hrvRevDiaIndx(i,j,:) = hrvRevDia(i,j,:)  DON'T SEE NEED FOR THIS   !Case if hrvRevCnt(i,j)=1

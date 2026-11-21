@@ -3,6 +3,7 @@
 !=====================================!
 ! EC $Id$
 subroutine SITSET
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! THIS SUBROUTINE LOADS THE SITEAR ARRAY WITH A SITE INDEX FOR EACH
@@ -93,7 +94,7 @@ subroutine SITSET
 
   !  DATA STATEMENTS
 
-  data SDICON/&
+  data SDICON(1:MAXSP_NATIVE)/&
        &645., 648., 766., 766., 766., 766., 674., 766., 700., 645.,&
        &900., 766., 900., 900., 900., 766., 900., 900., 900., 900.,&
        &900., 900., 900., 900., 900., 900., 900., 900., 900., 900.,&
@@ -108,7 +109,7 @@ subroutine SITSET
 
   NSISET = 0
   NSDSET = 0
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (SITEAR(I) .gt.0.) NSISET = NSISET+1
      if (SDIDEF(I) .gt.0.) NSDSET = NSDSET+1
      5 continue
@@ -174,7 +175,7 @@ subroutine SITSET
   ! IF SITEAR  HAS NOT BEEN SET WITH SITECODE KEYWORD, LOAD
   ! IT WITH SITE VALUES CALCULATED HERE.
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      if (DEBUG)write(JOSTND,*)'IN SITSET ISISP,ISPC,SITEAR =',&
           &ISISP,ISPC,SITEAR(ISISP)
      if (SITEAR(ISPC) .gt.0.0) go to 30
@@ -241,7 +242,7 @@ subroutine SITSET
 
   K = ISISP
   if (SDIDEF(K) .le.0.) K = JSISP
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (SDIDEF(I) .gt.0.0) go to 80
      select case (I)
      case(1:10,12,16,31)
@@ -264,12 +265,12 @@ subroutine SITSET
   do I = 1,15
      J = (I-1)*10 + 1
      JJ = J+9
-     if (JJ.gt.MAXSP)JJ = MAXSP
+     if (JJ.gt.CFG_MAXSP)JJ = CFG_MAXSP
      write(JOSTND,90)(NSP(K,1)(1:2),K = J,JJ)
      90 format(/'SPECIES ',5X,10(A2,6X))
      write(JOSTND,91)(NINT(SDIDEF(K)),K = J,JJ )
      91 format('SDI MAX ',   10I8.0)
-     if (JJ .eq. MAXSP)go to 93
+     if (JJ .eq. CFG_MAXSP)go to 93
      92 continue
   end do
   93 continue
@@ -290,7 +291,7 @@ subroutine SITSET
   VAR = 'EC'
 
   if (LFIANVB) call NVB_REGION_CHECK
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      read(FIAJSP(ISPC),'(I3)')IFIASP
      VOLEQ = '           '
      if (((METHC(ISPC).eq.6).or.(METHC(ISPC).eq.9)).and.&
@@ -314,14 +315,14 @@ subroutine SITSET
 
   if (LFIA) then
      call FIAHEAD(JOSTND)
-     write(JOSTND,211) (NSP(I,1)(1:2),FIAJSP(I),I = 1,MAXSP)
+     write(JOSTND,211) (NSP(I,1)(1:2),FIAJSP(I),I = 1,CFG_MAXSP)
      211 format ((T12,8(A3,'=',A6,:,'; '),A,'=',A6))
   end if
 
   !  WRITE VOLUME EQUATION NUMBER TABLE
 
   call VOLEQHEAD(JOSTND)
-  write(JOSTND,230)(NSP(J,1)(1:2),VEQNNC(J),VEQNNB(J),J = 1,MAXSP)
+  write(JOSTND,230)(NSP(J,1)(1:2),VEQNNC(J),VEQNNB(J),J = 1,CFG_MAXSP)
   230 format(4(2X,A2,4X,A11,1X,A10,1X))
 
   return

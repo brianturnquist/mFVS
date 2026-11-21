@@ -3,6 +3,7 @@
 !=================!
 ! RD $Id$
 subroutine RDIPRP(PROPN,NOPLOT,PRAN)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  Purpose :
@@ -85,7 +86,7 @@ subroutine RDIPRP(PROPN,NOPLOT,PRAN)
      99 continue
   end do
 
-  do KSP = 1, MAXSP
+  do KSP = 1, CFG_MAXSP
      YESSP(KSP) = .false.
      FULL(KSP) = .false.
      TOTSP(KSP) = 0.0
@@ -146,7 +147,7 @@ subroutine RDIPRP(PROPN,NOPLOT,PRAN)
 
   IDI = MAXRR
 
-  do KSP = 1, MAXSP
+  do KSP = 1, CFG_MAXSP
      if (TOTSP(KSP) .gt.0.0) then
 
         if (MAXRR .lt.3) IDI = IDITYP(IRTSPC(KSP))
@@ -180,7 +181,7 @@ subroutine RDIPRP(PROPN,NOPLOT,PRAN)
   do IDI = MINRR,MAXRR
      TOTINF(IDI) = PRAN(IDI) * TOTREE(IDI)
      !++++++
-     do KSP = 1, MAXSP
+     do KSP = 1, CFG_MAXSP
 
         !     The following calculation was nested in this loop to for the
         !     new initial ization method used in loop 1700
@@ -199,7 +200,7 @@ subroutine RDIPRP(PROPN,NOPLOT,PRAN)
 
   IDI = MAXRR
 
-  do KSP = 1, MAXSP
+  do KSP = 1, CFG_MAXSP
 
      if (MAXRR .lt.3) IDI = IDITYP(IRTSPC(KSP))
 
@@ -240,7 +241,7 @@ subroutine RDIPRP(PROPN,NOPLOT,PRAN)
      OVER = 0.0
 
      IDI = IRRSP
-     do KSP = 1, MAXSP
+     do KSP = 1, CFG_MAXSP
         if (IRRSP .lt.3) IDI = IDITYP(IRTSPC(KSP))
         if (IDI .ne. IRRSP) goto 1800
 

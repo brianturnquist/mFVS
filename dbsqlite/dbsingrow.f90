@@ -3,6 +3,7 @@
 !==========================!
 ! DBSQLITE $Id$
 subroutine DBSINGROW(IYEAR,INGROW,CSP,TPAIN)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     PURPOSE: TO POPULATE A DATABASE WITH REGENERATION INGROWTH
@@ -95,7 +96,7 @@ subroutine DBSINGROW(IYEAR,INGROW,CSP,TPAIN)
 
   !     ASSIGN FVS, PLANTS AND FIA SPECIES CODE
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (CSP .eq. JSP(I)) then
         CSP1 = JSP(I)
         CSP2 = PLNJSP(I)

@@ -3,6 +3,7 @@
 !=====================================!
 ! OP $Id$
 subroutine SITSET
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! THIS SUBROUTINE LOADS THE SITEAR ARRAY WITH A SITE INDEX FOR EACH
@@ -64,7 +65,7 @@ subroutine SITSET
 
   NSISET = 0
   NSDSET = 0
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (SITEAR(I) .gt.0.) NSISET = NSISET+1
      if (SDIDEF(I) .gt.0.) NSDSET = NSDSET+1
      5 continue
@@ -146,7 +147,7 @@ subroutine SITSET
   if (DEBUG)write(JOSTND,*)' IN SITSET AFTER ORG SITE EQNS SP 16 &',&
        &' 19 SITE INDEX = ',SITEAR(16),SITEAR(19)
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      if (DEBUG)write(JOSTND,*)'IN SITSET ISISP,ISPC,SITEAR =',&
           &ISISP,ISPC,SITEAR(ISISP)
      if (SITEAR(ISPC) .gt.0.0) go to 30
@@ -192,7 +193,7 @@ subroutine SITSET
 
   ! LOAD THE SDIDEF ARRAY
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (SDIDEF(I) .gt.0.0) go to 80
      SDIDEF(I) = SDIDEF(ISISP)
      80 continue
@@ -202,12 +203,12 @@ subroutine SITSET
   do I = 1,15
      J = (I-1)*10 + 1
      JJ = J+9
-     if (JJ.gt.MAXSP)JJ = MAXSP
+     if (JJ.gt.CFG_MAXSP)JJ = CFG_MAXSP
      write(JOSTND,90)(NSP(K,1)(1:2),K = J,JJ)
      90 format(/'SPECIES ',5X,10(A2,6X))
      write(JOSTND,91)(NINT(SDIDEF(K)),K = J,JJ )
      91 format('SDI MAX ',   10I8.0)
-     if (JJ .eq. MAXSP)go to 93
+     if (JJ .eq. CFG_MAXSP)go to 93
      92 continue
   end do
   93 continue
@@ -221,7 +222,7 @@ subroutine SITSET
 
   select case(IFOR)
   case(4,5,6)
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         if (DBHMIN(I) .le.0.) DBHMIN(I) = 7.0
         if (TOPD(I) .le.0.) TOPD(I) = 5.0
         if (BFTOPD(I) .le.0.0) BFTOPD(I) = 5.0
@@ -230,7 +231,7 @@ subroutine SITSET
         if (SCFMIND(I) .le.0.0) SCFMIND(I) = 7.0
      end do
   case default
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         if ((DBHMIN(I) .le.0.).and.(I.eq.11)) DBHMIN(I) = 6.0
         if ((BFMIND(I) .le.0.).and.(I.eq.11)) BFMIND(I) = 6.0
         if ((SCFMIND(I) .le.0.).and.(I.eq.11)) SCFMIND(I) = 6.0
@@ -265,7 +266,7 @@ subroutine SITSET
   end if
 
   if (LFIANVB) call NVB_REGION_CHECK
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      read(FIAJSP(ISPC),'(I4)')IFIASP
      VOLEQ = '           '
      if (((METHC(ISPC).eq.6).or.(METHC(ISPC).eq.9)).and.&
@@ -289,14 +290,14 @@ subroutine SITSET
 
   if (LFIA) then
      call FIAHEAD(JOSTND)
-     write(JOSTND,211) (NSP(I,1)(1:2),FIAJSP(I),I = 1,MAXSP)
+     write(JOSTND,211) (NSP(I,1)(1:2),FIAJSP(I),I = 1,CFG_MAXSP)
      211 format ((T12,8(A3,'=',A6,:,'; '),A,'=',A6))
   end if
 
   !  WRITE VOLUME EQUATION NUMBER TABLE
 
   call VOLEQHEAD(JOSTND)
-  write(JOSTND,230)(NSP(J,1)(1:2),VEQNNC(J),VEQNNB(J),J = 1,MAXSP)
+  write(JOSTND,230)(NSP(J,1)(1:2),VEQNNC(J),VEQNNB(J),J = 1,CFG_MAXSP)
   230 format(4(2X,A2,4X,A11,1X,A10,1X))
 
   !  SET ORGANON VARIABLES AS APPROPRIATE

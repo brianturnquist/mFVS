@@ -112,7 +112,7 @@ block data RDBLK1
 
   !.... The following IRTSPC is for the WS variant 43 species.
 
-  data IRTSPC /12,  3, 13, 28, 14, 31, 15, 10,  7, 22,  1,&
+  data IRTSPC(1:MAXSP_NATIVE) /12,  3, 13, 28, 14, 31, 15, 10,  7, 22,  1,&
        &33, 16, 37, 37, 37, 23, 10, 37, 37, 33,  3,&
        &35, 11, 26, 26, 26, 29, 29, 29, 29, 29, 29,&
        &32, 32, 19, 40, 40, 40, 40, 40, 17, 18 /

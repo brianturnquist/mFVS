@@ -30,7 +30,7 @@ subroutine FORMCL(ISPC,IFOR,D,FC)
 
   !  ROGUE RIVER FORM CLASS VALUES
 
-  data ROGRFC/&
+  data ROGRFC(1:MAXSP_NATIVE,:)/&
        &95., 94., 95., 96., 95., 94., 94., 91., 96., 92.,&
        &95., 95., 95., 95., 93., 94., 94., 93., 95., 95.,&
        &95., 93., 95., 98., 95., 95., 94., 95., 95., 89.,&
@@ -63,7 +63,7 @@ subroutine FORMCL(ISPC,IFOR,D,FC)
 
   !  SISKIYOU FORM CLASS VALUES
 
-  data SISKFC/&
+  data SISKFC(1:MAXSP_NATIVE,:)/&
        &94., 89., 96., 93., 92., 96., 93., 93., 93., 91.,&
        &96., 96., 91., 91., 93., 96., 96., 93., 91., 91.,&
        &91., 93., 91., 88., 91., 95., 95., 95., 95., 95.,&
@@ -96,7 +96,7 @@ subroutine FORMCL(ISPC,IFOR,D,FC)
 
   !  BLM ROSENBURG FORM CLASS VALUES
 
-  data BLM710/&
+  data BLM710(1:MAXSP_NATIVE)/&
        &73., 86., 80., 87., 76., 76., 89., 91., 76., 80.,&
        &80., 80., 80., 80., 80., 91., 80., 88., 80., 80.,&
        &76., 76., 76., 76., 76., 80., 80., 80., 80., 80.,&
@@ -105,7 +105,7 @@ subroutine FORMCL(ISPC,IFOR,D,FC)
 
   !  BLM MEDFORD FORM CLASS VALUES
 
-  data BLM711/&
+  data BLM711(1:MAXSP_NATIVE)/&
        &70., 78., 78., 91., 78., 78., 87., 91., 70., 73.,&
        &68., 68., 68., 68., 70., 84., 76., 85., 68., 68.,&
        &70., 74., 70., 76., 70., 80., 80., 80., 80., 80.,&
@@ -114,7 +114,7 @@ subroutine FORMCL(ISPC,IFOR,D,FC)
 
   !  BLM COOS BAY FORM CLASS VALUES
 
-  data BLM712/&
+  data BLM712(1:MAXSP_NATIVE)/&
        &70., 78., 78., 91., 75., 75., 87., 92., 72., 80.,&
        &80., 80., 80., 80., 75., 91., 80., 88., 80., 80.,&
        &60., 76., 75., 70., 74., 80., 80., 80., 80., 80.,&

@@ -3,6 +3,7 @@
 !=====================================!
 ! SO $Id$
 subroutine SITSET
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! THIS SUBROUTINE LOADS THE SITEAR ARRAY WITH A SITE INDEX FOR EACH
@@ -39,13 +40,13 @@ subroutine SITSET
   real    :: C6(MAXSP),C5(MAXSP)
   real    :: FORMAX,RSI,RSDI,TEM,SINDX,AG
 
-  data C5 /&
+  data C5(1:MAXSP_NATIVE) /&
        &272., 561., 570., 800., 687., 576., 679., 620., 1000., 365.,&
        &272., 800., 602., 790., 1000., 621., 423., 762., 682., 576.,&
        &441., 441., 629., 562., 452., 441., 440., 447., 785., 501.,&
        &501., 365., 441./
 
-  data C6/&
+  data C6(1:MAXSP_NATIVE)/&
        &447., 447., 767., 659., 758., 447., 541., 659., 750., 429.,&
        &500., 659., 659., 659., 659., 250., 250., 650., 650., 650.,&
        &200., 300., 300., 250., 250., 200., 200., 150., 250., 100.,&
@@ -61,7 +62,7 @@ subroutine SITSET
   NTOHI = 0
   NSISET = 0
   NSDSET = 0
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (SITEAR(I) .gt.0.) NSISET = NSISET+1
      if (SDIDEF(I) .gt.0.) NSDSET = NSDSET+1
      5 continue
@@ -151,7 +152,7 @@ subroutine SITSET
      TEM = 30.
      if (ISISP .gt.0.and. SITEAR(ISISP) .gt.0.0)TEM = SITEAR(ISISP)
      if (TEM.lt.SLOSSP)TEM = SLOSSP
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
 
         !  GET THE APPROPRIATE SITE INDEX RANGE VALUES FOR THIS SPECIES.
 
@@ -174,12 +175,12 @@ subroutine SITSET
 
   ! SI IS A VECTOR X MAXSP GIVING EQUIVALENT SITES FOR EACH SPECIES
 
-  if (DEBUG) write(JOSTND,9003)ISISP,SITEAR(ISISP),SIAGE
+  if (DEBUG) write(JOSTND,9003)ISISP,SITEAR(ISISP),SIAGE(1:CFG_MAXSP)
   9003 format('MAIN REF SPECIES ',I5,' SITE INDEX ',F10.1/&
        &((4X,11F6.1)/))
 
   if (DEBUG)write(JOSTND,*)'IN SITSET STARTING DO 30 LOOP'
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      AG = SIAGE(ISPC)
      SINDX = SITEAR(ISISP)
      call HTCALC(IFOR,SINDX,ISISP,AG,SI(ISPC),JOSTND,DEBUG)
@@ -210,7 +211,7 @@ subroutine SITSET
 
      30 continue
   end do
-  if (DEBUG) write(JOSTND,9025) SINDX,ISISP,SI
+  if (DEBUG) write(JOSTND,9025) SINDX,ISISP,SI(1:CFG_MAXSP)
   9025 format('IN SIADJ  SINDX ', F10.2,' SPECIES ',I5,&
        &' TRANSLATED SITES'/,((11F6.1)/))
 
@@ -218,7 +219,7 @@ subroutine SITSET
   ! IT WITH SITE VALUES TRANSLATED FROM SITE INDEX OF SITE SPECIES.
 
   32 continue
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (SITEAR(I) .eq.0.0) SITEAR(I) = SI(I)
      35 continue
   end do
@@ -227,7 +228,7 @@ subroutine SITSET
 
   K = ISISP
   if (SDIDEF(K) .le.0.) K = JSISP
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (SDIDEF(I) .gt.0.0) go to 40
      if (BAMAX .gt.0.) then
         SDIDEF(I) = BAMAX/(0.5454154*(PMSDIU/100.))
@@ -248,12 +249,12 @@ subroutine SITSET
   do I = 1,15
      J = (I-1)*10 + 1
      JJ = J+9
-     if (JJ.gt.MAXSP)JJ = MAXSP
+     if (JJ.gt.CFG_MAXSP)JJ = CFG_MAXSP
      write(JOSTND,90)(NSP(K,1)(1:2),K = J,JJ)
      90 format(/'SPECIES ',5X,10(A2,6X))
      write(JOSTND,91)(NINT(SDIDEF(K)),K = J,JJ )
      91 format('SDI MAX ',   10I8.0)
-     if (JJ .eq. MAXSP)go to 93
+     if (JJ .eq. CFG_MAXSP)go to 93
      92 continue
   end do
   93 continue
@@ -268,13 +269,13 @@ subroutine SITSET
 
   select case(IFOR)
   case(1:3,10)
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         if (TOPD(I) .le.0.) TOPD(I) = 4.5
         if (BFTOPD(I) .le.0.) BFTOPD(I) = 4.5
         if (SCFTOPD(I) .le.0.) SCFTOPD(I) = 4.5
      end do
   case default
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         if (TOPD(I) .le.0.) TOPD(I) = 6.
         if (BFTOPD(I) .le.0.) BFTOPD(I) = 6.
         if (SCFTOPD(I) .le.0.) SCFTOPD(I) = 6.
@@ -291,7 +292,7 @@ subroutine SITSET
   !  SHASTA (IFOR=9) GETS MAPPED TO IFOR=4 IN **FORKOD**
   !  INDUSTRY (IFOR=8) USE R5 DEFAULTS.
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      if (IFOR.lt.4.or. IFOR.eq.10) then
         if (METHB(ISPC).eq.999)METHB(ISPC) = 6
         if (METHC(ISPC).eq.999)METHC(ISPC) = 6
@@ -332,7 +333,7 @@ subroutine SITSET
   end if
 
   if (LFIANVB) call NVB_REGION_CHECK
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      read(FIAJSP(ISPC),'(I4)')IFIASP
      VOLEQ = '           '
      if (((METHC(ISPC).eq.6).or.(METHC(ISPC).eq.9)).and.&
@@ -357,14 +358,14 @@ subroutine SITSET
 
   if (LFIA) then
      call FIAHEAD(JOSTND)
-     write(JOSTND,211) (NSP(I,1)(1:2),FIAJSP(I),I = 1,MAXSP)
+     write(JOSTND,211) (NSP(I,1)(1:2),FIAJSP(I),I = 1,CFG_MAXSP)
      211 format ((T12,8(A3,'=',A6,:,'; '),A,'=',A6))
   end if
 
   !  WRITE VOLUME EQUATION NUMBER TABLE
 
   call VOLEQHEAD(JOSTND)
-  write(JOSTND,230)(NSP(J,1)(1:2),VEQNNC(J),VEQNNB(J),J = 1,MAXSP)
+  write(JOSTND,230)(NSP(J,1)(1:2),VEQNNC(J),VEQNNB(J),J = 1,CFG_MAXSP)
   230 format(4(2X,A2,4X,A11,1X,A10,1X))
 
   return

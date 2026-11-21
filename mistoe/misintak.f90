@@ -74,6 +74,7 @@ subroutine MISINT
   !    Added arrays for height growth impacts.
   !    Impact values must be supplied by MistHMod keyword.
 
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !.... Parameter statements.
@@ -100,21 +101,21 @@ subroutine MISINT
 
   !.... Species character representations
 
-  data (ACSP(I),I = 1,MAXSP)&
+  data (ACSP(I),I = 1,MAXSP_NATIVE)&
        &/'SF','AF','YC','TA','WS','LS','BE','SS','LP','RC',&
        &'WH','MH','OS','AD','RA','PB','AB','BA','AS','CW',&
        &'WI','SU','OH'/
 
   !.... Species affected by mistletoe
 
-  data (AFIT(I),I = 1,MAXSP)&
+  data (AFIT(I),I = 1,MAXSP_NATIVE)&
        &/ 1,   1,   0,   0,   0,   0,   0,   0,   1,   0,&
        &1,   1,   0,   0,   0,   0,   0,   0,   0,   0,&
        &0,   0,   0 /
 
   !.... Diameter growth rates
 
-  data ((ADGP(I,J),J = 1,7),I = 1,MAXSP)&
+  data ((ADGP(I,J),J = 1,7),I = 1,MAXSP_NATIVE)&
        &/1.0,1.0,1.0,.98,.95,.70,.50,&
        &1.0,1.0,1.0,.98,.95,.70,.50,&
        &1.0,1.0,1.0,1.0,1.0,1.0,1.0,&
@@ -157,7 +158,7 @@ subroutine MISINT
   !.... when appropriat default values are developed, they will be
   !.... set here.
 
-  data ((AHGP(I,J),J = 1,7),I = 1,MAXSP)&
+  data ((AHGP(I,J),J = 1,7),I = 1,MAXSP_NATIVE)&
        &/1.0,1.0,1.0,1.0,1.0,1.0,1.0,&
        &1.0,1.0,1.0,1.0,1.0,1.0,1.0,&
        &1.0,1.0,1.0,1.0,1.0,1.0,1.0,&
@@ -184,7 +185,7 @@ subroutine MISINT
 
   !.... Mortality coefficients
 
-  data ((APMC(I,J),J = 1,3),I = 1,MAXSP)&
+  data ((APMC(I,J),J = 1,3),I = 1,MAXSP_NATIVE)&
        &/0.0,0.00159,0.00508,&
        &0.0,0.00159,0.00508,&
        &0.0,0.0,0.0,&
@@ -218,7 +219,7 @@ subroutine MISINT
 
   !.... Mistletoe model initializations.
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      MISFIT(I) = AFIT(I)
      CSPARR(I) = ACSP(I)
      do J = 1,7

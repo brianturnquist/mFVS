@@ -73,7 +73,7 @@ subroutine FMCROW
   !    18 = OTHER SOFTWOODS          R Mtn. juniper   16
   !    19 = OTHER HARDWOODS          eastern cottonwood       17
 
-  data ISPMAP /14, 8, 3,11, 1,16,11,18, 1,13,&
+  data ISPMAP(1:MAXSP_NATIVE) /14, 8, 3,11, 1,16,11,18, 1,13,&
        &16,41,17,42,17,17,43,16,17/
 
   !     CHECK FOR DEBUG

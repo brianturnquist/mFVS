@@ -3,6 +3,7 @@
 !=================!
 ! RD $Id$
 subroutine RDBOUT
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  Purpose :
@@ -146,7 +147,7 @@ subroutine RDBOUT
   TOLDYR = .false.
 
   do I = 1,3
-     do J = 1,MAXSP
+     do J = 1,CFG_MAXSP
         ROWSUM(I,J) = 0.0
         SUMLIV(I,J) = 0.0
         TOTSPC(J) = 0.0
@@ -196,7 +197,7 @@ subroutine RDBOUT
 
   IDI = MAXRR
 
-  do SP = 1,MAXSP
+  do SP = 1,CFG_MAXSP
      if (RROBNK(SP) .le.0.0) goto 99
      NOKILL = .false.
 

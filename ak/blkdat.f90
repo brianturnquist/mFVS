@@ -73,11 +73,11 @@ block data BLKDAT
 
   !  DATA STATEMENTS FOR COMMON ESCOMN VARIABLES
 
-  data XMIN/ 1.00,0.50,0.50,0.50,0.50,0.50,0.50,0.50,1.00,0.50, &
+  data XMIN(1:MAXSP_NATIVE)/ 1.00,0.50,0.50,0.50,0.50,0.50,0.50,0.50,1.00,0.50, &
        & 0.50,0.50,0.50,1.00,1.00,1.00,1.00,1.00,1.00,1.00, &
        & 1.00,1.00,1.00 /
 
-  data HHTMAX/ 20.0,20.0,12.0,13.0,13.0,13.0,13.0,20.0,9.0,15.0, &
+  data HHTMAX(1:MAXSP_NATIVE)/ 20.0,20.0,12.0,13.0,13.0,13.0,13.0,20.0,9.0,15.0, &
        & 19.0,10.0,13.0,7.6,30.0,20.0,20.0,16.9,18.0,16.9,7.6,11.0,7.6 /
   data DBHMID /1.0,3.0,5.0,7.0,9.0,12.0,16.0,20.0,24.0,28.0 /, &
        & BNORML/ 3*1.0,1.046,1.093,1.139,1.186,1.232, &
@@ -96,17 +96,17 @@ block data BLKDAT
   !    OCURHT SETS SPECIES OCCURANCE BY HABITAT TYPE GROUP (0-NO, 1-YES)
   !    OCURHT DIMENSIONED (16,MAXSP)
 
-  data ((OCURHT(I,J),I = 1,16),J = 1,MAXSP)/ 368 * 0.0 / ! NOT USED IN AK
+  data ((OCURHT(I,J),I = 1,16),J = 1,MAXSP_NATIVE)/ 368 * 0.0 / ! NOT USED IN AK
 
   !    OCURNF SETS SPECIES OCCURANCE BY LOCATION (0-NO, 1-YES)
   !    OCURNF DIMENSIONED (20,MAXSP)
 
-  data ((OCURNF(I,J),I = 1,20),J = 1,MAXSP)/ 460 * 0.0 / ! NOT USED IN AK
+  data ((OCURNF(I,J),I = 1,20),J = 1,MAXSP_NATIVE)/ 460 * 0.0 / ! NOT USED IN AK
 
   !    OCURFT SETS SPECIES OCCURANCE BY FOREST TYPE (0-NO, 1-YES)
   !    OCURFT DIMENSIONED (MAXSP (23),FOREST TYPE (14))
 
-  data ((OCURFT(I,J),I = 1,MAXSP),J = 1,14)/ &
+  data ((OCURFT(I,J),I = 1,MAXSP_NATIVE),J = 1,14)/ &
        !    &  SF,  AF,  YC,  TA,  WS,  LS,  BE,  SS,  LP,  RC,  WH,  MH,  OS,
        !    &  AD,  RA,  PB,  AB,  BA,  AS,  CW,  WI,  SU,  OH
        & 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, & ! 122 WHITE SPRUCE
@@ -158,17 +158,17 @@ block data BLKDAT
 
   !  DATA STATEMENTS FOR COMMONS PLTCHR AND PLOT VARIABLES
 
-  data JSP / &
+  data JSP(1:MAXSP_NATIVE) / &
        & 'SF ', 'AF ', 'YC ', 'TA ', 'WS ', 'LS ', 'BE ', 'SS ', &
        & 'LP ', 'RC ', 'WH ', 'MH ', 'OS ', 'AD ', 'RA ', 'PB ', &
        & 'AB ', 'BA ', 'AS ', 'CW ', 'WI ', 'SU ', 'OH '/
 
-  data FIAJSP / &
+  data FIAJSP(1:MAXSP_NATIVE) / &
        & '011', '019', '042', '071', '094', '   ', '095', '098', &
        & '108', '242', '263', '264', '299', '350', '351', '375', &
        & '376', '741', '746', '747', '920', '928', '998'/
 
-  data PLNJSP / &
+  data PLNJSP(1:MAXSP_NATIVE) / &
        & 'ABAM  ', 'ABLA  ', 'CANO9 ', 'LALA  ', 'PIGL  ', 'PILU  ', &
        & 'PIMA  ', 'PISI  ', 'PICO  ', 'THPL  ', 'TSHE  ', 'TSME  ', &
        & '2TN   ', 'ALNUS ', 'ALRU2 ', 'BEPA  ', 'BENE4 ', 'POBA2 ', &
@@ -178,7 +178,7 @@ block data BLKDAT
        & 470,510,520,530,540,550,570,610,620,640, &
        & 660,670,680,690,710,720,730,830,850,999,92*0 /
 
-  data NSP / &
+  data NSP(1:MAXSP_NATIVE,:) / &
        & 'SF1', 'AF1', 'YC1', 'TA1', 'WS1', 'LS1', 'BE1', 'SS1', &
        & 'LP1', 'RC1', 'WH1', 'MH1', 'OS1', 'AD1', 'RA1', 'PB1', &
        & 'AB1', 'BA1', 'AS1', 'CW1', 'WI1', 'SU1', 'OH1', &
@@ -193,7 +193,7 @@ block data BLKDAT
 
   !      INTERCEPT COEFFICIENTS FOR WYKOFF HT-DBH FORM
 
-  data HT1/ &
+  data HT1(1:MAXSP_NATIVE)/ &
        & 5.047089, 5.047089, 4.683932, 4.350320,  4.633182, &
        & 4.633182, 4.350320, 5.047089, 4.513771, 4.716522, &
        & 5.007972, 4.701229, 4.633182, 4.622461, 4.542755, &
@@ -202,7 +202,7 @@ block data BLKDAT
 
   !      SLOPE COEFFICIENTS FOR WYKOFF HT-DBH FORM
 
-  data HT2/ &
+  data HT2(1:MAXSP_NATIVE)/ &
        & -12.629014, -12.629014, -10.690737, -5.776563,  -6.81926, &
        & -6.81926,   -5.776563,  -12.629014, -10.853785, -11.426736, &
        & -12.085418, -12.133655, -6.81926,   -6.696442,  -6.654068, &
@@ -213,7 +213,7 @@ block data BLKDAT
   !  CALCULATED VALUES WERE MULTIPLIED BY .75 TO ACCOUNT FOR FIELD
   !  MEASUREMENT ERROR. MARK CASTLE. 4/25/2020
 
-  data SIGMAR/ &
+  data SIGMAR(1:MAXSP_NATIVE)/ &
        & 0.5787,   0.5787,   0.52785,  0.616425, 0.715875, &
        & 0.715875, 0.616425, 0.5787,   0.45735,  0.510525, &
        & 0.530625, 0.519375, 0.715875, 0.61845,  0.58005, &
@@ -226,11 +226,11 @@ block data BLKDAT
   !   NOT USED IN NEW AK VARIANT.
   !   MAY BE ABLE TO DELETE THESE INITIALIZE TO ZERO.
 
-  data HTT1/ 207*0.0 /
-  data HTT2/ 207*0.0 /
+  data HTT1(1:MAXSP_NATIVE,:)/ 207*0.0 /
+  data HTT2(1:MAXSP_NATIVE,:)/ 207*0.0 /
 
   !      ASYMPTOTE PARAMETER COEFFICIENTS FOR CHAPMAN RICHARDS HT-DBH FORM
-  data HTT11/ &
+  data HTT11(1:MAXSP_NATIVE)/ &
        & 173.578068, 173.578068, 118.005962,  68.53457,  115.991446, &
        & 115.991446,  68.534570, 173.578068,  71.730424, 105.741099, &
        & 141.210402, 108.158839, 115.991446, 115.115222, 131.581959, &
@@ -238,7 +238,7 @@ block data BLKDAT
        & 115.115222, 115.115222, 115.115222/
 
   !      RATE PARAMTER COEFFICIENTS FOR CHAPMAN RICHARDS HT-DBH FORM
-  data HTT12/ &
+  data HTT12(1:MAXSP_NATIVE)/ &
        & -0.034704, -0.034704, -0.04487,  -0.149647, -0.068079, &
        & -0.068079, -0.149647, -0.034704, -0.096667, -0.051922, &
        & -0.054102, -0.054874, -0.068079, -0.04711,  -0.03474, &
@@ -246,7 +246,7 @@ block data BLKDAT
        & -0.04711,  -0.04711,  -0.04711/
 
   !      SHAPE PARAMTER COEFFICIENTS FOR CHAPMAN RICHARDS HT-DBH FORM
-  data HTT13/ &
+  data HTT13(1:MAXSP_NATIVE)/ &
        & 1.06697,  1.06697,  1.090783, 1.335243, 1.059224, &
        & 1.059224, 1.335243, 1.06697,  1.589409, 1.134463, &
        & 1.248358, 1.309823, 1.059224, 0.795143, 0.783043, &

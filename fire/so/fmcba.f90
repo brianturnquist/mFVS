@@ -3,6 +3,7 @@
 !=====================!
 ! FIRE-SO $Id$
 subroutine FMCBA (IYR,ISWTCH)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     SINGLE-STAND VERSION
@@ -557,7 +558,7 @@ subroutine FMCBA (IYR,ISWTCH)
 
   if (ITRN.gt.0) then
 
-     do KSP = 1,MAXSP
+     do KSP = 1,CFG_MAXSP
         TBA(KSP) = 0.0
      end do
 
@@ -575,7 +576,7 @@ subroutine FMCBA (IYR,ISWTCH)
      !  -> THAT WILL BE THE COVER TYPE
 
      BAMOST = 0.0
-     do KSP = 1,MAXSP
+     do KSP = 1,CFG_MAXSP
         if (TBA(KSP) .gt. BAMOST) then
            BAMOST = TBA(KSP)
            COVTYP = KSP
@@ -895,7 +896,7 @@ subroutine FMCBA (IYR,ISWTCH)
 
   if ((KODFOR .ge.500.and. KODFOR .lt.600)&
        &.or. KODFOR .eq.701) then
-     do I = 1,MAXSP ! CALIFORNIA
+     do I = 1,CFG_MAXSP ! CALIFORNIA
         select case (I)
 
            ! white, sugar, lodgepole & ponderosa pine
@@ -940,7 +941,7 @@ subroutine FMCBA (IYR,ISWTCH)
 
   else
 
-     do I = 1,MAXSP ! OREGON
+     do I = 1,CFG_MAXSP ! OREGON
         select case (I)
 
            ! white pine, sugar pine, Douglas-fir, whitebark pine
@@ -993,7 +994,7 @@ subroutine FMCBA (IYR,ISWTCH)
 
   ! set whether each species is a softwood or not
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      select case (I)
      case (1:20,32)
         LSW(I) = .true.
@@ -1030,13 +1031,13 @@ subroutine FMCBA (IYR,ISWTCH)
 
   if ((KODFOR .ge.500.and. KODFOR .lt.600)&
        &.or. KODFOR .eq.701) then
-     do I = 1, MAXSP !! CALIFORNIA
+     do I = 1, CFG_MAXSP !! CALIFORNIA
         TFALL(I,0) = 3.0
         TFALL(I,1) = 10.0
         TFALL(I,2) = 15.0
      end do
   else
-     do I = 1, MAXSP !! OREGON
+     do I = 1, CFG_MAXSP !! OREGON
         TFALL(I,0) = 2.0
         TFALL(I,1) = 5.0
         TFALL(I,2) = 5.0
@@ -1057,7 +1058,7 @@ subroutine FMCBA (IYR,ISWTCH)
 
   !       LARGER DEAD FOLIAGE IS IDENTICAL FOR CA AND OR
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      select case (I)
 
         ! white pine, sugar pine, Douglas-fir
@@ -1189,7 +1190,7 @@ subroutine FMCBA (IYR,ISWTCH)
 
   do ISZ = 1,MXFLCL
      if (TOTBA .gt.0.0) then
-        do KSP = 1,MAXSP
+        do KSP = 1,CFG_MAXSP
            if (TBA(KSP) .gt.0.0) then
               do J = 1,2
                  PRCL = TBA(KSP) / TOTBA

@@ -42,7 +42,7 @@ subroutine HTONT(ISPC,D_IN,Q_IN,BA_FT,HT_FT)
   !  USING PENNER (_P) DIAMETER-HEIGHT MODELS. THESE CORRESPOND
   !  TO THE DATA DATA STATEMENTS FOR B0,B1,B2,BSI,BDBHQ,BBA
 
-  data OSPMAP_P /&
+  data OSPMAP_P(1:MAXSP_NATIVE) /&
        &5,  4,  3,  4,  1,  7,  8, 12,  9, 14,& !10
        &13, 11,  9,  9, 21, 22, 26, 16, 16, 25,& !20
        &16, 16, 16, 17, 23, 15, 15, 20, 22, 20,& !30
@@ -56,7 +56,7 @@ subroutine HTONT(ISPC,D_IN,Q_IN,BA_FT,HT_FT)
   !  USING SHARMA-PARTON (2007) (_SP) DIAMETER-HEIGHT MODELS.
   !  TEST: ONLY JACK PINE PLANTATION (69) GROWS LIKE SHARMA MODEL
 
-  data OSPMAP_SP /&
+  data OSPMAP_SP(1:MAXSP_NATIVE) /&
        &0,  0,  0,  0,  0,  0,  0,  0,  0,  0,& !10
        &0,  0,  0,  0,  0,  0,  0,  0,  0,  0,& !20
        &0,  0,  0,  0,  0,  0,  0,  0,  0,  0,& !30

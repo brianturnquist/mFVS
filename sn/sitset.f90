@@ -3,6 +3,7 @@
 !=====================================!
 ! SN $Id$
 subroutine SITSET
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE LOADS THE SITEAR ARRAY WITH A SITE INDEX FOR EACH
@@ -42,7 +43,7 @@ subroutine SITSET
 
   !  LOAD SDI MAXIMUM VALUES
 
-  data SDICON /&
+  data SDICON(1:MAXSP_NATIVE) /&
        &655., 354., 412., 499., 490., 385., 490., 332., 398., 398.,&
        &310., 529., 480., 499., 692., 623., 518., 371., 344., 421.,&
        &590., 371., 371., 400., 350., 375., 276., 492., 420., 422.,&
@@ -75,7 +76,7 @@ subroutine SITSET
 
   !  THIS ARRAY CONTAINS A MAP TO ESTIMATE INDIVIDUAL SITE INDICIES.
 
-  data MAPSI/&
+  data MAPSI(1:MAXSP_NATIVE)/&
        &5,   5,   5,   5,   1,   1,   5,   4,   9,   8,&
        &1,   4,   4,   5,   3,   3,   1,   9,   9,   9,&
        &9,   9,   9,   9,   9,   9,   9,   9,   9,   9,&
@@ -99,7 +100,7 @@ subroutine SITSET
   !  MODIFIED FOR USE IN HEIGHT GROWTH SITE INDEX SCALING.
   !  THIS PROCESS IS ESPECIALLY IMPORTANT FOR THE SHORTER TREE SPECIES.
 
-  data SIMIN/&
+  data SIMIN(1:MAXSP_NATIVE)/&
        &15,   15,   15,   35,   35,   35,   45,   45,   35,   25,&
        &35,   40,   40,   35,   30,   30,   35,   35,   35,   35,&
        &30,   35,   25,   35,   35,   15,   25,   30,   15,   15,&
@@ -110,7 +111,7 @@ subroutine SITSET
        &35,   35,   30,   25,   25,   15,   25,   25,   30,   25,&
        &15,   15,   35,   35,   35,   35,   35,   15,   15,   15/
 
-  data SIMAX/&
+  data SIMAX(1:MAXSP_NATIVE)/&
        &100,   70,   80,  100,  105,  105,   90,  125,   70,   95,&
        &105,  135,  125,   95,  120,  120,   90,   70,   70,   85,&
        &105,  100,   90,   85,   70,   40,   85,   90,   90,   40,&
@@ -305,7 +306,7 @@ subroutine SITSET
   !    TO EACH SPECIES.  ALSO, EACH SITE INDEX VALUE IS CHECKED TO BE
   !    SURE IT IS WITHIN MIN AND MAX BOUNDS.
 
-  do I = 1, MAXSP
+  do I = 1, CFG_MAXSP
      if ( SITEAR(I) .eq.0. ) then
         SITEAR(I) = MGRSI(MAPSI(I))*(SIMAX(I) - SIMIN(I)) + SIMIN(I)
         if (DEBUG) write(JOSTND,*)'I, SITEAR= ',I,'  ',SITEAR(I)
@@ -327,7 +328,7 @@ subroutine SITSET
 
   !  SET SDIDEF VALUES IF NOT SET BY KEYWORD.
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (SDIDEF(I) .le.0.) then
         if (BAMAX .gt.0.) then
            SDIDEF(I) = BAMAX/(0.5454154*(PMSDIU/100.))
@@ -376,7 +377,7 @@ subroutine SITSET
      if (IFORST.lt.10)FORST(1:1) = '0'
   end if
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      if (IREGN.eq.8) then
         if (DBHMIN(ISPC).le.0.) then !SET **DBHMIN** DEFAULT
            if ((ISPC.le.17).or.(ISPC.eq.88)) then !SOFTWOODS
@@ -618,7 +619,7 @@ subroutine SITSET
   VAR = 'SN'
 
   if (LFIANVB) call NVB_REGION_CHECK
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      read(FIAJSP(ISPC),'(I4)')IFIASP
      VOLEQ = '           '
      if (((METHC(ISPC).eq.6).or.(METHC(ISPC).eq.9)).and.&
@@ -856,14 +857,14 @@ subroutine SITSET
 
   if (LFIA) then
      call FIAHEAD(JOSTND)
-     write(JOSTND,311) (NSP(I,1)(1:2),FIAJSP(I),I = 1,MAXSP)
+     write(JOSTND,311) (NSP(I,1)(1:2),FIAJSP(I),I = 1,CFG_MAXSP)
      311 format ((T12,8(A3,'=',A6,:,'; '),A,'=',A6))
   end if
 
   !  WRITE VOLUME EQUATION NUMBER TABLE
 
   call VOLEQHEAD(JOSTND)
-  write(JOSTND,230)(NSP(J,1)(1:2),VEQNNC(J),VEQNNB(J),J = 1,MAXSP)
+  write(JOSTND,230)(NSP(J,1)(1:2),VEQNNC(J),VEQNNB(J),J = 1,CFG_MAXSP)
   230 format(4(2X,A2,4X,A11,1X,A10,1X))
 
   return

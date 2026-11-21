@@ -28,6 +28,7 @@ subroutine MISCNT(MSPCNT)
   !     JOSTND: From CONTRL; unit number of stand output.
   !     MAXSP:  From PRGPRM; maximum number of species.
 
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !.... Parameter statements.
@@ -60,7 +61,7 @@ subroutine MISCNT(MSPCNT)
 
   !.... Clear the MSPCNT array.
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      MSPCNT(I) = 0
      150 continue
   end do

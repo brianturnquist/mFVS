@@ -3,6 +3,7 @@
 !================!
 ! RD $Id$
 subroutine RDMN1(INUM)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE IS CALLED FROM PROGNOSIS MAIN AND INITIALIZES THE
@@ -174,7 +175,7 @@ subroutine RDMN1(INUM)
   !LRD     DO 50 I=1,33
   !LRD         WK6(I) = 0.0
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      do II = 1,3
         SPCNT(I,II) = 0.0
         49 continue

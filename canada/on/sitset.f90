@@ -3,6 +3,7 @@
 !=====================================!
 ! CANADA-ON $Id$
 subroutine SITSET
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! THIS SUBROUTINE LOADS THE SITELG ARRAY WITH A SITE INDEX FOR EACH
@@ -37,7 +38,7 @@ subroutine SITSET
   real    :: AGEBH,HTM,SIM,SLP,DIFF,SIMIN,AGEDIF
   logical :: LONT
 
-  data BAMAX1/&
+  data BAMAX1(1:MAXSP_NATIVE)/&
        &150.,   150.,   240.,   240.,   240.,   190.,   240.,&
        &240.,   180.,   200.,   200.,   240.,   150.,   150.,&
        &150.,   150.,   130.,   150.,   150.,   200.,   150.,&
@@ -50,7 +51,7 @@ subroutine SITSET
        &150.,   150.,   150.,   150.,   150.,&
        &150.,   240.,   190.,   180. /
 
-  data ((SICOEF1(I,J),I = 1,MAXSP),J = 1,MAXSP)/&
+  data ((SICOEF1(I,J),I = 1,MAXSP_NATIVE),J = 1,MAXSP_NATIVE)/&
        &2*.000,2*-.083,35*.000,3*-4.661,-11.774,29*.000,&
        &2*.000,2*-.083,35*.000,3*-4.661,-11.774,29*.000,&
        &2*.081,2*.0,3.926,2*14.453,11*.0,2*13.601,19*.0,3*-20.194,26*.0,&
@@ -159,7 +160,7 @@ subroutine SITSET
        &2*.0,2*-18.249,-13.974,5*.0,-19.486,28*.0,3*-7.893,27*.0,&
        &-13.974,2*.0,&
        &7*.000,6.175,.000,2.846,62*.000/
-  data ((SICOEF2(I,J),I = 1,MAXSP),J = 1,MAXSP)/&
+  data ((SICOEF2(I,J),I = 1,MAXSP_NATIVE),J = 1,MAXSP_NATIVE)/&
        &2*.0,2*1.028,35*.0,3*1.063,1.308,29*.0,&
        &2*.0,2*1.028,35*.0,3*1.063,1.308,29*.0,&
        &2*.973,2*.0,.959,2*.792,11*.0,2*.761,19*.0,3*1.247,26*.00,&
@@ -296,7 +297,7 @@ subroutine SITSET
 
   !  SPECIES MAPPINGS FOR ONTARIO
   !     CODES AS ABOVE.
-  data OSP/&
+  data OSP(1:MAXSP_NATIVE)/&
        &14,15,15,15,16,13,13, 1, 2, 3,&
        &2, 9, 2, 2, 4, 4,17, 9, 9, 5,&
        &6, 6, 6, 7, 8, 9, 9, 9,10,11,&
@@ -326,7 +327,7 @@ subroutine SITSET
 
   !  MINIMUM DBH VALUES, BY FOREST
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      select case(KODFOR)
      case(903)
         if (I.le.14.or.I.ge.68) then
@@ -469,7 +470,7 @@ subroutine SITSET
   !  COEFFICIENTS IN THE PARAMETER FILE.  WHEN COEFFICIENTS ARE NOT
   !  AVAILABLE FOR A SPECIES, THAT SPECIES' SITE WILL BE ZERO.
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (SITEAR(I) .le..0001) SITEAR(I) = SICOEF1(ISISP,I)&
           &+ SICOEF2(ISISP,I)*SITEAR(ISISP)
      5 continue
@@ -480,7 +481,7 @@ subroutine SITSET
   !  WILL BE LEFT AS ZERO.
 
   if (SITEAR(41) .gt..0001) then
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         if (SITEAR(I) .le..0001) SITEAR(I) = SICOEF1(41,I)&
              &+ SICOEF2(41,I)*SITEAR(41)
         10 continue
@@ -489,7 +490,7 @@ subroutine SITSET
 
   !  NOW SET ALL UNSET SPECIES SITES TO THE STAND SITE INDEX
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (SITEAR(I) .lt..0001) SITEAR(I) = SITEAR(ISISP)
      if (SDIDEF(I) .le.0.) then
         if (BAMAX .gt.0.) then
@@ -503,7 +504,7 @@ subroutine SITSET
 
   !  LOAD VOLUME DEFAULT MERCH. SPECS.
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      if (DBHMIN(ISPC).le.0.) then !SET **DBHMIN** DEFAULT
         if (ISPC.le.14.or.ISPC.gt.68) then !SOFTWOODS
            DBHMIN(ISPC) = 5.
@@ -569,7 +570,7 @@ subroutine SITSET
 
   METHB8 = 0
   METHC8 = 0
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      read(FIAJSP(ISPC),'(I4)')IFIASP
      if (((METHC(ISPC).eq.6).or.(METHC(ISPC).eq.9).or.&
           &(METHC(ISPC).eq.5)).and.(VEQNNC(ISPC).eq.'          ')) then
@@ -603,12 +604,12 @@ subroutine SITSET
   do I = 1,15
      J = (I-1)*10 + 1
      JJ = J+9
-     if (JJ.gt.MAXSP)JJ = MAXSP
+     if (JJ.gt.CFG_MAXSP)JJ = CFG_MAXSP
      write(JOSTND,90)(NSP(K,1)(1:2),K = J,JJ)
      90 format(/' SPECIES ',5X,10(A2,6X))
      write(JOSTND,91)(SDIDEF(K)/ACRtoHA,K = J,JJ )
      91 format(' SDI MAX ',   10F8.0)
-     if (JJ .eq. MAXSP)go to 93
+     if (JJ .eq. CFG_MAXSP)go to 93
      92 continue
   end do
   93 continue
@@ -617,16 +618,16 @@ subroutine SITSET
 
   if (LFIA) then
      call FIAHEAD(JOSTND)
-     write(JOSTND,211) (NSP(I,1)(1:2),FIAJSP(I),I = 1,MAXSP)
+     write(JOSTND,211) (NSP(I,1)(1:2),FIAJSP(I),I = 1,CFG_MAXSP)
      211 format ((T13,8(A3,'=',A6,:,'; '),A,'=',A6))
   end if
 
   !  WRITE VOLUME EQUATION NUMBER TABLE
 
-  if ((METHC8.ne.MAXSP).and.(METHB8.ne.MAXSP))&
+  if ((METHC8.ne.CFG_MAXSP).and.(METHB8.ne.CFG_MAXSP))&
        &call VOLEQHEAD(JOSTND)
-  if ((METHC8.ne.MAXSP).and.(METHB8.ne.MAXSP))&
-       &write(JOSTND,230)(NSP(J,1)(1:2),VEQNNC(J),VEQNNB(J),J = 1,MAXSP)
+  if ((METHC8.ne.CFG_MAXSP).and.(METHB8.ne.CFG_MAXSP))&
+       &write(JOSTND,230)(NSP(J,1)(1:2),VEQNNC(J),VEQNNB(J),J = 1,CFG_MAXSP)
   230 format(4(3X,A2,4X,A10,1X,A10))
   return
 end

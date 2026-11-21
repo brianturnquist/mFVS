@@ -3,6 +3,7 @@
 !===================================!
 ! BASE $Id$
 subroutine SPESRT
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     REALIGNS THE SPECIES-ORDER SORT AFTER THE TREE LIST HAS
@@ -20,7 +21,7 @@ subroutine SPESRT
   !     INITIALIZE VARIABLES
 
   NUMSP = 0
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      ISCT(I,1) = 0
      ISCT(I,2) = 0
      IBEGIN(I) = 0

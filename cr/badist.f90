@@ -3,6 +3,7 @@
 !=================!
 ! CR $Id$
 subroutine BADIST(DEBUG)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! Common blocks
@@ -17,7 +18,7 @@ subroutine BADIST(DEBUG)
   real    :: TOTBA,TDBH,TREEBA
 
   ! Initialize variables
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      TBA(I) = 0.0
      do J = 1,41
         if (I .eq.1) BAU(J) = 0.0
@@ -72,11 +73,11 @@ subroutine BADIST(DEBUG)
      write(JOSTND,*)' IN BADIST TOTBA =',TOTBA
      write(JOSTND,*)' I,BCLAS(I, ),BAU(I) I=1,MAXSP BY DBH CLASS ='
      do I = 1,41
-        write(JOSTND,155)I,(BCLAS(J,I),J = 1,MAXSP),BAU(I)
+        write(JOSTND,155)I,(BCLAS(J,I),J = 1,CFG_MAXSP),BAU(I)
         155 format(' ',I3,4(12F10.3,/' '))
         160 continue
      end do
-     write(JOSTND,165)TBA
+     write(JOSTND,165)TBA(1:CFG_MAXSP)
      165 format(' TBA BY SPECIES =',10(11F10.4,/' ',16X))
   end if
 

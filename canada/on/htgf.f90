@@ -3,6 +3,7 @@
 !======================================!
 ! CANADA-ON $Id$
 subroutine HTGF
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE COMPUTES THE PREDICTED PERIODIC HEIGHT
@@ -35,7 +36,7 @@ subroutine HTGF
   if (DEBUG) write(JOSTND,3)ICYC
   3 format(' ENTERING SUBROUTINE HTGF CYCLE =',I5)
   if (DEBUG)write(JOSTND,*) 'IN HTGF AT BEGINNING, HTCON=',&
-       &HTCON,'RMAI=',RMAI,'ELEV=',ELEV
+       &HTCON(1:CFG_MAXSP),'RMAI=',RMAI,'ELEV=',ELEV
   SCALE = FINT/YR
 
   !  GET THE HEIGHT GROWTH MULTIPLIERS.
@@ -68,7 +69,7 @@ subroutine HTGF
 
   !  BEGIN SPECIES LOOP.
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      I1 = ISCT(ISPC,1)
      if (I1.eq.0) go to 40
      I2 = ISCT(ISPC,2)
@@ -157,7 +158,7 @@ subroutine HTGF
 
   !  LOAD OVERALL INTERCEPT FOR EACH SPECIES
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      HTCON(ISPC) = 0.0
      60 continue
   end do

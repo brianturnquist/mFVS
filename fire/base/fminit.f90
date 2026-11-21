@@ -3,6 +3,7 @@
 !========================!
 ! FIRE-BASE $Id$
 subroutine FMINIT
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  PURPOSE:
@@ -812,7 +813,7 @@ subroutine FMINIT
 
   !  SNAG POOL INITIALIZATION
 
-  do I = 1, MAXSP
+  do I = 1, CFG_MAXSP
      do J = 1, 19
         MAXHT(I,J) = 0.0
         MINHT(I,J) = 1000.0

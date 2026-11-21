@@ -3,6 +3,7 @@
 !=================!
 ! KT $Id$
 subroutine SMHTRG(ISPFL,DEBUG,HTKEEP)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE IS CALLED FROM CRATET.  IF ALL OF THE TREES IN A
@@ -35,7 +36,7 @@ subroutine SMHTRG(ISPFL,DEBUG,HTKEEP)
      end if
      50 continue
   end do
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      ISPFL(I) = 1
      100 continue
   end do
@@ -43,7 +44,7 @@ subroutine SMHTRG(ISPFL,DEBUG,HTKEEP)
   !  ENTER LOOP TO ADJUST SMALL-TREE HEIGHT-DBH MODEL FOR LOCAL
   !  CONDITIONS.
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      I1 = ISCT(ISPC,1)
      if (I1.le.0) go to 500
      I2 = ISCT(ISPC,2)

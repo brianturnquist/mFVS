@@ -3,6 +3,7 @@
 !=========================================!
 ! BASE $Id$
 subroutine FFERT
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE COMPUTES A RATIO OF THE FERTILIZATION TREATMENT
@@ -127,7 +128,7 @@ subroutine FFERT
 
   !     BEGIN SPECIES LOOP.
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
 
      I1 = ISCT(ISPC,1)
      if (I1 .eq. 0) goto 40

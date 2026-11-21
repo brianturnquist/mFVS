@@ -3,6 +3,7 @@
 !============================================!
 ! IE $Id$
 subroutine CROWN
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE IS USED TO DUB MISSING CROWN RATIOS AND COMPUTE CROWN
@@ -73,7 +74,7 @@ subroutine CROWN
 
   !  DATA STATEMENTS FROM NI VARIANT
 
-  data PARM/&
+  data PARM(1:MAXSP_NATIVE,:)/&
        &0.0,-0.00204,0.0,-0.00183,3*0.0,-0.00203,-0.00190,-0.002165,&
        &-0.00264,-.00204,0.0,-0.00190,8*0.0,-.00264,&
        &4*0.0,-0.000001902,6*0.0,12*0.0,&
@@ -98,7 +99,7 @@ subroutine CROWN
        &3*2,3*4,6,7,4,8,8,5,9,3*10,2*11,8,1,2*12,13,1,3,1,3,3*1,&
        &9*2,1,1,2,3,3*4,5,5,6,1,3*7,1,8,1,7,3*1,&
        &30*1/
-  data ((MAPHAB(I,J),I = 1,30), J = 6,MAXSP)/&
+  data ((MAPHAB(I,J),I = 1,30), J = 6,MAXSP_NATIVE)/&
        &16*1,3*2,11*1,&
        &6*2,4,5,5,2,2,6,7,3*8,9,9,10,2*11,12,11,1,13,1,14,3,3,11,&
        &7*2,3,2,1,1,2,4,3*5,6,6,7,8,8,9,8,10,11,1,1,2*12,8,&
@@ -110,7 +111,7 @@ subroutine CROWN
        &13*2,3,4*4,5,6,6,7,6,1,8,1,9,2*10,6,&
        &240*1,&
        &12*1,4*2,3,3,4,3*1,5,1,6,5*1/
-  data CRHAB/&
+  data CRHAB(:,1:MAXSP_NATIVE)/&
        &0.8884, 0.7309, 0.9347, 0.9888, 0.9945, 1.1126, 1.0263, 7*0.0,&
        &0.06533, 0.03441, 0.2307, 0.1661, -0.1253, -0.05018, 0.11005,&
        &0.08113, 0.1782, 0.03919, 0.2107, 3*0.0,&
@@ -216,7 +217,7 @@ subroutine CROWN
            21 continue
         end do
      else if (ISPCC .eq.0) then
-        do ISPCC = 1,MAXSP
+        do ISPCC = 1,CFG_MAXSP
            if (PRM(2) .ge.0.0)CRNMLT(ISPCC) = PRM(2)
            if (PRM(3) .gt.0.0)DLOW(ISPCC) = PRM(3)
            if (PRM(4) .gt.0.0)DHI(ISPCC) = PRM(4)
@@ -232,7 +233,7 @@ subroutine CROWN
      24 continue
   end do
   25 continue
-  if (DEBUG)write(JOSTND,9024)ICYC,CRNMLT
+  if (DEBUG)write(JOSTND,9024)ICYC,CRNMLT(1:CFG_MAXSP)
   9024 format(/' IN CROWN 9024 ICYC,CRNMLT= ',&
        &I5/((1X,11F6.2)/))
 
@@ -270,7 +271,7 @@ subroutine CROWN
 
   !  ENTER THE LOOP FOR SPECIES DEPENDENT VARIABLES
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      I1 = ISCT(ISPC,1)
      if (I1.eq.0)goto 70
      I2 = ISCT(ISPC,2)
@@ -697,35 +698,35 @@ subroutine CROWN
 
   ! LOAD WEIBULL 'A' PARAMETER BY SPECIES
 
-  data WEIBA/12*0.0,1.0,3*0.0,1.0,6*0.0/
+  data WEIBA(1:MAXSP_NATIVE)/12*0.0,1.0,3*0.0,1.0,6*0.0/
 
   ! LOAD WEIBULL 'B' PARAMETER EQUATION CONSTANT COEFFICIENT
 
-  data WEIBB0/12*0.0,-0.82631,3*0.0,-0.82631,-0.08414,0.0,&
+  data WEIBB0(1:MAXSP_NATIVE)/12*0.0,-0.82631,3*0.0,-0.82631,-0.08414,0.0,&
        &-0.08414,-0.08414,0.0,0.0/
 
   ! LOAD WEIBULL 'B' PARAMETER EQUATION SLOPE COEFFICIENT
 
-  data WEIBB1/12*0.0,1.06217,3*0.0,1.06217,1.14765,0.0,&
+  data WEIBB1(1:MAXSP_NATIVE)/12*0.0,1.06217,3*0.0,1.06217,1.14765,0.0,&
        &2*1.14765,0.0,0.0/
 
   ! LOAD WEIBULL 'C' PARAMETER EQUATION CONSTANT COEFFICIENT
 
-  data WEIBC0/12*0.0,3.31429,3*0.0,3.31429,2.77500,0.0,&
+  data WEIBC0(1:MAXSP_NATIVE)/12*0.0,3.31429,3*0.0,3.31429,2.77500,0.0,&
        &2*2.77500,0.0,0.0/
 
   ! LOAD WEIBULL 'C' PARAMETER EQUATION SLOPE COEFFICIENT
 
-  data WEIBC1/23*0.0/
+  data WEIBC1(1:MAXSP_NATIVE)/23*0.0/
 
   ! LOAD CR=F(SDI) EQUATION CONSTANT COEFFICIENT
 
-  data C0/12*0.0,6.19911,3*0.0,6.19911,4.01678,0.0,4.01678,&
+  data C0(1:MAXSP_NATIVE)/12*0.0,6.19911,3*0.0,6.19911,4.01678,0.0,4.01678,&
        &4.01678,0.0,0.0/
 
   ! LOAD CR=F(SDI) EQUATION SLOPE COEFFICIENT
 
-  data C1/12*0.0,-.02216,0.0,0.0,0.0,-.02216,-.01516,0.0,&
+  data C1(1:MAXSP_NATIVE)/12*0.0,-.02216,0.0,0.0,0.0,-.02216,-.01516,0.0,&
        &-.01516,-.01516,0.0,0.0/
 
   ! LOAD OTHER MISCELLANEOUS CONSTANTS
@@ -735,7 +736,7 @@ subroutine CROWN
   data DLOW/MAXSP*0.0/
   data DHI/MAXSP*99.0/
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      ICRHAB = MAPHAB(ITYPE,ISPC)
      CRCON(ISPC) = CRHAB(ICRHAB,ISPC)
      80 continue

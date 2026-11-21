@@ -43,7 +43,7 @@ subroutine UTMRT(TOKILL,DEBUG,SUMKIL)
   ! BI USES BM (BIGLEAF MAPLE) EQUATIONS FROM SO
   ! OS USES OT (OTHER SP.) EQUATIONS FROM UT
 
-  data VARADJ/&
+  data VARADJ(1:MAXSP_NATIVE)/&
        &0.80, 0.70, 0.55, 0.50, 0.50, 1.00, 0.90, 0.50, 0.60, 0.85,&
        &0.70, 0.70, 0.70, 0.70, 0.70, 0.70, 0.90, 0.90, 0.90,  1.1,&
        &0.70, 0.90, 0.75, 0.70/

@@ -3,6 +3,7 @@
 !===============!
 ! WS $Id$
 subroutine DUNN (SS)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! THIS SUBROUTINE PROCESSES THE DUNNING CODE INFORMATION THAT WAS
@@ -96,7 +97,7 @@ subroutine DUNN (SS)
 
   !  DATA STATEMENTS
 
-  data ADJFAC/&
+  data ADJFAC(1:MAXSP_NATIVE)/&
        &0.90, 1.00, 1.00, 1.00, 0.76, 1.00, 1.00, 1.00, 0.90, 0.90,&
        &0.90, 1.00, 1.00, 0.90, 0.90, 0.90, 0.90, 1.00, 0.90, 0.90,&
        &0.00, 1.00, 1.00, 0.90, 0.90, 0.90, 0.90, 0.60, 0.45, 0.45,&
@@ -112,7 +113,7 @@ subroutine DUNN (SS)
 
   !   SET SITE INDEX VALUES BASED ON DUNNING VALUES ENTERED.
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
 
      select case (ISPC)
 

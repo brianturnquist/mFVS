@@ -3,6 +3,7 @@
 !=======================!
 ! FIRE-NE $Id$
 subroutine FMVINIT
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  PURPOSE:
@@ -104,7 +105,7 @@ subroutine FMVINIT
   HTXSFT = 2.0
   HTR1 = 0.015 ! ht loss info from Coeli Hoover & Linda Heath
   HTR2 = 0.01
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      PSOFT(I) = 0.0
   end do
 
@@ -159,7 +160,7 @@ subroutine FMVINIT
   !  YOUNG GROWTH WAS ASSUMED.
   !  SPECIES NOT LISTED WERE CLASSED AS 4 IF NOT IN THE WOOD HANDBOOK
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
 
      select case (I)
 

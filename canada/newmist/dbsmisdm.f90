@@ -7,6 +7,7 @@
 
 
 subroutine DBSMIS5(IYEAR,KODE)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     PURPOSE: TO OUTPUT THE TREELIST DM DATA TO THE DATABASE
@@ -196,7 +197,7 @@ subroutine DBSMIS5(IYEAR,KODE)
      return
   end if
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      I1 = ISCT(ISPC,1)
      if (MISFIT(ISPC) .ne.0.and. I1.ne.0) then
         I2 = ISCT(ISPC,2)

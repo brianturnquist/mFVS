@@ -4,6 +4,7 @@
 ! BASE $Id$
 subroutine EVLDX (XLDREG,NXLDX,INSTR,IRC)
   use VARCFG_MOD, only: CFG_LMETRICVAR
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     CALLED FROM ALGEVL
@@ -201,7 +202,7 @@ subroutine EVLDX (XLDREG,NXLDX,INSTR,IRC)
      !       IF THE SPECIES (J) IS OUT OF RANGE, THEN: ISSUE ERROR CODE.
      !       NOTE: A NEGATIVE SPECIES NUMBER INDICATES A SPECIES GROUP
 
-     if (J.gt.MAXSP) goto 1002
+     if (J.gt.CFG_MAXSP) goto 1002
      if (J.lt.0 .and. NSPGRP.lt.-J) goto 1002
 
      !       IF THE MANAGEMENT CODE (K) IS OUT OF RANGE, THEN: ISSUE ERROR
@@ -479,7 +480,7 @@ subroutine EVLDX (XLDREG,NXLDX,INSTR,IRC)
      else
         I = IFIX(XLDREG(1)-.5)
      end if
-     if (I.gt.MAXSP) goto 1002
+     if (I.gt.CFG_MAXSP) goto 1002
      if (I.lt.0 .and. NSPGRP.lt.-I) goto 1002
      if (MYSTR.eq.11300 .and. IPHASE.lt.2) goto 1001
      if (I .lt. 0) then
@@ -498,7 +499,7 @@ subroutine EVLDX (XLDREG,NXLDX,INSTR,IRC)
         XLDREG(1) = TEMSUM
      else if (I .eq. 0) then
         TEMSUM = 0.
-        do ISPC = 1,MAXSP
+        do ISPC = 1,CFG_MAXSP
            if (MYSTR.eq.11200) then
               TEMSUM = TEMSUM + BCCFSP(ISPC)
            else
@@ -646,7 +647,7 @@ subroutine EVLDX (XLDREG,NXLDX,INSTR,IRC)
      !  (K=0:2)  ALL,HARD,SOFT
 
      if (L.lt.1 .or. L.gt.3) goto 1002
-     if (J.gt.MAXSP) goto 1002
+     if (J.gt.CFG_MAXSP) goto 1002
      if (J.lt.0 .and. NSPGRP.lt.-J) goto 1002
      if (K.lt.0 .or. K.gt.2) goto 1002
 
@@ -779,7 +780,7 @@ subroutine EVLDX (XLDREG,NXLDX,INSTR,IRC)
      else
         J = IFIX(XLDREG(1)-.5)
      end if
-     if (J.gt.MAXSP) goto 1002
+     if (J.gt.CFG_MAXSP) goto 1002
      if (J.lt.0 .and. NSPGRP.lt.-J) goto 1002
 
      !       FIND THE DBH RANGE
@@ -981,7 +982,7 @@ subroutine EVLDX (XLDREG,NXLDX,INSTR,IRC)
      else
         I4 = IFIX(XLDREG(4)-.5)
      end if
-     if (I4.gt.MAXSP) goto 1002
+     if (I4.gt.CFG_MAXSP) goto 1002
      if (I4.lt.0 .and. NSPGRP.lt.-I4) goto 1002
 
      !       FIND THE DBH RANGE AND THE HT RANGE.
@@ -1169,7 +1170,7 @@ subroutine EVLDX (XLDREG,NXLDX,INSTR,IRC)
      !       IF THE SPECIES (J) IS OUT OF RANGE, THEN: ISSUE ERROR CODE.
      !       NOTE: A NEGATIVE SPECIES NUMBER INDICATES A SPECIES GROUP
 
-     if (J.gt.MAXSP) goto 1002
+     if (J.gt.CFG_MAXSP) goto 1002
      if (J.lt.0 .and. NSPGRP.lt.-J) goto 1002
 
      !       COMPUTE ACORNS

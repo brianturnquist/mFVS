@@ -3,6 +3,7 @@
 !==================================!
 ! BASE $Id$
 subroutine SDEFLN (LNOTBK,ARRAY,KEYWRD,B0,B1,KARD,IS)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! Common blocks
@@ -47,7 +48,7 @@ subroutine SDEFLN (LNOTBK,ARRAY,KEYWRD,B0,B1,KARD,IS)
      !     IF (IS=0) ALL SPECIES WILL BE CHANGED IN FOLLOWING CODE:
 
   else if (IS .eq. 0) then
-     do IS = 1,MAXSP
+     do IS = 1,CFG_MAXSP
         if (LNOTBK(2)) B0(IS) = ARRAY(2)
         if (LNOTBK(3)) B1(IS) = ARRAY(3)
         60 continue

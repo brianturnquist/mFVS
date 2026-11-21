@@ -3,6 +3,7 @@
 !========================!
 ! CANADA-BC $Id$
 subroutine BECSET
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     THE PRINCIPAL TASK IS TO RESOLVE SITE AND BEC INFORMATION
@@ -69,8 +70,10 @@ subroutine BECSET
   TYPE LTHG_STR
      character (LEN = 7) :: BECszn
      logical           :: OK
-     integer           :: Lo(MAXSP)
-     integer           :: Hi(MAXSP)
+     !  NATIVE COEFFICIENT TABLE: COMPONENTS HAVE THE VARIANT'S OWN SPECIES
+     !  EXTENT (SP05), NOT THE SPECIES STORAGE SIZE.
+     integer           :: Lo(MAXSP_NATIVE)
+     integer           :: Hi(MAXSP_NATIVE)
   end TYPE
 
   !     LBEC8 IS A COPY OF LTDGOK
@@ -178,7 +181,7 @@ subroutine BECSET
   !     PARAMETERS FOR INTERCEPT, BY SPECIES (BOTH REGIONS) FOR
   !     LARGE TREE DIAMETER GROWTH
 
-  data INTRCP / -1.200116,  0.031636, -0.379727, -0.354087,&
+  data INTRCP(1:MAXSP_NATIVE) / -1.200116,  0.031636, -0.379727, -0.354087,&
        &-0.531580,  0.303820, -0.592774, -1.467097,&
        &-0.655108, -2.015720,  0.0,       0.0,&
        &0.0,      -0.379727,  0.0 /
@@ -187,32 +190,32 @@ subroutine BECSET
   !     ELEVATION**2 AND CCF (BOTH REGIONS) FOR LARGE TREE DIAMETER
   !     GROWTH
 
-  data SEISLP /  0.0     ,  0.0     ,  0.0     ,  0.0     ,&
+  data SEISLP(1:MAXSP_NATIVE) /  0.0     ,  0.0     ,  0.0     ,  0.0     ,&
        &0.0     ,  0.0     ,  0.0     , -0.819996,&
        &0.0     ,  0.0     ,  0.0     ,  0.0,&
        &0.0     ,  0.0     ,  0.0      /
 
-  data SEISAS /  0.0     ,  0.0     ,  0.000728,  0.0     ,&
+  data SEISAS(1:MAXSP_NATIVE) /  0.0     ,  0.0     ,  0.000728,  0.0     ,&
        &0.0     ,  0.0     ,  0.0     ,  0.0     ,&
        &0.0     , -1.114708,  0.0      ,  0.0,&
        &0.0     ,  0.000728,  0.0      /
 
-  data SEICAS /  0.0     ,  0.0     ,  0.0     , -0.406713,&
+  data SEICAS(1:MAXSP_NATIVE) /  0.0     ,  0.0     ,  0.0     , -0.406713,&
        &0.0     ,  0.0     , -0.091611,  0.0     ,&
        &-0.746618,  0.0     ,  0.0      ,  0.0,&
        &0.0     ,  0.0     ,  0.0      /
 
-  data SEIELV /  0.017243,  0.0     ,  0.000369,  0.057385,&
+  data SEIELV(1:MAXSP_NATIVE) /  0.017243,  0.0     ,  0.000369,  0.057385,&
        &0.046852,  0.0     ,  0.010962,  0.072226,&
        &0.071289,  0.061512,  0.0     ,  0.0,&
        &0.0     ,  0.000369,  0.0      /
 
-  data SEIEL2 /  0.0     ,  0.0     ,  0.0     , -0.000847,&
+  data SEIEL2(1:MAXSP_NATIVE) /  0.0     ,  0.0     ,  0.0     , -0.000847,&
        &-0.000680,  0.0     ,  0.0     , -0.000898,&
        &-0.000987,  0.0     ,  0.0     ,  0.0,&
        &0.0     ,  0.0     ,  0.0      /
 
-  data SEICCF /  0.0     ,  0.0     , -0.064699,  0.0     ,&
+  data SEICCF(1:MAXSP_NATIVE) /  0.0     ,  0.0     , -0.064699,  0.0     ,&
        &0.0     ,  0.0     , -0.160717,  0.0     ,&
        &0.0     ,  0.0     ,  0.0     ,  0.0,&
        &0.0     , -0.064699,  0.0      /
@@ -1180,13 +1183,13 @@ subroutine BECSET
 
   if (INDEX(BEC%Region,'KAM') .gt.0.or.&
        &INDEX(BEC%Region,'CAR') .gt.0) then
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         LLTDGOK(I) = LKOK(IBECY,I)
         if (IBEC.gt.0) BECTERM(I) = KCOEF(IBECX,I)
         SEICON(I) = INTRCP(I) + BECTERM(I)
      end do
   else if (INDEX(BEC%Region,'NEL') .gt.0) then
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         LLTDGOK(I) = LNOK(IBECY,I)
         if (IBEC.gt.0) BECTERM(I) = NCOEF(IBECX,I)
         SEICON(I) = INTRCP(I) + BECTERM(I)
@@ -1201,7 +1204,7 @@ subroutine BECSET
   end do
   INOSPP = 0
   IP = 1
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (.not. LLTDGOK(I)) then
         if (INOSPP .gt.0) then
            SPLST(IP:IP) = ',' ! INSERT COMMAS IF MORE THAN 1 SPP
@@ -1226,14 +1229,14 @@ subroutine BECSET
 
   !      IF THERE ARE SOME SPP W/ REPARAMETERIZATION COEFFICIENTS
 
-  if (INOSPP .lt. MAXSP) then
+  if (INOSPP .lt. CFG_MAXSP) then
      write (JOSTND, 31)
      31 format (/1X,T12,'THE FOLLOWING LARGE-TREE FACTOR ',&
           &'COEFFICIENT ADJUSTMENTS WILL BE APPLIED:',&
           &2(/1X),T13,'SPP',T17,'INTERCEPT',T27,'   BEC/SS',&
           &/1X,T13,3("-"),T17,9("-"),T27,9("-"))
 
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         if (LLTDGOK(I))&
              &write (JOSTND, 32) JSP(I), INTRCP(I), BECTERM(I)
         32 format(T13,A3,T17,F9.6,T27,F9.6)
@@ -1248,7 +1251,7 @@ subroutine BECSET
           &T13,3("-"), T17,9("-"),T27,9("-"),T37,9("-"),&
           &T47,9("-"),T57,9("-"),T67,9("-"))
 
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         if (LLTDGOK(I))&
              &write (JOSTND, 35) JSP(I), SEISLP(I),SEISAS(I),SEICAS(I),&
              &SEIELV(I), SEIEL2(I), SEICCF(I)
@@ -1268,7 +1271,7 @@ subroutine BECSET
 
   if (LV2HTCP) then
      LV2HTCP = .false.
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         XHT1B(I) = HT1(I)
         XHT2B(I) = HT2(I)
      end do
@@ -1276,14 +1279,14 @@ subroutine BECSET
 
   !     COPY TEMPORARY VALUES FROM ARCHIVE
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      XHT1(I) = XHT1B(I)
      XHT2(I) = XHT2B(I)
   end do
 
   !     SEARCH FOR MATCHES AND REPLACE IF FOUND
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
 
      if (I.eq.2) then ! western larch - LW
         if (INDEX(BEC%Zone,'ESSF') .gt.0.or.&
@@ -1429,7 +1432,7 @@ subroutine BECSET
   !     MARK COEFFICIENTS THAT ARE DIFFERENT FROM THE
   !     NI VARIANT DEFAULTS AND
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if ((XHT1(I) .ne. XHT1B(I)) .or. (XHT2(I) .ne. XHT2B(I))) then
         CH(I) = '*'
      else
@@ -1439,14 +1442,14 @@ subroutine BECSET
 
   !     COPY TEMPORARY TO PERMANENT ARRAYS
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      HT1(I) = XHT1(I)
      HT2(I) = XHT2(I)
   end do
 
   !     SET FLAG FOR WHETHER METRIC DUB IS USED, OR NOT
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if ((HT1(I) .ne. XHT1B(I)) .or.&
           &(HT2(I) .ne. XHT2B(I))) then
         LMHTDUB(I) = .true.
@@ -1466,7 +1469,7 @@ subroutine BECSET
        &T17,'       C0',T27,'       C1',T37,'NEW'/1X,&
        &T13,3("-"),T17,9("-"),T27,9("-"),T37,3("-"))
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      write (JOSTND, 42) JSP(I), HT1(I), HT2(I), CH(I)
      42 format(T13,A3,T17,F9.4,T27,F9.4,T39,A1)
   end do
@@ -1493,7 +1496,7 @@ subroutine BECSET
      end do
      INOSPP = 0
      IP = 1
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         LOK2 = ((LTHGMOD(JBECY)%LO(I) .eq.0) .and.&
              &(LTHGMOD(JBECY)%HI(I) .eq.5))
         if (LOK2) then
@@ -1517,14 +1520,14 @@ subroutine BECSET
           &    'THE FOLLOWING SPECIES:',2(/1X),T13,A)")&
           &SPLST(1:(IP-1))
 
-     if (INOSPP .lt. MAXSP) then
+     if (INOSPP .lt. CFG_MAXSP) then
         write (JOSTND, 61)
         61 format (/1X,T12,'THE FOLLOWING BREAKPOINTS ',&
              &'WILL BE USED FOR ADJUSTING HEIGHT GROWTH',&
              &2(/1X),T13,'SPP',T17,'  LOW (M)',T27,' HIGH (M)',&
              &/1X,T13,3("-"),T17,9("-"),T27,9("-"))
 
-        do I = 1,MAXSP
+        do I = 1,CFG_MAXSP
            LOK2 = ((LTHGMOD(JBECY)%LO(I) .eq.0) .and.&
                 &(LTHGMOD(JBECY)%HI(I) .eq.5))
            if (.not.LOK2) then
@@ -1552,7 +1555,7 @@ subroutine BECSET
      end do
      INOSPP = 0
      IP = 1
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         LOK2 = ((MORTMOD(JBECY)%LO(I) .eq.0) .and.&
              &(MORTMOD(JBECY)%HI(I) .eq.5))
         if (LOK2) then
@@ -1576,14 +1579,14 @@ subroutine BECSET
           &    'THE FOLLOWING SPECIES:',2(/1X),T13,A)")&
           &SPLST(1:(IP-1))
 
-     if (INOSPP .lt. MAXSP) then
+     if (INOSPP .lt. CFG_MAXSP) then
         write (JOSTND, 71)
         71 format (/T12,'THE FOLLOWING BREAKPOINTS ',&
              &'WILL BE USED FOR ADJUSTING MORTALITY',&
              &2(/1X),T13,'SPP',T17,' LOW (CM)',T27,'HIGH (CM)',&
              &/T13,3("-"),T17,9("-"),T27,9("-"))
 
-        do I = 1,MAXSP
+        do I = 1,CFG_MAXSP
            LOK2 = ((MORTMOD(JBECY)%LO(I) .eq.0) .and.&
                 &(MORTMOD(JBECY)%HI(I) .eq.5))
            if (.not.LOK2) then
@@ -1607,7 +1610,7 @@ subroutine BECSET
   entry SEILTDG (XBEC0,XBEC1,XBEC2,XBEC3,XBEC4,XBEC5,XBEC6,&
        &XBEC7,LBEC8)
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      LBEC8(I) = .false.
   end do
 
@@ -1619,7 +1622,7 @@ subroutine BECSET
   XBEC0(2) = XBEC0(2) * 3.14159 / 180.
   XBEC0(3) = XBEC0(3) * MtoFT / 100.
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      XBEC1(I) = SEICON(I)
      XBEC2(I) = SEISLP(I)
      XBEC3(I) = SEISAS(I)
@@ -1653,7 +1656,7 @@ subroutine BECSET
 
   entry SEILTHG (ISP2,XHT22,X02)
 
-  if (JBECY .eq.0.or. ISP2.lt.1.or. ISP2.gt. MAXSP) then
+  if (JBECY .eq.0.or. ISP2.lt.1.or. ISP2.gt. CFG_MAXSP) then
      X02 = 1.
      return
   end if
@@ -1678,7 +1681,7 @@ subroutine BECSET
   entry SEIMORT (ISP3,XDIA3,X03)
 
   X03 = 1.0
-  if (JBECY .eq.0.or. ISP3.lt.1.or. ISP3.gt. MAXSP) return
+  if (JBECY .eq.0.or. ISP3.lt.1.or. ISP3.gt. CFG_MAXSP) return
 
   XMORT(2) = MORTMOD(JBECY)%Lo(ISP3)
   XMORT(3) = MORTMOD(JBECY)%Hi(ISP3)

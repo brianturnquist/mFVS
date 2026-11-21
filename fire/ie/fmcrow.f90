@@ -79,7 +79,7 @@ subroutine FMCROW
   !    22 = OTHER HARDWOODS       red alder           23
   !    23 = OTHER SOFTWOODS     mountain hemlock      24
 
-  data ISPMAP / 15, 8, 3, 4, 6, 7, 11, 18, 1, 13,&
+  data ISPMAP(1:MAXSP_NATIVE) / 15, 8, 3, 4, 6, 7, 11, 18, 1, 13,&
        &24, 14, 11, 1, 12, 16, 7, 41, 17, 5,&
        &43, 23, 24/
 

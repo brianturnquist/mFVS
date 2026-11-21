@@ -3,6 +3,7 @@
 !================================!
 ! BASE $Id$
 subroutine ALGSPP (CTOK,LEN,NUM,IRC)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     CALLED FROM ALGKEY
@@ -38,7 +39,7 @@ subroutine ALGSPP (CTOK,LEN,NUM,IRC)
 
   !     SEARCH THROUGH SPECIES CODES.
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (CTEMP.eq.NSP(I,1)(1:2)) then
         NUM = -I
         goto 100

@@ -83,7 +83,7 @@ subroutine FORMCL(ISPC,IFOR,D,FC)
 
   !  GIFFORD PINCHOT FORM CLASS VALUES
 
-  data GIFPFC/&
+  data GIFPFC(1:MAXSP_NATIVE,:)/&
        &84., 76., 82., 87., 70., 84., 82., 80., 80., 76.,&
        &86., 82., 60., 82., 84., 84., 75., 76., 60., 74.,&
        &74., 74., 70., 75., 74., 75., 74., 70., 74., 75.,&
@@ -111,7 +111,7 @@ subroutine FORMCL(ISPC,IFOR,D,FC)
 
   !  MOUNT HOOD FORM CLASS VALUES
 
-  data MTHDFC/&
+  data MTHDFC(1:MAXSP_NATIVE,:)/&
        &84., 86., 76., 87., 75., 76., 76., 77., 84., 79.,&
        &78., 72., 60., 82., 78., 76., 75., 75., 60., 74.,&
        &74., 74., 70., 75., 70., 75., 74., 70., 74., 75.,&
@@ -139,7 +139,7 @@ subroutine FORMCL(ISPC,IFOR,D,FC)
 
   !  OKANOGAN FORM CLASS VALUES
 
-  data OKANFC/&
+  data OKANFC(1:MAXSP_NATIVE,:)/&
        &78., 78., 72., 82., 75., 76., 85., 82., 84., 78.,&
        &87., 75., 56., 82., 78., 76., 75., 75., 60., 74.,&
        &74., 74., 70., 75., 70., 75., 74., 70., 74., 75.,&
@@ -167,7 +167,7 @@ subroutine FORMCL(ISPC,IFOR,D,FC)
 
   !  WENATCHEE FORM CLASS VALUES
 
-  data WENAFC/&
+  data WENAFC(1:MAXSP_NATIVE,:)/&
        &83., 77., 75., 85., 69., 78., 82., 79., 76., 77.,&
        &87., 82., 56., 82., 78., 78., 75., 75., 60., 74.,&
        &74., 74., 70., 75., 70., 75., 74., 70., 74., 75.,&

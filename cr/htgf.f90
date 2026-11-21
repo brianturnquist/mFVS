@@ -3,6 +3,7 @@
 !======================================!
 ! CR $Id$
 subroutine HTGF
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !   THIS SUBROUTINE COMPUTES THE PREDICTED PERIODIC HEIGHT
@@ -47,7 +48,7 @@ subroutine HTGF
 
   ! LOAD HEIGHT-TO-SITE FOR SOUTHWEST MC MODEL TYPE
 
-  data (HTOSI(1,I),I = 1,MAXSP)/&
+  data (HTOSI(1,I),I = 1,MAXSP_NATIVE)/&
        &1.25, 1.25, 1.18, 1.00, 1.20, 1.00, 1.00, 1.00, 1.00, 1.00,&
        &1.20, 1.00, 1.20, 1.20, 1.20, 1.00, 1.20, 1.20, 1.20, 1.00,&
        &1.15, 1.15, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,&
@@ -55,7 +56,7 @@ subroutine HTGF
 
   ! LOAD HEIGHT-TO-SITE FOR SOUTHWEST PP MODEL TYPE
 
-  data (HTOSI(2,I),I = 1,MAXSP)/&
+  data (HTOSI(2,I),I = 1,MAXSP_NATIVE)/&
        &1.25, 1.25, 1.18, 1.00, 1.20, 1.00, 1.00, 1.00, 1.00, 1.00,&
        &1.15, 1.00, 1.20, 1.15, 1.20, 1.00, 1.20, 1.20, 1.20, 1.00,&
        &1.15, 1.15, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,&
@@ -63,7 +64,7 @@ subroutine HTGF
 
   ! LOAD HEIGHT-TO-SITE FOR BLACK HILL PP MODEL TYPE
 
-  data (HTOSI(3,I),I = 1,MAXSP)/&
+  data (HTOSI(3,I),I = 1,MAXSP_NATIVE)/&
        &1.13, 1.13, 1.10, 1.10, 1.13, 1.10, 1.10, 1.10, 1.00, 1.07,&
        &1.13, 1.00, 1.10, 1.10, 1.10, 1.00, 1.15, 1.15, 1.15, 1.00,&
        &1.05, 1.05, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,&
@@ -71,7 +72,7 @@ subroutine HTGF
 
   ! LOAD HEIGHT-TO-SITE FOR SPRUCE-FIR MODEL TYPE
 
-  data (HTOSI(4,I),I = 1,MAXSP)/&
+  data (HTOSI(4,I),I = 1,MAXSP_NATIVE)/&
        &1.15, 1.15, 1.18, 1.00, 1.15, 1.00, 1.00, 1.00, 1.00, 1.00,&
        &1.10, 1.00, 1.15, 1.05, 1.15, 1.00, 1.10, 1.10, 1.10, 1.00,&
        &1.05, 1.05, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,&
@@ -79,7 +80,7 @@ subroutine HTGF
 
   ! LOAD HEIGHT-TO-SITE FOR LODGEPOLE PINE MODEL TYPE
 
-  data (HTOSI(5,I),I = 1,MAXSP)/&
+  data (HTOSI(5,I),I = 1,MAXSP_NATIVE)/&
        &1.25, 1.25, 1.25, 1.10, 1.25, 1.10, 1.10, 1.10, 1.00, 1.07,&
        &1.30, 1.00, 1.25, 1.20, 1.20, 1.00, 1.20, 1.20, 1.20, 1.00,&
        &1.18, 1.18, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,&
@@ -87,7 +88,7 @@ subroutine HTGF
 
   ! LOAD HEIGHT-TO-SITE FOR ASPEN MODEL TYPE
 
-  data (HTOSI(6,I),I = 1,MAXSP)/&
+  data (HTOSI(6,I),I = 1,MAXSP_NATIVE)/&
        &1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,&
        &1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,&
        &1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,&
@@ -103,12 +104,12 @@ subroutine HTGF
   ! GET THE HEIGHT GROWTH MULTIPLIERS.
 
   call MULTS (2,IY(ICYC),XHMULT)
-  if (DEBUG)write(JOSTND,9099)XHMULT,SCALE
+  if (DEBUG)write(JOSTND,9099)XHMULT(1:CFG_MAXSP),SCALE
   9099 format( ' HTGF MULT=',F10.3,'SCALE=',F10.3)
 
   ! BEGIN SPECIES LOOP
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      I1 = ISCT(ISPC,1)
      if (I1.eq.0) go to 400
      I2 = ISCT(ISPC,2)
@@ -348,7 +349,7 @@ subroutine HTGF
 
   !  LOAD OVER INTERCEPT FOR EACH SPECIES
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      HTCON(ISPC) = 0.0
      if (LHCOR2.and. HCOR2(ISPC).gt.0.0) HTCON(ISPC) = &
           &HTCON(ISPC)+ALOG(HCOR2(ISPC))

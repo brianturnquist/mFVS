@@ -34,7 +34,7 @@ subroutine ESDLAY (ISPE,IAS,DRAW,DELAY)
 
   !     PLOT AGE (YRS): 2 THRU 7   8 THRU 12   13 THRU 20
 
-  data BSUB/      3.52946,   7.62339,    12.79801,&
+  data BSUB(:,1:MAXSP_NATIVE)/      3.52946,   7.62339,    12.79801,&
        &5.23792,   7.38005,    10.42350,&
        &4.34376,   6.55916,     9.16226,&
        &0.,        0.,          0.,&
@@ -54,7 +54,7 @@ subroutine ESDLAY (ISPE,IAS,DRAW,DELAY)
 
   !     PLOT AGE (YRS): 3 THRU 7   8 THRU 12   13 THRU 20
 
-  data CSUB/      1.71621,   2.72466,     3.98359,&
+  data CSUB(:,1:MAXSP_NATIVE)/      1.71621,   2.72466,     3.98359,&
        &3.11598,   3.04038,     2.87196,&
        &2.33194,   2.63560,     2.21663,&
        &0.,        0.,          0.,&
@@ -75,7 +75,7 @@ subroutine ESDLAY (ISPE,IAS,DRAW,DELAY)
   !     OVERSTORY BA:  0 TO 25  26+ SQ.FT./A.
   !     NO BUDWORM BEFORE HARVEST
 
-  data BADV/    6.699826, 13.431179,&
+  data BADV(:,1:MAXSP_NATIVE)/    6.699826, 13.431179,&
        &9.768223, 27.100242,&
        &13.121021, 22.186540,&
        &0.,        0.,&
@@ -105,7 +105,7 @@ subroutine ESDLAY (ISPE,IAS,DRAW,DELAY)
 
   !     NO BUDWORM BEFORE HARVEST
 
-  data CADV/    1.262533,  1.279302,&
+  data CADV(:,1:MAXSP_NATIVE)/    1.262533,  1.279302,&
        &1.152577,  1.319692,&
        &1.043254,  1.215651,&
        &0.,        0.,&

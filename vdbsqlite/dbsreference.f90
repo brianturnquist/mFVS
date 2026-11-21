@@ -2,6 +2,7 @@
 !   vdbsqlite : dbsreference   !
 !==============================!
 subroutine DBSREFERENCE
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  ROUTINE TO OUTPUT INVENTORY REFERENCE INFORMATION
@@ -75,7 +76,7 @@ subroutine DBSREFERENCE
 
   ITXN = fsql3_exec(IoutDBref,"Begin;"//CHAR(0))
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (TRIM(JSP(I)).eq.'') cycle
      ISPPSDI = NINT(SDIDEF(I))
      ISTIDX = NINT(SITEAR(I))

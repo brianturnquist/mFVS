@@ -3,6 +3,7 @@
 !=======================!
 ! FIRE-AK $Id$
 subroutine FMVINIT
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  Purpose:
@@ -126,7 +127,7 @@ subroutine FMVINIT
   NZERO = 0.01
   LIMBRK = 0.01
   HTXSFT = 2.0
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      PSOFT(I) = 0.0
   end do
 
@@ -175,7 +176,7 @@ subroutine FMVINIT
   !     ORIGINAL MEMBERS OF GROUPS PRIOR TO AK 23-SPECIES EXPANSION IS
   !     IS MARKED WITH (ORIGINAL) IN THE FOLLOWING 2 CASE STATMENTS.
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
 
      select case (I)
 

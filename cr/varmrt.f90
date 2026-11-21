@@ -41,7 +41,7 @@ subroutine VARMRT(TOKILL,DEBUG,SUMKIL)
   !  PM,PD,AZ USE CR PI
   !  CI USES CR PP
 
-  data VARADJ/&
+  data VARADJ(1:MAXSP_NATIVE)/&
        &0.10, 0.10, 0.50, 0.30, 0.30, 0.30, 0.10, 0.90, 0.90, 0.90,&
        &0.70, 0.70, 0.70, 0.90, 0.50, 0.70, 0.50, 0.30, 0.30, 0.90,&
        &0.90, 0.90, 0.70, 0.70, 0.70, 0.70, 0.70, 0.90, 0.70, 0.70,&

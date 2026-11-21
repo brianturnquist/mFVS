@@ -3,6 +3,7 @@
 !=================!
 ! CI $Id$
 subroutine ESINIT
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     CALLED FROM INITRE, ONLY ONCE, TO INITIALIZE REGEN. MODEL.
@@ -45,7 +46,7 @@ subroutine ESINIT
   !    18 = OTHER SOFTWOODS (OS)
   !    19 = OTHER HARDWOODS (OH)
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      HTADJ(I) = 0.0
      XESMLT(I) = 1.0
      10 continue

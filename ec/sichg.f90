@@ -3,6 +3,7 @@
 !================!
 ! EC $Id$
 subroutine SICHG(ISISP,SSITE,SIAGE)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS ROUTINE TAKES THE SITE FROM THE STDINFO CARD AND/OR
@@ -94,7 +95,7 @@ subroutine SICHG(ISISP,SSITE,SIAGE)
 
   !  DATA STATEMENTS
 
-  data A/&
+  data A(1:MAXSP_NATIVE)/&
        &18.43316,  8.11680,  8.50000,  9.01840, 24.62857,&
        &9.01840,  7.78447, 33.72545, 13.88200,  8.00000,&
        &6.15767, 45.24969, 11.56252, 11.56252, 7.938059,&
@@ -103,7 +104,7 @@ subroutine SICHG(ISISP,SSITE,SIAGE)
        &11.56252, 11.56252,  4.94166, 11.56252, 11.56252,&
        &45.24960, 11.56252/
 
-  data B/&
+  data B(1:MAXSP_NATIVE)/&
        &-0.13399, -0.05661, -0.05000, -0.05700, -0.20465,&
        &-0.05700, -0.05013,-0.274509, -0.06590, -0.04286,&
        &-0.03596, -1.28885, -0.05586, -0.05586, -0.02873,&
@@ -112,13 +113,13 @@ subroutine SICHG(ISISP,SSITE,SIAGE)
        &-0.05586, -0.05586, -0.02419, -0.05586, -0.05586,&
        &-1.28885, -0.05586/
 
-  data REFLOC/&
+  data REFLOC(1:MAXSP_NATIVE)/&
        &'T', 'B', 'B', 'B', 'T', 'B', 'T', 'B', 'B', 'B',&
        &'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B',&
        &'B', 'T', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B',&
        &'B', 'B'/
 
-  data REFAGE/&
+  data REFAGE(1:MAXSP_NATIVE)/&
        &50,  50,  50,  50, 100,  50, 100, 100, 100, 100,&
        &50, 100, 100, 100, 100,  50,  50, 100, 100, 100,&
        &100,  20, 100, 100, 100, 100, 100,  50, 100, 100,&
@@ -127,7 +128,7 @@ subroutine SICHG(ISISP,SSITE,SIAGE)
   ! ISILOC IS THE PLACE THE AGE FOR THE SITE SPECIES.
 
   ISILOC = REFLOC(ISISP)
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
 
      !  SET UP THE ARRAY TO TELL WHETHER YOU NEED TO SLIDE UP OR DOWN THE SIT
      !  LINE TO ADJUST FOR TOTAL AGE OR BREAST HIGH AGE

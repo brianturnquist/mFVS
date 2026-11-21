@@ -97,7 +97,7 @@ subroutine FINDAG(I,ISPC,D1,D2,H,SITAGE,SITHT,AGMAX1,HTMAX1,&
 
   !  DATA STATEMENTS
 
-  data AGMAX/&
+  data AGMAX(1:MAXSP_NATIVE)/&
        &200.,  110.,  180.,  130.,  250.,&
        &130.,  140.,  150.,  150.,  200.,&
        &200.,  180.,  200.,  200.,  200.,&
@@ -106,7 +106,7 @@ subroutine FINDAG(I,ISPC,D1,D2,H,SITAGE,SITHT,AGMAX1,HTMAX1,&
        &200.,  200.,  200.,  200.,  200.,&
        &180.,  200./
 
-  data AHMAX/&
+  data AHMAX(1:MAXSP_NATIVE)/&
        &2.3,      12.86,      -2.86,      21.29,      52.27,&
        &21.29,        2.3,        20.,      45.27,      -5.00,&
        &4.0156013,      -2.06,  3.2412923,  3.2412923,  4.3149844,&
@@ -115,7 +115,7 @@ subroutine FINDAG(I,ISPC,D1,D2,H,SITAGE,SITHT,AGMAX1,HTMAX1,&
        &3.9033821,  3.9033821,  3.9033821,  3.9033821,  3.9033821,&
        &-2.06,  3.9033821/
 
-  data BHMAX/&
+  data BHMAX(1:MAXSP_NATIVE)/&
        &2.39,       1.32,       1.54,       1.24,       1.14,&
        &1.24,       1.75,        1.1,       1.24,       1.30,&
        &51.9732476,       1.54, 62.7139427, 62.7139427, 39.6317079,&

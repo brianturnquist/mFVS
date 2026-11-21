@@ -74,7 +74,7 @@ subroutine VARMRT(TOKILL,DEBUG,SUMKIL)
   ! VERY INTOLERANT: 2=WL,  7=LP, 17=LL, 20=BM, 21=VN, 26=AS, 27=CW, 30=WI, 32=OH
   !                  USE LP FOR LL, BM, VN, AS, CW, WI, OH
 
-  data VARADJ/&
+  data VARADJ(1:MAXSP_NATIVE)/&
        &0.85, 1.00, 0.55, 0.60, 0.60, 0.50, 0.90, 0.50, 0.60, 0.85,&
        &0.60, 0.75, 0.60, 0.85, 0.85, 0.50, 0.90, 0.50, 0.85, 0.90,&
        &0.90, 0.85, 0.85, 0.85, 0.60, 0.90, 0.90, 0.85, 0.85, 0.90,&

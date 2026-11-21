@@ -3,6 +3,7 @@
 !============================================!
 ! NE $Id$
 subroutine CROWN
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE IS USED TO DUB MISSING CROWN RATIOS AND
@@ -38,22 +39,22 @@ subroutine CROWN
   data MYACTS/81/
 
   ! Species specific coefficients
-  data BCR1/&
+  data BCR1(1:MAXSP_NATIVE)/&
        &5.630,6.000,7.840,4*5.540,5.540, 6.640, 5.350, 6.790,&
        &4*5.710,2*5.710,8*4.350,3.400,3*4.180,3*4.180,2*5.000,&
        &5*4.000,6.210,5*3.733,3*3.733,5*4.500,3.733,5*4.110,4*4.000,&
        &3*3.733,2*5.840,2*4.200,27*4.000,11*4.000/
-  data BCR2/&
+  data BCR2(1:MAXSP_NATIVE)/&
        &.0047,.0053,.0057,4*.0072,.0072, .0135, .0053, .0058,&
        &4*.0077,2*.0077,8*.0046,.0066,3*.0025,3*.0025,2*.0066,&
        &5*.0024,.0073,5*.0040,3*.0040,5*.0032,.0040,5*.0054,4*.0024,&
        &3*.0040,2*.0082,2*.0016,27*.0024,11*.0024/
-  data BCR3/&
+  data BCR3(1:MAXSP_NATIVE)/&
        &3.523,0.431,1.272,4*4.200, 4.200, 3.200, 1.528, 7.590,&
        &4*2.290,2*2.290,8*1.820,2.870,3*1.410,3*1.410,2*4.920,&
        &5*-2.830,9.990,5*3.632,3*3.632,5*0.795,3.632,5*1.650,&
        &4*-2.830,3*3.632,2*3.260,2*2.760,27*-2.830,11*-2.830/
-  data BCR4/&
+  data BCR4(1:MAXSP_NATIVE)/&
        &-.0689,-.0012,-.1420,4*-.0530,-.0530,-.0518,-.0330,-.0103,&
        &4*-.2530,2*-.2530,8*-.2740,-.4340,3*-.5120,3*-.5120,2*-.0263,&
        &5*.0210,-.0100,5*-.0412,3*-.0412,5*-.1050,-.0412,5*-.1100,&
@@ -114,7 +115,7 @@ subroutine CROWN
            21 continue
         end do
      else if (ISPCC .eq.0) then
-        do ISPCC = 1,MAXSP
+        do ISPCC = 1,CFG_MAXSP
            if (PRM(2) .ge.0.0)CRNMLT(ISPCC) = PRM(2)
            if (PRM(3) .gt.0.0)DLOW(ISPCC) = PRM(3)
            if (PRM(4) .gt.0.0)DHI(ISPCC) = PRM(4)
@@ -130,13 +131,13 @@ subroutine CROWN
      24 continue
   end do
   25 continue
-  if (DEBUG)write(JOSTND,9024)ICYC,CRNMLT
+  if (DEBUG)write(JOSTND,9024)ICYC,CRNMLT(1:CFG_MAXSP)
   9024 format(/' IN CROWN 9024 ICYC,CRNMLT= ',&
        &I5/((1X,11F6.2)/))
 
   !  ENTER THE LOOP FOR SPECIES DEPENDENT VARIABLES
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      I1 = ISCT(ISPC,1)
      if (I1.eq.0) go to 70
      I2 = ISCT(ISPC,2)

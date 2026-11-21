@@ -3,6 +3,7 @@
 !================!
 ! WS $Id$
 subroutine SICHG(ISISP,SSITE,SIAGE)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! THIS ROUTINE TAKES THE SITE INFORMATION AND CALCULATES AN AGE FOR
@@ -96,7 +97,7 @@ subroutine SICHG(ISISP,SSITE,SIAGE)
 
   !  DATA STATEMENTS
 
-  data A/&
+  data A(1:MAXSP_NATIVE)/&
        &10.83,    13.27,    22.67,   29.286,    22.67,&
        &18.667,     25.0,   13.789,     10.0,     10.0,&
        &10.83,     10.0,    22.67,     10.0,     10.0,&
@@ -107,7 +108,7 @@ subroutine SICHG(ISISP,SSITE,SIAGE)
        &19.763,   19.763,   19.763,   19.763,   10.976,&
        &11.56252,    13.92,   10.976/
 
-  data B/&
+  data B(1:MAXSP_NATIVE)/&
        &-0.10,    -0.04,    -0.17,   -0.071,    -0.17,&
        &-0.100,   -0.125,   -0.050,      0.0,      0.0,&
        &-0.10,      0.0,    -0.17,      0.0,      0.0,&
@@ -118,7 +119,7 @@ subroutine SICHG(ISISP,SSITE,SIAGE)
        &-0.080,   -0.080,   -0.080,   -0.080,   -0.071,&
        &-0.05586,    -0.13,   -0.071/
 
-  data REFLOC/&
+  data REFLOC(1:MAXSP_NATIVE)/&
        &'T',      'T',      'T',      'T',      'T',&
        &'T',      'B',      'T',      'T',      'T',&
        &'T',      'T',      'T',      'T',      'T',&
@@ -129,7 +130,7 @@ subroutine SICHG(ISISP,SSITE,SIAGE)
        &'B',      'B',      'B',      'B',      'B',&
        &'B',      'T',      'B'/
 
-  data REFAGE/&
+  data REFAGE(1:MAXSP_NATIVE)/&
        &50,       50,       50,       50,       50,&
        &50,       50,       50,       50,       50,&
        &50,       50,       50,       50,       50,&
@@ -143,7 +144,7 @@ subroutine SICHG(ISISP,SSITE,SIAGE)
   ! ISILOC IS THE PLACE WHERE THE AGE FOR THE SITE IS TAKEN
 
   ISILOC = REFLOC(ISISP)
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
 
      !  SET UP THE ARRAY TO TELL WHETHER YOU NEED TO SLIDE UP OR DOWN THE SIT
      ! LINE TO ADJUST FOR TOTAL AGE OR BREAST HIGH AGE

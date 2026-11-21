@@ -30,7 +30,7 @@ subroutine NWCMRT(TOKILL,DEBUG,SUMKIL)
   !  SPECIES ORDER:
   ! 1=OC, 2=SP, 3=DF, 4=WF, 5=M , 6=IC, 7=BO, 8=TO, 9=RF, 10=PP, 11=OH, 12=RW
 
-  data VARADJ/&
+  data VARADJ(1:MAXSP_NATIVE)/&
        &0.65, 0.70, 0.65, 0.55, 0.80, 0.60,&
        &1.00, 0.55, 0.50, 0.85, 0.55, 0.80/
 

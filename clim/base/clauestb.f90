@@ -3,6 +3,7 @@
 !==========================!
 ! CLIM-BASE $Id$
 subroutine CLAUESTB
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     CLIMATE EXTENSION--AUTOMATIC ESTABLISHMENT ROUTINE
@@ -74,7 +75,7 @@ subroutine CLAUESTB
 
   if (PTREES*AESNTREES.gt.0.) then
 
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         if (INDXSPECIES(I).eq.0) then
            POTESTAB(I) = 0.
         else
@@ -86,9 +87,9 @@ subroutine CLAUESTB
         30 format ('IN CLAUESTB, SP,INDXSPECIES,POTESTAB(I)=',&
              &I4,1X,A2,I3,F10.3)
      end do
-     call RDPSRT(MAXSP,POTESTAB,ISPINDX,.true.)
+     call RDPSRT(CFG_MAXSP,POTESTAB,ISPINDX,.true.)
      NSPEC = 0
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         if (POTESTAB(ISPINDX(I)).lt..40) exit
         NSPEC = NSPEC+1
      end do
@@ -127,7 +128,7 @@ subroutine CLAUESTB
         do I = 1,NSPEC
            POTESTAB(ISPINDX(I)) = POTESTAB(ISPINDX(I))/XX
         end do
-        do I = 1,MAXSP
+        do I = 1,CFG_MAXSP
            if (I.gt.NSPEC) then
               POTESTAB(ISPINDX(I)) = 0
            else
@@ -193,14 +194,14 @@ subroutine CLAUESTB
      SPTPA(I1) = SPTPA(I1)+PROB(I)
   end do
   SPIMP = 0.
-  XX = SUM(SPBA)
-  if (XX.gt.0) SPIMP = SPBA/XX
-  XX = SUM(SPTPA)
-  if (XX.gt.0) SPIMP = SPIMP+(SPTPA/XX)
-  XX = SUM(SPIMP)
-  if (XX.gt.0) SPIMP = SPIMP/XX
+  XX = SUM(SPBA(1:CFG_MAXSP))
+  if (XX.gt.0) SPIMP(1:CFG_MAXSP) = SPBA(1:CFG_MAXSP)/XX
+  XX = SUM(SPTPA(1:CFG_MAXSP))
+  if (XX.gt.0) SPIMP(1:CFG_MAXSP) = SPIMP(1:CFG_MAXSP)+(SPTPA(1:CFG_MAXSP)/XX)
+  XX = SUM(SPIMP(1:CFG_MAXSP))
+  if (XX.gt.0) SPIMP(1:CFG_MAXSP) = SPIMP(1:CFG_MAXSP)/XX
   I2 = 0
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if ((SPIMP(I).gt.0.05.or. SPVIAB(I).gt..4) .and.&
           &INDXSPECIES(I).gt.0) then
         I2 = 1
@@ -268,6 +269,7 @@ subroutine CLAUESTB
 end
 
 subroutine CLSPVIAB(ISP,VIA,IRC)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     CLIMATE EXTENSION--FETCH THE VIABILITY SCORE FOR SPECIES ISP
@@ -287,7 +289,7 @@ subroutine CLSPVIAB(ISP,VIA,IRC)
   real    :: ALGSLP,THISYR,VIA
   integer :: ISP,IRC
 
-  if (ISP.le.0.or. ISP.gt.MAXSP) then
+  if (ISP.le.0.or. ISP.gt.CFG_MAXSP) then
      IRC = 1
      return
   end if

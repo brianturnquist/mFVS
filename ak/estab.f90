@@ -3,6 +3,7 @@
 !=========================================!
 ! AK $Id$
 subroutine ESTAB (KDT)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! AK estab.f
@@ -104,7 +105,7 @@ subroutine ESTAB (KDT)
        & CTOPO/'BOTM','LOWR',' MID','UPPR','RIDG'/, &
        & IDCMP1/10000000/, &
        & MYACTS/430,431,491,493/, &
-       & NOFSPE/MAXSP/
+       & NOFSPE/MAXSP_NATIVE/
 
   ! MAXTPP: CONTAINS MAX TPP VALUES USED IN TALLY SEQUENCES. VALUES ARE
   ! BASED ON THE 75TH PERCENTILE TPP VALUES FOUND IN THE DATA FOR
@@ -1337,8 +1338,8 @@ subroutine ESTAB (KDT)
            if (DEBUG) write(JOSTND,*)'NTALLY:',NTALLY
            if (NTALLY.eq.1) call ESPADV (IFT)
            call ESPSUB (IFT)
-           if (DEBUG) write(JOSTND,*)' PADV(I):',PADV
-           if (DEBUG) write(JOSTND,*)' PSUB(I):',PSUB
+           if (DEBUG) write(JOSTND,*)' PADV(I):',PADV(1:CFG_MAXSP)
+           if (DEBUG) write(JOSTND,*)' PSUB(I):',PSUB(1:CFG_MAXSP)
            if (DEBUG) write(JOSTND,*)'ICHOI IS A SPECIES ARRAY WHERE IF ', &
                 & 'IDENTIFIED AS BEST TREE AND A RANDOM DRAW IS GREATER'
            if (DEBUG) write(JOSTND,*)'THAN THE PROBABILITY OF THE SPECIES ', &

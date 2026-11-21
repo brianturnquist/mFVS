@@ -98,7 +98,7 @@ subroutine VARMRT(TOKILL,DEBUG,SUMKIL)
   !    FROM UT VARIANT --
   !      USE UT17(GB) FOR 21(GB)
 
-  data VARADJ/&
+  data VARADJ(1:MAXSP_NATIVE)/&
        &0.70, 0.65, 0.55, 0.80, 0.60, 0.85, 0.50, 0.85, 0.90, 0.90,&
        &0.70, 0.90, 0.55, 0.90, 0.90, 0.90, 0.90, 0.85, 0.90, 0.90,&
        &0.90, 0.65, 0.80, 0.70, 0.90, 0.90, 0.90, 1.00, 1.00, 1.00,&

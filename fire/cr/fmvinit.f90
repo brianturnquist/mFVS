@@ -3,6 +3,7 @@
 !=======================!
 ! FIRE-CR $Id$
 subroutine FMVINIT
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  Purpose:
@@ -130,7 +131,7 @@ subroutine FMVINIT
   HTXSFT = 10.0
   HTR1 = 0.0228
   HTR2 = 0.01
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      PSOFT(I) = 0.0
   end do
 
@@ -172,7 +173,7 @@ subroutine FMVINIT
   !     CAN USE THE FUELDCAY KEYWORD TO REASSIGN RATES WITHIN THE 4
   !     CLASSES, AND THE FUELPOOL KEYWORD TO REASSIGN CLASS
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
 
      select case (I)
 

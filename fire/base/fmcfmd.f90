@@ -3,6 +3,7 @@
 !=======================!
 ! FIRE-BASE $Id$
 subroutine FMCFMD (IYR, FMD)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     SINGLE-STAND VERSION
@@ -163,7 +164,7 @@ subroutine FMCFMD (IYR, FMD)
      CTBA(I) = 0.0
   end do
   STNDBA = 0.0
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      STNDBA = STNDBA + FMTBA(I)
   end do
 
@@ -174,7 +175,7 @@ subroutine FMCFMD (IYR, FMD)
   !     FIRST CASE...
 
   if (VARACD .eq. 'WC') then
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         select case (I)
         case (1,19,10,18)
            CTBA(SFCT) = CTBA(SFCT) + FMTBA(I)
@@ -191,7 +192,7 @@ subroutine FMCFMD (IYR, FMD)
         end select
      end do
   else
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         select case (I)
         case (1,19,6,18)
            CTBA(SFCT) = CTBA(SFCT) + FMTBA(I)

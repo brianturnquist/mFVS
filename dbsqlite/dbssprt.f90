@@ -4,6 +4,7 @@
 ! DBSQLITE $Id$
 subroutine DBSSPRT(CSP,TPASUM,HTAVE,TPATOT,&
      &WTHTAVE,TOT,IYEAR)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !----------C
@@ -84,7 +85,7 @@ subroutine DBSSPRT(CSP,TPASUM,HTAVE,TPATOT,&
      CSP2 = "ALL"
      CSP3 = "ALL"
   else
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         if (CSP(1:2) .eq. JSP(I)) then
            CSP1 = JSP(I)
            CSP2 = PLNJSP(I)

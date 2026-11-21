@@ -3,6 +3,7 @@
 !=================================!
 ! BASE $Id$
 subroutine SVINIT
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     STAND VISUALIZATION GENERATION
@@ -38,7 +39,7 @@ subroutine SVINIT
   !     When the FFE and SVSNAD logic are reconciled for incoming
   !     snags, the following coefficients can likely be eliminated.
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (I.ge.1 .and. I.le.3) then
         YHFHTS(I) = 33
         YHFHTH(I) = 16

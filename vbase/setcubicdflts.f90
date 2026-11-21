@@ -2,6 +2,7 @@
 !   vbase : setcubicdflts   !
 !===========================!
 subroutine SETCUBICDFLTS
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! Common blocks
@@ -61,7 +62,7 @@ subroutine SETCUBICDFLTS
      !  DETERMINE DBHMIN, TOPD, SCFMIND AND SCFTOPD BASED ON AKMERCHCAT
 
      !  SET DBHMIN DEFAULTS
-     do ISPC = 1,MAXSP
+     do ISPC = 1,CFG_MAXSP
 
         if (STMP(ISPC) .le.0)    STMP(ISPC) = 1
         if (SCFSTMP(ISPC) .le.0) SCFSTMP(ISPC) = 1
@@ -99,7 +100,7 @@ subroutine SETCUBICDFLTS
      if (DBHMIN(7) .le.0)        DBHMIN(7) = 6.0
      if (SCFMIND(7) .le.0)      SCFMIND(7) = 6.0
 
-     do ISPC = 1,MAXSP
+     do ISPC = 1,CFG_MAXSP
         if (STMP(ISPC) .le.0)    STMP(ISPC) = 1.
         if (DBHMIN(ISPC) .le.0)   DBHMIN(ISPC) = 7.0
         if (TOPD(ISPC) .le.0)    TOPD(ISPC) = 4.5
@@ -112,7 +113,7 @@ subroutine SETCUBICDFLTS
      if (DBHMIN(11) .le.0)   DBHMIN(11) = 6.0
      if (SCFMIND(11) .le.0) SCFMIND(11) = 6.0
 
-     do ISPC = 1,MAXSP
+     do ISPC = 1,CFG_MAXSP
         select case (IFOR)
         case(6:10)
            if (TOPD(ISPC) .le.0)    TOPD(ISPC) = 4.5
@@ -133,7 +134,7 @@ subroutine SETCUBICDFLTS
      if (DBHMIN(7) .le.0)   DBHMIN(7) = 7.0
      if (SCFMIND(7) .le.0) SCFMIND(7) = 7.0
 
-     do ISPC = 1,MAXSP
+     do ISPC = 1,CFG_MAXSP
         if (STMP(ISPC) .le.0)    STMP(ISPC) = 1.
         if (DBHMIN(ISPC) .le.0)   DBHMIN(ISPC) = 8.0
         if (TOPD(ISPC) .le.0)    TOPD(ISPC) = 6.0
@@ -144,7 +145,7 @@ subroutine SETCUBICDFLTS
 
   case ("CR")
      if (IMODTY .le.0.or. IMODTY .gt.5) IMODTY = CRDEFMT(IFOR)
-     do ISPC = 1,MAXSP
+     do ISPC = 1,CFG_MAXSP
         if (STMP(ISPC) .le.0)    STMP(ISPC) = 1.
         if (SCFSTMP(ISPC) .le.0) SCFSTMP(ISPC) = 1.
         select case (IMODTY)
@@ -165,7 +166,7 @@ subroutine SETCUBICDFLTS
      end do
 
   case ("CS")
-     do ISPC = 1,MAXSP
+     do ISPC = 1,CFG_MAXSP
         !            CHECK FOR UNIQUE VALUES FIRST
         if (ISPC .le.7.or. IFOR .eq.1) then
            if (DBHMIN(ISPC) .le.0)  DBHMIN(ISPC) = 5.
@@ -197,7 +198,7 @@ subroutine SETCUBICDFLTS
      if (DBHMIN(7) .le.0)   DBHMIN(7) = 6.
      if (SCFMIND(7) .le.0) SCFMIND(7) = 6.
 
-     do ISPC = 1,MAXSP
+     do ISPC = 1,CFG_MAXSP
         if (STMP(ISPC) .le.0)    STMP(ISPC) = 1.
         if (SCFSTMP(ISPC) .le.0) SCFSTMP(ISPC) = 1.
         if (DBHMIN(ISPC) .le.0)   DBHMIN(ISPC) = 7.
@@ -210,7 +211,7 @@ subroutine SETCUBICDFLTS
      if (DBHMIN(7) .le.0)   DBHMIN(7) = 6.
      if (SCFMIND(7) .le.0) SCFMIND(7) = 6.
 
-     do ISPC = 1,MAXSP
+     do ISPC = 1,CFG_MAXSP
         if (STMP(ISPC) .le.0)    STMP(ISPC) = 1.
         if (SCFSTMP(ISPC) .le.0) SCFSTMP(ISPC) = 1.
         if (DBHMIN(ISPC) .le.0)   DBHMIN(ISPC) = 7.0
@@ -223,7 +224,7 @@ subroutine SETCUBICDFLTS
      if (DBHMIN(7) .le.0)   DBHMIN(7) = 6.
      if (SCFMIND(7) .le.0) SCFMIND(7) = 6.
 
-     do ISPC = 1,MAXSP
+     do ISPC = 1,CFG_MAXSP
         if (STMP(ISPC) .le.0)    STMP(ISPC) = 1.
         if (SCFSTMP(ISPC) .le.0) SCFSTMP(ISPC) = 1.
         if (DBHMIN(ISPC) .le.0)   DBHMIN(ISPC) = 7.0
@@ -236,7 +237,7 @@ subroutine SETCUBICDFLTS
      if (DBHMIN(7) .le.0)   DBHMIN(7) = 6.
      if (SCFMIND(7) .le.0) SCFMIND(7) = 6.
 
-     do ISPC = 1,MAXSP
+     do ISPC = 1,CFG_MAXSP
         if (STMP(ISPC) .le.0)    STMP(ISPC) = 1.
         if (SCFSTMP(ISPC) .le.0) SCFSTMP(ISPC) = 1.
         if (DBHMIN(ISPC) .le.0)   DBHMIN(ISPC) = 7.0
@@ -246,7 +247,7 @@ subroutine SETCUBICDFLTS
      end do
 
   case ("LS")
-     do ISPC = 1,MAXSP
+     do ISPC = 1,CFG_MAXSP
         if ((ISPC.ge.40.and.ISPC.le.42.and.IFOR.eq.2)&
              &.or.(IFOR.eq.6.and.ISPC.gt.14)) then
            if (DBHMIN(ISPC) .le.0) DBHMIN(ISPC) = 6.
@@ -283,7 +284,7 @@ subroutine SETCUBICDFLTS
      end do
 
   case ("NC")
-     do ISPC = 1,MAXSP
+     do ISPC = 1,CFG_MAXSP
         select case (IFOR)
         case (4)
            if (TOPD(ISPC) .le.0)    TOPD(ISPC) = 4.5
@@ -302,7 +303,7 @@ subroutine SETCUBICDFLTS
      end do
 
   case ("NE")
-     do ISPC = 1,MAXSP
+     do ISPC = 1,CFG_MAXSP
         if ((IFOR .eq.1.or. IFOR .eq.3) .and. ISPC .gt.25) then
            if (DBHMIN(ISPC) .le.0) DBHMIN(ISPC) = 6.
         end if
@@ -328,7 +329,7 @@ subroutine SETCUBICDFLTS
   case ("OC")
      if (DBHMIN(11) .le.0)   DBHMIN(11) = 6.
      if (SCFMIND(11) .le.0) SCFMIND(11) = 6.
-     do ISPC = 1,MAXSP
+     do ISPC = 1,CFG_MAXSP
         select case (IFOR)
         case (6:10)
            if (TOPD(ISPC) .le.0)    TOPD(ISPC) = 4.5
@@ -344,7 +345,7 @@ subroutine SETCUBICDFLTS
      end do
 
   case ("OP")
-     do ISPC = 1,MAXSP
+     do ISPC = 1,CFG_MAXSP
         select case (IFOR)
         case (4,5,6)
            if (TOPD(ISPC) .le.0)    TOPD(ISPC) = 5.
@@ -364,7 +365,7 @@ subroutine SETCUBICDFLTS
      end do
 
   case ("PN")
-     do ISPC = 1,MAXSP
+     do ISPC = 1,CFG_MAXSP
         select case (IFOR)
         case (4,5,6)
            if (TOPD(ISPC) .le.0)   TOPD(ISPC) = 5.
@@ -391,7 +392,7 @@ subroutine SETCUBICDFLTS
      end if
 
      if (IREGN .eq.8) then
-        do ISPC = 1,MAXSP
+        do ISPC = 1,CFG_MAXSP
            if (STMP(ISPC) .le.0)    STMP(ISPC) = 0.5
            if (SCFSTMP(ISPC) .le.0) SCFSTMP(ISPC) = 1.0
 
@@ -467,7 +468,7 @@ subroutine SETCUBICDFLTS
         ! END OF REGION 8 LOGIC
 
      else
-        do ISPC = 1,MAXSP
+        do ISPC = 1,CFG_MAXSP
            if (STMP(ISPC) .le.0)    STMP(ISPC) = 0.5
            if (SCFSTMP(ISPC) .le.0) SCFSTMP(ISPC) = 1.0
            ! SET DBHMIN AND TOPD SPECS
@@ -489,7 +490,7 @@ subroutine SETCUBICDFLTS
      end if
 
   case ("SO")
-     do ISPC = 1,MAXSP
+     do ISPC = 1,CFG_MAXSP
         if (STMP(ISPC) .le.0)    STMP(ISPC) = 1.0
         if (SCFSTMP(ISPC) .le.0) SCFSTMP(ISPC) = 1.0
         if (DBHMIN(ISPC) .le.0)   DBHMIN(ISPC) = 9.0
@@ -508,7 +509,7 @@ subroutine SETCUBICDFLTS
      if (DBHMIN(7) .le.0)        DBHMIN(7) = 7.0
      if (SCFMIND(7) .le.0)      SCFMIND(7) = 7.0
 
-     do ISPC = 1,MAXSP
+     do ISPC = 1,CFG_MAXSP
         if (STMP(ISPC) .le.0)    STMP(ISPC) = 1.0
         if (SCFSTMP(ISPC) .le.0) SCFSTMP(ISPC) = 1.0
         if (DBHMIN(ISPC) .le.0)   DBHMIN(ISPC) = 8.0
@@ -521,7 +522,7 @@ subroutine SETCUBICDFLTS
      if (DBHMIN(7) .le.0)        DBHMIN(7) = 7.0
      if (SCFMIND(7) .le.0)      SCFMIND(7) = 7.0
 
-     do ISPC = 1,MAXSP
+     do ISPC = 1,CFG_MAXSP
         if (STMP(ISPC) .le.0)    STMP(ISPC) = 1.0
         if (SCFSTMP(ISPC) .le.0) SCFSTMP(ISPC) = 1.0
         if (DBHMIN(ISPC) .le.0)   DBHMIN(ISPC) = 8.0
@@ -531,7 +532,7 @@ subroutine SETCUBICDFLTS
      end do
 
   case ("WC")
-     do ISPC = 1,MAXSP
+     do ISPC = 1,CFG_MAXSP
         if (STMP(ISPC) .le.0)    STMP(ISPC) = 1.0
         if (SCFSTMP(ISPC) .le.0) SCFSTMP(ISPC) = 1.0
         select case (IFOR)
@@ -553,7 +554,7 @@ subroutine SETCUBICDFLTS
      end do
 
   case ("WS")
-     do ISPC = 1,MAXSP
+     do ISPC = 1,CFG_MAXSP
         if (STMP(ISPC) .le.0)    STMP(ISPC) = 1.0
         if (SCFSTMP(ISPC) .le.0) SCFSTMP(ISPC) = 1.0
         if (DBHMIN(ISPC) .le.0)   DBHMIN(ISPC) = 7.0

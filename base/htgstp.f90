@@ -3,6 +3,7 @@
 !=================================!
 ! BASE $Id$
 subroutine HTGSTP
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! Common blocks
@@ -46,7 +47,7 @@ subroutine HTGSTP
      goto 20
      10 continue
      IS1 = 1
-     IS2 = MAXSP
+     IS2 = CFG_MAXSP
      20 continue
 
      !     ENTER SPECIES LOOP

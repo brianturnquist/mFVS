@@ -25,7 +25,7 @@ subroutine ESDLAY (ISPE,IAS,DRAW,DELAY)
   !     PLOT AGE (YRS): 2 THRU 7   8 THRU 12   13 THRU 20
   !     ORIGINAL VALUES FROM 13 SPECIES AK MARKED WITH #
 
-  data BSUB/ &
+  data BSUB(:,1:MAXSP_NATIVE)/ &
        & 4.34376,   6.55916,     9.16226, & ! #  1  SF = pacific silver fir
        & 3.45725,   6.34975,     8.65545, & ! #  2  AF = subalpine fir
        & 4.16284,   7.52536,    10.20937, & ! #  3  YC = alaska-cedar
@@ -53,7 +53,7 @@ subroutine ESDLAY (ISPE,IAS,DRAW,DELAY)
   !     PLOT AGE (YRS): 3 THRU 7   8 THRU 12   13 THRU 20
   !     ORIGINAL VALUES FROM 13 SPECIES AK MARKED WITH #
 
-  data CSUB/ &
+  data CSUB(:,1:MAXSP_NATIVE)/ &
        & 2.33194,   2.63560,     2.21663, & ! #  1  SF = pacific silver fir
        & 2.06804,   2.79933,     2.28687, & ! #  2  AF = subalpine fir
        & 2.03892,   3.12279,     2.68340, & ! #  3  YC = alaska-cedar
@@ -81,7 +81,7 @@ subroutine ESDLAY (ISPE,IAS,DRAW,DELAY)
   !     OVERSTORY BA:  0 TO 25  26+ SQ.FT./A.
   !     ORIGINAL VALUES FROM 13 SPECIES AK MARKED WITH #
 
-  data BADV/ &
+  data BADV(:,1:MAXSP_NATIVE)/ &
        & 13.121021, 22.186540, & ! #  1  SF = pacific silver fir
        & 21.962337, 32.176727, & ! #  2  AF = subalpine fir
        & 17.779381, 24.241344, & ! #  3  YC = alaska-cedar
@@ -108,7 +108,7 @@ subroutine ESDLAY (ISPE,IAS,DRAW,DELAY)
 
   !     ORIGINAL VALUES FROM 13 SPECIES AK MARKED WITH #
 
-  data CADV/ &
+  data CADV(:,1:MAXSP_NATIVE)/ &
        & 1.043254,  1.215651, & ! #  1  SF = pacific silver fir
        & 1.101266,  1.317022, & ! #  2  AF = subalpine fir
        & 1.337217,  1.540663, & ! #  3  YC = alaska-cedar

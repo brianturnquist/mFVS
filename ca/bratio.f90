@@ -16,7 +16,7 @@ function BRATIO(IS,D,H)
   integer :: JBARK(MAXSP),IS,J,I
   real    :: RDANUW
 
-  data JBARK/&
+  data JBARK(1:MAXSP_NATIVE)/&
        &12,  5, 12,  2,  2,  2,  1, 13, 13, 10,&
        &27, 10,  3, 10,  4, 25, 25,  3,  3, 26,&
        &12,  9, 29, 10,  3, 19, 18, 17, 20,  8,&

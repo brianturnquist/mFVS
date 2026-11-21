@@ -3,6 +3,7 @@
 !======================================!
 ! EM $Id$
 subroutine HTGF
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE COMPUTES THE PREDICTED PERIODIC HEIGHT INCREMENT FOR
@@ -92,7 +93,7 @@ subroutine HTGF
   3 format(' ENTERING SUBROUTINE HTGF  CYCLE =',I5)
 
   if (DEBUG)write(JOSTND,*) 'IN HTGF AT BEGINNING,HTCON=',&
-       &HTCON,'RMAI=',RMAI,'ELEV=',ELEV
+       &HTCON(1:CFG_MAXSP),'RMAI=',RMAI,'ELEV=',ELEV
   SCALE = FINT/YR
   ISMALL = 0
 
@@ -109,7 +110,7 @@ subroutine HTGF
   C3MOD = 2.54119
   C4MOD = 0.250537
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      I1 = ISCT(ISPC,1)
      if (I1.eq.0) go to 40
      I2 = ISCT(ISPC,2)
@@ -446,7 +447,7 @@ subroutine HTGF
 
   !  LOAD OVERALL INTERCEPT FOR EACH SPECIES.
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      if (ISPC .eq.5) then
         HTCON(ISPC) = HGHCH - 0.5478
      else

@@ -3,6 +3,7 @@
 !=============================!
 ! CANADA-NEWMIST $Id$
 subroutine DMCYCL
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! **DMCYCL -- NISI  Date of last revision April 7 1994
@@ -213,7 +214,7 @@ subroutine DMCYCL
   !     CAN BE PASSED DIRECTLY TO ALGSLP. HELP YOURSELF IF YOU ARE FEELING
   !     CLEVER TODAY.
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
 
      I1 = ISCT(ISPC,1)
      if (I1.eq.0) goto 98
@@ -266,7 +267,7 @@ subroutine DMCYCL
 
      !       ZERO BC-MORTALITY, BC-SUPPRESSION THIS YEAR
 
-     do J = 1,MAXSP
+     do J = 1,CFG_MAXSP
         do K = 1,ACTIVE
            do L = 1,MXHT
               BCMORT(J,K,L) = 0.0 ! MORTALITY
@@ -300,7 +301,7 @@ subroutine DMCYCL
                  goto 11
               end if
               ISPP = BC(BCT)%Spp
-              if (ISPP .lt.1.or. ISPP .gt. MAXSP) LOK = .false.
+              if (ISPP .lt.1.or. ISPP .gt. CFG_MAXSP) LOK = .false.
               11 if (LOK) then
                  PRM(2) = MAX(0.0, PRM(2))
                  PRM(3) = MAX(0.0, MIN(FLOAT(MXHT*MESH), PRM(3)))
@@ -330,7 +331,7 @@ subroutine DMCYCL
         end do
      end if
 
-     do ISPC = 1,MAXSP
+     do ISPC = 1,CFG_MAXSP
 
         I1 = ISCT(ISPC,1)
         if (I1.eq.0) goto 99

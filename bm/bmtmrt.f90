@@ -46,7 +46,7 @@ subroutine BMTMRT(TOKILL,DEBUG,SUMKIL)
   !  OS USES BM PP BARK COEFFICIENT
   !  OH USES SO OH (ORIGINALLY FROM WC VARIANT)
 
-  data VARADJ /&
+  data VARADJ(1:MAXSP_NATIVE) /&
        &1.0,   1.0,  1.0,   1.0,  1.0,   1.1,  1.0,  1.0,  1.0,   1.0,&
        &0.8,   0.8,  0.5,   0.5,  1.3,  0.85,  1.0,  1.0/
 

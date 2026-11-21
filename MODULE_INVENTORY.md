@@ -240,8 +240,8 @@ includes differ by variant: `PRGPRM` (24 versions), `FMBIOGRP` (3) and
 per-variant: BLKDAT ×24, FMCBLK ×21, CUBRDS ×20, RDBLK1 ×15 and ESBLKD ×2.
 
 Every statement that names one of these inputs, or the runtime `VARACD`,
-has one kind and a use (4,715 statements outside `PRGPRM` after SP04;
-4,729 at SP01):
+has one kind and a use. The table gives the SP01 counts (4,729 statements
+outside `PRGPRM`); after SP05, 2,766 remain (see below):
 
 | Kind | Statements | Uses |
 |---|---:|---|
@@ -249,6 +249,17 @@ has one kind and a use (4,715 statements outside `PRGPRM` after SP04;
 | Identity test | 1,360 | `VARIANTCD` 510 compile-time tests and 1 declaration (the VARCFG_MOD copy); `LMETRICVAR` 349 and 1; `VARACD` 477 runtime tests, 20 assignments, 2 declarations. SP04 removed the 11 `VARIANTCD` and 5 `LMETRICVAR` parameter expressions |
 | Storage dimension | 978 | declarations (MAXSP 686, MAXTRE 230, MAXPLT 42, NSPSPE 10, MXFRCDS 2) and 8 size parameter expressions |
 | Initializer | 318 | DATA using MAXSP (278, plus 38 with literal repeat counts), NSPSPE (1) and `VARACD` (1) |
+
+SP05 moved every species active extent to the runtime count `CFG_MAXSP`
+(VARCFG_MOD) and every DATA statement that initialises native species slots
+to the native count `MAXSP_NATIVE` (PRGPRM); the name `MAXSP` now means
+species storage only. Of the 1,735 MAXSP active-extent statements, 13
+remain, each deliberately on storage: SSTGHP's own dummy argument (3), the
+STATS work-array EQUIVALENCE offsets (1), the metric FMSOUT allocations (7),
+the FMSCUT leading dimension (1) and NVEL's local MAXSP in `r8init.f90` (1).
+MAXSP initialisers fell from 316 to 137 storage-wide fills (`X/MAXSP*v/`),
+and the restart and API flags on MAXSP are gone. The restart transfers of
+species-leading arrays go through PUTGETSP_MOD (`pg/putgetsp_mod.f90`).
 
 Flags mark the restart serializers (`pg/putstd.f90`, `pg/getstd.f90`: MAXSP
 210, MAXPLT 12, MAXTRE 4 statements) and the API adapters (MAXSP 31, MAXTRE 4,

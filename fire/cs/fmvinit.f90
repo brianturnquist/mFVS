@@ -3,6 +3,7 @@
 !=======================!
 ! FIRE-CS $Id$
 subroutine FMVINIT
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  PURPOSE:
@@ -100,7 +101,7 @@ subroutine FMVINIT
   HTXSFT = 2.0
   HTR1 = 0.01 !from bm fmvinit, the way to get 0 ht. loss is
   HTR2 = 0.01 !to set these low (can't be 0) and set htx to 0
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      PSOFT(I) = 0.0
   end do
 
@@ -156,7 +157,7 @@ subroutine FMVINIT
   !  SPECIES NOT LISTED IN THE BOOK WERE ASSIGNED BASED ON INFO
   !  PROVIDED AT THE SN WORKSHOP
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
 
      select case (I)
 

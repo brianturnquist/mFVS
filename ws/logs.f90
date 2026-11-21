@@ -101,7 +101,7 @@ subroutine LOGS(DBH,HT,IBCD,BDMIN,ISP,STMP,BV)
   data XPS/&
        &0.95204, 0.92368, 0.89659, 0.95411, 0.94976, 0.95222/
 
-  data IMAP/&
+  data IMAP(1:MAXSP_NATIVE)/&
        &2,  4,  5,  1,  3,  1,  6,  1,  1,  1,&
        &2,  1,  5,  1,  1,  1,  1,  1,  1,  1,&
        &1,  4,  1,  2,  1,  1,  1,  1,  1,  1,&

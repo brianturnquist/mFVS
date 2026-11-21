@@ -1,0 +1,100 @@
+!=====================!
+!   pg : putgetsp_mod   !
+!=====================!
+! PG $Id$
+
+!     RESTART TRANSFERS OF SPECIES-LEADING ARRAYS (SP05).
+!
+!     AN ARRAY DIMENSIONED (MAXSP,...) WAS WRITTEN TO THE RESTART BUFFER
+!     AS ONE RUN OF MAXSP*NCOL WORDS. THESE ROUTINES WRITE (OR READ) THE
+!     FIRST CFG_MAXSP WORDS OF EACH OF THE NCOL COLUMNS INSTEAD, IN THE
+!     SAME ORDER, THROUGH THE EXISTING BUFFER ROUTINES. WHEN STORAGE
+!     EQUALS THE ACTIVE COUNT THE WORD STREAM IS UNCHANGED; WITH LARGER
+!     STORAGE ONLY THE ACTIVE SPECIES ARE TRANSFERRED, SO A RESTART FILE
+!     DOES NOT DEPEND ON THE STORAGE SIZE.
+!
+!     IBEGIN KEEPS ITS MEANING FOR THE WHOLE ARRAY: 1 STARTS A SERIES
+!     (FIRST COLUMN ONLY), 3 ENDS ONE (LAST COLUMN ONLY), 2 IS A MIDDLE
+!     CALL.
+
+module PUTGETSP_MOD
+  implicit none
+  private
+  public :: BFWRSP,BFRDSP,IFWRSP,IFRDSP,LFWRSP,LFRDSP
+
+contains
+
+  integer function COLFLG (J,NCOL,IBEGIN)
+    integer :: J,NCOL,IBEGIN
+    COLFLG = 2
+    if (IBEGIN.eq.1 .and. J.eq.1) COLFLG = 1
+    if (IBEGIN.eq.3 .and. J.eq.NCOL) COLFLG = 3
+  end function COLFLG
+
+  subroutine BFWRSP (BUFFER,IPNT,ILIMIT,VARBLE,NCOL,IBEGIN)
+    use VARCFG_MOD, only: CFG_MAXSP
+    include 'PRGPRM.f90'
+    real    :: BUFFER(*)
+    real    :: VARBLE(MAXSP,*)
+    integer :: IPNT,ILIMIT,NCOL,IBEGIN,J
+    do J = 1,NCOL
+       call BFWRIT (BUFFER,IPNT,ILIMIT,VARBLE(1,J),CFG_MAXSP,COLFLG(J,NCOL,IBEGIN))
+    end do
+  end subroutine BFWRSP
+
+  subroutine BFRDSP (BUFFER,IPNT,ILIMIT,VARBLE,NCOL,IBEGIN)
+    use VARCFG_MOD, only: CFG_MAXSP
+    include 'PRGPRM.f90'
+    real    :: BUFFER(*)
+    real    :: VARBLE(MAXSP,*)
+    integer :: IPNT,ILIMIT,NCOL,IBEGIN,J
+    do J = 1,NCOL
+       call BFREAD (BUFFER,IPNT,ILIMIT,VARBLE(1,J),CFG_MAXSP,COLFLG(J,NCOL,IBEGIN))
+    end do
+  end subroutine BFRDSP
+
+  subroutine IFWRSP (BUFFER,IPNT,ILIMIT,VARBLE,NCOL,IBEGIN)
+    use VARCFG_MOD, only: CFG_MAXSP
+    include 'PRGPRM.f90'
+    real    :: BUFFER(*)
+    integer :: VARBLE(MAXSP,*)
+    integer :: IPNT,ILIMIT,NCOL,IBEGIN,J
+    do J = 1,NCOL
+       call IFWRIT (BUFFER,IPNT,ILIMIT,VARBLE(1,J),CFG_MAXSP,COLFLG(J,NCOL,IBEGIN))
+    end do
+  end subroutine IFWRSP
+
+  subroutine IFRDSP (BUFFER,IPNT,ILIMIT,VARBLE,NCOL,IBEGIN)
+    use VARCFG_MOD, only: CFG_MAXSP
+    include 'PRGPRM.f90'
+    real    :: BUFFER(*)
+    integer :: VARBLE(MAXSP,*)
+    integer :: IPNT,ILIMIT,NCOL,IBEGIN,J
+    do J = 1,NCOL
+       call IFREAD (BUFFER,IPNT,ILIMIT,VARBLE(1,J),CFG_MAXSP,COLFLG(J,NCOL,IBEGIN))
+    end do
+  end subroutine IFRDSP
+
+  subroutine LFWRSP (BUFFER,IPNT,ILIMIT,VARBLE,NCOL,IBEGIN)
+    use VARCFG_MOD, only: CFG_MAXSP
+    include 'PRGPRM.f90'
+    real    :: BUFFER(*)
+    logical :: VARBLE(MAXSP,*)
+    integer :: IPNT,ILIMIT,NCOL,IBEGIN,J
+    do J = 1,NCOL
+       call LFWRIT (BUFFER,IPNT,ILIMIT,VARBLE(1,J),CFG_MAXSP,COLFLG(J,NCOL,IBEGIN))
+    end do
+  end subroutine LFWRSP
+
+  subroutine LFRDSP (BUFFER,IPNT,ILIMIT,VARBLE,NCOL,IBEGIN)
+    use VARCFG_MOD, only: CFG_MAXSP
+    include 'PRGPRM.f90'
+    real    :: BUFFER(*)
+    logical :: VARBLE(MAXSP,*)
+    integer :: IPNT,ILIMIT,NCOL,IBEGIN,J
+    do J = 1,NCOL
+       call LFREAD (BUFFER,IPNT,ILIMIT,VARBLE(1,J),CFG_MAXSP,COLFLG(J,NCOL,IBEGIN))
+    end do
+  end subroutine LFRDSP
+
+end module PUTGETSP_MOD

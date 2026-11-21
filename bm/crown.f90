@@ -3,6 +3,7 @@
 !============================================!
 ! BM $Id$
 subroutine CROWN
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE IS USED TO DUB MISSING CROWN RATIOS AND
@@ -125,7 +126,7 @@ subroutine CROWN
            21 continue
         end do
      else if (ISPCC .eq.0) then
-        do ISPCC = 1,MAXSP
+        do ISPCC = 1,CFG_MAXSP
            if (PRM(2) .ge.0.0)CRNMLT(ISPCC) = PRM(2)
            if (PRM(3) .gt.0.0)DLOW(ISPCC) = PRM(3)
            if (PRM(4) .gt.0.0)DHI(ISPCC) = PRM(4)
@@ -141,7 +142,7 @@ subroutine CROWN
      24 continue
   end do
   25 continue
-  if (DEBUG)write(JOSTND,9024)ICYC,CRNMLT
+  if (DEBUG)write(JOSTND,9024)ICYC,CRNMLT(1:CFG_MAXSP)
   9024 format(/' IN CROWN 9024 ICYC,CRNMLT= ',&
        &I5/((1X,11F6.2)/))
 
@@ -163,7 +164,7 @@ subroutine CROWN
 
   !  ENTER THE LOOP FOR SPECIES DEPENDENT VARIABLES
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      I1 = ISCT(ISPC,1)
      if (I1.eq.0) go to 70
      I2 = ISCT(ISPC,2)
@@ -382,49 +383,49 @@ subroutine CROWN
 
   ! LOAD WEIBULL 'A' PARAMETER BY SPECIES
 
-  data WEIBA/        0.0,      0.0,     0.0,      0.0,      0.0,&
+  data WEIBA(1:MAXSP_NATIVE)/        0.0,      0.0,     0.0,      0.0,      0.0,&
        &0.0,      0.0,     0.0,      0.0,      0.0,&
        &1.0,      1.0,     0.0,      1.0,      0.0,&
        &0.0,      0.0,     0.0/
 
   ! LOAD WEIBULL 'B' PARAMETER EQUATION CONSTANT COEFFICIENT
 
-  data WEIBB0/  0.74338, -0.00114,  0.35559,  0.46010,  0.46010,&
+  data WEIBB0(1:MAXSP_NATIVE)/  0.74338, -0.00114,  0.35559,  0.46010,  0.46010,&
        &0.07609, -0.04970,  0.74338,  0.40743,  0.22542,&
        &-0.82631, -0.82631, 0.196054,-0.811424, -0.08414,&
        &-0.238295,  0.22542,-0.238295/
 
   ! LOAD WEIBULL 'B' PARAMETER EQUATION SLOPE COEFFICIENT
 
-  data WEIBB1/  0.97850,  1.11300,  1.04220,  1.02563,  1.02563,&
+  data WEIBB1(1:MAXSP_NATIVE)/  0.97850,  1.11300,  1.04220,  1.02563,  1.02563,&
        &1.10184,  1.14250,  0.97850,  1.02954,  1.06011,&
        &1.06217,  1.06217, 1.073909, 1.056190,  1.14765,&
        &1.180163,  1.06011, 1.180163/
 
   ! LOAD WEIBULL 'C' PARAMETER EQUATION CONSTANT COEFFICIENT
 
-  data WEIBC0/ -3.98461,  3.40943, -0.68418, -1.74681, -1.74681,&
+  data WEIBC0(1:MAXSP_NATIVE)/ -3.98461,  3.40943, -0.68418, -1.74681, -1.74681,&
        &3.01,  2.49474, -3.98461,  4.06366,  0.58615,&
        &3.31429,  3.31429, 0.345647,-3.831124,  2.77500,&
        &3.044134,  0.58615, 3.044134/
 
   ! LOAD WEIBULL 'C' PARAMETER EQUATION SLOPE COEFFICIENT
 
-  data WEIBC1/  1.34802,  0.00000,  0.80153,  0.98317,  0.98317,&
+  data WEIBC1(1:MAXSP_NATIVE)/  1.34802,  0.00000,  0.80153,  0.98317,  0.98317,&
        &0.0,  0.00000,  1.34802,  0.00000,  0.64158,&
        &0.0,      0.0, 0.620145, 1.401938,      0.0,&
        &0.0,  0.64158,      0.0/
 
   ! LOAD CR=F(SDI) EQUATION CONSTANT COEFFICIENT
 
-  data C0/      6.94062,  5.30390,  6.69836,  7.07172,  7.07172,&
+  data C0(1:MAXSP_NATIVE)/      6.94062,  5.30390,  6.69836,  7.07172,  7.07172,&
        &7.23800,  4.82367,  6.94062,  7.97175,  6.23850,&
        &6.19911,  6.19911, 5.417431, 5.200550,  4.01678,&
        &4.625125,  6.23850, 4.625125/
 
   ! LOAD CR=F(SDI) EQUATION SLOPE COEFFICIENT
 
-  data C1/     -0.01927, -0.02049, -0.02594, -0.03044, -0.03044,&
+  data C1(1:MAXSP_NATIVE)/     -0.01927, -0.02049, -0.02594, -0.03044, -0.03044,&
        &0.0, -0.02373, -0.01927, -0.03545, -0.03064,&
        &-0.02216, -0.02216,-0.011608,-0.014890, -0.01516,&
        &-0.016042, -0.03064,-0.016042/

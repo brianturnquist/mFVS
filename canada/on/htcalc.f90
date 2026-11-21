@@ -50,7 +50,7 @@ subroutine HTCALC (N,IVAR,ISPC,SI,BA,YRS,H,AGET,HTMAX,HTG1,&
   real    :: HTG1,HTMAX,AGET,H,YRS,SI,B1,B2,B3,B4,B5,BH
   real    :: D,PCT1,BA,BAL
 
-  data MAPLS/&
+  data MAPLS(1:MAXSP_NATIVE)/&
        &74,  108,   95,   95,  104,   68,   64,   55,   70,   59,&
        &126,  127,   58,   58,   14,   15,   28,    4,    1,   35,&
        &53,   53,   53,    5,   51,    2,    2,   11,   12,   41,&

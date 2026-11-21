@@ -3,6 +3,7 @@
 !==================================!
 ! BASE $Id$
 subroutine REASS
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  **REASS** REALLIGNS THE POINTERS VECTORS IND1 AND IND, AND
@@ -20,7 +21,7 @@ subroutine REASS
   !  COPY IND1 INTO IND2 IN SPECIES ORDER.
 
   J = 0
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      I1 = ISCT(ISPC,1)
      if (I1.eq.0) go to 20
      I2 = ISCT(ISPC,2)
@@ -48,7 +49,7 @@ subroutine REASS
   !  REALLIGN POINTERS TO THE SPECIES SEGMENTS IN IND1.
 
   LAST = 0
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      if (ISCT(ISPC,1).eq.0) go to 40
      IKNT = ISCT(ISPC,2)-ISCT(ISPC,1)+1
      ISCT(ISPC,1) = LAST+1

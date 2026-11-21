@@ -3,6 +3,7 @@
 !======================================!
 ! SO $Id$
 subroutine HTGF
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE COMPUTES THE PREDICTED PERIODIC HEIGHT
@@ -70,20 +71,20 @@ subroutine HTGF
   !      10     PP            INTL                10
   !      11     OT            INTM                 8
 
-  data RHR /&
+  data RHR(1:MAXSP_NATIVE) /&
        &15.0, 15.0, 15.0, 20.0, 20.0, 20.0, 12.0, 16.0, 16.0, 13.0,&
        &13.0, 13.0, 20.0, 20.0, 15.0, 15.0, 12.0, 20.0, 20.0, 20.0,&
        &13.0, 13.0, 20.0, 15.0, 12.0, 13.0, 15.0, 12.0, 15.0, 15.0,&
        &15.0, 15.0, 15.0/
 
-  data RHYXS /&
+  data RHYXS(1:MAXSP_NATIVE) /&
        &0.10, 0.10, 0.10, 0.20, 0.20, 0.20, 0.01, 0.15, 0.15, 0.05,&
        &0.10, 0.20, 0.05, 0.10, 0.10, 0.10, 0.10, 0.10, 0.20, 0.20,&
        &0.05, 0.05, 0.20, 0.10, 0.01, 0.05, 0.10, 0.01, 0.10, 0.10,&
        &0.10, 0.10, 0.10/
   data RHM /&
        &MAXSP*1.10/
-  data RHB /&
+  data RHB(1:MAXSP_NATIVE) /&
        &-1.45,-1.45,-1.45,-1.10,-1.10,-1.10,-1.60,-1.20,-1.20,-1.60,&
        &-1.45,-1.10,-1.20,-1.10,-1.45,-1.60,-1.60,-1.10,-1.10,-1.10,&
        &-1.60,-1.60,-1.10,-1.45,-1.60,-1.60,-1.45,-1.60,-1.45,-1.45,&
@@ -118,7 +119,7 @@ subroutine HTGF
   if (DEBUG) write(JOSTND,3)ICYC
   3 format(' ENTERING SUBROUTINE HTGF  CYCLE =',I5)
   if (DEBUG)write(JOSTND,*) 'IN HTGF AT BEGINNING,HTCON=',&
-       &HTCON,'RMAI=',RMAI,'ELEV=',ELEV
+       &HTCON(1:CFG_MAXSP),'RMAI=',RMAI,'ELEV=',ELEV
 
   SCALE = FINT/YR
 
@@ -126,11 +127,11 @@ subroutine HTGF
 
   call MULTS (2,IY(ICYC),XHMULT)
   if (DEBUG)write(JOSTND,*)'HTGF- IY(ICYC),XHMULT= ',&
-       &IY(ICYC), XHMULT
+       &IY(ICYC), XHMULT(1:CFG_MAXSP)
 
   !   BEGIN SPECIES LOOP.
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      I1 = ISCT(ISPC,1)
      if (I1.eq.0) go to 40
      I2 = ISCT(ISPC,2)
@@ -585,7 +586,7 @@ subroutine HTGF
   !  ARE SITE DEPENDENT AND REQUIRE ONE-TIME RESOLUTION.
   !  LOAD OVERALL INTERCEPT FOR EACH SPECIES.
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      HTCON(ISPC) = 0.0
      if (LHCOR2.and. HCOR2(ISPC).gt.0.0) HTCON(ISPC) = &
           &HTCON(ISPC)+ALOG(HCOR2(ISPC))

@@ -32,7 +32,7 @@ block data CUBRDS
   !  COEFFICIENTS FOR CUBIC FOOT VOLUME FOR TREES THAT ARE SMALLER THAN
   !  THE TRANSITION SIZE
 
-  data CFVEQS/&
+  data CFVEQS(:,1:MAXSP_NATIVE)/&
        &0.0,      0.0,     0.0,     0.0,     0.0,     0.0,    0.0,&
        &0.0,      0.0,     0.0,     0.0,     0.0,     0.0,    0.0,&
        &0.0,      0.0,     0.0,     0.0,     0.0,     0.0,    0.0,&
@@ -55,7 +55,7 @@ block data CUBRDS
   !  COEFFICIENTS FOR CUBIC FOOT VOLUME FOR TREES THAT ARE LARGER THAN
   !  THE TRANSITION SIZE
 
-  data CFVEQL/&
+  data CFVEQL(:,1:MAXSP_NATIVE)/&
        &0.0,      0.0,     0.0, 0.00233,     0.0,     0.0,    0.0,&
        &0.0,      0.0,     0.0, 0.00184,     0.0,     0.0,    0.0,&
        &0.0,      0.0,0.003865,0.001714,     0.0,     0.0,    0.0,&
@@ -77,13 +77,13 @@ block data CUBRDS
 
   !  FLAG IDENTIFYING THE SIZE TRANSITION VARIABLE; 0=D, 1=D2H
 
-  data ICTRAN/0, 0, 0, 0, 0, 0, 0, 0, 0, 1,&
+  data ICTRAN(1:MAXSP_NATIVE)/0, 0, 0, 0, 0, 0, 0, 0, 0, 1,&
        &0, 0, 0, 0, 0, 0, 1, 0/
 
   !  TRANSITION SIZE.  TREES OF LARGER SIZE (D OR D2H) WILL COEFFICIENTS
   !  FOR LARGER SIZE TREES.
 
-  data CTRAN/&
+  data CTRAN(1:MAXSP_NATIVE)/&
        &0.0,      0.0,     0.0,     0.0,     0.0,     0.0,&
        &0.0,      0.0,     0.0,  6000.0,     0.0,     0.0,&
        &0.0,      0.0,     0.0,     0.0,  6000.0,     0.0/
@@ -91,7 +91,7 @@ block data CUBRDS
   !  COEFFICIENTS FOR BOARD FOOT VOLUME FOR TREES THAT ARE SMALLER THAN
   !  THE TRANSITION SIZE
 
-  data BFVEQS/&
+  data BFVEQS(:,1:MAXSP_NATIVE)/&
        &-26.729,      0.0,     0.0, 0.01189,     0.0,     0.0,    0.0,&
        &-29.790,      0.0,     0.0, 0.00997,     0.0,     0.0,    0.0,&
        &-25.332,      0.0,     0.0, 0.01003,     0.0,     0.0,    0.0,&
@@ -114,7 +114,7 @@ block data CUBRDS
   !  COEFFICIENTS FOR BOARD FOOT VOLUME FOR TREES THAT ARE LARGER THAN
   !  THE TRANSITION SIZE
 
-  data BFVEQL/&
+  data BFVEQL(:,1:MAXSP_NATIVE)/&
        &-32.516,      0.0,     0.0, 0.01181,     0.0,     0.0,    0.0,&
        &85.150,      0.0,     0.0, 0.00841,     0.0,     0.0,    0.0,&
        &-9.522,      0.0,     0.0, 0.01011,     0.0,     0.0,    0.0,&
@@ -136,13 +136,13 @@ block data CUBRDS
 
   !  FLAG IDENTIFYING THE SIZE TRANSITION VARIABLE; 0=D, 1=D2H
 
-  data IBTRAN/0, 0, 0, 0, 0, 0, 0, 0, 0, 0,&
+  data IBTRAN(1:MAXSP_NATIVE)/0, 0, 0, 0, 0, 0, 0, 0, 0, 0,&
        &1, 1, 0, 0, 0, 0, 0, 0/
 
   !  TRANSITION SIZE.  TREES OF LARGER SIZE (D OR D2H) WILL USE COEFFICIENTS
   !  FOR LARGER SIZE TREES.
 
-  data BTRAN/&
+  data BTRAN(1:MAXSP_NATIVE)/&
        &20.5,     20.5,    20.5,    20.5,    20.5,    20.5,&
        &20.5,     20.5,    20.5,    20.5,  21100.,  21100.,&
        &20.5,     20.5,    20.5,    20.5,    20.5,    20.5/

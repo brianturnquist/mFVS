@@ -3,6 +3,7 @@
 !===============================!
 subroutine FMSOUT (IYR)
   use FMSRECORD_MOD, only: FMSRECORD
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! METRIC-FIRE-BASE
@@ -116,7 +117,7 @@ subroutine FMSOUT (IYR)
   !     ZERO OUT THE CUMULATIVE VARIABLES
 
   do JYR = 1,100
-     do IDC = 1,MAXSP
+     do IDC = 1,CFG_MAXSP
         do JCL = 1,6
            TOTDH(IDC,JYR,JCL) = 0.0
            TOTDS(IDC,JYR,JCL) = 0.0
@@ -201,7 +202,7 @@ subroutine FMSOUT (IYR)
   end do
 
   do JYR = 1,YRLAST
-     do IDC = 1,MAXSP
+     do IDC = 1,CFG_MAXSP
         do JCL = 1,6
            TOTN = TOTDH(IDC,JYR,JCL) + TOTDS(IDC,JYR,JCL)
            if (TOTN .eq.0.0) goto 110

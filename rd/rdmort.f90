@@ -3,6 +3,7 @@
 !=================!
 ! RD $Id$
 subroutine RDMORT
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE CALCULATES THE INFECTION OF THE ROOT SYSTEMS OF
@@ -61,7 +62,7 @@ subroutine RDMORT
 
   !     ZERO OUT ACCUMULATORS.
 
-  do KSP = 1,MAXSP
+  do KSP = 1,CFG_MAXSP
      I1 = ISCT(KSP,1)
      I2 = ISCT(KSP,2)
      if (ISCT(KSP,1) .eq.0) goto 100
@@ -86,7 +87,7 @@ subroutine RDMORT
   if (ITRN .eq.0) return
 
   IDI = MAXRR
-  do KSP = 1, MAXSP
+  do KSP = 1, CFG_MAXSP
      if (MAXRR .lt.3) IDI = IDITYP(IRTSPC(KSP))
 
      !     Modification (RNH, MAR98).  If MAXRR < 3 then annosus disease.

@@ -76,6 +76,7 @@ subroutine MISINT
   !    Added arrays for height growth impacts.
   !    Impact values must be supplied by MistHMod keyword.
 
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !.... Parameter statements.
@@ -104,27 +105,27 @@ subroutine MISINT
   !....   (6) Aspen (to be completed)
 
   !.... Species affected or unaffected by dwarf mistletoe.
-  data ((AFIT(I,J),J = 1,MAXSP),I = 1,1)/&
+  data ((AFIT(I,J),J = 1,MAXSP_NATIVE),I = 1,1)/&
        &1, 1, 1, 1, 1, 1, 0, 1, 1, 1,&
        &1, 1, 1, 1, 1, 0, 1, 1, 0, 0,&
        &0, 0, 0, 0, 0, 0, 0, 0, 0, 0,&
        &0, 0, 1, 1, 1, 1, 0, 0/
-  data ((AFIT(I,J),J = 1,MAXSP),I = 2,2)/&
+  data ((AFIT(I,J),J = 1,MAXSP_NATIVE),I = 2,2)/&
        &1, 1, 1, 1, 1, 1, 0, 1, 1, 1,&
        &1, 1, 1, 1, 1, 0, 1, 1, 0, 0,&
        &0, 0, 0, 0, 0, 0, 0, 0, 0, 0,&
        &0, 0, 1, 1, 1, 1, 0, 0/
-  data ((AFIT(I,J),J = 1,MAXSP),I = 3,3)/&
+  data ((AFIT(I,J),J = 1,MAXSP_NATIVE),I = 3,3)/&
        &1, 1, 1, 1, 1, 1, 0, 1, 1, 1,&
        &1, 1, 1, 1, 1, 0, 1, 1, 0, 0,&
        &0, 0, 0, 0, 0, 0, 0, 0, 0, 0,&
        &0, 0, 1, 1, 1, 1, 0, 0/
-  data ((AFIT(I,J),J = 1,MAXSP),I = 4,4)/&
+  data ((AFIT(I,J),J = 1,MAXSP_NATIVE),I = 4,4)/&
        &1, 1, 1, 1, 1, 1, 0, 1, 1, 1,&
        &1, 1, 1, 1, 1, 0, 1, 1, 0, 0,&
        &0, 0, 0, 0, 0, 0, 0, 0, 0, 0,&
        &0, 0, 1, 1, 1, 1, 0, 0/
-  data ((AFIT(I,J),J = 1,MAXSP),I = 5,5)/&
+  data ((AFIT(I,J),J = 1,MAXSP_NATIVE),I = 5,5)/&
        &1, 1, 1, 1, 1, 1, 0, 1, 1, 1,&
        &1, 1, 1, 1, 1, 0, 1, 1, 0, 0,&
        &0, 0, 0, 0, 0, 0, 0, 0, 0, 0,&
@@ -136,7 +137,7 @@ subroutine MISINT
   !     & 0, 0, 0, 0, 0, 0, 0, 0/
 
   !.... Species character representations.
-  data (ACSP(J),J = 1,MAXSP)/&
+  data (ACSP(J),J = 1,MAXSP_NATIVE)/&
        &'AF','CB','DF','GF','WF','MH','RC','WL','BC','LM',&
        &'LP','PI','PP','WB','SW','UJ','BS','ES','WS','AS',&
        &'NC','PW','GO','AW','EM','BK','SO','PB','AJ','RM',&
@@ -144,7 +145,7 @@ subroutine MISINT
 
   !.... Diameter growth rates.
   !.... Southwest Mixed Conifer.
-  data (((ADGP(I,J,K),K = 1,7),J = 1,MAXSP),I = 1,1)/&
+  data (((ADGP(I,J,K),K = 1,7),J = 1,MAXSP_NATIVE),I = 1,1)/&
        &1.0,1.0,1.0,.98,.95,.70,.50,& ! 1  AF (GF      )
        &1.0,1.0,1.0,.98,.95,.70,.50,& ! 2  CB (GF      )
        &1.0,.98,.97,.85,.80,.52,.44,& ! 3  DF (  DF    )
@@ -185,7 +186,7 @@ subroutine MISINT
        &1.0,1.0,1.0,1.0,1.0,1.0,1.0/ ! 38 OH not host
 
   !.... Southwest PP and PJ.
-  data (((ADGP(I,J,K),K = 1,7),J = 1,MAXSP),I = 2,2)/&
+  data (((ADGP(I,J,K),K = 1,7),J = 1,MAXSP_NATIVE),I = 2,2)/&
        &1.0,1.0,1.0,.98,.95,.70,.50,& ! 1  AF (GF      )
        &1.0,1.0,1.0,.98,.95,.70,.50,& ! 2  CB (GF      )
        &1.0,.98,.97,.85,.80,.52,.44,& ! 3  DF (  DF    )
@@ -226,7 +227,7 @@ subroutine MISINT
        &1.0,1.0,1.0,1.0,1.0,1.0,1.0/ ! 38 OH not host
 
   !.... Black Hills.
-  data (((ADGP(I,J,K),K = 1,7),J = 1,MAXSP),I = 3,3)/&
+  data (((ADGP(I,J,K),K = 1,7),J = 1,MAXSP_NATIVE),I = 3,3)/&
        &1.0,1.0,1.0,.98,.95,.70,.50,& ! 1  AF (GF      )
        &1.0,1.0,1.0,.98,.95,.70,.50,& ! 2  CB (GF      )
        &1.0,.98,.97,.85,.80,.52,.44,& ! 3  DF (  DF    )
@@ -267,7 +268,7 @@ subroutine MISINT
        &1.0,1.0,1.0,1.0,1.0,1.0,1.0/ ! 38 OH not host
 
   !.... Spruce-Fir.
-  data (((ADGP(I,J,K),K = 1,7),J = 1,MAXSP),I = 4,4)/&
+  data (((ADGP(I,J,K),K = 1,7),J = 1,MAXSP_NATIVE),I = 4,4)/&
        &1.0,1.0,1.0,.98,.95,.70,.50,& ! 1  AF (GF      )
        &1.0,1.0,1.0,.98,.95,.70,.50,& ! 2  CB (GF      )
        &1.0,.98,.97,.85,.80,.52,.44,& ! 3  DF (  DF    )
@@ -307,7 +308,7 @@ subroutine MISINT
        &1.0,1.0,1.0,1.0,1.0,1.0,1.0,& ! 37 OS not host
        &1.0,1.0,1.0,1.0,1.0,1.0,1.0/ ! 38 OH not host
   !.... Lodgepole Pine.
-  data (((ADGP(I,J,K),K = 1,7),J = 1,MAXSP),I = 5,5)/&
+  data (((ADGP(I,J,K),K = 1,7),J = 1,MAXSP_NATIVE),I = 5,5)/&
        &1.0,1.0,1.0,.98,.95,.70,.50,& ! 1  AF (GF      )
        &1.0,1.0,1.0,.98,.95,.70,.50,& ! 2  CB (GF      )
        &1.0,.98,.97,.85,.80,.52,.44,& ! 3  DF (  DF    )
@@ -409,7 +410,7 @@ subroutine MISINT
   !.... based on Model type (subvariant) like diameter growth and
   !.... mortaility.
   !....
-  data ((AHGP(I,J),J = 1,7),I = 1,MAXSP)&
+  data ((AHGP(I,J),J = 1,7),I = 1,MAXSP_NATIVE)&
        &/1.0,1.0,1.0,1.0,1.0,1.0,1.0,& ! 1  AF
        &1.0,1.0,1.0,1.0,1.0,1.0,1.0,& ! 2  CB
        &1.0,1.0,1.0,1.0,1.0,1.0,1.0,& ! 3  DF
@@ -451,7 +452,7 @@ subroutine MISINT
 
   !.... Mortality coefficients.
   !.... Southwest Mixed Conifer.
-  data (((APMC(I,J,K),K = 1,3),J = 1,MAXSP),I = 1,1)/&
+  data (((APMC(I,J,K),K = 1,3),J = 1,MAXSP_NATIVE),I = 1,1)/&
        &0.0,     0.00159, 0.00508,& ! 1  AF (GF      )
        &0.0,     0.00159, 0.00508,& ! 2  CB (GF      )
        &0.01319,-0.01627, 0.00822,& ! 3  DF (  DF    )
@@ -492,7 +493,7 @@ subroutine MISINT
        &0.0,0.0,0.0/ ! 38 OH not host
 
   !.... Southwest PP and PJ.
-  data (((APMC(I,J,K),K = 1,3),J = 1,MAXSP),I = 2,2)/&
+  data (((APMC(I,J,K),K = 1,3),J = 1,MAXSP_NATIVE),I = 2,2)/&
        &0.0,     0.00159, 0.00508,& ! 1  AF (GF      )
        &0.0,     0.00159, 0.00508,& ! 2  CB (GF      )
        &0.01319,-0.01627, 0.00822,& ! 3  DF (  DF    )
@@ -533,7 +534,7 @@ subroutine MISINT
        &0.0,0.0,0.0/ ! 38 OH not host
 
   !.... Black Hills.
-  data (((APMC(I,J,K),K = 1,3),J = 1,MAXSP),I = 3,3)/&
+  data (((APMC(I,J,K),K = 1,3),J = 1,MAXSP_NATIVE),I = 3,3)/&
        &0.0,     0.00159, 0.00508,& ! 1  AF (GF      )
        &0.0,     0.00159, 0.00508,& ! 2  CB (GF      )
        &0.01319,-0.01627, 0.00822,& ! 3  DF (  DF    )
@@ -574,7 +575,7 @@ subroutine MISINT
        &0.0,0.0,0.0/ ! 38 OH not host
 
   !.... Spruce-Fir.
-  data (((APMC(I,J,K),K = 1,3),J = 1,MAXSP),I = 4,4)/&
+  data (((APMC(I,J,K),K = 1,3),J = 1,MAXSP_NATIVE),I = 4,4)/&
        &0.0,     0.00159, 0.00508,& ! 1  AF (GF      )
        &0.0,     0.00159, 0.00508,& ! 2  CB (GF      )
        &0.01319,-0.01627, 0.00822,& ! 3  DF (  DF    )
@@ -615,7 +616,7 @@ subroutine MISINT
        &0.0,0.0,0.0/ ! 38 OH not host
 
   !.... Lodgepole Pine.
-  data (((APMC(I,J,K),K = 1,3),J = 1,MAXSP),I = 5,5)/&
+  data (((APMC(I,J,K),K = 1,3),J = 1,MAXSP_NATIVE),I = 5,5)/&
        &0.0,     0.00159, 0.00508,& ! 1  AF (GF      )
        &0.0,     0.00159, 0.00508,& ! 2  CB (GF      )
        &0.01319,-0.01627, 0.00822,& ! 3  DF (  DF    )
@@ -711,7 +712,7 @@ subroutine MISINT
   else
      LTYPE = IMODTY
   end if
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      MISFIT(I) = AFIT(LTYPE,I)
 
      !.... 17-DEC-98 Matt Oberle (MJO DEC98)

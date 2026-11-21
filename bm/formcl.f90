@@ -44,7 +44,7 @@ subroutine FORMCL(ISPC,IFOR,D,FC)
 
   !  MALHEUR FORM CLASS VALUES
 
-  data MALHFC/&
+  data MALHFC(1:MAXSP_NATIVE,:)/&
        &78., 78., 78., 76., 75., 60., 80., 77., 78., 78.,&
        &80., 80., 56., 56., 77., 76., 60., 77.,&
        &78., 79., 77., 78., 79., 60., 83., 80., 80., 78.,&
@@ -58,7 +58,7 @@ subroutine FORMCL(ISPC,IFOR,D,FC)
 
   !  OCHOCO FORM CLASS VALUES
 
-  data OCHOFC/&
+  data OCHOFC(1:MAXSP_NATIVE,:)/&
        &78., 78., 79., 76., 75., 60., 70., 82., 78., 76.,&
        &80., 80., 56., 56., 77., 76., 60.,  77.,&
        &80., 78., 79., 78., 78., 60., 75., 82., 76., 78.,&
@@ -72,7 +72,7 @@ subroutine FORMCL(ISPC,IFOR,D,FC)
 
   !  UMATILLA FORM CLASS VALUES
 
-  data UMATFC/&
+  data UMATFC(1:MAXSP_NATIVE,:)/&
        &78., 78., 77., 76., 75., 60., 86., 77., 74., 78.,&
        &80., 80., 56., 56., 77., 76., 60., 77.,&
        &78., 78., 77., 78., 75., 60., 86., 77., 74., 78.,&
@@ -86,7 +86,7 @@ subroutine FORMCL(ISPC,IFOR,D,FC)
 
   !  WALLOWA-WHITMAN FORM CLASS VALUES
 
-  data WLWHFC/&
+  data WLWHFC(1:MAXSP_NATIVE,:)/&
        &78., 78., 78., 76., 75., 60., 85., 84., 78., 78.,&
        &80., 80., 56., 56., 77., 76., 60., 77.,&
        &78., 82., 77., 78., 79., 60., 86., 84., 79., 78.,&

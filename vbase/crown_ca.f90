@@ -3,6 +3,7 @@
 !============================================!
 ! CA, OC $Id$
 subroutine CROWN
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE IS USED TO DUB MISSING CROWN RATIOS AND
@@ -48,7 +49,7 @@ subroutine CROWN
 
   data MYACTS/81/
 
-  data IMAP/  6,  6,  6,  4,  9,  9,  3, 12, 12, 13,&
+  data IMAP(1:MAXSP_NATIVE)/  6,  6,  6,  4,  9,  9,  3, 12, 12, 13,&
        &13, 17, 13, 13, 10,  2,  2, 10, 10, 10,&
        &1,  1,  1,  1,  3,  7,  7,  7,  7, 7,&
        &7,  7,  7, 14, 16, 15,  5, 16, 16, 16,&
@@ -142,7 +143,7 @@ subroutine CROWN
            21 continue
         end do
      else if (ISPCC .eq.0) then
-        do ISPCC = 1,MAXSP
+        do ISPCC = 1,CFG_MAXSP
            if (PRM(2) .ge.0.0)CRNMLT(ISPCC) = PRM(2)
            if (PRM(3) .gt.0.0)DLOW(ISPCC) = PRM(3)
            if (PRM(4) .gt.0.0)DHI(ISPCC) = PRM(4)
@@ -158,7 +159,7 @@ subroutine CROWN
      24 continue
   end do
   25 continue
-  if (DEBUG)write(JOSTND,9024)ICYC,CRNMLT
+  if (DEBUG)write(JOSTND,9024)ICYC,CRNMLT(1:CFG_MAXSP)
   9024 format(/' IN CROWN 9024 ICYC,CRNMLT= ',&
        &I5/((1X,11F6.2)/))
 
@@ -180,7 +181,7 @@ subroutine CROWN
 
   !  ENTER THE LOOP FOR SPECIES DEPENDENT VARIABLES
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      I1 = ISCT(ISPC,1)
      if (I1.eq.0) go to 70
      I2 = ISCT(ISPC,2)

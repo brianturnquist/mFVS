@@ -40,7 +40,7 @@ subroutine LOGS(DBH,HT,IBCD,BDMIN,ISP,STMP,BV)
 
   !                 13  14  15  16  17  18  19  20  21  22  23
   !                 OS  AD  RA  PB  AB  BA  AS  CW  WI  SU  OH
-  data IMAP / 4,  6,  3,  1,  1,  1,  1,  1,  1,   2,  1,  5, &
+  data IMAP(1:MAXSP_NATIVE) / 4,  6,  3,  1,  1,  1,  1,  1,  1,   2,  1,  5, &
        & 3,  1,  1,  1,  1,  1,  1,  1,  1,   1,  1 /
 
   !  DEFINE NOMINAL SCALING STANDARDS: SLN=STANDARD LOG LENGTH;

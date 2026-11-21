@@ -3,6 +3,7 @@
 !==================================================!
 ! STRP $Id$
 subroutine ESNUTR
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     INTERFACE ROUTINE TO COUPLE THE REGEN MODEL AND PROGNOSIS.
@@ -53,7 +54,7 @@ subroutine ESNUTR
                  19 continue
               end do
            else if (J .eq.0) then
-              do J = 1,MAXSP
+              do J = 1,CFG_MAXSP
                  XESMLT(J) = PRMS(2)
                  20 continue
               end do
@@ -73,7 +74,7 @@ subroutine ESNUTR
                  21 continue
               end do
            else if (J .eq.0) then
-              do J = 1,MAXSP
+              do J = 1,CFG_MAXSP
                  HTADJ(J) = PRMS(2)
                  30 continue
               end do

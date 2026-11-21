@@ -44,7 +44,7 @@ subroutine VARMRT(TOKILL,DEBUG,SUMKIL)
   !         79=LO,  80=BK,  81=WI,  82=SS,  83=BW,  84=EL
   !         85=WE,  86=AE,  87=RL,  88=OS,  89=OH,  90=OT
 
-  data VARADJ/&
+  data VARADJ(1:MAXSP_NATIVE)/&
        &0.1,  0.7,  0.3,  0.7,  0.7,  0.7,  0.1,  0.7,  0.7,  0.7,&
        &0.7,  0.5,  0.7,  0.7,  0.5,  0.5,  0.1,  0.3,  0.3,  0.3,&
        &0.3,  0.1,  0.3,  0.7,  0.7,  0.1,  0.5,  0.7,  0.5,  0.3,&

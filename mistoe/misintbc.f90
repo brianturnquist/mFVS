@@ -3,6 +3,7 @@
 !=======================!
 ! MISTOE $Id$
 subroutine MISINT
+  use VARCFG_MOD, only: CFG_MAXSP
 
   !  Purpose:
   !     Mistletoe parameter initialization routine. This routine is
@@ -112,7 +113,7 @@ subroutine MISINT
 
   !.... Mistletoe model initializations.
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      MISFIT(I) = AFIT(I)
      CSPARR(I) = ACSP(I)
      do J = 1,7

@@ -3,6 +3,7 @@
 !=================!
 ! RD $Id$
 subroutine RDCNTL
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  MAIN ROOT DISEASE SUBROUTINE.  CONTROLS SPREAD OF DISEASE
@@ -440,7 +441,7 @@ subroutine RDCNTL
 
   !     ACCUMULATE SOME INDICATORS
 
-  do J = 1,(ITOTRR+MAXSP)
+  do J = 1,(ITOTRR+CFG_MAXSP)
      PRINF(J) = 0
      PRPTOT(J) = 0.0
      550 continue
@@ -485,7 +486,7 @@ subroutine RDCNTL
   !        (PRINF & PRPTOT ARE ZEROED ABOVE)
 
   IDI = MAXRR
-  do KSP = 1,MAXSP
+  do KSP = 1,CFG_MAXSP
      if (MAXRR .lt.3) IDI = IDITYP(IRTSPC(KSP))
 
      !     Modification (RNH, MAR98).  If MAXRR < 3 then annosus disease.

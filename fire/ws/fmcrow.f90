@@ -102,7 +102,7 @@ subroutine FMCROW
   !    42 = OTHER SOFTWOODS          lodgepole pine   11
   !    43 = OTHER HARDWOODS          CA black oak     21
 
-  data ISPMAP/&
+  data ISPMAP(1:MAXSP_NATIVE)/&
        &15,  3,  4, 19, 20, 15,  4, 13, 11, 14,&
        &15, 12,  4, 11, 11, 11, 11, 13, 11, 11,&
        &9,  3, 19, 24, 16, 16, 16, 17, 17, 21,&

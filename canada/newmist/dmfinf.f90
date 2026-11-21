@@ -3,6 +3,7 @@
 !=============================!
 ! CANADA-NEWMIST $Id$
 subroutine DMFINF (Ptr, Index)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! **DMFINF --  DATE OF LAST REVISION: 02/16/96
@@ -90,7 +91,7 @@ subroutine DMFINF (Ptr, Index)
 
   ! Zero pointer matrix
 
-  do i = 1, MAXSP
+  do i = 1, CFG_MAXSP
      do j = 0, 6
         do k = FST, LST
            Ptr(i, j, k) = 0

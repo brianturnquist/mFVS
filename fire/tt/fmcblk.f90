@@ -42,7 +42,7 @@ block data FMCBLK
   ! MC USES MC (CURL-LEAF MTN-MAHOGANY) EQUATIONS FROM SO
   ! OS USES OT (OTHER SP.) EQUATIONS FROM TT
 
-  data BIOGRP/&
+  data BIOGRP(1:MAXSP_NATIVE)/&
        &4, 4, 2, 4, 5,&
        &6, 4, 5, 3, 4,& ! 10
        &10,10, 7, 7, 6,&

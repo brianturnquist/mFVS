@@ -3,6 +3,7 @@
 !=======================!
 ! FIRE-TT $Id$
 subroutine FMVINIT
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  Purpose:
@@ -103,7 +104,7 @@ subroutine FMVINIT
   HTXSFT = 2.0
   HTR1 = 0.0228
   HTR2 = 0.01
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      PSOFT(I) = 0.0
   end do
 
@@ -161,7 +162,7 @@ subroutine FMVINIT
   ! MC USES MC (CURL-LEAF MTN-MAHOGANY) EQUATIONS FROM SO
   ! OS USES OT (OTHER SP.) EQUATIONS FROM TT
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
 
      select case (I)
 

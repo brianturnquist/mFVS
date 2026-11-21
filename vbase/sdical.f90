@@ -3,6 +3,7 @@
 !====================!
 ! VBASE $Id$
 subroutine SDICAL (IWHO,XMAX)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE COMPUTES THE MAXIMUM SDI IN EFFECT FOR A STAND.
@@ -89,7 +90,7 @@ subroutine SDICAL (IWHO,XMAX)
 
   XMAX = 0.0
   TOTBA = 0.0
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      BAXSP(I) = 0.0
      20 continue
   end do
@@ -98,7 +99,7 @@ subroutine SDICAL (IWHO,XMAX)
   !     TO STORE BA BY SPECIES AND POINT
 
   NPNT = INT(PI)
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      do II = 1,(NPNT+10) ! initialize for up to 10 unregistered plots
         BAXPSP(I,II) = 0.0
      end do
@@ -143,7 +144,7 @@ subroutine SDICAL (IWHO,XMAX)
   !  DEBUG OUTPUT
 
   if (DEBUG) then
-     write(JOSTND,40)BAXSP
+     write(JOSTND,40)BAXSP(1:CFG_MAXSP)
      40 format(' BAXSP(1-MAXSP) =',10(11F10.4,/' ',16X))
      write(JOSTND,50)TOTBA
      50 format(' TOTAL BA = ',F10.4)
@@ -156,7 +157,7 @@ subroutine SDICAL (IWHO,XMAX)
   55 if (TOTBA .le.0.) then
      XMAX = 1.0
   else
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         XMAX = XMAX + SDIDEF(I) * BAXSP(I)
         60 continue
      end do
@@ -173,7 +174,7 @@ subroutine SDICAL (IWHO,XMAX)
      !      DO 65 II=1,NPNT
      XMAXPT(II) = 0.0
      PNTBA = 0.0
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         XMAXPT(II) = XMAXPT(II) + SDIDEF(I) * BAXPSP(I,II)
         PNTBA = PNTBA + BAXPSP(I,II)
         64 continue

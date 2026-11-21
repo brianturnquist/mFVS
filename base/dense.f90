@@ -3,6 +3,7 @@
 !======================================!
 ! BASE $Id$
 subroutine DENSE
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !   THIS SUBROUTINE CALCULATES THE AVERAGE HEIGHT OF THE STAND,
@@ -130,14 +131,14 @@ subroutine DENSE
         PTPAA(IP) = 0.0
         PRDA(IP) = 0.0
      end if
-     do IS = 1,MAXSP
+     do IS = 1,CFG_MAXSP
         OVER(IS,IP) = 0.0
         13 continue
      end do
      14 continue
   end do
   15 continue
-  do IS = 1,MAXSP
+  do IS = 1,CFG_MAXSP
      RELDSP(IS) = 0.0
      16 continue
   end do
@@ -156,7 +157,7 @@ subroutine DENSE
 
   SUMDR0 = 0.
   DR016 = 0.
-  do ISPC = 1, MAXSP
+  do ISPC = 1, CFG_MAXSP
      I2 = ISCT(ISPC,2)
      if ( I2 .le. 0 ) go to  50
      I1 = ISCT(ISPC,1)

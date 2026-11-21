@@ -59,7 +59,7 @@ subroutine DUBSCR(ISPC,D,H,PRD,QMDPLT,CR)
   !  23     OH   other hardwoods     998  2TB
 
   !    STANDARD ERROR OF REGRESSIONS FOR EACH SPECIES
-  data CRSD/ &
+  data CRSD(1:MAXSP_NATIVE)/ &
        & 0.1719, 0.1719, 0.159,  0.1645, 0.1542, &
        & 0.1542, 0.1894, 0.1719, 0.1568, 0.1811, &
        & 0.1582, 0.155,  0.1542, 0.1447, 0.1447, &

@@ -3,6 +3,7 @@
 !=================!
 ! RD $Id$
 subroutine RDOAGM
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  Purpose :
@@ -107,14 +108,14 @@ subroutine RDOAGM
      200 continue
   end do
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      RROBNK(I) = 0.0
      233 continue
   end do
 
   !.... Cycle processing.
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      do J = 1,4
         WINDSP(I,J) = 0
         400 continue

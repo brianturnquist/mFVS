@@ -2,6 +2,7 @@
 !   Base-model keyword handlers shared by INITRE   !
 !==================================================!
 module INITREKEYS_MOD
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! Keyword handlers that were identical in the US, ON and BC INITRE.
@@ -287,7 +288,7 @@ contains
        !     IF (IS=0) ALL SPECIES WILL BE CHANGED IN FOLLOWING CODE:
 
     else if (IS .eq.0) then
-       do J = 1,MAXSP
+       do J = 1,CFG_MAXSP
           LDGCAL(J) = .false.
           LHTCAL(J) = .false.
           5803 continue
@@ -365,7 +366,7 @@ contains
        !        SPECIES, OTHERWISE INVOKE CALIBRATION FOR ALL SPECIES.
 
        if (LNOTBK(2).and.ARRAY(2).gt.0) then
-          do J = 1,MAXSP
+          do J = 1,CFG_MAXSP
              LHTDRG(J) = .true.
              6205 continue
           end do
@@ -373,7 +374,7 @@ contains
           6206 format(/A8,'   CALIBRATION OF HEIGHT-DIAMETER',&
                &' RELATIONSHIP WILL BE  INVOKED   FOR ALL SPECIES')
        else
-          do J = 1,MAXSP
+          do J = 1,CFG_MAXSP
              LHTDRG(J) = .false.
              6210 continue
           end do

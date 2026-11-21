@@ -3,6 +3,7 @@
 !======================================!
 ! BASE $Id$
 subroutine SETUP
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     SET UP THE INDEX POINTERS FOR IND1( SPECIES INDICES ).
@@ -23,7 +24,7 @@ subroutine SETUP
   IX = 1
   LAST = 0
 
-  do I = 1, MAXSP
+  do I = 1, CFG_MAXSP
 
      IR = IREF(I)
      if ( IR .eq. 0 ) go to 300

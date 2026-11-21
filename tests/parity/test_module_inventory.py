@@ -1,8 +1,9 @@
 """Check the live-source contracts that the MOD03/MOD04 index must retain."""
 
+import re
 import unittest
 
-from module_inventory import build_index, collision_inventory, configuration_inventory
+from module_inventory import ROOT, build_index, collision_inventory, configuration_inventory
 
 
 class ModuleInventoryChecks(unittest.TestCase):
@@ -98,6 +99,16 @@ class ModuleInventoryChecks(unittest.TestCase):
         constant = {s["source"] for s in self.configuration["sites"]
                     if s["name"] in ("VARIANTCD", "LMETRICVAR") and s["use"] == "parameter expression"}
         self.assertEqual(constant, set())
+        # SP05: each PRGPRM's native species count (the default active count)
+        # equals its storage size; only the poisoned-storage mode raises MAXSP.
+        for prgprm in sorted(ROOT.glob("**/PRGPRM.f90")):
+            if "tests" in prgprm.relative_to(ROOT).parts:
+                continue
+            text = prgprm.read_text(encoding="latin1")
+            storage = re.findall(r"parameter\s*\(\s*MAXSP\s*=\s*(\d+)\s*\)", text, re.I)
+            native = re.findall(r"parameter\s*\(\s*MAXSP_NATIVE\s*=\s*(\d+)\s*\)", text, re.I)
+            self.assertEqual(len(storage), 1, prgprm)
+            self.assertEqual(native, storage, prgprm)
 
     def test_collision_families_are_consistent(self) -> None:
         # SP02: no name is defined twice for one variant, proposed names are

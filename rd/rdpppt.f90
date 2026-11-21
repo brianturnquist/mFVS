@@ -3,6 +3,7 @@
 !=================!
 ! RD $Id$
 subroutine RDPPPT (WK3, IPNT, ILIMIT)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  Purpose:
@@ -235,11 +236,11 @@ subroutine RDPPPT (WK3, IPNT, ILIMIT)
   call IFWRIT (WK3, IPNT, ILIMIT, ISTEML,        IRRTRE, 2)
   call IFWRIT (WK3, IPNT, ILIMIT, ISTEMI,        IRRTRE, 2)
   !---- from common RDCOM ------------
-  call IFWRIT (WK3, IPNT, ILIMIT, HOST,         3*MAXSP, 2)
+  call IFWRIT (WK3, IPNT, ILIMIT, HOST,         3*CFG_MAXSP, 2)
   call IFWRIT (WK3, IPNT, ILIMIT, IDITYP,        ITOTSP, 2)
   call IFWRIT (WK3, IPNT, ILIMIT, IPCFLG,        ITOTRR, 2)
   call IFWRIT (WK3, IPNT, ILIMIT, IRGEN,             10, 2)
-  call IFWRIT (WK3, IPNT, ILIMIT, IRTSPC,         MAXSP, 2)
+  call IFWRIT (WK3, IPNT, ILIMIT, IRTSPC,         CFG_MAXSP, 2)
   call IFWRIT (WK3, IPNT, ILIMIT, ISPS,          ITOTSP, 2)
   do I = 1, 2
      do J = 1, 5
@@ -452,16 +453,16 @@ subroutine RDPPPT (WK3, IPNT, ILIMIT)
   end do
 
   call BFWRIT (WK3, IPNT, ILIMIT, HTIFAC,      ITOTSP, 2)
-  call BFWRIT (WK3, IPNT, ILIMIT, IURATE,     3*MAXSP, 2)
-  call BFWRIT (WK3, IPNT, ILIMIT, IIRATE,     3*MAXSP, 2)
+  call BFWRIT (WK3, IPNT, ILIMIT, IURATE,     3*CFG_MAXSP, 2)
+  call BFWRIT (WK3, IPNT, ILIMIT, IIRATE,     3*CFG_MAXSP, 2)
   do I = 1, 50
      call BFWRIT (WK3, IPNT, ILIMIT, MCRATE(1,I), ITOTRR, 2) !(ITOTRR,50)
      77 continue
   end do
-  call BFWRIT (WK3, IPNT, ILIMIT, MINDBH,     3*MAXSP, 2)
-  call BFWRIT (WK3, IPNT, ILIMIT, MININF,     3*MAXSP, 2)
-  call BFWRIT (WK3, IPNT, ILIMIT, ORATE,      3*MAXSP, 2)
-  call BFWRIT (WK3, IPNT, ILIMIT, OFRATE,     3*MAXSP, 2)
+  call BFWRIT (WK3, IPNT, ILIMIT, MINDBH,     3*CFG_MAXSP, 2)
+  call BFWRIT (WK3, IPNT, ILIMIT, MININF,     3*CFG_MAXSP, 2)
+  call BFWRIT (WK3, IPNT, ILIMIT, ORATE,      3*CFG_MAXSP, 2)
+  call BFWRIT (WK3, IPNT, ILIMIT, OFRATE,     3*CFG_MAXSP, 2)
   call BFWRIT (WK3, IPNT, ILIMIT, OOAREA,      ITOTRR, 2)
   call BFWRIT (WK3, IPNT, ILIMIT, PAREA,       ITOTRR, 2)
   do I = 1, 100
@@ -485,7 +486,7 @@ subroutine RDPPPT (WK3, IPNT, ILIMIT)
      82 continue
   end do
   call BFWRIT (WK3, IPNT, ILIMIT, PRANKL,      IRRTRE, 2)
-  call BFWRIT (WK3, IPNT, ILIMIT, PRINF, ITOTRR+MAXSP, 2)
+  call BFWRIT (WK3, IPNT, ILIMIT, PRINF, ITOTRR+CFG_MAXSP, 2)
   call BFWRIT (WK3, IPNT, ILIMIT, PRKILL,      ITOTRR, 2)
   do I = 1, 2
      do J = 1, 5
@@ -505,14 +506,14 @@ subroutine RDPPPT (WK3, IPNT, ILIMIT)
      87 continue
   end do
   call BFWRIT (WK3, IPNT, ILIMIT, PROOT,        ITOTSP, 2)
-  call BFWRIT (WK3, IPNT, ILIMIT, PRPTOT, ITOTRR+MAXSP, 2)
+  call BFWRIT (WK3, IPNT, ILIMIT, PRPTOT, ITOTRR+CFG_MAXSP, 2)
   call BFWRIT (WK3, IPNT, ILIMIT, PRUN,         ITOTRR, 2)
   call BFWRIT (WK3, IPNT, ILIMIT, RADINF(1,1),      50, 2) !(50,2)
   call BFWRIT (WK3, IPNT, ILIMIT, RADINF(1,2),      50, 2) !------
   call BFWRIT (WK3, IPNT, ILIMIT, RDKILL,       IRRTRE, 2)
   call BFWRIT (WK3, IPNT, ILIMIT, REINEK,            4, 2)
-  call BFWRIT (WK3, IPNT, ILIMIT, ROCRI,         MAXSP, 2)
-  call BFWRIT (WK3, IPNT, ILIMIT, ROCRL,         MAXSP, 2)
+  call BFWRIT (WK3, IPNT, ILIMIT, ROCRI,         CFG_MAXSP, 2)
+  call BFWRIT (WK3, IPNT, ILIMIT, ROCRL,         CFG_MAXSP, 2)
   call BFWRIT (WK3, IPNT, ILIMIT, ROOT4,             4, 2)
   do I = 1, 2
      do J = 1, 5
@@ -550,7 +551,7 @@ subroutine RDPPPT (WK3, IPNT, ILIMIT)
   call BFWRIT (WK3, IPNT, ILIMIT, RRIRAD,      IRRTRE, 2)
   call BFWRIT (WK3, IPNT, ILIMIT, RRJINC,      ITOTRR, 2)
   call BFWRIT (WK3, IPNT, ILIMIT, RROBMR,      ITOTRR, 2)
-  call BFWRIT (WK3, IPNT, ILIMIT, RROBNK,       MAXSP, 2)
+  call BFWRIT (WK3, IPNT, ILIMIT, RROBNK,       CFG_MAXSP, 2)
   call BFWRIT (WK3, IPNT, ILIMIT, RROBOL,           4, 2)
   call BFWRIT (WK3, IPNT, ILIMIT, RROBRD,           4, 2)
   call BFWRIT (WK3, IPNT, ILIMIT, RROBSC,           4, 2)
@@ -579,12 +580,12 @@ subroutine RDPPPT (WK3, IPNT, ILIMIT)
      99 continue
   end do
   call BFWRIT (WK3, IPNT, ILIMIT, STCUT,            5, 2)
-  call BFWRIT (WK3, IPNT, ILIMIT, STEMSI,       MAXSP, 2)
-  call BFWRIT (WK3, IPNT, ILIMIT, STEMSL,       MAXSP, 2)
+  call BFWRIT (WK3, IPNT, ILIMIT, STEMSI,       CFG_MAXSP, 2)
+  call BFWRIT (WK3, IPNT, ILIMIT, STEMSL,       CFG_MAXSP, 2)
   call BFWRIT (WK3, IPNT, ILIMIT, TNJUMP,      ITOTRR, 2)
   call BFWRIT (WK3, IPNT, ILIMIT, TXP12,            4, 2)
   do I = 1, 4
-     call BFWRIT (WK3, IPNT, ILIMIT, WINDSP(1,I),  MAXSP, 2) !(MAXSP,4)
+     call BFWRIT (WK3, IPNT, ILIMIT, WINDSP(1,I),  CFG_MAXSP, 2) !(MAXSP,4)
      100 continue
   end do
   call BFWRIT (WK3, IPNT, ILIMIT, WK22,        IRRTRE, 2)

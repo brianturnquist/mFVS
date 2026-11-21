@@ -76,7 +76,7 @@ block data BLKDAT
 
   ! COMMON STATEMENT FOR ESCOMN VARIABLE.
 
-  data XMIN/&
+  data XMIN(1:MAXSP_NATIVE)/&
        &1.0, 1.0, 1.0, 0.5, 0.5, 6.0, 1.0, 0.5, 0.5, 1.0,&
        &0.5, 0.5, 0.5, 6.0, 3.0, 0.5, 0.5, 3.0/
   data DBHMID/1.0,3.0,5.0,7.0,9.0,12.0,16.0,20.0,24.0,28.0/,&
@@ -84,7 +84,7 @@ block data BLKDAT
        &BNORML/3*1.0,1.046,1.093,1.139,1.186,1.232,&
        &1.278,1.325,1.371,1.418,1.464,1.510,1.557,1.603,1.649,1.696,&
        &1.742,1.789/,&
-       &HHTMAX/&
+       &HHTMAX(1:MAXSP_NATIVE)/&
        &23.0, 27.0, 21.0,  6.0, 18.0, 20.0, 24.0, 18.0, 18.0, 17.0,&
        &6.0,  6.0,  6.0, 16.0, 16.0,  6.0, 22.0, 16.0/,&
        &IFORCD/103,104,105,106,621,110,113,114,116,117,&
@@ -97,29 +97,29 @@ block data BLKDAT
   !      AS SHOWN IN TABLE 3, PG 6, GTR INT-279) WHICH DOES NOT PERTAIN
   !      TO THE TT VARIANT)
 
-  data ((OCURHT(I,J),I = 1,16),J = 1,MAXSP)/ 288*0.0 /
+  data ((OCURHT(I,J),I = 1,16),J = 1,MAXSP_NATIVE)/ 288*0.0 /
 
   !     OCURNF ZEROES OUT PROBABILITIES ON NATIONAL FORESTS BY SPECIES.
   !     (DIMENSIONED 20,MAXSP WITH THE 20 BEING 20 FOREST CODES SHOWN
   !      IN ARRAY IFORCD ABOVE AND MAPPED AS SHOWN IN ARRAY IFORST)
 
-  data ((OCURNF(I,J),I = 1,20),J = 1,MAXSP)/ 360*0.0 /
+  data ((OCURNF(I,J),I = 1,20),J = 1,MAXSP_NATIVE)/ 360*0.0 /
 
   ! COMMON STATEMENT FOR PLOT VARIABLES.
 
-  data JSP /&
+  data JSP(1:MAXSP_NATIVE) /&
        &'WB ',   'LM ',   'DF ',   'PM ',   'BS ',&
        &'AS ',   'LP ',   'ES ',   'AF ',   'PP ',&
        &'UJ ',   'RM ',   'BI ',   'MM ',   'NC ',&
        &'MC ',   'OS ',   'OH '/
 
-  data FIAJSP /&
+  data FIAJSP(1:MAXSP_NATIVE) /&
        &'101',   '113',   '202',   '133',   '096',&
        &'746',   '108',   '093',   '019',   '122',&
        &'065',   '066',   '322',   '321',   '749',&
        &'475',   '299',   '998'/
 
-  data PLNJSP /&
+  data PLNJSP(1:MAXSP_NATIVE) /&
        &'PIAL  ','PIFL2 ','PSME  ','PIMO  ','PIPU  ',&
        &'POTR5 ','PICO  ','PIEN  ','ABLA  ','PIPO  ',&
        &'JUOS  ','JUSC2 ','ACGR3 ','ACGL  ','POAN3 ',&
@@ -129,7 +129,7 @@ block data BLKDAT
        &470,510,520,530,540,550,570,610,620,640,&
        &660,670,680,690,710,720,730,830,850,999,92*0 /
 
-  data NSP /&
+  data NSP(1:MAXSP_NATIVE,:) /&
        &'WB1','LM1','DF1','PM1','BS1','AS1','LP1','ES1','AF1','PP1',&
        &'UJ1','RM1','BI1','MM1','NC1','MC1','OS1','OH1',&
        &'WB2','LM2','DF2','PM2','BS2','AS2','LP2','ES2','AF2','PP2',&
@@ -139,12 +139,12 @@ block data BLKDAT
 
   ! COMMON STATEMENT FOR COEFFS VARIABLES
 
-  data HT1/&
+  data HT1(1:MAXSP_NATIVE)/&
        &4.1920,  4.1920,  4.5175,  3.2000,  4.5822,&
        &4.4625,  4.4625,  4.5822,  4.3603,   4.993,&
        &3.2000,  3.2000,  4.7000,  4.4421,  4.4421,&
        &5.1520,  4.1920,  4.4421/
-  data HT2/&
+  data HT2(1:MAXSP_NATIVE)/&
        &-5.1651, -5.1651, -6.5129, -5.0000, -6.4818,&
        &-5.2223, -5.2223, -6.4818, -5.2148, -12.430,&
        &-5.0000, -5.0000, -6.3260, -6.5405, -6.5405,&
@@ -153,44 +153,44 @@ block data BLKDAT
   !  RESIDUAL ERROR ESTIMATES WERE MULTIPLIED BY 0.75 TO APPROXIMATE
   !  CORRECTION FOR MEASUREMENT ERROR.
 
-  data SIGMAR/&
+  data SIGMAR(1:MAXSP_NATIVE)/&
        &0.46710, 0.46710, 0.48664,     0.2, 0.47645,&
        &0.48657, 0.48657, 0.47645, 0.44065,   0.230,&
        &0.2,     0.2,  0.5107,  0.3750,     0.2,&
        &0.5357, 0.46710,      0.2/
 
-  data BREAK/&
+  data BREAK(1:MAXSP_NATIVE)/&
        &3.,   3.,   3.,  99.,   3.,   3.,   3.,   3.,   3.,   3.,&
        &99.,  99.,  99.,   3.,   1.,  99.,   3.,  1./
 
   ! DATA STATEMENTS FOR VARIABLES IN VARCOM COMMON BLOCK
 
-  data B0ACCF/&
+  data B0ACCF(1:MAXSP_NATIVE)/&
        &1.17527,  1.17527, -4.35709,       0., -0.55052,&
        &0., -0.90086, -0.55052, -4.35709,       0.,&
        &0.,       0.,       0.,       0.,       0.,&
        &0.,  1.17527,       0./
-  data B1ACCF/&
+  data B1ACCF(1:MAXSP_NATIVE)/&
        &-0.42124, -0.42124,  0.67307,       0., -0.02858,&
        &0.,  0.16996, -0.02858,  0.67307,       0.,&
        &0.,       0.,       0.,       0.,       0.,&
        &0., -0.42124,       0./
-  data B0BCCF/&
+  data B0BCCF(1:MAXSP_NATIVE)/&
        &-2.56002, -2.56002, -2.49682,       0., -2.26007,&
        &0., -1.50963, -2.26007, -2.49682,       0.,&
        &0.,       0.,       0.,       0.,       0.,&
        &0., -2.56002,       0./
-  data B1BCCF/&
+  data B1BCCF(1:MAXSP_NATIVE)/&
        &-0.58642, -0.58642, -0.51938,       0., -0.67115,&
        &0., -0.61825, -0.67115, -0.51938,       0.,&
        &0.,       0.,       0.,       0.,       0.,&
        &0., -0.58642,       0./
-  data B0ASTD/&
+  data B0ASTD(1:MAXSP_NATIVE)/&
        &1.08720,  1.08720,  1.13785,       0.,  1.09730,&
        &0.,  1.00749,  1.09730,  1.13785,       0.,&
        &0.,       0.,       0.,       0.,       0.,&
        &0.,  1.08720,       0./
-  data B1BSTD/&
+  data B1BSTD(1:MAXSP_NATIVE)/&
        &-0.00230, -0.00230, -0.00185,       0., -0.00130,&
        &0., -0.00435, -0.00130, -0.00185,       0.,&
        &0.,       0.,       0.,       0.,       0.,&

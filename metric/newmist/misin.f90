@@ -4,6 +4,7 @@
 ! METRIC-NEWMIST $Id$
 subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
   use MISTPRT_MOD, only: MISTPRT
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  Purpose:
@@ -228,7 +229,7 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
 
   !.... Check for valid species code.
 
-  if (ISPL.ge.0.and.ISPL.le.MAXSP) then
+  if (ISPL.ge.0.and.ISPL.le.CFG_MAXSP) then
 
      !....    Check for valid multipliers.
 
@@ -252,7 +253,7 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
           &'; DMR Decrease Multiplier=',F6.2)
   else
      call KEYDMP(JOSTND,IRECNT,KEYWRD,ARRAY,KARD)
-     write(JOSTND,8000) ISPL,MAXSP
+     write(JOSTND,8000) ISPL,CFG_MAXSP
      call ERRGRO(.true.,4)
   end if
   go to 50
@@ -278,9 +279,9 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
 
   !.... Check for invalid species code.
 
-  if (ISPL.lt.0.or.ISPL.gt.MAXSP) then
+  if (ISPL.lt.0.or.ISPL.gt.CFG_MAXSP) then
      call KEYDMP(JOSTND,IRECNT,KEYWRD,ARRAY,KARD)
-     write(JOSTND,8000) ISPL,MAXSP
+     write(JOSTND,8000) ISPL,CFG_MAXSP
      call ERRGRO(.true.,4)
 
      !.... Process height growth modification proportions from
@@ -338,9 +339,9 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
 
   !.... Check for invalid species code.
 
-  if (ISPL.lt.0.or.ISPL.gt.MAXSP) then
+  if (ISPL.lt.0.or.ISPL.gt.CFG_MAXSP) then
      call KEYDMP(JOSTND,IRECNT,KEYWRD,ARRAY,KARD)
-     write(JOSTND,8000) ISPL,MAXSP
+     write(JOSTND,8000) ISPL,CFG_MAXSP
      call ERRGRO(.true.,4)
 
      !.... Process preferences from supplemental record
@@ -387,7 +388,7 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
 
   !.... Check for valid species code.
 
-  if (ISPL.ge.0.and.ISPL.le.MAXSP) then
+  if (ISPL.ge.0.and.ISPL.le.CFG_MAXSP) then
 
      !....    Check for valid multipliers.
 
@@ -405,7 +406,7 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
           &I3,'); Mortality Multiplier=',F6.2)
   else
      call KEYDMP(JOSTND,IRECNT,KEYWRD,ARRAY,KARD)
-     write(JOSTND,8000) ISPL,MAXSP
+     write(JOSTND,8000) ISPL,CFG_MAXSP
      call ERRGRO(.true.,4)
   end if
   go to 50
@@ -445,9 +446,9 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
 
   !.... Check for invalid species code.
 
-  if (ISPL .lt.0.or. ISPL .gt. MAXSP) then
+  if (ISPL .lt.0.or. ISPL .gt. CFG_MAXSP) then
      call KEYDMP (JOSTND,IRECNT,KEYWRD,ARRAY,KARD)
-     write (JOSTND,8000) ISPL,MAXSP
+     write (JOSTND,8000) ISPL,CFG_MAXSP
      call ERRGRO (.true.,4)
 
      !.... Process growth modification proportions from supplemental record
@@ -520,9 +521,9 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
 
   !.... Check for valid species code.
 
-  if (ISPL.lt.0.or.ISPL.gt.MAXSP) then
+  if (ISPL.lt.0.or.ISPL.gt.CFG_MAXSP) then
      call KEYDMP(JOSTND,IRECNT,KEYWRD,ARRAY,KARD)
-     write(JOSTND,8000) ISPL,MAXSP
+     write(JOSTND,8000) ISPL,CFG_MAXSP
      call ERRGRO(.true.,4)
 
      !.... Check for invalid proportion to be infected.
@@ -580,7 +581,7 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
 
   !.... Check for valid species code.
 
-  if (ISPL.ge.0.and.ISPL.le.MAXSP) then
+  if (ISPL.ge.0.and.ISPL.le.CFG_MAXSP) then
 
      !....    Insert activity into schedule.
 
@@ -591,7 +592,7 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
           &I3,')')
   else
      call KEYDMP(JOSTND,IRECNT,KEYWRD,ARRAY,KARD)
-     write(JOSTND,8000) ISPL,MAXSP
+     write(JOSTND,8000) ISPL,CFG_MAXSP
      call ERRGRO(.true.,4)
   end if
   go to 50
@@ -685,7 +686,7 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
 
   !.... Check for valid species code.
 
-  if (ISPL.ge.0.and.ISPL.le.MAXSP) then
+  if (ISPL.ge.0.and.ISPL.le.CFG_MAXSP) then
 
      !....    Check for valid opacity.
 
@@ -700,14 +701,14 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
      if (ISPL .gt.0) then
         DMOPAQ(ISPL) = ARRAY(2)
      else
-        do J = 1, MAXSP
+        do J = 1, CFG_MAXSP
            DMOPAQ(J) = ARRAY(2)
            1502 continue
         end do
      end if
   else
      call KEYDMP(JOSTND,IRECNT,KEYWRD,ARRAY,KARD)
-     write (JOSTND,8000) ISPL,MAXSP
+     write (JOSTND,8000) ISPL,CFG_MAXSP
      call ERRGRO(.true.,4)
   end if
 
@@ -733,7 +734,7 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
 
   !.... Check for valid species code.
 
-  if (ISPL.ge.0.and.ISPL.le.MAXSP) then
+  if (ISPL.ge.0.and.ISPL.le.CFG_MAXSP) then
 
      !....    Check for valid threshold DMR.
 
@@ -748,14 +749,14 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
      if (ISPL .gt.0) then
         DMKTUN(ISPL) = INT(ARRAY(2))
      else
-        do J = 1, MAXSP
+        do J = 1, CFG_MAXSP
            DMKTUN(J) = INT(ARRAY(2))
            1602 continue
         end do
      end if
   else
      call KEYDMP(JOSTND,IRECNT,KEYWRD,ARRAY,KARD)
-     write (JOSTND,8000) ISPL,MAXSP
+     write (JOSTND,8000) ISPL,CFG_MAXSP
      call ERRGRO(.true.,4)
   end if
 
@@ -780,7 +781,7 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
 
   !.... Check for valid species code.
 
-  if (ISPL.ge.0.and.ISPL.le.MAXSP) then
+  if (ISPL.ge.0.and.ISPL.le.CFG_MAXSP) then
 
      !....    Check for valid multiplier.
 
@@ -795,14 +796,14 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
      if (ISPL .gt.0) then
         DMSTUN(ISPL) = ARRAY(2)
      else
-        do J = 1, MAXSP
+        do J = 1, CFG_MAXSP
            DMSTUN(J) = ARRAY(2)
            1702 continue
         end do
      end if
   else
      call KEYDMP(JOSTND,IRECNT,KEYWRD,ARRAY,KARD)
-     write (JOSTND,8000) ISPL,MAXSP
+     write (JOSTND,8000) ISPL,CFG_MAXSP
      call ERRGRO(.true.,4)
   end if
 
@@ -827,7 +828,7 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
 
   !.... Check for valid species code.
 
-  if (ISPL.ge.0.and.ISPL.le.MAXSP) then
+  if (ISPL.ge.0.and.ISPL.le.CFG_MAXSP) then
 
      !....    Check for valid multiplier.
 
@@ -842,14 +843,14 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
      if (ISPL .gt.0) then
         DMITUN(ISPL) = ARRAY(2)
      else
-        do J = 1, MAXSP
+        do J = 1, CFG_MAXSP
            DMITUN(J) = ARRAY(2)
            1802 continue
         end do
      end if
   else
      call KEYDMP(JOSTND,IRECNT,KEYWRD,ARRAY,KARD)
-     write (JOSTND,8000) ISPL,MAXSP
+     write (JOSTND,8000) ISPL,CFG_MAXSP
      call ERRGRO(.true.,4)
   end if
 
@@ -874,7 +875,7 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
 
   !.... Check for valid species code.
 
-  if (ISPL.ge.0.and.ISPL.le.MAXSP) then
+  if (ISPL.ge.0.and.ISPL.le.CFG_MAXSP) then
 
      !....    Check for valid multiplier.
 
@@ -889,14 +890,14 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
      if (ISPL .gt.0) then
         DMETUN(ISPL) = ARRAY(2)
      else
-        do J = 1, MAXSP
+        do J = 1, CFG_MAXSP
            DMETUN(J) = ARRAY(2)
            1902 continue
         end do
      end if
   else
      call KEYDMP(JOSTND,IRECNT,KEYWRD,ARRAY,KARD)
-     write (JOSTND,8000) ISPL,MAXSP
+     write (JOSTND,8000) ISPL,CFG_MAXSP
      call ERRGRO(.true.,4)
   end if
 
@@ -942,7 +943,7 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
 
   LTNM = KEYWRD
 
-  if (ISPL .ge.0.and. ISPL .le. MAXSP) then
+  if (ISPL .ge.0.and. ISPL .le. CFG_MAXSP) then
      LTNP(1) = 0
      LTNP(2) = 0
      LCHK(1) = .true.
@@ -1070,7 +1071,7 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
 
         if (ISPL .eq.0) then
            J = 1
-           K = MAXSP
+           K = CFG_MAXSP
         else
            J = ISPL
            K = ISPL
@@ -1094,7 +1095,7 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
      end do
   else
      call KEYDMP(JOSTND,IRECNT,KEYWRD,ARRAY,KARD)
-     write (JOSTND,8800) ISPL,MAXSP
+     write (JOSTND,8800) ISPL,CFG_MAXSP
   end if
 
   go to 50
@@ -1118,7 +1119,7 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
 
   !.... Check for valid species code.
 
-  if (ISPL.ge.0.and.ISPL.le.MAXSP) then
+  if (ISPL.ge.0.and.ISPL.le.CFG_MAXSP) then
 
      !....    Check for valid death rate.
 
@@ -1133,14 +1134,14 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
      if (ISPL .gt.0) then
         DMDETH(ISPL) = ARRAY(2)
      else
-        do J = 1, MAXSP
+        do J = 1, CFG_MAXSP
            DMDETH(J) = ARRAY(2)
            2102 continue
         end do
      end if
   else
      call KEYDMP(JOSTND,IRECNT,KEYWRD,ARRAY,KARD)
-     write (JOSTND,8000) ISPL,MAXSP
+     write (JOSTND,8000) ISPL,CFG_MAXSP
      call ERRGRO(.true.,4)
   end if
 
@@ -1165,7 +1166,7 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
 
   !.... Check for valid species code.
 
-  if (ISPL.ge.0.and.ISPL.le.MAXSP) then
+  if (ISPL.ge.0.and.ISPL.le.CFG_MAXSP) then
 
      !....    Check for valid capping factor.
 
@@ -1180,14 +1181,14 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
      if (ISPL .gt.0) then
         DMCAP(ISPL) = ARRAY(2)
      else
-        do J = 1, MAXSP
+        do J = 1, CFG_MAXSP
            DMCAP(J) = ARRAY(2)
            2202 continue
         end do
      end if
   else
      call KEYDMP(JOSTND,IRECNT,KEYWRD,ARRAY,KARD)
-     write (JOSTND,8000) ISPL,MAXSP
+     write (JOSTND,8000) ISPL,CFG_MAXSP
      call ERRGRO(.true.,4)
   end if
 
@@ -1324,7 +1325,7 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
 
   !.... Check for valid species code.
 
-  if (ISPL.ge.0.and.ISPL.le.MAXSP) then
+  if (ISPL.ge.0.and.ISPL.le.CFG_MAXSP) then
 
      !....    Check for valid delay.
 
@@ -1339,13 +1340,13 @@ subroutine MISIN(PASKEY,ARRAY,LNOTBK,LKECHO)
      if (ISPL .gt.0) then
         DMFLWR(ISPL) = NINT(ARRAY(2))
      else
-        do J = 1,MAXSP
+        do J = 1,CFG_MAXSP
            DMFLWR(J) = NINT(ARRAY(2))
         end do
      end if
   else
      call KEYDMP(JOSTND,IRECNT,KEYWRD,ARRAY,KARD)
-     write (JOSTND,8000) ISPL,MAXSP
+     write (JOSTND,8000) ISPL,CFG_MAXSP
      call ERRGRO(.true.,4)
   end if
 

@@ -3,6 +3,7 @@
 !=====================================!
 ! CR $Id$
 subroutine SITSET
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS SUBROUTINE IS USED TO SET ALL VARIANT SPECIFIC VARIABLES,
@@ -47,7 +48,7 @@ subroutine SITSET
   !  PM,PD,AZ USE CR PI
   !  CI USES CR PP
 
-  data SDICON/&
+  data SDICON(1:MAXSP_NATIVE)/&
        &602., 423., 570., 562., 634., 687., 762., 423., 621., 409.,&
        &679., 348., 446., 621., 529., 497., 620., 620., 412., 562.,&
        &452., 452., 652., 403., 284., 423., 284., 466., 395., 411.,&
@@ -92,7 +93,7 @@ subroutine SITSET
   !  VARIATION IN THE SYSTEM. CARL'S SE VALUES LOOKED REALLY SUSPECT.
   !  EQNS FROM OTHER VARIANTS HAVE SIGMAR VALUES
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      SIGMAR(I) = 0.2
      50 continue
   end do
@@ -261,7 +262,7 @@ subroutine SITSET
 
      ! LOAD BLKDAT VARIABLES FOR MODEL 3
 
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         SIGMAR(I) = 0.346
         1225 continue
      end do
@@ -462,7 +463,7 @@ subroutine SITSET
   if (IMODTY .eq.3.and. ISISP .eq.0) ISISP = 13
   if (IMODTY .eq.4.and. ISISP .eq.0) ISISP = 18
   if (IMODTY .eq.5.and. ISISP .eq.0) ISISP = 11
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (TEM .lt. SITELO(ISISP))TEM = SITELO(ISISP)
      if (SITEAR(I) .le.0.0) SITEAR(I) = SITELO(I) +&
           &(TEM-SITELO(ISISP))/(SITEHI(ISISP)-SITELO(ISISP))&
@@ -472,7 +473,7 @@ subroutine SITSET
 
   ! LOAD THE SDIDEF ARRAY
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (SDIDEF(I) .gt.0.0) go to 40
      if (BAMAX .gt.0.) then
         SDIDEF(I) = BAMAX/(0.5454154*(PMSDIU/100.))
@@ -485,12 +486,12 @@ subroutine SITSET
   do I = 1,15
      J = (I-1)*10 + 1
      JJ = J+9
-     if (JJ.gt.MAXSP)JJ = MAXSP
+     if (JJ.gt.CFG_MAXSP)JJ = CFG_MAXSP
      write(JOSTND,90)(NSP(K,1)(1:2),K = J,JJ)
      90 format(/'SPECIES ',5X,10(A2,6X))
      write(JOSTND,91)(NINT(SDIDEF(K)),K = J,JJ )
      91 format('SDI MAX ',   10I8.0)
-     if (JJ .eq. MAXSP)go to 93
+     if (JJ .eq. CFG_MAXSP)go to 93
      92 continue
   end do
   93 continue
@@ -498,7 +499,7 @@ subroutine SITSET
   !  LOAD VOLUME DEFAULT MERCH. SPECS.
 
   if (IMODTY.eq.3) then
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         if (DBHMIN(I) .le.0.) DBHMIN(I) = 9.0
         if (TOPD(I) .le.0.) TOPD(I) = 6.0
         if (BFTOPD(I) .le.0.0) BFTOPD(I) = 6.0
@@ -508,7 +509,7 @@ subroutine SITSET
      end do
   else if ((IMODTY.eq.1).or.(IMODTY.eq.2).or.&
        &(IMODTY.eq.4).or.(IMODTY.eq.5)) then
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         if (DBHMIN(I) .le.0.) DBHMIN(I) = 5.0
         if (TOPD(I) .le.0.) TOPD(I) = 4.0
         if (BFTOPD(I) .le.0.0) BFTOPD(I) = 6.0
@@ -541,7 +542,7 @@ subroutine SITSET
   VAR = 'CR'
 
   if (LFIANVB) call NVB_REGION_CHECK
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      read(FIAJSP(ISPC),'(I4)')IFIASP
      VOLEQ = '           '
      if (((METHC(ISPC).eq.6).or.(METHC(ISPC).eq.9)).and.&
@@ -564,14 +565,14 @@ subroutine SITSET
 
   if (LFIA) then
      call FIAHEAD(JOSTND)
-     write(JOSTND,211) (NSP(I,1)(1:2),FIAJSP(I),I = 1,MAXSP)
+     write(JOSTND,211) (NSP(I,1)(1:2),FIAJSP(I),I = 1,CFG_MAXSP)
      211 format ((T12,8(A3,'=',A6,:,'; '),A,'=',A6))
   end if
 
   !  WRITE VOLUME EQUATION NUMBER TABLE
 
   call VOLEQHEAD(JOSTND)
-  write(JOSTND,230)(NSP(J,1)(1:2),VEQNNC(J),VEQNNB(J),J = 1,MAXSP)
+  write(JOSTND,230)(NSP(J,1)(1:2),VEQNNC(J),VEQNNB(J),J = 1,CFG_MAXSP)
   230 format(4(2X,A2,4X,A11,1X,A10,1X))
 
   return

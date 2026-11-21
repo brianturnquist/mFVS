@@ -3,6 +3,7 @@
 !=====================!
 ! FIRE-CR $Id$
 subroutine FMCBA (IYR,ISWTCH)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     SINGLE-STAND VERSION
@@ -74,7 +75,7 @@ subroutine FMCBA (IYR,ISWTCH)
   !     INITIAL LIVE FUEL LOADING FOR 'ESTABLISHED' STANDS WITH 60% COVER
 
   !                  herbs, shrubs
-  data FULIVE /&
+  data FULIVE(:,1:MAXSP_NATIVE) /&
        &0.15,  0.20,& !  1 subalpine fir
        &0.15,  0.20,& !  2 corkbark fir - use subalpine fir
        &0.20,  0.20,& !  3 Douglas-fir
@@ -118,7 +119,7 @@ subroutine FMCBA (IYR,ISWTCH)
   !     INITIAL LIVE FUEL LOADING FOR 'INTIALIZING STANDS WITH 10% COVER
 
   !                  herbs, shrubs
-  data FULIVI /&
+  data FULIVI(:,1:MAXSP_NATIVE) /&
        &0.30,  2.00,& !  1 subalpine fir
        &0.30,  2.00,& !  2 corkbark fir - use subalpine fir
        &0.40,  2.00,& !  3 Douglas-fir
@@ -163,7 +164,7 @@ subroutine FMCBA (IYR,ISWTCH)
   !     THIS CAN BE MODIFIED BY THE *FUELINIT** KEYWORD
 
   !                  <.25 to1  1-3  3-6  6-12  12-20 20-35 35-50 >50  Lit  Duf
-  data FUINIE /&
+  data FUINIE(:,1:MAXSP_NATIVE) /&
        &1.1, 1.1, 2.2, 10.0,10.0, 0.0, 0.0,0.0,0.0,0.6,30.0,& !  1 subalpine fir
        &1.1, 1.1, 2.2, 10.0,10.0, 0.0, 0.0,0.0,0.0,0.6,30.0,& !  2 corkbark fir - use subalpine fir
        &0.9, 0.9, 1.6,  3.5, 3.5, 0.0, 0.0,0.0,0.0,0.6,10.0,& !  3 Douglas-fir
@@ -208,7 +209,7 @@ subroutine FMCBA (IYR,ISWTCH)
   !     THIS CAN BE MODIFIED BY THE *FUELINIT** KEYWORD
 
   !                  <.25 to1  1-3  3-6  6-12  12-20 20-35 35-50 >50  Lit  Duf
-  data FUINII /&
+  data FUINII(:,1:MAXSP_NATIVE) /&
        &0.7, 0.7, 1.6,  4.0, 4.0, 0.0, 0.0,0.0,0.0,0.3,12.0,& !  1 subalpine fir
        &0.7, 0.7, 1.6,  4.0, 4.0, 0.0, 0.0,0.0,0.0,0.3,12.0,& !  1 corkbark fir - use subalpine fir
        &0.5, 0.5, 1.0,  1.4, 1.4, 0.0, 0.0,0.0,0.0,0.3, 5.0,& !  3 Douglas-fir
@@ -359,7 +360,7 @@ subroutine FMCBA (IYR,ISWTCH)
      BAMOST = 0.0
      TOTCRA = 0.0
 
-     do KSP = 1,MAXSP
+     do KSP = 1,CFG_MAXSP
         FMTBA(KSP) = 0.0
      end do
 
@@ -390,7 +391,7 @@ subroutine FMCBA (IYR,ISWTCH)
      !        Determine which species has the most basal area
      !        -> that will be the cover type
 
-     do KSP = 1,MAXSP
+     do KSP = 1,CFG_MAXSP
         if (FMTBA(KSP) .gt. BAMOST) then
            BAMOST = FMTBA(KSP)
            COVTYP = KSP
@@ -561,7 +562,7 @@ subroutine FMCBA (IYR,ISWTCH)
 
      do ISZ = 1,MXFLCL
         if (TOTBA .gt.0.0) then
-           do KSP = 1,MAXSP
+           do KSP = 1,CFG_MAXSP
               if (FMTBA(KSP) .gt.0.0) then
                  do J = 1,2
                     PRCL = FMTBA(KSP) / TOTBA

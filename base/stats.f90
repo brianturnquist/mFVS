@@ -4,6 +4,7 @@
 ! BASE $Id$
 subroutine STATS
   use VARCFG_MOD, only: CFG_LMETRICVAR
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS ROUTINE COMPUTES STATISTICS THAT DESCRIBE THE INPUT
@@ -73,7 +74,7 @@ subroutine STATS
   else
      LABELS = LABIMP
   end if
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      TOTTR(I) = 0.0
      TOTBA(I) = 0.0
      TOTBF(I) = 0.0
@@ -146,7 +147,7 @@ subroutine STATS
      end if
      30 continue
   end do
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      TOTTR(ISPC) = TOTTR(ISPC)/GROSPC
      TOTBA(ISPC) = TOTBA(ISPC)/GROSPC
      TOTCF(ISPC) = TOTCF(ISPC)/GROSPC
@@ -179,7 +180,7 @@ subroutine STATS
   9102 format(/2X,'SPECIES',T18,'NMV (CU M)',T31,'GTV (CU M)', &
        & T52,'TREES',T61,'BASAL AREA',/,73('-'))
   ROWS = 0
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (IFLG(I).eq.0) go to 40
      ROWS = ROWS+1
      SP(ROWS) = JSP(I)
@@ -264,7 +265,7 @@ subroutine STATS
   !  POPULATE ARRAYS WITH NON-ZERO VALUES
 
   150 CNT = 0
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      CNT = CNT+1
      SPECCD(CNT) = SP(I)
      if (LMETRICVAR) then

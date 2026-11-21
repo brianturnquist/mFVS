@@ -3,6 +3,7 @@
 !======================!
 ! FIRE-BM $Id$
 subroutine FMCFMD (IYR, FMD)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     SINGLE-STAND VERSION
@@ -129,7 +130,7 @@ subroutine FMCFMD (IYR, FMD)
   !     PLUS DOUGLAS-FIR
 
   STNDBA = 0.0
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      STNDBA = STNDBA + FMTBA(I)
   end do
 

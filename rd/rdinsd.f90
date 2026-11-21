@@ -3,6 +3,7 @@
 !=================!
 ! RD $Id$
 subroutine RDINSD
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  Purpose :
@@ -135,7 +136,7 @@ subroutine RDINSD
      IRINCS = 0
      IDI = MAXRR
 
-     do KSP = 1, MAXSP
+     do KSP = 1, CFG_MAXSP
         if (MAXRR .lt.3) IDI = IDITYP(IRTSPC(KSP))
         if ((ISCT(KSP,1) .eq.0) .or. (IDI .ne. IRRSP)) goto 100
 
@@ -262,7 +263,7 @@ subroutine RDINSD
      RRGEN(IRRSP,4) = 0
      IDI = MAXRR
 
-     do KSP = 1, MAXSP
+     do KSP = 1, CFG_MAXSP
         if (MAXRR .lt.3) IDI = IDITYP(IRTSPC(KSP))
 
         !     Modification (RNH, MAR98).  If MAXRR < 3 then annosus disease.
@@ -382,7 +383,7 @@ subroutine RDINSD
   !.... each record.
 
   IDI = MAXRR
-  do KSP = 1, MAXSP
+  do KSP = 1, CFG_MAXSP
      if (MAXRR .lt.3) IDI = IDITYP(IRTSPC(KSP))
      if ((ISCT(KSP,1) .le.0) .or. (IDI .ne. IRRSP)) goto 1050
 

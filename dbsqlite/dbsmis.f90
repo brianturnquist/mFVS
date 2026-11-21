@@ -6,6 +6,7 @@ subroutine DBSMIS1(IYEAR,CNPLT,CSP,&
      &SPDMR4,SPDMI4,SPINF4,SPMRT4,SPPIN4,SPPMR4,SPPOC4,&
      &KODE)
 
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     PURPOSE: TO POPULATE A DATABASE WITH THE 1ST MISTLETOE REPORT INFORMATION
@@ -138,7 +139,7 @@ subroutine DBSMIS1(IYEAR,CNPLT,CSP,&
 
      !     ASSIGN FVS, PLANTS AND FIA SPECIES CODES
 
-     do I2 = 1,MAXSP
+     do I2 = 1,CFG_MAXSP
         if (CSP(I) .eq. JSP(I2)) then
            CSP1 = JSP(I2)
            CSP2 = PLNJSP(I2)

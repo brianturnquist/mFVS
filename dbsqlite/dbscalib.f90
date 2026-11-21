@@ -4,6 +4,7 @@
 ! DBSQLITE $Id$
 subroutine DBSCALIB(ICFROM,CORTEM,NUMCAL,STDRAT)
 
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     PURPOSE: TO POPULATE A DATABASE WITH THE CALIBRATION STATS
@@ -129,11 +130,11 @@ subroutine DBSCALIB(ICFROM,CORTEM,NUMCAL,STDRAT)
      return
   end if
 
-  do K = 1,MAXSP
+  do K = 1,CFG_MAXSP
      if (CORTEM(K).ne.1.0.or. NUMCAL(K).ge.FNMIN) then
-        SPEC = NSP(MAXSP,1)(1:2)
-        ISPEC = MAXSP
-        do KK = 1,MAXSP
+        SPEC = NSP(CFG_MAXSP,1)(1:2)
+        ISPEC = CFG_MAXSP
+        do KK = 1,CFG_MAXSP
            if (K .ne. IREF(KK)) cycle
            ISPEC = KK
            SPEC = NSP(KK,1)(1:2)

@@ -21,9 +21,11 @@ COMMON storage declared in include files is covered: module variables, SAVE
 locals and COMMON declared inside a procedure are not. Restarted runs read
 their storage from the restart file and are not re-poisoned.
 
-Until SP05 and SP06 move the loops and checks to active extents, raising the
-storage sizes also raises those bounds, and the MAXSP-shaped DATA statements
-no longer match, so real variants are not expected to build or pass yet.
+SP05 moved the species loops, checks, restart transfers and DATA statements
+to the active count (CFG_MAXSP) and the native count (MAXSP_NATIVE), so real
+variants run with MAXSP alone raised (`check_suite.py --poison-storage
+MAXSP`); only MAXSP's PRGPRM parameter is rewritten, never MAXSP_NATIVE.
+Raising MAXTRE and MAXPLT as well waits for SP06.
 `check_poison_storage.py` proves the mechanism on a planted fixture.
 """
 

@@ -3,6 +3,7 @@
 !=================!
 ! RD $Id$
 subroutine RDDOUT
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  Purpose :
@@ -161,7 +162,7 @@ subroutine RDDOUT
      90 continue
   end do
 
-  do J = 1,MAXSP
+  do J = 1,CFG_MAXSP
      ORRKIL(J) = 0.0
      OPROBI(J) = 0.0
      OPROBU(J) = 0.0
@@ -244,7 +245,7 @@ subroutine RDDOUT
 
   804 continue
   IDI = IRRSP
-  do KSP = 1, MAXSP
+  do KSP = 1, CFG_MAXSP
      if (IRRSP .lt.3) IDI = IDITYP(IRTSPC(KSP))
      if ((ISCT(KSP,1) .eq.0) .or. (IDI .ne. IRRSP)) goto 800
 

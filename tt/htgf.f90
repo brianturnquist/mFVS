@@ -3,6 +3,7 @@
 !======================================!
 ! TT $Id$
 subroutine HTGF
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !   THIS SUBROUTINE COMPUTES THE PREDICTED PERIODIC HEIGHT
@@ -198,12 +199,12 @@ subroutine HTGF
        &45.0,90.0,1.64770,0.30546,1.35015,0.94823,0.70453,&
        &2.46480,1.00316/
 
-  data AZBIAS/&
+  data AZBIAS(1:MAXSP_NATIVE)/&
        &0.0,     0.0, -.86001,     0.0, -.84735,&
        &0.0,  .40153, -.84735,  .89035,     0.0,&
        &0.0,     0.0,     0.0,     0.0,     0.0,&
        &0.0,     0.0,     0.0/
-  data BZBIAS/&
+  data BZBIAS(1:MAXSP_NATIVE)/&
        &0.0,     0.0,  .01051,     0.0,  .01102,&
        &0.0,  -.0078,  .01102, -.01331,     0.0,&
        &0.0,     0.0,     0.0,      0.,     0.0,&
@@ -220,7 +221,7 @@ subroutine HTGF
   ! Check whether debugging is enabled
   call DBCHK (DEBUG,'HTGF',4,ICYC)
   if (DEBUG)write(JOSTND,*) 'IN HTGF AT BEGINNING, HTCON=',&
-       &HTCON,' RMAI=',RMAI,' ELEV=',ELEV
+       &HTCON(1:CFG_MAXSP),' RMAI=',RMAI,' ELEV=',ELEV
 
   XI2 = 4.5
   XI1 = 0.1
@@ -230,7 +231,7 @@ subroutine HTGF
   !  GET THE HEIGHT GROWTH MULTIPLIERS.
 
   call MULTS (2,IY(ICYC),XHMULT)
-  if (DEBUG)write(JOSTND,*)' HTGF MULT= ',XHMULT,'  SCALE= ',SCALE
+  if (DEBUG)write(JOSTND,*)' HTGF MULT= ',XHMULT(1:CFG_MAXSP),'  SCALE= ',SCALE
 
   !  PUT SITE INDEX FOR THE SITE SPECIES INTO A SITE GROUP
 
@@ -242,7 +243,7 @@ subroutine HTGF
 
   !   BEGIN SPECIES LOOP:
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      I1 = ISCT(ISPC,1)
      if (I1.eq.0) go to 40
      I2 = ISCT(ISPC,2)
@@ -747,7 +748,7 @@ subroutine HTGF
 
   !  LOAD HTCON.  IF CORRECTION TERMS ARE TO BE USED, MODIFY ACCORDINGLY
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      HTCON(ISPC) = 0.0
      if (LHCOR2.and. HCOR2(ISPC).gt.0.0) HTCON(ISPC) = &
           &HTCON(ISPC)+ALOG(HCOR2(ISPC))

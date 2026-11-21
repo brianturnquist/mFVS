@@ -4,6 +4,7 @@
 ! BASE $Id$
 subroutine GRINCR (DEBUG,IPMODI,LTMGO,LMPBGO,LDFBGO, &
      & LBWEGO,LCVATV)
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     COMPUTES GROWTH AND MORTALITY ON EACH TREE RECORD.
@@ -132,7 +133,7 @@ subroutine GRINCR (DEBUG,IPMODI,LTMGO,LMPBGO,LDFBGO, &
            !     IF (IS=0) ALL SPECIES WILL BE CHANGED IN FOLLOWING CODE:
 
         else if (IS .eq. 0) then
-           do I = 1,MAXSP
+           do I = 1,CFG_MAXSP
               if (PRM(5) .eq. 0) then
                  if (PRM(4).gt.0.)SITEAR(I) = PRM(4)
               else
@@ -168,7 +169,7 @@ subroutine GRINCR (DEBUG,IPMODI,LTMGO,LMPBGO,LDFBGO, &
            do I = 1,15
               J = (I-1)*10 + 1
               JJ = J+9
-              if (JJ.gt.MAXSP)JJ = MAXSP
+              if (JJ.gt.CFG_MAXSP)JJ = CFG_MAXSP
               write(JOSTND,990)(NSP(K,1)(1:2),K = J,JJ)
               990 format(/'    SPECIES ',5X,10(A2,6X))
               if (VARACD .eq. 'BC') then
@@ -182,14 +183,14 @@ subroutine GRINCR (DEBUG,IPMODI,LTMGO,LMPBGO,LDFBGO, &
                  write(JOSTND,991)(NINT(SDIDEF(K)),K = J,JJ )
                  991 format('    SDI MAX ',   10I8.0)
               end if
-              if (JJ .eq. MAXSP)go to 993
+              if (JJ .eq. CFG_MAXSP)go to 993
               992 continue
            end do
            993 continue
         end if
         9 continue
      end do
-     if (ISISP.gt.0 .and. ISISP.le.MAXSP) then
+     if (ISISP.gt.0 .and. ISISP.le.CFG_MAXSP) then
         STNDSI = SITEAR(ISISP)
      else
         STNDSI = 0.

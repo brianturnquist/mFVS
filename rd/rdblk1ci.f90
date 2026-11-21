@@ -89,7 +89,7 @@ block data RDBLK1
   !.... The following IRTSPC is for the CI 19 species variant.
   !....              1   2   3   4   5   6   7   8   9   10  11  12  -- FVS index
   !....              WP  WL  DF  GF  WH  RC  LP  ES  AF  PP  WB  PY  -- FVS species
-  data IRTSPC /1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 22, 38,&
+  data IRTSPC(1:MAXSP_NATIVE) /1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 22, 38,&
        !....              13  14  15  16  17  18  19                      -- FVS index
        !....              AS  WJ  MC  LM  CW  OS  OH                      -- FVS species
        &19, 26, 40, 23, 24, 17, 18 /

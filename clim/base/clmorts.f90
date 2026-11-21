@@ -3,6 +3,7 @@
 !=========================!
 ! CLIM-BASE $Id$
 subroutine CLMORTS
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !     CLIMATE EXTENSION - COMPUTES CLIMATE-CAUSED MORTALITY
@@ -41,7 +42,7 @@ subroutine CLMORTS
         if (I .eq.0) then
            CLMRTMLT1 = PRMS(2)
            CLMRTMLT2 = PRMS(3)
-        else if (I.gt.0.and. I.le.MAXSP) then
+        else if (I.gt.0.and. I.le.CFG_MAXSP) then
            CLMRTMLT1(I) = PRMS(2)
            CLMRTMLT2(I) = PRMS(3)
         end if
@@ -52,7 +53,7 @@ subroutine CLMORTS
 
   if (ICYC.eq.1) then
      THISYR = FLOAT(IY(ICYC))
-     do I = 1,MAXSP
+     do I = 1,CFG_MAXSP
         if (INDXSPECIES(I).eq.0) cycle
         I2 = INDXSPECIES(I)
         if (ISCT(I,1) .gt.0) then ! THE SPECIES IS PRESENT (THIS IS A FACT).
@@ -70,7 +71,7 @@ subroutine CLMORTS
   SPMORT1 = 0.
   FYRMORT = 0.
   THISYR = FLOAT(IY(ICYC))+(FINT/2)
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (INDXSPECIES(I).eq.0) cycle
      I2 = INDXSPECIES(I)
 
@@ -255,7 +256,7 @@ subroutine CLMORTS
 
   !     COMPUTE THE WEIGHTED AVERAGE MORTALITY RATE FOR CAUSE 2
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      if (SPWTS(I).gt.0.0001) then
         SPMORT2(I) = SPMORT2(I)/SPWTS(I)
      else

@@ -3,6 +3,7 @@
 !=======================================!
 ! CI $Id$
 subroutine GRINIT
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  INITIALIZE PROGNOSIS MODEL VARIABLES
@@ -41,7 +42,7 @@ subroutine GRINIT
   CFCTYPE = 'F'
   BFCTYPE = 'F'
   call LNKINT
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      IORDER(I) = 0
      COR(I) = 0.0
      XDMULT(I) = 1.
@@ -246,7 +247,7 @@ subroutine GRINIT
   CCCOEF2 = 1.0
 
   do J = 1,9
-     do K = 1,MAXSP
+     do K = 1,CFG_MAXSP
         BFDEFT(J,K) = 0.0
         CFDEFT(J,K) = 0.0
         20 continue
@@ -319,7 +320,7 @@ subroutine GRINIT
 
   !  INITIALIZE VARCOM COMMON VARIABLES
 
-  do I = 1,MAXSP
+  do I = 1,CFG_MAXSP
      ISTAGF(I) = 0
   end do
 

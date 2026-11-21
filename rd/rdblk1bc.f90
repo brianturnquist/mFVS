@@ -52,7 +52,7 @@ block data RDBLK1
 
   !     Assume birch = non-host (NH)(40) for i=11,15
 
-  data IRTSPC / 1,  2,  3,  4,  5,  6,  7,  8,  9, 10,&
+  data IRTSPC(1:MAXSP_NATIVE) / 1,  2,  3,  4,  5,  6,  7,  8,  9, 10,&
        &40, 19, 24,  3, 40 /
 
   data DICLAS /0.0, 5.0, 12.0, 24.0/

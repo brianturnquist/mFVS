@@ -3,6 +3,7 @@
 !===============================!
 ! CANADA-NEWMIST $Id$
 subroutine DMINIT
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   ! **DMINIT--NI  DATE OF LAST REVISION: 02/22/96
@@ -115,7 +116,7 @@ subroutine DMINIT
   !.... 'PW','LW','FD','BG','HW','CW','PL','SE','BL','PY',
   !.... 'EP','AT','AC','OC','OH'
 
-  data TPOPAQ /&
+  data TPOPAQ(1:MAXSP_NATIVE) /&
        &1.2,& !PW
        &0.9,& !LW
        &1.5,& !FD
@@ -232,7 +233,7 @@ subroutine DMINIT
 
   !.... Initialize default values for the relative opacities.
 
-  do i = 1, MAXSP
+  do i = 1, CFG_MAXSP
      DMOPAQ(i) = TPOPAQ(i)
      250 continue
   end do
@@ -243,7 +244,7 @@ subroutine DMINIT
 
   DMOPQM = 0.20
 
-  do i = 1, MAXSP
+  do i = 1, CFG_MAXSP
 
      !....    Default coefficients for the light-driven forward and backward
      !....    transitions.

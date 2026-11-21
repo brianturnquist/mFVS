@@ -3,6 +3,7 @@
 !======================================!
 ! AK $Id$
 subroutine HTGF
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !   THIS SUBROUTINE COMPUTES THE PREDICTED PERIODIC HEIGHT
@@ -68,7 +69,7 @@ subroutine HTGF
   !  DATA STATEMENTS:
 
   !      BASE HG INTERCEPT COEFFICIENTS
-  data NOPERMH1/ &
+  data NOPERMH1(1:MAXSP_NATIVE)/ &
        & -2.18236,  -2.18236,  -2.955092, -0.663746, -0.501134, &
        & -0.501134, -0.663746, -2.18236,  -3.19512,  -2.979661, &
        & -2.404892, -2.770793, -0.501134, -0.174905, -0.710501, &
@@ -76,7 +77,7 @@ subroutine HTGF
        & -0.174905, -0.174905, -0.174905/
 
   !      BASE HG DBH^2 COEFFICIENTS
-  data NOPERMH2/ &
+  data NOPERMH2(1:MAXSP_NATIVE)/ &
        & -0.000447, -0.000447, -0.000447, -0.003814, -0.003814, &
        & -0.003814, -0.003814, -0.000447, -0.000447, -0.000447, &
        & -0.000447, -0.000447, -0.003814, -0.003814, -0.003814, &
@@ -84,7 +85,7 @@ subroutine HTGF
        & -0.003814, -0.003814, -0.003814/
 
   !      BASE HG LN(DBH) COEFFICIENTS
-  data NOPERMH3/ &
+  data NOPERMH3(1:MAXSP_NATIVE)/ &
        & -0.00488,  -0.00488,   0.125393, 0.176358,  0.209621, &
        & 0.209621,  0.176358, -0.00488,  0.166453,  0.130947, &
        & 0.044809,  0.099358,  0.209621, -0.051622,  0.396143, &
@@ -92,7 +93,7 @@ subroutine HTGF
        & -0.051622, -0.051622, -0.051622/
 
   !      BASE HG ELEV COEFFICIENTS
-  data NOPERMH4/ &
+  data NOPERMH4(1:MAXSP_NATIVE)/ &
        & 0.0,       0.0,       0.0,      -0.000075, -0.000075, &
        & -0.000075, -0.000075,  0.0,       0.0,       0.0, &
        & 0.0,       0.0,      -0.000075, -0.000075, -0.000075, &
@@ -100,7 +101,7 @@ subroutine HTGF
        & -0.000075, -0.000075, -0.000075/
 
   !      BASE HG LN(SITEINDEX) COEFFICIENTS
-  data NOPERMH5/ &
+  data NOPERMH5(1:MAXSP_NATIVE)/ &
        & 0.429243, 0.429243, 0.429243, 0.0,      0.0, &
        & 0.0,      0.0,      0.429243, 0.429243, 0.429243, &
        & 0.429243, 0.429243, 0.0,      0.0,      0.0, &
@@ -108,7 +109,7 @@ subroutine HTGF
        & 0.0,      0.0,      0.0/
 
   !      BASE HG LN(DG) COEFFICIENTS
-  data NOPERMH6/ &
+  data NOPERMH6(1:MAXSP_NATIVE)/ &
        & 0.489281, 0.489281, 0.376732, 0.560124, 0.517799, &
        & 0.517799, 0.560124, 0.489281, 0.342411, 0.374658, &
        & 0.469563, 0.408836, 0.517799, 0.539313, 0.195472, &
@@ -116,7 +117,7 @@ subroutine HTGF
        & 0.539313, 0.539313, 0.539313/
 
   !      HG PERMAFROST MOD INTERCEPT COEFFICIENTS
-  data PERMH1/ &
+  data PERMH1(1:MAXSP_NATIVE)/ &
        & 0.0,       0.0,       0.0,      -0.661722, -0.509243, &
        & -0.509243, -0.661722,  0.0,       0.0,       0.0, &
        & 0.0,       0.0,      -0.509243,  0.0,       0.0, &
@@ -124,7 +125,7 @@ subroutine HTGF
        & -0.148618, -0.148618, -0.148618/
 
   !      HG PERMAFROST MOD - PERMFROST EFFECT COEFFICIENTS
-  data PERMH2/ &
+  data PERMH2(1:MAXSP_NATIVE)/ &
        & 0.0,       0.0,       0.0,      -0.130016, -0.130016, &
        & -0.130016, -0.130016,  0.0,       0.0,       0.0, &
        & 0.0,       0.0,      -0.130016,  0.0,       0.0, &
@@ -132,7 +133,7 @@ subroutine HTGF
        & -0.130016, -0.130016, -0.130016/
 
   !      HG PERMAFROST MOD DBH^2 COEFFICIENTS
-  data PERMH3/ &
+  data PERMH3(1:MAXSP_NATIVE)/ &
        & 0.0,       0.0,       0.0,      -0.003807, -0.003807, &
        & -0.003807, -0.003807,  0.0,       0.0,       0.0, &
        & 0.0,       0.0,      -0.003807,  0.0,       0.0, &
@@ -140,7 +141,7 @@ subroutine HTGF
        & -0.003807, -0.003807, -0.003807/
 
   !      HG PERMAFROST MOD LN(DBH) COEFFICIENTS
-  data PERMH4/ &
+  data PERMH4(1:MAXSP_NATIVE)/ &
        & 0.0,        0.0,       0.0,      0.17915,   0.221303, &
        & 0.221303,   0.17915,   0.0,      0.0,       0.0, &
        & 0.0,        0.0,       0.221303, 0.0,       0.0, &
@@ -148,7 +149,7 @@ subroutine HTGF
        & -0.075692, -0.075692, -0.075692/
 
   !      HG PERMAFROST ELEV COEFFICIENTS
-  data PERMH5/ &
+  data PERMH5(1:MAXSP_NATIVE)/ &
        & 0.0,       0.0,       0.0,      -0.000067, -0.000067, &
        & -0.000067, -0.000067,  0.0,       0.0,       0.0, &
        & 0.0,       0.0,      -0.000067,  0.0,       0.0, &
@@ -156,7 +157,7 @@ subroutine HTGF
        & -0.000067, -0.000067, -0.000067/
 
   !      HG PERMAFROST LN(DG) COEFFICIENTS
-  data PERMH6/ &
+  data PERMH6(1:MAXSP_NATIVE)/ &
        & 0.0,      0.0,      0.0,      0.537482, 0.509459, &
        & 0.509459, 0.537482, 0.0,      0.0,      0.0, &
        & 0.0,      0.0,      0.509459, 0.0,      0.0, &
@@ -166,7 +167,7 @@ subroutine HTGF
   !  LOWER BOUNDING VALUES FOR HTG BOUNDING. THESE VALUES ARE BASED ON THE
   !  99TH PERCENTILE OF HT VALUES OBSERVED IN THE DATASET USED TO FIT
   !  HEIGHT GROWTH EQUATIONS.
-  data HTLO/ &
+  data HTLO(1:MAXSP_NATIVE)/ &
        & 131.0,  83.0,  92.0, 47.0, 78.0, 78.0, 47.0, 131.0, &
        & 70.0, 102.0, 130.0, 83.0, 78.0, 38.0, 86.0,  77.0, &
        & 77.0,  84.0,  76.0, 84.0, 38.0, 55.0, 38.0/
@@ -174,7 +175,7 @@ subroutine HTGF
   !  UPPER BOUNDING VALUES USED FOR HTG BOUNDING. THESE VALUES ARE BASED ON
   !  THE MAXIMUM HT VALUES OBSERVED IN THE DATASET USED TO FIT HEIGHT DIAMETER
   !  RELATIONSHIPS.
-  data HTHI/ &
+  data HTHI(1:MAXSP_NATIVE)/ &
        & 211.0, 150.0, 139.0,  77.0, 123.0, 123.0,  77.0, 211.0, &
        & 98.0, 151.0, 214.0, 150.0, 123.0,  59.0, 120.0, 102.0, &
        & 102.0, 130.0, 102.0, 130.0,  59.0,  85.0,  59.0/
@@ -185,7 +186,7 @@ subroutine HTGF
   3 format(' ENTERING SUBROUTINE HTGF  CYCLE =',I5)
 
   if (DEBUG)write(JOSTND,*) 'IN HTGF AT BEGINNING,HTCON=', &
-       & HTCON,'RMAI=',RMAI,'ELEV=',ELEV
+       & HTCON(1:CFG_MAXSP),'RMAI=',RMAI,'ELEV=',ELEV
 
   SCALE = FINT/YR
 
@@ -199,7 +200,7 @@ subroutine HTGF
 
   !   BEGIN SPECIES LOOP:
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      I1 = ISCT(ISPC,1)
      if (I1 .eq. 0) go to 40
      I2 = ISCT(ISPC,2)
@@ -426,7 +427,7 @@ subroutine HTGF
 
   !  LOAD OVERALL INTERCEPT FOR EACH SPECIES.
 
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      HTCON(ISPC) = 0.0
      if (LHCOR2 .and. HCOR2(ISPC).gt.0.0) HTCON(ISPC) =  &
           & HTCON(ISPC)+ALOG(HCOR2(ISPC))

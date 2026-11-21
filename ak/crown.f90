@@ -3,6 +3,7 @@
 !============================================!
 ! AK $Id$
 subroutine CROWN
+  use VARCFG_MOD, only: CFG_MAXSP
   implicit none
 
   !  THIS ROUTINE IS CALLED FROM **CRATET** TO DUB
@@ -125,7 +126,7 @@ subroutine CROWN
            21 continue
         end do
      else if (ISPCC .eq. 0) then
-        do ISPCC = 1,MAXSP
+        do ISPCC = 1,CFG_MAXSP
            if (PRM(2) .ge. 0.0)CRNMLT(ISPCC) = PRM(2)
            if (PRM(3) .gt. 0.0)DLOW(ISPCC) = PRM(3)
            if (PRM(4) .gt. 0.0)DHI(ISPCC) = PRM(4)
@@ -143,7 +144,7 @@ subroutine CROWN
   25 continue
 
   !  DETERMINE IF DEBUG IS NEEDED
-  if (DEBUG)write(JOSTND,9024)ICYC,CRNMLT
+  if (DEBUG)write(JOSTND,9024)ICYC,CRNMLT(1:CFG_MAXSP)
   9024 format(/' IN CROWN 9024 ICYC,CRNMLT= ', &
        & I5/((1X,23F6.2)/))
 
@@ -168,7 +169,7 @@ subroutine CROWN
   !  FOR EACH SPECIES
 
   !  BEGIN OUTER LOOP OVER SPECIES
-  do ISPC = 1,MAXSP
+  do ISPC = 1,CFG_MAXSP
      I1 = ISCT(ISPC,1)
      if (I1 .eq. 0) go to 70
      I2 = ISCT(ISPC,2)
@@ -461,7 +462,7 @@ subroutine CROWN
   !  OS  AD  RA  PB  AB  BA  AS  CW  WI  SU  OH
 
   !  CROWN RATIO INTERCEPT COEFFICIENTS
-  data CRINT/ &
+  data CRINT(1:MAXSP_NATIVE)/ &
        & -2.818788, -2.818788,  0.655733,  6.469047, -4.02647, &
        & -4.02647,  -2.781735, -2.818788, -0.425173, -0.449694, &
        & -0.364665, -0.47458,  -4.026470,  0.977291, -2.799049, &
@@ -469,7 +470,7 @@ subroutine CROWN
        & -2.406592, -2.406592,  0.977291/
 
   !  CROWN RATIO HT/DBH RATIO COEFFICIENTS
-  data CRHDR/ &
+  data CRHDR(1:MAXSP_NATIVE)/ &
        & 0.623633,  0.623633, -0.064716, -1.495754,  0.655230, &
        & 0.655230,  0.438826,  0.623633,  0.295262,  0.104368, &
        & 0.116994,  0.141604,  0.655230, -0.314026,  0.660530, &
@@ -477,7 +478,7 @@ subroutine CROWN
        & 0.347417,  0.347417, -0.314026/
 
   !  CROWN RATIO RELATIVE DENSITY COEFFICIENTS
-  data CRRD/ &
+  data CRRD(1:MAXSP_NATIVE)/ &
        & 0.952948, 0.952948, 0.439411, 0.913909, 0.914077, &
        & 0.914077, 0.970251, 0.952948, 0.732675, 0.557638, &
        & 0.573079, 0.590263, 0.914077, 0.848483, 0.987503, &
@@ -485,7 +486,7 @@ subroutine CROWN
        & 0.952753, 0.952753, 0.848483/
 
   !  CROWN RATIO DQMD COEFFICIENTS - CONSISTENT ACROSS ALL SPECIES
-  data CRDQMD/ &
+  data CRDQMD(1:MAXSP_NATIVE)/ &
        & -0.174337, -0.174337, -0.174337, -0.051268, -0.051268, &
        & -0.051268, -0.051268, -0.174337, -0.174337, -0.174337, &
        & -0.174337, -0.174337, -0.051268, -0.051268, -0.174337, &
